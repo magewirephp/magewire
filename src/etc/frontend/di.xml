@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd"
+>
+    <type name="Magewirephp\Magewire\Model\ComponentManager">
+        <arguments>
+            <argument name="updateActionsPool" xsi:type="array">
+                <item name="callMethod" xsi:type="object">Magewirephp\Magewire\Model\Action\CallMethod</item>
+                <item name="fireEvent" xsi:type="object">Magewirephp\Magewire\Model\Action\FireEvent</item>
+                <item name="syncInput" xsi:type="object">Magewirephp\Magewire\Model\Action\SyncInput</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magewirephp\Magewire\Model\Action\CallMethod">
+        <arguments>
+            <!-- Define public methods as protected to avoid being called on a subsequent request -->
+            <argument name="uncallableMethods" xsi:type="array">
+
+                <!-- Lifecycle -->
+                <item name="10" xsi:type="string">mount</item>
+                <item name="11" xsi:type="string">hydrate</item>
+                <item name="12" xsi:type="string">dehydrate</item>
+                <item name="13" xsi:type="string">updating</item>
+                <item name="14" xsi:type="string">updated</item>
+
+                <!-- Base Component -->
+                <item name="15" xsi:type="string">getParent</item>
+                <item name="16" xsi:type="string">setParent</item>
+                <item name="17" xsi:type="string">getPublicProperties</item>
+                <item name="18" xsi:type="string">getUncallables</item>
+                <item name="19" xsi:type="string">__call</item>
+
+                <!-- Concerns -->
+                <item name="20" xsi:type="string">setRequest</item>
+                <item name="21" xsi:type="string">getRequest</item>
+                <item name="22" xsi:type="string">setResponse</item>
+                <item name="23" xsi:type="string">getResponse</item>
+                <item name="24" xsi:type="string">getEventQueue</item>
+
+                <!-- Pagination -->
+                <item name="25" xsi:type="string">renderPagination</item>
+
+            </argument>
+        </arguments>
+    </type>
+</config>

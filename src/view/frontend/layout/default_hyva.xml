@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+>
+    <body>
+        <referenceContainer name="before.body.end">
+            <block name="magewire"
+                   before="script-alpine-js"
+                   template="Magewirephp_Magewire::page/js/magewire.phtml"/>
+            <block name="magewire-init"
+                   after="magewire"
+                   template="Magewirephp_Magewire::page/js/magewire-initialize.phtml"/>
+
+            <!-- Plugin placeholder -->
+            <container name="magewire.plugin" after="magewire-init">
+                <block name="magewire-plugin-intersect"
+                       template="Magewirephp_Magewire::page/js/magewire/plugin/intersect.phtml"/>
+            </container>
+
+            <block name="magewire.loader"
+                   template="Magewirephp_Magewire::html/loader.phtml"
+                   after="-"/>
+            <block name="magewire.loader.script"
+                   template="Magewirephp_Magewire::html/loader-script.phtml"
+                   after="magewire.loader"/>
+        </referenceContainer>
+
+        <block name="magewire.pagination.pager"/>
+    </body>
+</page>

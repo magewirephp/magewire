@@ -1,0 +1,37 @@
+<?php declare(strict_types=1);
+/**
+ * Copyright © Willem Poortman 2021-present. All rights reserved.
+ *
+ * Please read the README and LICENSE files for more
+ * details on copyrights and license information.
+ */
+
+/** @var PaginationInterface $pagination */
+
+use Magewirephp\Magewire\Component\PaginationInterface;
+
+$pagination = $block->getComponent();
+?>
+<div>
+    <?php if ($pagination->hasPages()): ?>
+    <div class="flex items-center">
+        <?php if ($pagination->onFirstPage()): ?>
+        <span class="rounded-l rounded-sm border border-brand-light px-3 py-2 cursor-not-allowed no-underline">&laquo;</span>
+        <?php else: ?>
+        <button
+            class="rounded-l rounded-sm border-t border-b border-l border-brand-light px-3 py-2 text-brand-dark hover:bg-brand-light no-underline cursor-pointer"
+            wire:click="toPreviousPage"
+            rel="prev"
+        >
+            &laquo;
+        </button>
+        <?php endif; ?>
+
+        <?php if ($pagination->hasMorePages()): ?>
+        <button class="rounded-r rounded-sm border border-brand-light px-3 py-2 hover:bg-brand-light text-brand-dark no-underline cursor-pointer" wire:click="toNextPage" rel="next">&raquo;</button>
+        <?php else: ?>
+        <span class="rounded-r rounded-sm border border-brand-light px-3 py-2 hover:bg-brand-light text-brand-dark no-underline cursor-not-allowed">&raquo;</span>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
+</div>

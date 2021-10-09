@@ -1,0 +1,69 @@
+<?php declare(strict_types=1);
+/**
+ * Copyright © Willem Poortman 2021-present. All rights reserved.
+ *
+ * Please read the README and LICENSE files for more
+ * details on copyrights and license information.
+ */
+
+/** @var Magewire $magewireScripts */
+
+use Magewirephp\Magewire\ViewModel\Magewire;
+
+$magewireScripts = $viewModels->require(Magewire::class);
+?>
+<script>
+    'use strict';
+
+    if (window.magewire) {
+        console.warn('Magewire: It looks like Magewire\'s JavaScript assets have already been loaded. Make sure you aren\'t loading them twice.')
+    }
+
+    window.magewire = new Livewire()
+    <?php if ($magewireScripts->isDeveloperMode()): ?>
+    window.magewire.devTools(true)
+    <?php endif; ?>
+
+    window.Livewire = window.magewire
+    window.Magewire = window.magewire
+    window.livewire_app_url = '<?= $magewireScripts->getPostRoute() ?>'
+    window.livewire_token = window.hyva.getFormKey()
+
+    /* Make sure Magewire loads first. */
+    if (window.Alpine) {
+        /* Defer showing the warning so it doesn't get buried under downstream errors. */
+        document.addEventListener("DOMContentLoaded", () => {
+            setTimeout(function() {
+                console.warn("Magewire: It looks like AlpineJS has already been loaded. Make sure Magewire\'s scripts are loaded before AlpineJS.")
+            })
+        })
+    }
+
+    /* Make Alpine wait until Magewire is finished rendering to do its thing. */
+    window.deferLoadingAlpine = function (callback) {
+        window.addEventListener('magewire:load', () => {
+            callback()
+        });
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        window.magewire.start()
+    });
+
+    ['load', 'available', 'update'].forEach(function (target, index) {
+        document.addEventListener('livewire:' + target, () => {
+            mgwr.dispatchEvent(target)
+        })
+    });
+
+    (function(mgwr) {
+        mgwr.dispatchEvent = (name, data = null) => {
+            const event = document.createEvent('Events')
+
+            event.initEvent('magewire:' + name, true, true)
+            event.detail = data
+
+            document.dispatchEvent(event)
+        }
+    }( window.mgwr = window.mgwr || {} ))
+</script>

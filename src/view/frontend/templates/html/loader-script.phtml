@@ -1,0 +1,45 @@
+<script defer>
+    'use strict';
+
+    (() => {
+        document.addEventListener('DOMContentLoaded', () => {
+            let hasEmits = false
+
+            const canShowLoader = (message, component) => {
+                if (Array.isArray(component.effects.loader)) {
+                    for (const item of message.updateQueue) {
+                        if (item.type !== 'callMethod') {
+                            continue
+                        }
+
+                        return component.effects.loader.includes(item.method)
+                    }
+                }
+
+                return 'loader' in component.effects || hasEmits
+            }
+
+            Magewire.hook('message.sent', (message, component) => {
+                if (canShowLoader(message, component)) {
+                    hasEmits = false
+
+                    mgwr.dispatchEvent('loader:start', {
+                        message: message, component: component
+                    })
+                }
+            })
+            Magewire.hook('message.processed', (message, component) => {
+                hasEmits = 'loader' in component.effects && 'emits' in message.response.effects
+
+                mgwr.dispatchEvent('loader:stop', {
+                    message: message, component: component
+                })
+            })
+            Magewire.hook('message.failed', (message, component) => {
+                mgwr.dispatchEvent('loader:stop', {
+                    message: message, component: component
+                })
+            })
+        })
+    })();
+</script>
