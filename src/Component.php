@@ -95,18 +95,9 @@ abstract class Component implements ArgumentInterface
      */
     protected $uncallables = [];
 
-    /** @var ComponentContext $context */
-    protected $context;
-
     /**
-     * @param ComponentContext $context
-     */
-    public function __construct(ComponentContext $context)
-    {
-        $this->context = $context;
-    }
-
-    /**
+     * @deprecared
+     *
      * Assign/overwrite public class properties.
      *
      * @lifecyclehook updatingProperty
