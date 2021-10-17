@@ -74,7 +74,7 @@ $magewire->getFoo();
 // Call a custom method inside your component
 $magewire->myCustomMethod();
 // Overwrite a property after the (optional) mount method was executed
-$magewire->assign('foo', 'barbar');
+$magewire->foo('barbar');
 ?>
 ```
 
@@ -101,7 +101,7 @@ Set some data but prevent a frontend DOM replacement while on a subsequent reque
 public function setSomeProperties(string $value = 'bar')
 {
     // Will set the data but will return null as effects html value.
-    $this->assign('foo', $value)->skipRender();
+    $this->foo($value)->skipRender();
 }
 ```
 
@@ -153,11 +153,11 @@ Assign properties including a lifecycle ```updating``` and ```updated``` method.
 ```php
 public function myCustomSetMethod(string $value)
 {
-    $this->assign('publicProperty', $value);
+    $this->publicProperty($value);
 }
 
 /**
- * Mass assign() the given property/value array.
+ * Mass assign the given property/value array.
  */
 public function setDataBatch()
 {
@@ -457,7 +457,7 @@ Prefetch a component and show differences on click.
 ```php
 public function prefetchMyContent()
 {
-    $this->assign('myContent', 'Hello world');
+    $this->myContent('Hello world');
 }
 ```
 
@@ -484,12 +484,12 @@ Perform actions on keydown
 ```php
 public function keyUp()
 {
-    $this->assign('random', random_int(100, 999));
+    $this->random(random_int(100, 999));
 }
 
 public function keyDown()
 {
-    $this->assign('random', random_int(10, 99));
+    $this->random(random_int(10, 99));
 }
 ```
 
@@ -644,7 +644,7 @@ class Explanation extends \Magewirephp\Magewire\Component
     
     public function foo(string $bar)
     {
-        $this->assign('bar', $bar);
+        $this->bar($bar);
     }
 }
 ```
@@ -790,12 +790,12 @@ class Explanation extends \Magewirephp\Magewire\Component
     
     public function foo()
     {
-        $this->assign('fooPropertyValue', 'bar');
+        $this->fooPropertyValue('bar');
     }
     
     public function bar(string $textOne, string $textTwo)
     {
-        $this->assign('barPropertyValue', $textOne . ' & ' . $textTwo);
+        $this->barPropertyValue($textOne . ' & ' . $textTwo);
     }
 }
 ```
