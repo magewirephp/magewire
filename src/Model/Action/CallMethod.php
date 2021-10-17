@@ -47,8 +47,10 @@ class CallMethod implements ActionInterface
      */
     public function handle(Component $component, array $payload)
     {
+        // Magic or not, it's still a class method who can have no '$' as name prefix.
         $method = ltrim($payload['method'], '$');
-        $params = $payload['params'];
+        // Let's make sure we have an unpackable array.
+        $params = is_array($payload['params']) ? $payload['params'] : [$payload['params']];
 
         if ($this->isCallable($method, $component)) {
             return $component->{$method}(...$params);

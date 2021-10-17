@@ -10,7 +10,6 @@ namespace Magewirephp\Magewire\Model\Action;
 
 use Magento\Framework\Exception\LocalizedException;
 use Magewirephp\Magewire\Exception\ComponentActionException;
-use Magewirephp\Magewire\Helper\Functions as FunctionsHelper;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Model\ActionInterface;
 use Magewirephp\Magewire\Model\Hydrator\Listener as ListenerHydrator;
@@ -21,9 +20,6 @@ use Magewirephp\Magewire\Model\Hydrator\Listener as ListenerHydrator;
  */
 class FireEvent implements ActionInterface
 {
-    /** @var FunctionsHelper $functionsHelper */
-    private $functionsHelper;
-
     /** @var CallMethod $callMethodHandler */
     private $callMethodHandler;
 
@@ -32,16 +28,13 @@ class FireEvent implements ActionInterface
 
     /**
      * FireEvent constructor.
-     * @param FunctionsHelper $functionsHelper
      * @param CallMethod $callMethodHandler
      * @param ListenerHydrator $listenerHydrator
      */
     public function __construct(
-        FunctionsHelper $functionsHelper,
         CallMethod $callMethodHandler,
         ListenerHydrator $listenerHydrator
     ) {
-        $this->functionsHelper = $functionsHelper;
         $this->callMethodHandler = $callMethodHandler;
         $this->listenerHydrator = $listenerHydrator;
     }
@@ -63,7 +56,7 @@ class FireEvent implements ActionInterface
 
         $this->callMethodHandler->handle($component, [
             'method' => $method,
-            'params' => array_values($parameters)
+            'params' => $parameters
         ]);
     }
 }

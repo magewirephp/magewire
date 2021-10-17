@@ -1,5 +1,5 @@
 ## Magewire
-![version](https://img.shields.io/badge/Version-1.0.0--alpha-blue)
+![version](https://img.shields.io/badge/Version-Beta-blue)
 ![hyva](https://img.shields.io/badge/Hyva_Themes-Compatible-1abc9c)
 ![magento-open-source](https://img.shields.io/badge/Magento_Open_Source-2.3.x-orange)
 ![adobe-commerce](https://img.shields.io/badge/Adobe_Commerce-2.3.x-red)
@@ -24,7 +24,6 @@ section to enable all the Magewire richness in your Blank or Luma projects.
 - [Hydrators](./docs/Hydrators.md)
 
 ## Roadmap
-- New logo
 - Unit & Integration tests
 - Single and Multi file upload integrations
 - Form integration including rule & validation options.
