@@ -23,11 +23,12 @@ trait View
     /**
      * Avoid block rendering on a subsequent request.
      *
+     * @param bool $skip
      * @return $this
      */
-    public function skipRender(): self
+    public function skipRender(bool $skip = true): self
     {
-        $this->skipRender = true;
+        $this->skipRender = $skip;
         return $this;
     }
 
