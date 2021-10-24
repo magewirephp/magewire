@@ -14,5 +14,4 @@ namespace Magewirephp\Magewire\Exception;
  */
 class ValidationException extends MagewireException
 {
-
 }
