@@ -51,7 +51,7 @@ class QueryString implements HydratorInterface
 
             foreach (array_keys($properties) as $property) {
                 if ($value = $this->request->getParam($aliases[$property] ?? $property)) {
-                    $component->assign($property, $value);
+                    $component->{$property} = $value;
                 }
             }
         }
@@ -89,7 +89,7 @@ class QueryString implements HydratorInterface
      */
     public function getQueryParamsFromComponentProperties(Component $component): array
     {
-        return $this->functionsHelper->mapWithKeys(function($value, $key) use ($component) {
+        return $this->functionsHelper->mapWithKeys(function($value, $key) use ($component, $properties) {
             $key = is_string($key) ? $key : $value;
             return [$key => $component->{$key}];
         }, $component->getQueryString());

@@ -42,12 +42,12 @@ class Property implements HydratorInterface
             $request->memo['data'] = array_merge($request->memo['data'], $component->getPublicProperties(true));
         }
 
-        // Bind regular properties
+        // Bind regular properties.
         $this->propertyHelper->assign(function(Component $component, $request, $property, $value) {
-            $component->assign($property, $value, true);
+            $component->{$property} = $value;
         }, $request, $component);
 
-        // Flush properties cache
+        // Flush properties cache.
         $component->getPublicProperties(true);
     }
 

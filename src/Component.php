@@ -98,52 +98,16 @@ abstract class Component implements ArgumentInterface
     /**
      * @deprecared
      *
-     * Assign/overwrite public class properties.
-     *
-     * @lifecyclehook updatingProperty
-     * @lifecyclehook updating
-     * @lifecyclehook defineProperty
-     * @lifecyclehook updated
-     * @lifecyclehook updatedProperty
-     *
      * @param string $name
      * @param mixed $value
-     * @param bool $skipLifecycle
-     * @param string|null $method
      * @return $this
      */
-    public function assign(
-        string $name,
-        $value,
-        bool $skipLifecycle = false,
-        string $method = null
-    ): self
+    public function assign(string $name, $value): self
     {
         try {
             if (!array_key_exists($name, $this->getPublicProperties())) {
                 throw new ComponentException(__('Public property %1 does\'nt exist', [$name]));
             }
-            if ($skipLifecycle) {
-                throw new LifecycleException(__('Skips lifecycle'));
-            }
-
-            // Process lifecycle from this point on.
-            $before  = 'updating' . str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $method ?? $name)));
-            $current = str_replace('updating', 'define', $before);
-            $after   = str_replace('define', 'updated', $current);
-
-            $methods = [$before, 'updating', $current, 'updated', $after];
-            $clone   = $value;
-
-            foreach ($methods as $m) {
-                if (method_exists($this, $m)) {
-                    $clone = $this->{$m}(...[$value, $name]);
-                }
-
-                $this->{$name} = $clone;
-            }
-        } catch (LifecycleException $exception) {
-            // We skip the rest and just assign the property.
         } catch (Exception $exception) {
             return $this;
         }
@@ -156,13 +120,16 @@ abstract class Component implements ArgumentInterface
      * Assign/overwrite multiple public class properties at once.
      *
      * @param array $assignees
-     * @param bool $skipLifecycle
      * @return $this
      */
-    public function fill(array $assignees, bool $skipLifecycle = false): self
+    public function fill(array $assignees): self
     {
+        $properties = $this->getPublicProperties();
+
         foreach ($assignees as $assignee => $value) {
-            $this->assign($assignee, $value, $skipLifecycle);
+            if (array_key_exists($assignee, $properties)) {
+                $this->{$assignee} = $value;
+            }
         }
 
         return $this;
@@ -233,7 +200,7 @@ abstract class Component implements ArgumentInterface
      */
     public function __call(string $method, array $args)
     {
-        if($this->ignoreCall($method)) {
+        if ($this->ignoreCall($method)) {
             return;
         }
 
