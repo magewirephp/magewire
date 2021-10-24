@@ -49,7 +49,8 @@ class Component
         $magewire = $block->getMagewire();
 
         if ($magewire && is_array($magewire)) {
-            unset($magewire['type']); return array_merge_recursive($magewire, $addition);
+            unset($magewire['type']);
+            return array_merge_recursive($magewire, $addition);
         }
 
         return $addition;

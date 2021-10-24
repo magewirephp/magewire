@@ -40,8 +40,7 @@ trait Error
             return $this->errors;
         }
 
-        foreach ($targets as $key => $value)
-        {
+        foreach ($targets as $key => $value) {
             if (isset($this->errors[$value])) {
                 $targets[$value] = $this->errors[$value];
             }
