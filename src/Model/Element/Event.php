@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -9,8 +11,7 @@
 namespace Magewirephp\Magewire\Model\Element;
 
 /**
- * Class Event
- * @package Magewirephp\Magewire\Model\Element
+ * Class Event.
  */
 class Event
 {
@@ -22,6 +23,7 @@ class Event
 
     /**
      * Event constructor.
+     *
      * @param $name
      * @param $params
      */
@@ -37,6 +39,7 @@ class Event
     public function up(): Event
     {
         $this->up = true;
+
         return $this;
     }
 
@@ -46,16 +49,19 @@ class Event
     public function self(): Event
     {
         $this->self = true;
+
         return $this;
     }
 
     /**
      * @param string $name
+     *
      * @return $this
      */
     public function component(string $name): Event
     {
         $this->component = $name;
+
         return $this;
     }
 

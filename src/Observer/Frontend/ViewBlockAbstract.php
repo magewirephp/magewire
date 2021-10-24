@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -17,29 +19,29 @@ use Magewirephp\Magewire\Model\ComponentManager;
 use Magewirephp\Magewire\Model\HttpFactory;
 
 /**
- * Class ViewBlockAbstract
- * @package Magewirephp\Magewire\Observer\Frontend
+ * Class ViewBlockAbstract.
  */
 class ViewBlockAbstract
 {
-    /** @var ApplicationState $applicationState */
+    /** @var ApplicationState */
     private $applicationState;
 
-    /** @var ComponentHelper $componentHelper */
+    /** @var ComponentHelper */
     private $componentHelper;
 
-    /** @var ComponentManager $componentManager */
+    /** @var ComponentManager */
     private $componentManager;
 
-    /** @var HttpFactory $httpFactory */
+    /** @var HttpFactory */
     private $httpFactory;
 
     /**
      * ViewBlockAbstract constructor.
+     *
      * @param ApplicationState $applicationState
      * @param ComponentManager $componentManager
-     * @param ComponentHelper $componentHelper
-     * @param HttpFactory $httpFactory
+     * @param ComponentHelper  $componentHelper
+     * @param HttpFactory      $httpFactory
      */
     public function __construct(
         ApplicationState $applicationState,
@@ -78,8 +80,9 @@ class ViewBlockAbstract
     }
 
     /**
-     * @param Template $block
+     * @param Template  $block
      * @param Exception $exception
+     *
      * @throws SubsequentRequestException
      */
     public function throwException(Template $block, Exception $exception): void

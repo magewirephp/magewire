@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -11,15 +13,15 @@ namespace Magewirephp\Magewire\Exception;
 use Exception;
 
 /**
- * Class RootTagMissingFromViewException
- * @package Magewirephp\Magewire\Exception
+ * Class RootTagMissingFromViewException.
  */
 class RootTagMissingFromViewException extends MagewireException
 {
     /**
      * RootTagMissingFromViewException constructor.
+     *
      * @param Exception|null $cause
-     * @param int $code
+     * @param int            $code
      */
     public function __construct(Exception $cause = null, $code = 0)
     {

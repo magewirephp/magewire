@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -8,23 +10,23 @@
 
 namespace Magewirephp\Magewire\Model\Hydrator;
 
-use Magewirephp\Magewire\Exception\ComponentHydrationException;
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Exception\ComponentHydrationException;
 use Magewirephp\Magewire\Model\HydratorInterface;
 use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
 /**
- * Class Hash
- * @package Magewirephp\Magewire\Model\Hydrator
+ * Class Hash.
  */
 class Hash implements HydratorInterface
 {
-    /** @var array $domHashes */
+    /** @var array */
     protected $domHashes = [];
 
     /**
      * @inheritdoc
+     *
      * @throws ComponentHydrationException
      */
     public function hydrate(Component $component, RequestInterface $request): void
@@ -33,7 +35,7 @@ class Hash implements HydratorInterface
             throw new ComponentHydrationException(__('Request fingerprint doesn\'t have all data available'));
         }
 
-        $component->id   = $request->fingerprint['id'];
+        $component->id = $request->fingerprint['id'];
         $component->name = $request->fingerprint['name'];
 
         if (isset($request->memo['htmlHash'])) {

@@ -11,8 +11,7 @@ namespace Magewirephp\Magewire\Model;
 use Magewirephp\Magewire\Component;
 
 /**
- * Interface ActionInterface
- * @package Magewirephp\Magewire\Model
+ * Interface ActionInterface.
  *
  * @api
  */
@@ -22,7 +21,7 @@ interface ActionInterface
      * Handle update action.
      *
      * @param Component $component
-     * @param array $payload
+     * @param array     $payload
      *
      * @return mixed
      */

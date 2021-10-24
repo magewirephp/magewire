@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -9,15 +11,14 @@
 namespace Magewirephp\Magewire\Model\Concern;
 
 /**
- * Trait View
- * @package Magewirephp\Magewire\Model\Concern
+ * Trait View.
  */
 trait View
 {
-    /** @var bool $skipRender */
+    /** @var bool */
     protected $skipRender = false;
 
-    /** @var bool|array $loader  */
+    /** @var bool|array */
     protected $loader = false;
 
     /**
@@ -28,6 +29,7 @@ trait View
     public function skipRender(): self
     {
         $this->skipRender = true;
+
         return $this;
     }
 

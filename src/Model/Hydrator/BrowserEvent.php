@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -14,8 +16,7 @@ use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
 /**
- * Class BrowserEvent
- * @package Magewirephp\Magewire\Model\Hydrator
+ * Class BrowserEvent.
  */
 class BrowserEvent implements HydratorInterface
 {

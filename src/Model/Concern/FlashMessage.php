@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -12,16 +14,16 @@ use Magento\Framework\Phrase;
 use Magewirephp\Magewire\Model\Element\FlashMessage as FlashMessageElement;
 
 /**
- * Trait FlashMessage
- * @package Magewirephp\Magewire\Model\Concern
+ * Trait FlashMessage.
  */
 trait FlashMessage
 {
-    /** @var FlashMessageElement[] $messages */
+    /** @var FlashMessageElement[] */
     protected $messages = [];
 
     /**
      * @param Phrase|string $message
+     *
      * @return FlashMessageElement
      */
     public function dispatchErrorMessage($message): FlashMessageElement
@@ -31,6 +33,7 @@ trait FlashMessage
 
     /**
      * @param Phrase|string $message
+     *
      * @return FlashMessageElement
      */
     public function dispatchWarningMessage($message): FlashMessageElement
@@ -40,6 +43,7 @@ trait FlashMessage
 
     /**
      * @param Phrase|string $message
+     *
      * @return FlashMessageElement
      */
     public function dispatchNoticeMessage($message): FlashMessageElement
@@ -49,6 +53,7 @@ trait FlashMessage
 
     /**
      * @param Phrase|string $message
+     *
      * @return FlashMessageElement
      */
     public function dispatchSuccessMessage($message): FlashMessageElement
@@ -57,8 +62,9 @@ trait FlashMessage
     }
 
     /**
-     * @param string $type
+     * @param string        $type
      * @param Phrase|string $message
+     *
      * @return FlashMessageElement
      */
     public function dispatchMessage(string $type, $message): FlashMessageElement

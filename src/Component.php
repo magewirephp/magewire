@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -12,7 +14,6 @@ use Exception;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Framework\View\Element\Template;
-use ReflectionClass;
 use Magewirephp\Magewire\Exception\ComponentException;
 use Magewirephp\Magewire\Exception\LifecycleException;
 use Magewirephp\Magewire\Model\Concern\BrowserEvent as BrowserEventConcern;
@@ -24,23 +25,19 @@ use Magewirephp\Magewire\Model\Concern\FlashMessage as FlashMessageConcern;
 use Magewirephp\Magewire\Model\Concern\QueryString as QueryStringConcern;
 use Magewirephp\Magewire\Model\Concern\Redirect as RedirectConcern;
 use Magewirephp\Magewire\Model\Concern\View as ViewConcern;
-use Magewirephp\Magewire\Model\Context\Component as ComponentContext;
 use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
+use ReflectionClass;
 
 /**
- * Class Component
+ * Class Component.
  *
- * @method void boot(RequestInterface $request)
- * @method void mount(RequestInterface $request)
- *
- * @method void hydrate(RequestInterface $request)
- * @method void dehydrate(ResponseInterface $response)
- *
+ * @method void  boot(RequestInterface $request)
+ * @method void  mount(RequestInterface $request)
+ * @method void  hydrate(RequestInterface $request)
+ * @method void  dehydrate(ResponseInterface $response)
  * @method mixed updating($value, string $name)
  * @method mixed updated($value, string $name)
- *
- * @package Magewirephp\Magewire
  */
 abstract class Component implements ArgumentInterface
 {
@@ -48,15 +45,15 @@ abstract class Component implements ArgumentInterface
      * Still a proof of concept to separate all logic
      * and make it a bit more clear and clean.
      */
-    use BrowserEventConcern,
-        ConversationConcern,
-        EmitConcern,
-        ErrorConcern,
-        EventConcern,
-        FlashMessageConcern,
-        RedirectConcern,
-        ViewConcern,
-        QueryStringConcern;
+    use BrowserEventConcern;
+    use ConversationConcern;
+    use EmitConcern;
+    use ErrorConcern;
+    use EventConcern;
+    use FlashMessageConcern;
+    use RedirectConcern;
+    use ViewConcern;
+    use QueryStringConcern;
 
     public const LAYOUT_ITEM_TYPE = 'type';
     public const RESERVED_PROPERTIES = ['id', 'name'];
@@ -66,6 +63,7 @@ abstract class Component implements ArgumentInterface
      * Component id.
      *
      * @reserved
+     *
      * @var string
      */
     public $id;
@@ -74,6 +72,7 @@ abstract class Component implements ArgumentInterface
      * Component name.
      *
      * @reserved
+     *
      * @var string
      */
     public $name;
@@ -91,6 +90,7 @@ abstract class Component implements ArgumentInterface
      * Protected methods.
      *
      * @see getUncallables()
+     *
      * @var string[]
      */
     protected $uncallables = [];
@@ -106,10 +106,11 @@ abstract class Component implements ArgumentInterface
      * @lifecyclehook updated
      * @lifecyclehook updatedProperty
      *
-     * @param string $name
-     * @param mixed $value
-     * @param bool $skipLifecycle
+     * @param string      $name
+     * @param mixed       $value
+     * @param bool        $skipLifecycle
      * @param string|null $method
+     *
      * @return $this
      */
     public function assign(
@@ -117,8 +118,7 @@ abstract class Component implements ArgumentInterface
         $value,
         bool $skipLifecycle = false,
         string $method = null
-    ): self
-    {
+    ): self {
         try {
             if (!array_key_exists($name, $this->getPublicProperties())) {
                 throw new ComponentException(__('Public property %1 does\'nt exist', [$name]));
@@ -128,12 +128,12 @@ abstract class Component implements ArgumentInterface
             }
 
             // Process lifecycle from this point on.
-            $before  = 'updating' . str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $method ?? $name)));
+            $before = 'updating'.str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $method ?? $name)));
             $current = str_replace('updating', 'define', $before);
-            $after   = str_replace('define', 'updated', $current);
+            $after = str_replace('define', 'updated', $current);
 
             $methods = [$before, 'updating', $current, 'updated', $after];
-            $clone   = $value;
+            $clone = $value;
 
             foreach ($methods as $m) {
                 if (method_exists($this, $m)) {
@@ -149,6 +149,7 @@ abstract class Component implements ArgumentInterface
         }
 
         $this->{$name} = $value;
+
         return $this;
     }
 
@@ -156,7 +157,8 @@ abstract class Component implements ArgumentInterface
      * Assign/overwrite multiple public class properties at once.
      *
      * @param array $assignees
-     * @param bool $skipLifecycle
+     * @param bool  $skipLifecycle
+     *
      * @return $this
      */
     public function fill(array $assignees, bool $skipLifecycle = false): self
@@ -178,11 +180,13 @@ abstract class Component implements ArgumentInterface
 
     /**
      * @param Template $parent
+     *
      * @return $this
      */
     public function setParent(Template $parent): self
     {
         $this->parent = $parent;
+
         return $this;
     }
 
@@ -191,6 +195,7 @@ abstract class Component implements ArgumentInterface
      * (non-static) public property objects.
      *
      * @param bool $refresh
+     *
      * @return array
      */
     public function getPublicProperties(bool $refresh = false): array
@@ -227,13 +232,15 @@ abstract class Component implements ArgumentInterface
 
     /**
      * @param string $method
-     * @param array $args
-     * @return array|bool|mixed|null|void
+     * @param array  $args
+     *
      * @throws LocalizedException
+     *
+     * @return array|bool|mixed|null|void
      */
     public function __call(string $method, array $args)
     {
-        if($this->ignoreCall($method)) {
+        if ($this->ignoreCall($method)) {
             return;
         }
 
@@ -254,6 +261,7 @@ abstract class Component implements ArgumentInterface
 
     /**
      * @param string $method
+     *
      * @return bool
      */
     public function ignoreCall(string $method): bool

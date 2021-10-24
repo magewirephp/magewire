@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -9,8 +11,7 @@
 namespace Magewirephp\Magewire\Model\Element;
 
 /**
- * Class Redirect
- * @package Magewirephp\Magewire\Model\Element
+ * Class Redirect.
  */
 class Redirect
 {
@@ -19,8 +20,9 @@ class Redirect
 
     /**
      * Redirect constructor.
+     *
      * @param string $path
-     * @param array $params
+     * @param array  $params
      */
     public function __construct(
         string $path,

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -14,16 +16,16 @@ use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
 /**
- * Class Property
- * @package Magewirephp\Magewire\Helper
+ * Class Property.
  */
 class Property
 {
-    /** @var ArrayManager $arrayManager */
+    /** @var ArrayManager */
     protected $arrayManager;
 
     /**
      * Magic constructor.
+     *
      * @param ArrayManager $arrayManager
      */
     public function __construct(
@@ -34,6 +36,7 @@ class Property
 
     /**
      * @param string $property
+     *
      * @return bool
      */
     public function containsDots(string $property): bool
@@ -45,6 +48,7 @@ class Property
      * @param string $path
      * @param $value
      * @param Component $component
+     *
      * @return array
      */
     public function transformDots(string $path, $value, Component $component): array
@@ -64,9 +68,10 @@ class Property
      *
      * NOTE: Will skip the lifecycle.
      *
-     * @param callable $callback
-     * @param RequestInterface|ResponseInterface $subject (waiting for PHP 8.x support)
-     * @param Component $component
+     * @param callable                           $callback
+     * @param RequestInterface|ResponseInterface $subject   (waiting for PHP 8.x support)
+     * @param Component                          $component
+     *
      * @return void
      */
     public function assign(callable $callback, $subject, Component $component): void

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -8,23 +10,23 @@
 
 namespace Magewirephp\Magewire\Model\Hydrator;
 
-use Magewirephp\Magewire\Helper\Component as ComponentHelper;
 use Magewirephp\Magewire\Component as MagewireComponent;
+use Magewirephp\Magewire\Helper\Component as ComponentHelper;
 use Magewirephp\Magewire\Model\HydratorInterface;
 use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
 /**
- * Class Component
- * @package Magewirephp\Magewire\Model\Hydrator
+ * Class Component.
  */
 class Component implements HydratorInterface
 {
-    /** @var ComponentHelper $componentHelper */
+    /** @var ComponentHelper */
     private $componentHelper;
 
     /**
      * Component constructor.
+     *
      * @param ComponentHelper $componentHelper
      */
     public function __construct(
@@ -66,13 +68,13 @@ class Component implements HydratorInterface
 
     /**
      * @param MagewireComponent $component
-     * @param string $type
-     * @param object $object
+     * @param string            $type
+     * @param object            $object
      */
     public function executePropertyLifecycleHook(MagewireComponent $component, string $type, object $object): void
     {
         foreach ($component->getPublicProperties() as $property => $value) {
-            $component->{strtolower($type) . ucfirst($property)}($value, $object);
+            $component->{strtolower($type).ucfirst($property)}($value, $object);
         }
     }
 }

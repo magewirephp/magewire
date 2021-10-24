@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -17,13 +19,13 @@ use Magewirephp\Magewire\Exception\SubsequentRequestException;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
 /**
- * Class ViewBlockAbstractToHtmlAfter
- * @package Magewirephp\Magewire\Observer\Frontend
+ * Class ViewBlockAbstractToHtmlAfter.
  */
 class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements ObserverInterface
 {
     /**
      * @param Observer $observer
+     *
      * @throws SubsequentRequestException
      */
     public function execute(Observer $observer): void
@@ -33,7 +35,7 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
         if ($block->hasMagewire()) {
             try {
                 $component = $this->getComponentHelper()->extractComponentFromBlock($block);
-                $response  = $component->getResponse();
+                $response = $component->getResponse();
 
                 if ($response === null) {
                     throw new LifecycleException(__('Component response object not found'));
@@ -50,10 +52,12 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
 
     /**
      * @param ResponseInterface $response
-     * @param Component $component
-     * @param string $html
-     * @return string|null
+     * @param Component         $component
+     * @param string            $html
+     *
      * @throws LifecycleException
+     *
+     * @return string|null
      */
     public function renderToView(ResponseInterface $response, Component $component, string $html): ?string
     {
@@ -70,7 +74,7 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
 
         if ($component->canRender() === false) {
             $response->effects['html'] = null;
-        } else if (is_string($response->effects['html'])) {
+        } elseif (is_string($response->effects['html'])) {
             $response->effects['html'] = $response->renderWithRootAttribute($data);
         }
 

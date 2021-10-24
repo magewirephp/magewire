@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -14,20 +16,20 @@ use Magento\Framework\Exception\RuntimeException;
 use Magento\Framework\Serialize\SerializerInterface;
 
 /**
- * Class Security
- * @package Magewirephp\Magewire\Helper
+ * Class Security.
  */
 class Security
 {
-    /** @var DeploymentConfig $deployConfig */
+    /** @var DeploymentConfig */
     private $deployConfig;
 
-    /** @var SerializerInterface $serializer */
+    /** @var SerializerInterface */
     private $serializer;
 
     /**
      * Component constructor.
-     * @param DeploymentConfig $deployConfig
+     *
+     * @param DeploymentConfig    $deployConfig
      * @param SerializerInterface $serializer
      */
     public function __construct(
@@ -41,25 +43,30 @@ class Security
     /**
      * @param array $data1
      * @param array $data2
-     * @return string
+     *
      * @throws FileSystemException
      * @throws RuntimeException
+     *
+     * @return string
      */
     public function generateChecksum(array $data1, array $data2): string
     {
         $key = $this->deployConfig->get('crypt/key');
 
-        $hash = '' . $this->serializer->serialize($data1) . $this->serializer->serialize($data2);
+        $hash = ''.$this->serializer->serialize($data1).$this->serializer->serialize($data2);
+
         return hash_hmac('sha256', $hash, $key);
     }
 
     /**
      * @param string $checksum
-     * @param array $data1
-     * @param array $data2
-     * @return bool
+     * @param array  $data1
+     * @param array  $data2
+     *
      * @throws FileSystemException
      * @throws RuntimeException
+     *
+     * @return bool
      */
     public function validateChecksum(string $checksum, array $data1, array $data2): bool
     {

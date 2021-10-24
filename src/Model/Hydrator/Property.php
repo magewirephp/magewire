@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -15,16 +17,16 @@ use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
 /**
- * Class Property
- * @package Magewirephp\Magewire\Model\Hydrator
+ * Class Property.
  */
 class Property implements HydratorInterface
 {
-    /** @var PropertyHelper $propertyHelper */
+    /** @var PropertyHelper */
     private $propertyHelper;
 
     /**
      * Property constructor.
+     *
      * @param PropertyHelper $propertyHelper
      */
     public function __construct(
@@ -43,7 +45,7 @@ class Property implements HydratorInterface
         }
 
         // Bind regular properties
-        $this->propertyHelper->assign(function(Component $component, $request, $property, $value) {
+        $this->propertyHelper->assign(function (Component $component, $request, $property, $value) {
             $component->assign($property, $value, true);
         }, $request, $component);
 

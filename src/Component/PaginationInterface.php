@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -9,8 +11,7 @@
 namespace Magewirephp\Magewire\Component;
 
 /**
- * Interface ActionInterface
- * @package Magewirephp\Magewire\Model\Component
+ * Interface ActionInterface.
  *
  * @api
  */
@@ -34,6 +35,7 @@ interface PaginationInterface
      * Navigate to page.
      *
      * @param $page
+     *
      * @return void
      */
     public function toPage($page): void;
@@ -63,6 +65,7 @@ interface PaginationInterface
      * Check if the given page is the current page.
      *
      * @param $page
+     *
      * @return bool
      */
     public function isCurrentPage($page): bool;

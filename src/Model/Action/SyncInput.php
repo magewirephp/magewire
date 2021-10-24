@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -8,22 +10,22 @@
 
 namespace Magewirephp\Magewire\Model\Action;
 
-use Magewirephp\Magewire\Exception\ComponentActionException;
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Exception\ComponentActionException;
 use Magewirephp\Magewire\Helper\Property as PropertyHelper;
 use Magewirephp\Magewire\Model\ActionInterface;
 
 /**
- * Class SyncInput
- * @package Magewirephp\Magewire\Model\Action
+ * Class SyncInput.
  */
 class SyncInput implements ActionInterface
 {
-    /** @var PropertyHelper $propertyHelper */
+    /** @var PropertyHelper */
     private $propertyHelper;
 
     /**
      * Magic constructor.
+     *
      * @param PropertyHelper $propertyHelper
      */
     public function __construct(
@@ -52,7 +54,7 @@ class SyncInput implements ActionInterface
             }, $payload['name']);
 
             // Re-assign original method properties
-            $payload['name']  = $transform['property'];
+            $payload['name'] = $transform['property'];
             $payload['value'] = $transform['value'];
         }
 

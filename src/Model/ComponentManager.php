@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -12,37 +14,37 @@ use Exception;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Locale\Resolver;
 use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exception\ComponentActionException;
 use Magewirephp\Magewire\Exception\LifecycleException;
-use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exception\ValidationException;
 use Magewirephp\Magewire\Model\Context\Hydrator as HydratorContext;
 
 /**
- * Class ComponentManager
- * @package Magewirephp\Magewire\Model
+ * Class ComponentManager.
  */
 class ComponentManager
 {
-    /** @var Resolver $localeResolver */
+    /** @var Resolver */
     private $localeResolver;
 
-    /** @var HttpFactory $httpFactory */
+    /** @var HttpFactory */
     private $httpFactory;
 
-    /** @var array $updateActionsPool */
+    /** @var array */
     private $updateActionsPool;
 
-    /** @var array $hydrationPool */
+    /** @var array */
     private $hydrationPool;
 
     /**
      * ComponentManager constructor.
+     *
      * @param HydratorContext $hydratorContext
-     * @param Resolver $localeResolver
-     * @param HttpFactory $httpFactory
-     * @param array $updateActionsPool
-     * @param array $hydrationPool
+     * @param Resolver        $localeResolver
+     * @param HttpFactory     $httpFactory
+     * @param array           $updateActionsPool
+     * @param array           $hydrationPool
      */
     public function __construct(
         HydratorContext $hydratorContext,
@@ -70,13 +72,14 @@ class ComponentManager
             $hydratorContext->getListenerHydrator(),
             $hydratorContext->getLoaderHydrator(),
             $hydratorContext->getEmitHydrator(),
-            $hydratorContext->getRedirectHydrator()
+            $hydratorContext->getRedirectHydrator(),
         ]);
     }
 
     /**
      * @param Component $component
-     * @param array $updates
+     * @param array     $updates
+     *
      * @throws LocalizedException
      * @throws ComponentActionException
      */
@@ -103,8 +106,10 @@ class ComponentManager
      * has been rendered.
      *
      * @param Component $component
-     * @return void
+     *
      * @throws LifecycleException
+     *
+     * @return void
      */
     public function hydrate(Component $component): void
     {
@@ -124,6 +129,7 @@ class ComponentManager
      * right before the layout block gets rendered.
      *
      * @param Component $component
+     *
      * @throws LifecycleException
      */
     public function dehydrate(Component $component): void
@@ -140,12 +146,14 @@ class ComponentManager
     }
 
     /**
-     * @param Template $block
-     * @param Component $component
-     * @param array $arguments
+     * @param Template    $block
+     * @param Component   $component
+     * @param array       $arguments
      * @param string|null $handle
-     * @return Request
+     *
      * @throws LocalizedException
+     *
+     * @return Request
      */
     public function createInitialRequest(
         Template $block,
@@ -164,7 +172,7 @@ class ComponentManager
          */
         $id = $component->id ?? sha1($block->getNameInLayout());
 
-        $name   = $block->getNameInLayout();
+        $name = $block->getNameInLayout();
         $handle = $handle ?? $request->getFullActionName();
         $locale = $this->localeResolver->getLocale();
 
@@ -178,7 +186,7 @@ class ComponentManager
 
                 // Custom relative to Livewire's core.
                 'handle' => $handle,
-                'type'   => $component::COMPONENT_TYPE
+                'type'   => $component::COMPONENT_TYPE,
             ],
             'serverMemo' => [
                 'data'   => $data,
@@ -186,7 +194,7 @@ class ComponentManager
 
                 // Custom relative to Livewire's core.
                 'custom' => [],
-            ]
+            ],
         ]);
     }
 
@@ -194,10 +202,11 @@ class ComponentManager
      * [
      *   "class" => object,
      *   "order" => int
-     * ]
+     * ].
      *
      * @param array $hydrators
      * @param $systemHydrators
+     *
      * @return array
      *
      * @see ComponentManager::dehydrate()

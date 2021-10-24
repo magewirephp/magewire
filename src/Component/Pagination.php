@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -13,15 +15,12 @@ use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exception\ComponentException;
 
 /**
- * Class Pagination
+ * Class Pagination.
  *
- * @method int getPage()
+ * @method int  getPage()
  * @method bool hasPage()
- *
- * @method int getPageSize()
+ * @method int  getPageSize()
  * @method bool hasPageSize()
- *
- * @package Magewirephp\Magewire\Component
  */
 abstract class Pagination extends Component implements PaginationInterface
 {
@@ -32,7 +31,7 @@ abstract class Pagination extends Component implements PaginationInterface
 
     protected $queryString = [
         'page',
-        'pageSize'
+        'pageSize',
     ];
 
     protected $pagerTemplate = 'Magewirephp_Magewire::html/pagination/pager.phtml';
@@ -41,6 +40,7 @@ abstract class Pagination extends Component implements PaginationInterface
      * Renders a default pagination block.
      *
      * @param string|null $template
+     *
      * @return string
      */
     public function renderPagination(string $template = null): string

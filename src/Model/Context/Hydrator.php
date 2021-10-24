@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -8,74 +10,73 @@
 
 namespace Magewirephp\Magewire\Model\Context;
 
-use Magewirephp\Magewire\Model\Hydrator\Hash;
 use Magewirephp\Magewire\Model\Hydrator\BrowserEvent;
+use Magewirephp\Magewire\Model\Hydrator\Component;
 use Magewirephp\Magewire\Model\Hydrator\Emit;
 use Magewirephp\Magewire\Model\Hydrator\Error;
 use Magewirephp\Magewire\Model\Hydrator\FlashMessage;
+use Magewirephp\Magewire\Model\Hydrator\Hash;
 use Magewirephp\Magewire\Model\Hydrator\Listener;
+use Magewirephp\Magewire\Model\Hydrator\Loader;
 use Magewirephp\Magewire\Model\Hydrator\Property;
 use Magewirephp\Magewire\Model\Hydrator\QueryString;
 use Magewirephp\Magewire\Model\Hydrator\Redirect;
 use Magewirephp\Magewire\Model\Hydrator\Security;
-use Magewirephp\Magewire\Model\Hydrator\Component;
-use Magewirephp\Magewire\Model\Hydrator\Loader;
 
 /**
- * Class Hydrator
- * @package Magewirephp\Magewire\Model\Context
+ * Class Hydrator.
  */
 class Hydrator
 {
-    /** @var Hash $hashHydrator */
+    /** @var Hash */
     private $hashHydrator;
 
-    /** @var Listener $listenerHydrator */
+    /** @var Listener */
     protected $listenerHydrator;
 
-    /** @var Emit $emit */
+    /** @var Emit */
     protected $emit;
 
-    /** @var BrowserEvent $browserEventHydrator */
+    /** @var BrowserEvent */
     protected $browserEventHydrator;
 
-    /** @var Component $componentHydrator */
+    /** @var Component */
     protected $componentHydrator;
 
-    /** @var Property $propertyHydrator */
+    /** @var Property */
     protected $propertyHydrator;
 
-    /** @var QueryString $queryStringHydrator */
+    /** @var QueryString */
     protected $queryStringHydrator;
 
-    /** @var Error $errorHydrator */
+    /** @var Error */
     protected $errorHydrator;
 
-    /** @var Redirect $redirectHydrator */
+    /** @var Redirect */
     protected $redirectHydrator;
 
-    /** @var FlashMessage $flashMessageHydrator */
+    /** @var FlashMessage */
     protected $flashMessageHydrator;
 
-    /** @var Security $securityHydrator */
+    /** @var Security */
     protected $securityHydrator;
 
-    /** @var Loader $loaderHydrator */
+    /** @var Loader */
     protected $loaderHydrator;
 
     /**
-     * @param Hash $hashHydrator
-     * @param Listener $listenerHydrator
-     * @param Emit $emit
+     * @param Hash         $hashHydrator
+     * @param Listener     $listenerHydrator
+     * @param Emit         $emit
      * @param BrowserEvent $browserEventHydrator
      * @param FlashMessage $flashMessageHydrator
-     * @param Component $componentHydrator
-     * @param Property $propertyHydrator
-     * @param QueryString $queryString
-     * @param Error $errorHydrator
-     * @param Redirect $redirectHydrator
-     * @param Security $securityHydrator
-     * @param Loader $loaderHydrator
+     * @param Component    $componentHydrator
+     * @param Property     $propertyHydrator
+     * @param QueryString  $queryString
+     * @param Error        $errorHydrator
+     * @param Redirect     $redirectHydrator
+     * @param Security     $securityHydrator
+     * @param Loader       $loaderHydrator
      */
     public function __construct(
         Hash $hashHydrator,

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -14,23 +16,22 @@ use Magento\Framework\Data\Form\FormKey;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 
 /**
- * Class Magewire
- * @package Magewirephp\Magewire\ViewModel
+ * Class Magewire.
  */
 class Magewire implements ArgumentInterface
 {
-    /** @var FormKey $formKey */
+    /** @var FormKey */
     protected $formKey;
 
-    /** @var ApplicationState $applicationState */
+    /** @var ApplicationState */
     protected $applicationState;
 
-    /** @var ProductMetadataInterface $productMetaData */
+    /** @var ProductMetadataInterface */
     protected $productMetaData;
 
     /**
-     * @param FormKey $formKey
-     * @param ApplicationState $applicationState
+     * @param FormKey                  $formKey
+     * @param ApplicationState         $applicationState
      * @param ProductMetadataInterface $productMetadata
      */
     public function __construct(

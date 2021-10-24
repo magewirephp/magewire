@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -11,12 +13,11 @@ namespace Magewirephp\Magewire\Model\Concern;
 use Magewirephp\Magewire\Model\Element\Event;
 
 /**
- * Trait Emit
- * @package Magewirephp\Magewire\Model\Concern
+ * Trait Emit.
  */
 trait Emit
 {
-    /** @var Event[] $eventQueue */
+    /** @var Event[] */
     protected $eventQueue = [];
 
     /**
@@ -30,6 +31,7 @@ trait Emit
     /**
      * @param string $event
      * @param ...$params
+     *
      * @return Event
      */
     public function emit(string $event, ...$params): Event
@@ -52,6 +54,7 @@ trait Emit
      *
      * @param string $event
      * @param ...$params
+     *
      * @return Event
      */
     public function emitSelf(string $event, ...$params): Event
@@ -65,6 +68,7 @@ trait Emit
      * @param string $name
      * @param string $event
      * @param ...$params
+     *
      * @return Event
      */
     public function emitTo(string $name, string $event, ...$params): Event
@@ -76,6 +80,7 @@ trait Emit
      * Only emit a "refresh" event to other components of the same type.
      *
      * @param string $name
+     *
      * @return Event
      */
     public function emitToRefresh(string $name): Event

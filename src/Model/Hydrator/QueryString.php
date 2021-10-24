@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -16,21 +18,21 @@ use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
 /**
- * Class QueryString
- * @package Magewirephp\Magewire\Model\Hydrator
+ * Class QueryString.
  */
 class QueryString implements HydratorInterface
 {
-    /** @var AppRequestInterface $request */
+    /** @var AppRequestInterface */
     private $request;
 
-    /** @var FunctionsHelper $functionsHelper */
+    /** @var FunctionsHelper */
     private $functionsHelper;
 
     /**
      * Property constructor.
+     *
      * @param AppRequestInterface $request
-     * @param FunctionsHelper $functionsHelper
+     * @param FunctionsHelper     $functionsHelper
      */
     public function __construct(
         AppRequestInterface $request,
@@ -69,7 +71,8 @@ class QueryString implements HydratorInterface
      * Try to filter out any excepts "property:except-value" pairs.
      *
      * @param Component $component
-     * @param string $setting
+     * @param string    $setting
+     *
      * @return array|false
      */
     public function filterQueryStringSetting(Component $component, string $setting = 'except')
@@ -85,12 +88,14 @@ class QueryString implements HydratorInterface
 
     /**
      * @param Component $component
+     *
      * @return array
      */
     public function getQueryParamsFromComponentProperties(Component $component): array
     {
-        return $this->functionsHelper->mapWithKeys(function($value, $key) use ($component) {
+        return $this->functionsHelper->mapWithKeys(function ($value, $key) use ($component) {
             $key = is_string($key) ? $key : $value;
+
             return [$key => $component->{$key}];
         }, $component->getQueryString());
     }

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -11,16 +13,16 @@ namespace Magewirephp\Magewire\Model\Action\Type;
 use Magento\Framework\ObjectManagerInterface;
 
 /**
- * Class Factory
- * @package Magewirephp\Magewire\Model\Action\Type
+ * Class Factory.
  */
 class Factory
 {
-    /** @var ObjectManagerInterface|null $objectManager */
+    /** @var ObjectManagerInterface|null */
     protected $objectManager;
 
     /**
      * Factory constructor.
+     *
      * @param ObjectManagerInterface $objectManager
      */
     public function __construct(
@@ -31,6 +33,7 @@ class Factory
 
     /**
      * @param string $type
+     *
      * @return mixed|string
      */
     public function create(string $type)

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -11,10 +13,8 @@ namespace Magewirephp\Magewire\Exception;
 use Magento\Framework\Exception\LocalizedException;
 
 /**
- * Class MagewireException
- * @package Magewirephp\Magewire\Exception
+ * Class MagewireException.
  */
 class MagewireException extends LocalizedException
 {
-
 }

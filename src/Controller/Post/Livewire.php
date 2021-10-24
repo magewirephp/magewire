@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -15,48 +17,48 @@ use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\App\RequestInterface;
-use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\Result\Json;
+use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Data\Form\FormKey;
 use Magento\Framework\Encryption\Helper\Security;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Framework\View\Element\BlockInterface;
+use Magento\Framework\View\Result\PageFactory;
 use Magewirephp\Magewire\Exception\MagewireException;
 use Magewirephp\Magewire\Exception\SubsequentRequestException;
 use Magewirephp\Magewire\Helper\Component as ComponentHelper;
-use Magento\Framework\View\Result\PageFactory;
 use Magewirephp\Magewire\Model\HttpFactory;
 
 class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
 {
     public const HANDLE = 'magewire_post_livewire';
 
-    /** @var FormKey $formKey */
+    /** @var FormKey */
     protected $formKey;
 
-    /** @var ComponentHelper $componentHelper */
+    /** @var ComponentHelper */
     private $componentHelper;
 
-    /** @var PageFactory $resultPageFactory */
+    /** @var PageFactory */
     private $resultPageFactory;
 
-    /** @var SerializerInterface $serializer */
+    /** @var SerializerInterface */
     private $serializer;
 
-    /** @var HttpFactory $httpFactory */
+    /** @var HttpFactory */
     private $httpFactory;
 
-    /** @var JsonFactory $resultJsonFactory */
+    /** @var JsonFactory */
     protected $resultJsonFactory;
 
     /**
-     * @param FormKey $formKey
-     * @param JsonFactory $resultJsonFactory
-     * @param ComponentHelper $componentHelper
-     * @param PageFactory $resultPageFactory
+     * @param FormKey             $formKey
+     * @param JsonFactory         $resultJsonFactory
+     * @param ComponentHelper     $componentHelper
+     * @param PageFactory         $resultPageFactory
      * @param SerializerInterface $serializer
-     * @param HttpFactory $httpFactory
+     * @param HttpFactory         $httpFactory
      */
     public function __construct(
         FormKey $formKey,
@@ -99,30 +101,32 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
             $response->effects['html'] = $html;
 
             return $result->setData([
-                'effects' => $response->getEffects(),
-                'serverMemo' => $response->getServerMemo()
+                'effects'    => $response->getEffects(),
+                'serverMemo' => $response->getServerMemo(),
             ]);
         } catch (SubsequentRequestException $exception) {
             $result->setStatusHeader(Response::STATUS_CODE_500, AbstractMessage::VERSION_11, 'Bad Request');
 
             return $result->setData([
-                'message' => 'Something went wrong during the subsequent request lifecycle: ' . $exception->getMessage(),
-                'code' => $exception->getCode()
+                'message' => 'Something went wrong during the subsequent request lifecycle: '.$exception->getMessage(),
+                'code'    => $exception->getCode(),
             ]);
         } catch (Exception $exception) {
             $result->setStatusHeader(Response::STATUS_CODE_500, AbstractMessage::VERSION_11, 'Bad Request');
 
             return $result->setData([
-                'message' => 'Something went wrong outside the component: ' . $exception->getMessage(),
-                'code' => $exception->getCode()
+                'message' => 'Something went wrong outside the component: '.$exception->getMessage(),
+                'code'    => $exception->getCode(),
             ]);
         }
     }
 
     /**
      * @param array $post
-     * @return BlockInterface
+     *
      * @throws SubsequentRequestException
+     *
+     * @return BlockInterface
      */
     public function locateWireBlock(array $post): BlockInterface
     {
@@ -148,6 +152,7 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
 
     /**
      * @inheritDoc
+     *
      * @throws LocalizedException
      */
     public function validateForCsrf(RequestInterface $request): ?bool

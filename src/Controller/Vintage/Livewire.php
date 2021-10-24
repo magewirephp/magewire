@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -19,12 +21,12 @@ use Magewirephp\Magewire\Controller\Post\Livewire as Origin;
 
 class Livewire extends Action implements HttpPostActionInterface, CsrfAwareActionInterface
 {
-    /** @var Origin $origin */
+    /** @var Origin */
     protected $origin;
 
     /**
      * @param Context $context
-     * @param Origin $origin
+     * @param Origin  $origin
      */
     public function __construct(
         Context $context,

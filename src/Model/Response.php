@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -13,12 +15,11 @@ use Magewirephp\Magewire\Exception\RootTagMissingFromViewException;
 use Magewirephp\Magewire\Helper\Functions as FunctionsHelper;
 
 /**
- * Class Response
- * @package Magewirephp\Magewire\Model
+ * Class Response.
  */
 class Response implements ResponseInterface
 {
-    /** @var FunctionsHelper $functionsHelper */
+    /** @var FunctionsHelper */
     private $functionsHelper;
 
     protected $request;
@@ -29,6 +30,7 @@ class Response implements ResponseInterface
 
     /**
      * Response constructor.
+     *
      * @param FunctionsHelper $functionsHelper
      */
     public function __construct(
@@ -51,6 +53,7 @@ class Response implements ResponseInterface
     public function setRequest($request): ResponseInterface
     {
         $this->request = $request;
+
         return $this;
     }
 
@@ -68,6 +71,7 @@ class Response implements ResponseInterface
     public function setFingerprint($fingerprint): ResponseInterface
     {
         $this->fingerprint = $fingerprint;
+
         return $this;
     }
 
@@ -85,6 +89,7 @@ class Response implements ResponseInterface
     public function setServerMemo($memo): ResponseInterface
     {
         $this->memo = $memo;
+
         return $this;
     }
 
@@ -102,6 +107,7 @@ class Response implements ResponseInterface
     public function setEffects($effects): ResponseInterface
     {
         $this->effects = $effects;
+
         return $this;
     }
 
@@ -138,12 +144,12 @@ class Response implements ResponseInterface
             throw new RootTagMissingFromViewException();
         }
 
-        $attributes = implode(' ', $this->functionsHelper->map(function($value, $key) {
+        $attributes = implode(' ', $this->functionsHelper->map(function ($value, $key) {
             return sprintf('%s="%s"', $key, $value);
         }, $this->functionsHelper->mapWithKeys(function ($value, $key) {
             return ["wire:{$key}" => $this->functionsHelper->escapeStringForHtml($value)];
         }, $data)));
 
-        return substr_replace($html, ' ' . $attributes, $matches[1][1] + strlen($matches[1][0]), 0);
+        return substr_replace($html, ' '.$attributes, $matches[1][1] + strlen($matches[1][0]), 0);
     }
 }

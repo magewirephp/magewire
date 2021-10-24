@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -15,16 +17,16 @@ use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
 /**
- * Class Redirect
- * @package Magewirephp\Magewire\Model\Hydrator
+ * Class Redirect.
  */
 class Redirect implements HydratorInterface
 {
-    /** @var UrlInterface $builder */
+    /** @var UrlInterface */
     protected $builder;
 
     /**
      * Redirect constructor.
+     *
      * @param UrlInterface $builder
      */
     public function __construct(

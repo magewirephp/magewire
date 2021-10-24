@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -11,12 +13,11 @@ namespace Magewirephp\Magewire\Model\Concern;
 use Magento\Framework\Phrase;
 
 /**
- * Trait Error
- * @package Magewirephp\Magewire\Model\Concern
+ * Trait Error.
  */
 trait Error
 {
-    /** @var Phrase[] $errors */
+    /** @var Phrase[] */
     protected $errors = [];
 
     /**
@@ -24,6 +25,7 @@ trait Error
      *
      * @param string $property
      * @param string $message
+     *
      * @return Phrase
      */
     public function error(string $property, string $message): Phrase
@@ -40,8 +42,7 @@ trait Error
             return $this->errors;
         }
 
-        foreach ($targets as $key => $value)
-        {
+        foreach ($targets as $key => $value) {
             if (isset($this->errors[$value])) {
                 $targets[$value] = $this->errors[$value];
             }
@@ -54,6 +55,7 @@ trait Error
 
     /**
      * @param array $targets
+     *
      * @return bool
      */
     public function hasErrors(array $targets = []): bool
@@ -63,6 +65,7 @@ trait Error
 
     /**
      * @param string $property
+     *
      * @return bool
      */
     public function hasError(string $property): bool
@@ -72,6 +75,7 @@ trait Error
 
     /**
      * @param string $property
+     *
      * @return Phrase
      */
     public function getError(string $property): Phrase

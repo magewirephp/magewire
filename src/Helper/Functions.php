@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -11,16 +13,16 @@ namespace Magewirephp\Magewire\Helper;
 use Magento\Framework\Serialize\SerializerInterface;
 
 /**
- * Class Component
- * @package Magewirephp\Magewire\Helper
+ * Class Component.
  */
 class Functions
 {
-    /** @var SerializerInterface $serializer */
+    /** @var SerializerInterface */
     private $serializer;
 
     /**
      * Functions constructor.
+     *
      * @param SerializerInterface $serializer
      */
     public function __construct(
@@ -31,12 +33,13 @@ class Functions
 
     /**
      * @param callable $callback
-     * @param array $data
+     * @param array    $data
+     *
      * @return array
      */
     public function map(callable $callback, array $data): array
     {
-        $keys  = array_keys($data);
+        $keys = array_keys($data);
         $items = array_map($callback, $data, $keys);
 
         return array_combine($keys, $items);
@@ -44,7 +47,8 @@ class Functions
 
     /**
      * @param callable $callback
-     * @param array $data
+     * @param array    $data
+     *
      * @return array
      */
     public function mapWithKeys(callable $callback, array $data): array
@@ -64,6 +68,7 @@ class Functions
 
     /**
      * @param $subject
+     *
      * @return string
      */
     public function escapeStringForHtml($subject): string

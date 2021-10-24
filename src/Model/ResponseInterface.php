@@ -9,8 +9,7 @@
 namespace Magewirephp\Magewire\Model;
 
 /**
- * Interface ResponseInterface
- * @package Magewirephp\Magewire\Model
+ * Interface ResponseInterface.
  *
  * @api
  */
@@ -23,6 +22,7 @@ interface ResponseInterface
 
     /**
      * @param $request
+     *
      * @return \Magewirephp\Magewire\Model\ResponseInterface
      */
     public function setRequest($request): \Magewirephp\Magewire\Model\ResponseInterface;
@@ -34,6 +34,7 @@ interface ResponseInterface
 
     /**
      * @param $fingerprint
+     *
      * @return \Magewirephp\Magewire\Model\ResponseInterface
      */
     public function setFingerprint($fingerprint): \Magewirephp\Magewire\Model\ResponseInterface;
@@ -45,6 +46,7 @@ interface ResponseInterface
 
     /**
      * @param $memo
+     *
      * @return \Magewirephp\Magewire\Model\ResponseInterface
      */
     public function setServerMemo($memo): \Magewirephp\Magewire\Model\ResponseInterface;
@@ -56,6 +58,7 @@ interface ResponseInterface
 
     /**
      * @param $effects
+     *
      * @return \Magewirephp\Magewire\Model\ResponseInterface
      */
     public function setEffects($effects): \Magewirephp\Magewire\Model\ResponseInterface;
@@ -64,7 +67,8 @@ interface ResponseInterface
      * Renders the effects html with additional root attribute(s).
      *
      * @param array $data
-     * @param bool $secure
+     * @param bool  $secure
+     *
      * @return string
      */
     public function renderWithRootAttribute(array $data, bool $secure = false): string;

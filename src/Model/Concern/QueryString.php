@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -9,8 +11,7 @@
 namespace Magewirephp\Magewire\Model\Concern;
 
 /**
- * Trait QueryString
- * @package Magewirephp\Magewire\Model\Concern
+ * Trait QueryString.
  */
 trait QueryString
 {

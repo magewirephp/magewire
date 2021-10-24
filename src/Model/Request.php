@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -9,12 +11,9 @@
 namespace Magewirephp\Magewire\Model;
 
 use Magento\Framework\Exception\LocalizedException;
-use Magewirephp\Magewire\Exception\MagewireException;
-use Magewirephp\Magewire\Exception\SubsequentRequestException;
 
 /**
- * Class Request
- * @package Magewirephp\Magewire\Model
+ * Class Request.
  */
 class Request implements RequestInterface
 {
@@ -45,6 +44,7 @@ class Request implements RequestInterface
     public function setFingerprint($fingerprint): RequestInterface
     {
         $this->fingerprint = $fingerprint;
+
         return $this;
     }
 
@@ -66,6 +66,7 @@ class Request implements RequestInterface
     public function setServerMemo($memo): RequestInterface
     {
         $this->memo = $memo;
+
         return $this;
     }
 
@@ -87,6 +88,7 @@ class Request implements RequestInterface
     public function setUpdates($updates): RequestInterface
     {
         $this->updates = $updates;
+
         return $this;
     }
 

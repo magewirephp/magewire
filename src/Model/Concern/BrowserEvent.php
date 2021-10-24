@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -9,12 +11,11 @@
 namespace Magewirephp\Magewire\Model\Concern;
 
 /**
- * Trait BrowserEvent
- * @package Magewirephp\Magewire\Model\Concern
+ * Trait BrowserEvent.
  */
 trait BrowserEvent
 {
-    /** @var array $dispatchQueue */
+    /** @var array */
     protected $dispatchQueue = [];
 
     /**

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -11,19 +13,19 @@ namespace Magewirephp\Magewire\Model\Concern;
 use Magewirephp\Magewire\Model\Element\Redirect as RedirectElement;
 
 /**
- * Trait Redirect
- * @package Magewirephp\Magewire\Model\Concern
+ * Trait Redirect.
  */
 trait Redirect
 {
-    /** @var RedirectElement|null $redirect */
+    /** @var RedirectElement|null */
     protected $redirect;
 
     /**
      * Redirect away from the current page.
      *
      * @param string $path
-     * @param array $params
+     * @param array  $params
+     *
      * @return RedirectElement
      */
     public function redirect(string $path, array $params = []): RedirectElement

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -16,16 +18,16 @@ use Magewirephp\Magewire\Exception\MissingComponentException;
 use Magewirephp\Magewire\Exception\SubsequentRequestException;
 
 /**
- * Class ViewBlockAbstractToHtmlBefore
- * @package Magewirephp\Magewire\Observer\Frontend
+ * Class ViewBlockAbstractToHtmlBefore.
  */
 class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements ObserverInterface
 {
-    /** @var $updateHandle null|string */
+    /** @var null|string */
     protected $updateHandle;
 
     /**
      * @param Observer $observer
+     *
      * @throws SubsequentRequestException
      */
     public function execute(Observer $observer): void
@@ -47,7 +49,10 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
                 }
                 if (($request === null) || ($request->isPreceding())) {
                     $request = $this->getComponentManager()->createInitialRequest(
-                        $block, $component, $data, $this->getUpdateHandle()
+                        $block,
+                        $component,
+                        $data,
+                        $this->getUpdateHandle()
                     );
                 }
 
@@ -75,8 +80,10 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
      * Results in: {Module_Name::magewire/dashed-class-name.phtml}
      *
      * @param Template $block
-     * @return Template
+     *
      * @throws MissingComponentException
+     *
+     * @return Template
      */
     public function determineTemplate(Template $block): Template
     {
@@ -84,10 +91,10 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
             $magewire = $this->getComponentHelper()->extractComponentFromBlock($block);
             $module = explode('\\', get_class($magewire));
 
-            $prefix = $module[0] . '_' . $module[1];
-            $affix  = strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', end($module)));
+            $prefix = $module[0].'_'.$module[1];
+            $affix = strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', end($module)));
 
-            $block->setTemplate($prefix . '::magewire/' . $affix . '.phtml');
+            $block->setTemplate($prefix.'::magewire/'.$affix.'.phtml');
         }
 
         return $block;
@@ -95,6 +102,7 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
 
     /**
      * @param string $handle
+     *
      * @return string
      */
     public function overwriteUpdateHandle(string $handle): string

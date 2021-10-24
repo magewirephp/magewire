@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -9,10 +11,8 @@
 namespace Magewirephp\Magewire\Exception;
 
 /**
- * Class ValidationException
- * @package Magewirephp\Magewire\Exception
+ * Class ValidationException.
  */
 class ValidationException extends MagewireException
 {
-
 }

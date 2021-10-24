@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -8,26 +10,25 @@
 
 namespace Magewirephp\Magewire\Model\Hydrator;
 
-use Magewirephp\Magewire\Helper\Functions as FunctionsHelper;
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Helper\Functions as FunctionsHelper;
 use Magewirephp\Magewire\Model\HydratorInterface;
 use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
 /**
- * Class Listener
- * @package Magewirephp\Magewire\Model\Hydrator
+ * Class Listener.
  */
 class Listener implements HydratorInterface
 {
-    /** @var FunctionsHelper $functionsHelper */
+    /** @var FunctionsHelper */
     private $functionsHelper;
-    /** @var array $listeners */
+    /** @var array */
     protected $listeners;
 
     /**
      * @param FunctionsHelper $functionsHelper
-     * @param array $listeners
+     * @param array           $listeners
      */
     public function __construct(
         FunctionsHelper $functionsHelper,
@@ -59,6 +60,7 @@ class Listener implements HydratorInterface
      * Merges optional injected event listeners for the given Component.
      *
      * @param Component $component
+     *
      * @return array
      */
     public function assimilateListeners(Component $component): array

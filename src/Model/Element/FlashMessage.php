@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -12,14 +14,13 @@ use Magento\Framework\Message\MessageInterface;
 use Magento\Framework\Phrase;
 
 /**
- * Class FlashMessage
- * @package Magewirephp\Magewire\Model\Element
+ * Class FlashMessage.
  */
 class FlashMessage
 {
-    public const ERROR   = MessageInterface::TYPE_ERROR;
+    public const ERROR = MessageInterface::TYPE_ERROR;
     public const WARNING = MessageInterface::TYPE_WARNING;
-    public const NOTICE  = MessageInterface::TYPE_NOTICE;
+    public const NOTICE = MessageInterface::TYPE_NOTICE;
     public const SUCCESS = MessageInterface::TYPE_SUCCESS;
 
     /**
@@ -34,8 +35,9 @@ class FlashMessage
 
     /**
      * Message constructor.
+     *
      * @param Phrase|string $message
-     * @param string $type
+     * @param string        $type
      */
     public function __construct($message, string $type)
     {

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -9,28 +11,28 @@
 namespace Magewirephp\Magewire\Model\Action;
 
 use Magento\Framework\Exception\LocalizedException;
-use Magewirephp\Magewire\Exception\ComponentActionException;
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Exception\ComponentActionException;
 use Magewirephp\Magewire\Model\Action\Type\Factory as TypeFactory;
 use Magewirephp\Magewire\Model\Action\Type\Magic;
 use Magewirephp\Magewire\Model\ActionInterface;
 
 /**
- * Class CallMethod
- * @package Magewirephp\Magewire\Model\Action
+ * Class CallMethod.
  */
 class CallMethod implements ActionInterface
 {
-    /** @var TypeFactory $typeFactory */
+    /** @var TypeFactory */
     protected $typeFactory;
 
-    /** @var string[] $uncallableMethods */
+    /** @var string[] */
     private $uncallableMethods;
 
     /**
      * CallMethod constructor.
+     *
      * @param TypeFactory $typeFactory
-     * @param array $uncallableMethods
+     * @param array       $uncallableMethods
      */
     public function __construct(
         TypeFactory $typeFactory,
@@ -42,6 +44,7 @@ class CallMethod implements ActionInterface
 
     /**
      * @inheritdoc
+     *
      * @throws ComponentActionException
      * @throws LocalizedException
      */
@@ -71,6 +74,7 @@ class CallMethod implements ActionInterface
     /**
      * @param $method
      * @param object $class
+     *
      * @return bool
      */
     public function isCallable($method, object $class): bool
@@ -86,8 +90,10 @@ class CallMethod implements ActionInterface
 
     /**
      * @param string $method
-     * @return mixed|string
+     *
      * @throws LocalizedException
+     *
+     * @return mixed|string
      */
     public function determineType(string $method)
     {

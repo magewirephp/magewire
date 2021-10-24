@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -11,16 +13,16 @@ namespace Magewirephp\Magewire\Model\Action\Type;
 use Magewirephp\Magewire\Helper\Property as PropertyHelper;
 
 /**
- * Class Magic
- * @package Magewirephp\Magewire\Model\Action\Type
+ * Class Magic.
  */
 class Magic
 {
-    /** @var PropertyHelper $propertyHelper */
+    /** @var PropertyHelper */
     protected $propertyHelper;
 
     /**
      * Magic constructor.
+     *
      * @param PropertyHelper $propertyHelper
      */
     public function __construct(
@@ -36,6 +38,7 @@ class Magic
      *
      * @param string $property
      * @param $component
+     *
      * @return void
      */
     public function toggle(string $property, $component): void
@@ -51,6 +54,7 @@ class Magic
      * @param string $property
      * @param $value
      * @param $component
+     *
      * @return void
      */
     public function set(string $property, $value, $component): void
@@ -68,6 +72,6 @@ class Magic
 
     public function refresh(): void
     {
-        return;
+
     }
 }

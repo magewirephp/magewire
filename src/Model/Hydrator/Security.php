@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -10,24 +12,24 @@ namespace Magewirephp\Magewire\Model\Hydrator;
 
 use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Exception\RuntimeException;
-use Magewirephp\Magewire\Exception\CorruptPayloadException;
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Exception\CorruptPayloadException;
 use Magewirephp\Magewire\Helper\Security as SecurityHelper;
 use Magewirephp\Magewire\Model\HydratorInterface;
 use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
 /**
- * Class Security
- * @package Magewirephp\Magewire\Model\Hydrator
+ * Class Security.
  */
 class Security implements HydratorInterface
 {
-    /** @var SecurityHelper $securityHelper */
+    /** @var SecurityHelper */
     private $securityHelper;
 
     /**
      * Security constructor.
+     *
      * @param SecurityHelper $securityHelper
      */
     public function __construct(
@@ -39,8 +41,9 @@ class Security implements HydratorInterface
     /**
      * @inheritdoc
      *
-     * @param Component $component
+     * @param Component        $component
      * @param RequestInterface $request
+     *
      * @throws CorruptPayloadException
      * @throws FileSystemException
      * @throws RuntimeException

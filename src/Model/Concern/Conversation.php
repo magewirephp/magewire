@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -13,19 +15,19 @@ use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
 /**
- * Trait Conversation
- * @package Magewirephp\Magewire\Model\Concern
+ * Trait Conversation.
  */
 trait Conversation
 {
-    /** @var RequestInterface|null $request */
+    /** @var RequestInterface|null */
     protected $request;
 
-    /** @var ResponseInterface|null $response */
+    /** @var ResponseInterface|null */
     protected $response;
 
     /**
      * @param string|null $section
+     *
      * @return bool
      */
     public function hasRequest($section = null): bool
@@ -39,6 +41,7 @@ trait Conversation
 
     /**
      * @param string|null $section
+     *
      * @return RequestInterface|array|null
      */
     public function getRequest($section = null)
@@ -52,16 +55,19 @@ trait Conversation
 
     /**
      * @param RequestInterface $request
+     *
      * @return $this
      */
     public function setRequest(RequestInterface $request): self
     {
         $this->request = $request;
+
         return $this;
     }
 
     /**
      * @param string|null $section
+     *
      * @return bool
      */
     public function hasResponse($section = null): bool
@@ -79,6 +85,7 @@ trait Conversation
 
     /**
      * @param string|null $section
+     *
      * @return ResponseInterface|array
      */
     public function getResponse($section = null)
@@ -92,11 +99,13 @@ trait Conversation
 
     /**
      * @param ResponseInterface $response
+     *
      * @return $this
      */
     public function setResponse(ResponseInterface $response): self
     {
         $this->response = $response;
+
         return $this;
     }
 }

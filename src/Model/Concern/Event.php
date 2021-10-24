@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -9,12 +11,11 @@
 namespace Magewirephp\Magewire\Model\Concern;
 
 /**
- * Trait Event
- * @package Magewirephp\Magewire\Model\Concern
+ * Trait Event.
  */
 trait Event
 {
-    /** @var array $listeners */
+    /** @var array */
     protected $listeners = [];
 
     /**

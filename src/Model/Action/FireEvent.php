@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -9,26 +11,26 @@
 namespace Magewirephp\Magewire\Model\Action;
 
 use Magento\Framework\Exception\LocalizedException;
-use Magewirephp\Magewire\Exception\ComponentActionException;
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Exception\ComponentActionException;
 use Magewirephp\Magewire\Model\ActionInterface;
 use Magewirephp\Magewire\Model\Hydrator\Listener as ListenerHydrator;
 
 /**
- * Class FireEvent
- * @package Magewirephp\Magewire\Model\Action
+ * Class FireEvent.
  */
 class FireEvent implements ActionInterface
 {
-    /** @var CallMethod $callMethodHandler */
+    /** @var CallMethod */
     private $callMethodHandler;
 
-    /** @var ListenerHydrator $listenerHydrator */
+    /** @var ListenerHydrator */
     private $listenerHydrator;
 
     /**
      * FireEvent constructor.
-     * @param CallMethod $callMethodHandler
+     *
+     * @param CallMethod       $callMethodHandler
      * @param ListenerHydrator $listenerHydrator
      */
     public function __construct(
@@ -46,8 +48,8 @@ class FireEvent implements ActionInterface
      */
     public function handle(Component $component, array $payload)
     {
-        $listeners  = $this->listenerHydrator->assimilateListeners($component);
-        $method     = $listeners[$payload['event']] ?? false;
+        $listeners = $this->listenerHydrator->assimilateListeners($component);
+        $method = $listeners[$payload['event']] ?? false;
         $parameters = $payload['params'][0] ?? [];
 
         if ($method === false) {
@@ -56,7 +58,7 @@ class FireEvent implements ActionInterface
 
         $this->callMethodHandler->handle($component, [
             'method' => $method,
-            'params' => $parameters
+            'params' => $parameters,
         ]);
     }
 }

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -9,19 +11,20 @@
 namespace Magewirephp\Magewire\Helper;
 
 use Magento\Framework\View\Element\BlockInterface;
-use Magewirephp\Magewire\Exception\MissingComponentException;
 use Magewirephp\Magewire\Component as MagewireComponent;
+use Magewirephp\Magewire\Exception\MissingComponentException;
 
 /**
- * Class Component
- * @package Magewirephp\Magewire\Helper
+ * Class Component.
  */
 class Component
 {
     /**
      * @param BlockInterface $block
-     * @return MagewireComponent
+     *
      * @throws MissingComponentException
+     *
+     * @return MagewireComponent
      */
     public function extractComponentFromBlock(BlockInterface $block): MagewireComponent
     {
@@ -41,7 +44,8 @@ class Component
 
     /**
      * @param BlockInterface $block
-     * @param array $addition
+     * @param array          $addition
+     *
      * @return array
      */
     public function extractDataFromBlock(BlockInterface $block, array $addition = []): array
@@ -49,7 +53,9 @@ class Component
         $magewire = $block->getMagewire();
 
         if ($magewire && is_array($magewire)) {
-            unset($magewire['type']); return array_merge_recursive($magewire, $addition);
+            unset($magewire['type']);
+
+            return array_merge_recursive($magewire, $addition);
         }
 
         return $addition;
