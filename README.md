@@ -1,4 +1,5 @@
 ## Magewire
+![style CI](https://github.styleci.io/repos/414967404/shield?style=flat&branch=main)
 ![version](https://img.shields.io/badge/Version-Beta-blue)
 ![hyva](https://img.shields.io/badge/Hyva_Themes-Compatible-1abc9c)
 ![magento-open-source](https://img.shields.io/badge/Magento_Open_Source-2.3.x-orange)
