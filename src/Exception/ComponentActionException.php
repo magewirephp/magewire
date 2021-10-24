@@ -14,5 +14,4 @@ namespace Magewirephp\Magewire\Exception;
  */
 class ComponentActionException extends MagewireException
 {
-
 }

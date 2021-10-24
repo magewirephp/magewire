@@ -13,5 +13,4 @@ namespace Magewirephp\Magewire\Model;
  */
 interface WireableInterface
 {
-
 }

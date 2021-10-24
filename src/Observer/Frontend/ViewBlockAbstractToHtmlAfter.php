@@ -70,7 +70,7 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
 
         if ($component->canRender() === false) {
             $response->effects['html'] = null;
-        } else if (is_string($response->effects['html'])) {
+        } elseif (is_string($response->effects['html'])) {
             $response->effects['html'] = $response->renderWithRootAttribute($data);
         }
 
