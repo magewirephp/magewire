@@ -47,7 +47,10 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
                 }
                 if (($request === null) || ($request->isPreceding())) {
                     $request = $this->getComponentManager()->createInitialRequest(
-                        $block, $component, $data, $this->getUpdateHandle()
+                        $block,
+                        $component,
+                        $data,
+                        $this->getUpdateHandle()
                     );
                 }
 

@@ -14,5 +14,4 @@ namespace Magewirephp\Magewire\Exception;
  */
 class MissingComponentException extends MagewireException
 {
-
 }

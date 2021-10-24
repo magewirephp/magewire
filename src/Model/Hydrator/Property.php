@@ -43,7 +43,7 @@ class Property implements HydratorInterface
         }
 
         // Bind regular properties.
-        $this->propertyHelper->assign(function(Component $component, $request, $property, $value) {
+        $this->propertyHelper->assign(function (Component $component, $request, $property, $value) {
             $component->{$property} = $value;
         }, $request, $component);
 

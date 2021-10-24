@@ -138,7 +138,7 @@ class Response implements ResponseInterface
             throw new RootTagMissingFromViewException();
         }
 
-        $attributes = implode(' ', $this->functionsHelper->map(function($value, $key) {
+        $attributes = implode(' ', $this->functionsHelper->map(function ($value, $key) {
             return sprintf('%s="%s"', $key, $value);
         }, $this->functionsHelper->mapWithKeys(function ($value, $key) {
             return ["wire:{$key}" => $this->functionsHelper->escapeStringForHtml($value)];

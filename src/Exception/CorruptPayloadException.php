@@ -25,7 +25,9 @@ class CorruptPayloadException extends MagewireException
     public function __construct(string $name, Exception $cause = null, $code = 0)
     {
         parent::__construct(
-            __('Magewire encountered corrupt data when trying to hydrate the %1 component. Ensure that the [name, id, data] of the Magewire component wasn\'t tampered with between requests.', [$name]), $cause, $code
+            __('Magewire encountered corrupt data when trying to hydrate the %1 component. Ensure that the [name, id, data] of the Magewire component wasn\'t tampered with between requests.', [$name]),
+            $cause,
+            $code
         );
     }
 }
