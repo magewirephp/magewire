@@ -23,7 +23,7 @@
                 if (canShowLoader(message, component)) {
                     hasEmits = false
 
-                    mgwr.dispatchEvent('loader:start', {
+                    Magewire.dispatchEvent('loader:start', {
                         message: message, component: component
                     })
                 }
@@ -31,12 +31,12 @@
             Magewire.hook('message.processed', (message, component) => {
                 hasEmits = 'loader' in component.effects && 'emits' in message.response.effects
 
-                mgwr.dispatchEvent('loader:stop', {
+                Magewire.dispatchEvent('loader:stop', {
                     message: message, component: component
                 })
             })
             Magewire.hook('message.failed', (message, component) => {
-                mgwr.dispatchEvent('loader:stop', {
+                Magewire.dispatchEvent('loader:stop', {
                     message: message, component: component
                 })
             })
