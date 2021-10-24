@@ -62,8 +62,6 @@ class Property
      * Use a callback function to assign component property
      * values except default reserved properties.
      *
-     * NOTE: Will skip the lifecycle.
-     *
      * @param callable $callback
      * @param RequestInterface|ResponseInterface $subject (waiting for PHP 8.x support)
      * @param Component $component
