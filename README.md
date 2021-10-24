@@ -1,9 +1,6 @@
 ## Magewire
 ![style CI](https://github.styleci.io/repos/414967404/shield?style=flat&branch=main)
-![version](https://img.shields.io/badge/Version-Beta-blue)
 ![hyva](https://img.shields.io/badge/Hyva_Themes-Compatible-1abc9c)
-![magento-open-source](https://img.shields.io/badge/Magento_Open_Source-2.3.x-orange)
-![adobe-commerce](https://img.shields.io/badge/Adobe_Commerce-2.3.x-red)
 
 Magewire is a [Laravel Livewire](https://laravel-livewire.com/) port for Magento 2. The goal is to make it fun and easy
 to build modern, reactive and dynamic interfaces, without leaving the comfort of Magento's core layout and template
