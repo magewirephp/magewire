@@ -14,5 +14,4 @@ namespace Magewirephp\Magewire\Exception;
  */
 class LifecycleException extends MagewireException
 {
-
 }

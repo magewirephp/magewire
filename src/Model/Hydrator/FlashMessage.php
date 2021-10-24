@@ -28,7 +28,7 @@ class FlashMessage implements HydratorInterface
      * @param ManagerInterface $messageManager
      */
     public function __construct(
-       ManagerInterface $messageManager
+        ManagerInterface $messageManager
     ) {
         $this->messageManager = $messageManager;
     }
@@ -47,12 +47,12 @@ class FlashMessage implements HydratorInterface
     public function dehydrate(Component $component, ResponseInterface $response): void
     {
         if ($component->hasFlashMessages()) {
-            $messages = array_map(static function($message) {
+            $messages = array_map(static function ($message) {
                 return ['text' => $message->getMessage()->render(), 'type' => $message->getType()];
             }, $component->getFlashMessages());
 
             if (isset($response->effects['redirect']) || $response->getRequest()->isPreceding()) {
-                $this->messageManager->addMessages(array_map(function($message) {
+                $this->messageManager->addMessages(array_map(function ($message) {
                     return $this->messageManager->createMessage($message['type'])->setText($message['text']);
                 }, $messages));
 
