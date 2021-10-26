@@ -45,77 +45,57 @@ class SyncInput implements ActionInterface
             throw new ComponentActionException(__('Invalid update payload'));
         }
 
-        $name  = $payload['name'];
-        $value = $payload['value'];
+        $property = $payload['name'];
+        $value    = $payload['value'];
 
         try {
-            $containsDots = $this->propertyHelper->containsDots($name);
+            if ($this->propertyHelper->containsDots($property)) {
+                // Full property value including its new payload value.
+                $transform = $this->propertyHelper->transformDots($property, $value, $component);
+                // Search for the newly set property value by path.
+                $value = $this->propertyHelper->searchViaDots($transform['path'], $transform['value']);
+                // Process the property value by path.
+                $value = $this->processPropertyByLifecycle($component, $transform['realpath'], $value);
+                // Re-assign the full processed property value.
+                $transform = $this->propertyHelper->transformDots($transform['realpath'], $value, $component);
 
-            if ($containsDots) {
-                $transform = $this->propertyHelper->transformDots($name, $value, $component);
-
-                // Re-assign original method properties.
-                $name  = $transform['property'];
-                $value = $transform['value'];
+                $property = $transform['property'];
+                $value    = $transform['value'];
             }
 
-            if (!array_key_exists($name, $component->getPublicProperties())) {
-                throw new ComponentException(__('Public property %1 does\'nt exist', [$name]));
-            }
-
-            $value = is_array($value)
-                ? $this->lifecycleSyncArray($component, $name, $value)
-                : $this->lifecycleSync($component, $name, $value);
+            $value = $this->processPropertyByLifecycle($component, $property, $value);
         } catch (Exception $exception) {
             return;
         }
 
         // Set the property if a lifecycle method succeed or failed.
-        $component->{$name} = $value;
+        $component->{$property} = $value;
     }
 
     /**
      * Sync regular mixed value
      *
      * @param Component $component
-     * @param string $name
+     * @param string $property
      * @param mixed $value
      * @return mixed
      */
-    public function lifecycleSync(Component $component, string $name, $value)
-    {
-        $before = 'updating' . str_replace(' ', '', ucwords(str_replace(['-', '_'], ' ', $name)));
-        $after = str_replace('updating', 'updated', $before);
+    public function processPropertyByLifecycle(
+        Component $component,
+        string $property,
+        $value
+    ) {
+        $before = 'updating' . str_replace(' ', '', ucwords(str_replace(['-', '_', '.'], ' ', $property)));
+        $after  = str_replace('updating', 'updated', $before);
 
         $methods = [$before, 'updating', 'updated', $after];
-        $clone = $value;
 
         foreach ($methods as $method) {
             if (method_exists($component, $method)) {
-                $clone = $component->{$method}(...[$clone, $name]);
+                $value = $component->{$method}(...[$value, $property]);
             }
-
-            $component->{$name} = $clone;
         }
 
         return $value;
-    }
-
-    /**
-     * Sync value as a dotted value (e.g: my.nested.value).
-     *
-     * @param Component $component
-     * @param string $name
-     * @param array $value
-     * @return mixed
-     */
-    public function lifecycleSyncArray(Component $component, string $name, array $value)
-    {
-        // Get most deep key value pair.
-        $value = end($value);
-        // Hydrate the value from the key value pair.
-        $value = reset($value);
-
-        return $this->lifecycleSync($component, $name, $value);
     }
 }

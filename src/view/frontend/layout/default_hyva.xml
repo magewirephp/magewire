@@ -16,16 +16,14 @@
             <block name="magewire.initialize"
                    after="magewire.livewire"
                    template="Magewirephp_Magewire::page/js/magewire-initialize.phtml"/>
-        </referenceContainer>
 
-        <!-- @TODO make it possible to render this container after the magewire.initialize block -->
-        <!-- Plugin scripts placeholder -->
-        <container name="magewire.plugin.scripts" after="magewire.initialize">
-            <block name="magewire.plugin.loader"
-                   template="Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml"/>
-            <block name="magewire.plugin.intersect"
-                   template="Magewirephp_Magewire::page/js/magewire/plugin/intersect.phtml"/>
-        </container>
+            <container name="magewire.plugin.scripts">
+                <block name="magewire.plugin.loader"
+                       template="Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml"/>
+                <block name="magewire.plugin.intersect"
+                       template="Magewirephp_Magewire::page/js/magewire/plugin/intersect.phtml"/>
+            </container>
+        </referenceContainer>
 
         <!-- Global Magewire pager placeholder -->
         <block name="magewire.pagination.pager"/>

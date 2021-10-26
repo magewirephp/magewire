@@ -8,6 +8,8 @@
 
 namespace Magewirephp\Magewire\Model\Action\Type;
 
+use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Exception\ComponentException;
 use Magewirephp\Magewire\Helper\Property as PropertyHelper;
 
 /**
@@ -37,6 +39,7 @@ class Magic
      * @param string $property
      * @param $component
      * @return void
+     * @throws ComponentException
      */
     public function toggle(string $property, $component): void
     {
@@ -46,24 +49,24 @@ class Magic
     /**
      * Magic method ($set) to update the value of a property.
      *
-     * Example: <button wire:click($set('public-property', 'the-value'))>Set</button>
+     * Example: <button wire:click="$set('public-property', 'the-value')">Set</button>
      *
      * @param string $property
      * @param $value
-     * @param $component
+     * @param Component $component
      * @return void
+     * @throws ComponentException
      */
-    public function set(string $property, $value, $component): void
+    public function set(string $property, $value, Component $component): void
     {
         if ($this->propertyHelper->containsDots($property)) {
             $transform = $this->propertyHelper->transformDots($property, $value, $component);
 
-            // Re-assign original method properties
             $property = $transform['property'];
-            $value = $transform['value'];
+            $value    = $transform['value'];
         }
 
-        $component->assign($property, $value);
+        $component->{$property} = $value;
     }
 
     public function refresh(): void
