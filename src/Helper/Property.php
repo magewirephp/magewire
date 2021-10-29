@@ -10,6 +10,7 @@ namespace Magewirephp\Magewire\Helper;
 
 use Magento\Framework\Stdlib\ArrayManager;
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Exception\ComponentException;
 use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
@@ -46,16 +47,31 @@ class Property
      * @param $value
      * @param Component $component
      * @return array
+     * @throws ComponentException
      */
     public function transformDots(string $path, $value, Component $component): array
     {
-        $pieces = explode('.', $path);
-        $property = $pieces[0];
+        $property = strstr($path, '.', true);
+        $realpath = $path;
 
-        array_shift($pieces);
-        $value = $this->arrayManager->set(implode('/', $pieces), $component->{$property}, $value);
+        if (!array_key_exists($property, $component->getPublicProperties())) {
+            throw new ComponentException(__('Public property %1 does\'nt exist', [$property]));
+        }
 
-        return compact('property', 'value');
+        $path = substr(strstr($path, '.'), 1);
+        $value = $this->arrayManager->set($path, $component->{$property}, $value, '.');
+
+        return compact('property', 'value', 'realpath', 'path');
+    }
+
+    /**
+     * @param string $path
+     * @param array $value
+     * @return mixed|null
+     */
+    public function searchViaDots(string $path, array $value)
+    {
+        return $this->arrayManager->get($path, $value, null, '.');
     }
 
     /**

@@ -14,17 +14,16 @@ use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Framework\View\Element\Template;
 use ReflectionClass;
 use Magewirephp\Magewire\Exception\ComponentException;
-use Magewirephp\Magewire\Exception\LifecycleException;
 use Magewirephp\Magewire\Model\Concern\BrowserEvent as BrowserEventConcern;
 use Magewirephp\Magewire\Model\Concern\Conversation as ConversationConcern;
 use Magewirephp\Magewire\Model\Concern\Emit as EmitConcern;
 use Magewirephp\Magewire\Model\Concern\Error as ErrorConcern;
 use Magewirephp\Magewire\Model\Concern\Event as EventConcern;
 use Magewirephp\Magewire\Model\Concern\FlashMessage as FlashMessageConcern;
+use Magewirephp\Magewire\Model\Concern\Method as MethodConcern;
 use Magewirephp\Magewire\Model\Concern\QueryString as QueryStringConcern;
 use Magewirephp\Magewire\Model\Concern\Redirect as RedirectConcern;
 use Magewirephp\Magewire\Model\Concern\View as ViewConcern;
-use Magewirephp\Magewire\Model\Context\Component as ComponentContext;
 use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
@@ -54,9 +53,10 @@ abstract class Component implements ArgumentInterface
         ErrorConcern,
         EventConcern,
         FlashMessageConcern,
+        MethodConcern,
+        QueryStringConcern,
         RedirectConcern,
-        ViewConcern,
-        QueryStringConcern;
+        ViewConcern;
 
     public const LAYOUT_ITEM_TYPE = 'type';
     public const RESERVED_PROPERTIES = ['id', 'name'];
@@ -86,14 +86,6 @@ abstract class Component implements ArgumentInterface
     private $parent;
 
     private $publicProperties;
-
-    /**
-     * Protected methods.
-     *
-     * @see getUncallables()
-     * @var string[]
-     */
-    protected $uncallables = [];
 
     /**
      * @deprecared
@@ -177,19 +169,6 @@ abstract class Component implements ArgumentInterface
         }
 
         return $this->publicProperties;
-    }
-
-    /**
-     * Returns an optional array with uncallable method names
-     * who can not be executed by a subsequent request.
-     *
-     * These methods are still callable inside the component's template file.
-     *
-     * @return string[]
-     */
-    public function getUncallables(): array
-    {
-        return $this->uncallables;
     }
 
     /**
