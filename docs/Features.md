@@ -113,8 +113,6 @@ like for instance property validation.
 ```php
 class Explanation extends Magewirephp\Magewire\Component {}
 // OR
-class Explanation extends \Magewirephp\Magewire\Component\Form {}
-// OR
 class Explanation extends \Magewirephp\Magewire\Component\Pagination {}
 ```
 
@@ -547,69 +545,13 @@ class Explanation extends \Magewirephp\Magewire\Component\Pagination
 </div>
 ```
 
-# Error Handling
-An error will automatically bind a Phrase with it property name as key. Every single property can have one error per
-round-trip. The build in validation also uses the Component's errors bag on failure.
-```php
-class MySearchForm extends \Magewirephp\Magewire\Component\Form
-{
-    public $searchText;
-
-    protected $rules = [
-        'searchText' => 'required|min:6'
-    ];
-
-    public function search()
-    {
-        // Won't continue on failure.
-        $this->validate();
-        
-        $this->someSearchProvider->search($this->getSearchText());
-        
-        // OR
-        
-        if (strlen($this->getSearchText()) < 6) {
-            $this->error('searchText', 'Minimal length is 6');
-        }
-    }
-}
-```
-Render all errors on top as a list.
-```html
-<div id="my-magewire-component">
-    <?php if ($magewire->hasErrors()): ?>
-    <ul>
-        <?php foreach ($magewire->getErrors() as $error): ?>
-        <li><?= $error ?></li>
-        <?php endforeach; ?>
-    </ul>
-    <?php endif; ?>
-    
-    <form wire:submit.prevent="search">
-        <input wire:model="searchText"/>
-    </form>
-</div>
-```
-
-Render each error underneath a specific input field.
-```html
-<div id="my-magewire-component">
-    <form wire:submit.prevent="search">
-        <input wire:model="searchText"/>
-        <?php if ($magewire->hasError('searchText')): ?>
-        <p><?= $magewire->getError('searchText') ?></p>
-        <?php endif; ?>
-    </form>
-</div>
-```
-
 ## Query String
 > **Note**: The query string feature is currently incomplete compared to the original Laravel Livewire implementation.
 > At the moment you can only set public properties values via the URL when loading a page.
 
 Define public properties via URL params on a page load
 ```php
-class MySearchForm extends \Magewirephp\Magewire\Component\Form
+class MySearchForm extends \Magewirephp\Magewire\Component
 {
     public $searchText;
     
