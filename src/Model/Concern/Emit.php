@@ -76,10 +76,11 @@ trait Emit
      * Only emit a "refresh" event to other components of the same type.
      *
      * @param string $name
+     * @param mixed ...$params
      * @return Event
      */
-    public function emitToRefresh(string $name): Event
+    public function emitToRefresh(string $name, ...$params): Event
     {
-        return $this->emitTo($name, 'refresh');
+        return $this->emitTo($name, 'refresh', $params);
     }
 }
