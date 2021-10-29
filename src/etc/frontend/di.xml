@@ -28,18 +28,18 @@
                 <item name="15" xsi:type="string">getParent</item>
                 <item name="16" xsi:type="string">setParent</item>
                 <item name="17" xsi:type="string">getPublicProperties</item>
-                <item name="18" xsi:type="string">getUncallables</item>
-                <item name="19" xsi:type="string">__call</item>
+                <item name="18" xsi:type="string">__call</item>
 
                 <!-- Concerns -->
-                <item name="20" xsi:type="string">setRequest</item>
-                <item name="21" xsi:type="string">getRequest</item>
-                <item name="22" xsi:type="string">setResponse</item>
-                <item name="23" xsi:type="string">getResponse</item>
-                <item name="24" xsi:type="string">getEventQueue</item>
+                <item name="19" xsi:type="string">setRequest</item>
+                <item name="20" xsi:type="string">getRequest</item>
+                <item name="21" xsi:type="string">setResponse</item>
+                <item name="22" xsi:type="string">getResponse</item>
+                <item name="23" xsi:type="string">getEventQueue</item>
+                <item name="24" xsi:type="string">getUncallables</item>
 
                 <!-- Pagination -->
-                <item name="25" xsi:type="string">renderPagination</item>
+                <item name="26" xsi:type="string">renderPagination</item>
 
             </argument>
         </arguments>
