@@ -1,12 +1,12 @@
 # Magewire - Compatibility
-> Please keep in mind that Magewire is currently in a Beta-phase. Therefore not all architectural choices are set in
-> concrete. So make sure you are aware of the risks of building on top of the platform in it's current state.
 
 Magewire is **not** compatible with any specific Laravel Livewire backend version. The Livewire JS package does have a
 matching version as this is a identical copy of it's origin. The goal is to make as much practible front- & backend
 features compatible.
 
 ## Magento - 2.3.x
+> **Important**: Version 2.0.0 will only be compatible with 2.4.x.
+
 As it's core, Magewire is build primarily for Magento 2.4.x to get rid of the deprated App\Action controller extend.
 I've gave it a headspin to still be able to use Magewire in Magento 2.3.x. I call it the "vintage" concept of handling
 HTTP subsequent requests. Therefore 2.3.x version will make Magewire HTTP requests to the ```Vintage``` instead of the
