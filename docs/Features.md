@@ -1,6 +1,4 @@
 # Magewire - Features
-> Please keep in mind that Magewire is currently in a Beta-phase. Therefore not all architectural choices are set in
-> concrete. So make sure you are aware of the risks of building on top of the platform in it's current state.
 
 ## Best Practices
 1. Use the Magewire naming conventions and structures.
@@ -17,8 +15,8 @@
 | /src/view/frontend/templates/magewire | All Magewire component template files live here (subfolder allowed) |
 
 ## JavaScript
-The ```Magewire``` (alias for ```Livewire```) object is globally available on the page after DomContentLoaded. More
-information can be found inside the [Livewire docs](https://laravel-livewire.com/docs/2.x/reference#global-livewire-js).
+The ```Magewire``` (alias for ```Livewire```) object is globally available on the page. More information can be found
+inside the [Livewire docs](https://laravel-livewire.com/docs/2.x/reference#global-livewire-js).
 
 ### Document Events
 - magewire:load
@@ -56,6 +54,8 @@ information can be found inside the [Livewire docs](https://laravel-livewire.com
     </arguments>
 </block>
 ```
+> **Note**: Template will automatically be set if a Magewire component has been set. When your component is named Foo, just
+> create a foo.phtml inside the /view/templates/magewire folder.
 
 ## Templates
 Options within your block template.
@@ -67,14 +67,14 @@ use My\Module\Magewire\Explanation;
 
 $magewire = $block->getMagewire();
 
-// Check if property exists
+// Check if property exists or is not null.
 $magewire->hasFoo();
-// Get property value
+// Get property value.
 $magewire->getFoo();
-// Call a custom method inside your component
+// Call a custom method inside your component (if not set as uncallable).
 $magewire->myCustomMethod();
-// Overwrite a property after the (optional) mount method was executed
-$magewire->foo('barbar');
+// Overwrite a property after the (optional) mount method was executed.
+$magewire->foo = 'barbar';
 ?>
 ```
 
@@ -100,8 +100,8 @@ Set some data but prevent a frontend DOM replacement while on a subsequent reque
 ```php
 public function setSomeProperties(string $value = 'bar')
 {
-    // Will set the data but will return null as effects html value.
-    $this->foo($value)->skipRender();
+    $this->foo = $value;
+    $this->skipRender();
 }
 ```
 
@@ -115,6 +115,7 @@ class Explanation extends Magewirephp\Magewire\Component {}
 // OR
 class Explanation extends \Magewirephp\Magewire\Component\Pagination {}
 ```
+> **Note**: More core component types will be added over time.
 
 ## Magic Actions & Properties
 Toggle, set or emit without writing any PHP.
@@ -149,40 +150,28 @@ public function refresh() {}
 ## Properties
 Assign properties including a lifecycle ```updating``` and ```updated``` method.
 ```php
-public function myCustomSetMethod(string $value)
-{
-    $this->publicProperty($value);
-}
-
-/**
- * Mass assign the given property/value array.
- */
-public function setDataBatch()
-{
-    $this->fill([
-        'publicPropertyOne' => 'valueOne',
-        'publicPropertyTwo' => 'valueTwo',
-    ]);
-}
+public $foo = 'bar'
 
 /**
  * OPTIONAL METHOD: Gets executed right before the property gets assigned.
+ * You should in this case use a magic method called updatingFoo(string $value): string {}
  */
 public function updating($value, string $name)
 {
-    // Bad practice on listening for a name specific property.
-    if ($name === 'publicProperty') { return ucfirst($value); }
+    // Bad practice on listening for a name specific property (updatingFoo(string $value)).
+    if ($name === 'foo') { return ucfirst($value); }
     // Best practice
     return ucfirst($value);
 }
 
 /**
  * OPTIONAL METHOD: Gets executed immediately after the property has been assigned.
+ * You should in this case use a magic method called updatedFoo(string $value): string {}
  */
 public function updated($value, string $name)
 {
-    // Bad practice on listening for a name specific property.
-    if ($name === 'publicProperty') { return ucfirst($value); }
+    // Bad practice on listening for a name specific property (updatedFoo(string $value)).
+    if ($name === 'foo') { return ucfirst($value); }
     // Best practice
     return ucfirst($value);
 }
@@ -206,15 +195,6 @@ public function updatingFoo(string $value): string
 }
 
 /**
- * OPTIONAL METHOD: Gets executed when the property gets assigned.
- */
-public function defineFoo(string $value): string
-{
-    // $value: Updating-foo
-    return strtolower('define-' . $value);
-}
-
-/**
  * OPTIONAL METHOD: After the property has been updated.
  * Gets executed after the updated() lifecycle hook.
  */
@@ -233,14 +213,18 @@ class Explanation extends \Magewirephp\Magewire\Component
 {
     public $nested = ['foo' => ['bar' => 'Hello world']];
     
-    // These nested methods will also work for the 'updating' & 'define' lifecycle methods
-    public function updatedNestedFooBar(array $value): array
+    // Before it's getting updated.
+    public function updatingNestedFooBar(string $value): string
     {
-        // A updated $nested array will be given as value of $value 
-        $value['foo']['bar'] = strtoupper($value['foo']['bar']);
-        
-        // Will result in a uppercased value for $nested['foo']['bar']
-        return $value;
+        // Returns ['foo' => ['bar' => 'HELLO WORLD']]
+        return strtoupper($value);
+    }
+    
+    // After it has been updated.
+    public function updatedNestedFooBar(string $value): string
+    {
+        // Returns ['foo' => ['bar' => 'hello world']]
+        return strtolower($value);
     }
 }
 ```
@@ -249,11 +233,10 @@ class Explanation extends \Magewirephp\Magewire\Component
 <!-- Input value will be 'Hello world' on initialization. -->
 <!-- Input value will be synced onto the component on change. -->
 <input wire:model="nested.foo.bar"/>
-
 <!-- OR -->
-
 <button wire:click="$set('nested.foo.bar', 'Hello outerspace')">Set</button>
 ```
+
 ## Flash Messages
 Show a flash message on the page without a reload.
 ```php
@@ -395,14 +378,20 @@ public function mount(...$params) {}
 public function hydrate($request) {}
 // Runs after a property called $foo is hydrated.
 public function hydrateFoo($value, $request) {}
-// Runs before a property called $foo is updated.
+// Runs before a property called $foo will be updated.
+
 public function updatingFoo($value) {}
+// Run before a nested array value 'bar' will be updated (Using wire:model, not directly inside PHP).
+public function updatingFooBar($value) {}
 // Runs before any update to the Livewire component's data (Using wire:model, not directly inside PHP).
 public function updating($value, $name) {}
 // Runs after any update to the Livewire component's data (Using wire:model, not directly inside PHP).
 public function updated($value, $name) {}
-// Runs after a property called $foo is updated.
+// Runs after a property called $foo is updated (Using wire:model, not directly inside PHP).
 public function updatedFoo($value) {}
+// Run after a nested array value 'bar' is updated (Using wire:model, not directly inside PHP).
+public function updatedFooBar($value) {}
+
 // Runs on every request, before the component is dehydrated, but after render() is called.
 public function dehydrate($response) {}
 // Runs before a property called $foo is dehydrated (COMING SOON).
@@ -438,6 +427,7 @@ public function openSubscribeModal()
     function subscribeModal() {
         let self = this
 
+        // 'user' will exist inside event.detail like event.detail.user
         window.addEventListener('open-subscribe-modal', event => {
             self.show = !self.show
         })
@@ -478,7 +468,7 @@ class Explanation extends \Magewirephp\Magewire\Component
 ```
 
 ## Keydown Modifiers
-Perform actions on keydown
+Perform actions on keydown.
 ```php
 public function keyUp()
 {
@@ -615,9 +605,9 @@ Display a loading state only when performing a (targeted) subsequent method call
 ```php
 class Explanation extends \Magewirephp\Magewire\Component
 {
-    `// Show a loading state for all methods
+    // Show a loading state for all methods.
     protected $loader = true;
-    // Show a loading state for specific methods
+    // Show a loading state for specific methods.
     protected $loader = ['foo'];`
     
     public function foo() {
@@ -668,7 +658,7 @@ needed for the project.
     <!-- Remove only the indicator to still be able to hook into the available events -->
     <referenceBlock name="magewire.loader" remove="true"/>
     <!-- Remove all JavaScript beloning to the loader indicator -->
-    <referenceBlock name="magewire.loader.script" remove="true"/>
+    <referenceBlock name="magewire.plugin.loader" remove="true"/>
 </body>
 ```
 **File**: view/frontend/layout/default_hyva.xml
@@ -705,7 +695,7 @@ it.
 <referenceContainer name="magewire.plugin" remove="true"/>
 ```
 
-### Intersect Directive Plugin
+### WIP: Intersect Directive Plugin
 > **Under construction**: This features is still under construction. Don't use this feature in any project until a
 > first and final release.
 

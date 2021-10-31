@@ -1,6 +1,4 @@
 # Magewire - Hydrators
-> Please keep in mind that Magewire is currently in a Beta-phase. Therefore not all architectural choices are set in
-> concrete. So make sure you are aware of the risks of building on top of the platform in it's current state.
 
 By default Magewire come's with a stack of core hydrators who can not be overwritten by default. These take precedence
 over the rest to ensure the bootstrap lifecycle.
@@ -77,7 +75,7 @@ class MyAwesomeHydrator implements \Magewirephp\Magewire\Model\HydratorInterface
 ## API
 
 ### Lifecycle
-Check if the hydration lifecycle is in an initial or update request
+Check if the hydration lifecycle is in an initial or update request.
 ```php
 public function hydrate(Component $component, RequestInterface $request): void
 {

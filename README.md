@@ -1,6 +1,7 @@
-## Magewire
+# Magewire
 ![style CI](https://github.styleci.io/repos/414967404/shield?style=flat&branch=main)
 ![hyva](https://img.shields.io/badge/Hyva_Themes-Compatible-1abc9c)
+![Open Source](https://img.shields.io/badge/Open-Source-1abc9c)
 
 Magewire is a [Laravel Livewire](https://laravel-livewire.com/) port for Magento 2. The goal is to make it fun and easy
 to build modern, reactive and dynamic interfaces, without leaving the comfort of Magento's core layout and template
@@ -22,17 +23,17 @@ section to enable all the Magewire richness in your Blank or Luma projects.
 - [Hydrators](./docs/Hydrators.md)
 
 ## Roadmap
+- Finalizy the Intersect plugin (in beta)
 - Unit & Integration tests
 - Single and Multi file upload integrations
-- Form integration including rule & validation options.
-- Modal and Dialog integrations.
-- Enrich pagination functionality.
-- Advanced Query String manipulation.
-- Throttling capabilities.
-- Wireable Interface concept for public object properties like e.g. DataObject.
-- Parent / Children system for Emit Up compatibility.
-- Make the ```$wire``` AlpineJS component object accessible.
-- Deprecate the assign() method before the first release and come up with a lifecycle alternative.
+- Form integration including rule & validation options
+- Modal and Dialog integrations
+- Enrich pagination functionality
+- Advanced Query String manipulation
+- Throttling capabilities
+- Wireable Interface concept for public object properties like e.g. DataObject
+- Parent / Children system for Emit Up compatibility
+- Make the ```$wire``` AlpineJS component object accessible
 
 ## Tools
 - [Livewire Devtools](https://chrome.google.com/webstore/detail/livewire-devtools/ahcmcdmhdcgbpklkdhpejphjekpmhkll) by [Beyond Code](https://beyondco.de/)
