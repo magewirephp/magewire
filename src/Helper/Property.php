@@ -85,7 +85,7 @@ class Property
      */
     public function assign(callable $callback, $subject, Component $component): void
     {
-        $publicProperties = $component->getPublicProperties();
+        $publicProperties = $component->getPublicProperties(true);
 
         foreach ($subject->memo['data'] as $property => $value) {
             if (in_array($property, Component::RESERVED_PROPERTIES, true)) {
