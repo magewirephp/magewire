@@ -39,7 +39,17 @@ class Property implements HydratorInterface
     public function hydrate(Component $component, RequestInterface $request): void
     {
         if ($request->isPreceding()) {
-            $request->memo['data'] = array_merge($request->memo['data'], $component->getPublicProperties(true));
+            /**
+             * There is one problem with array in the case. When an empty array is assigned
+             * inside the component, it will never be possible to overwrite it with a layout
+             * data array. This is mainly because the merge is not recursive. To temporary fix this,
+             * you should not set an empty array as the default property value, just leave it as null.
+             */
+            $request->memo['data'] = array_merge($request->memo['data'],
+                array_filter($component->getPublicProperties(true), function ($value) {
+                    return $value !== null;
+                })
+            );
         }
 
         // Bind regular properties.

@@ -89,7 +89,7 @@ class QueryString implements HydratorInterface
      */
     public function getQueryParamsFromComponentProperties(Component $component): array
     {
-        return $this->functionsHelper->mapWithKeys(function ($value, $key) use ($component, $properties) {
+        return $this->functionsHelper->mapWithKeys(function ($value, $key) use ($component) {
             $key = is_string($key) ? $key : $value;
             return [$key => $component->{$key}];
         }, $component->getQueryString());
