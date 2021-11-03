@@ -57,7 +57,7 @@ class Security implements HydratorInterface
         $memo = array_diff_key($request->getServerMemo(), array_flip(['children']));
 
         if (!$this->securityHelper->validateChecksum($checksum, $request->getFingerprint(), $memo)) {
-            throw new CorruptPayloadException('Temporary Component Name (todo)');
+            throw new CorruptPayloadException(get_class($component));
         }
     }
 
