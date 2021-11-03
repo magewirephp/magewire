@@ -5,10 +5,11 @@
   "type": "magento2-module",
   "authors": [
     {
-      "name": "Willem Poortman"
+      "name": "Willem Poortman",
+      "email": "magewirephp@wpoortman.nl"
     }
   ],
-  "license": "GPL-3.0-or-later",
+  "license": "MIT",
   "autoload": {
     "files": [
       "src/registration.php"
