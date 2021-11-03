@@ -45,7 +45,8 @@ class Property implements HydratorInterface
              * data array. This is mainly because the merge is not recursive. To temporary fix this,
              * you should not set an empty array as the default property value, just leave it as null.
              */
-            $request->memo['data'] = array_merge($request->memo['data'],
+            $request->memo['data'] = array_merge(
+                $request->memo['data'],
                 array_filter($component->getPublicProperties(true), function ($value) {
                     return $value !== null;
                 })
