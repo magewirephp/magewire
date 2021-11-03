@@ -107,6 +107,23 @@ Ignore smart DOM diffing on specified elements within a Magewire component.
 <?= 'Foo: ' . $magewire->getFoo() ?>
 ```
 
+### Child Block Rendering
+This can be very powerful when you are in the situation where you want to keep the child blocks intact.
+```html
+<div>
+    <!-- We assume property value of $foo is unequal to 'bar' on page load. -->
+    <button wire:click="$set('foo', 'bar')">Set Foo</button>
+    <!-- Fresh HTML will be injected after you've clicked the Set Foo button. -->
+    <span>
+        <?= 'Foo: ' . $getFoo() ?>
+    </span>
+    <!-- Wont change to its original state as long as the wire:ignore sits there. -->
+    <div wire:ignore>
+        <?= $block->getChildHtml('child.block.name') ?>
+    </div>
+</div>
+```
+
 ## Component Types
 The base idea behind de default component is to keep things as simple and clean as possible without any constructor
 dependencies. Therefore I've decided to create multiple component to inherit from, who give you the option to use stuff
@@ -134,7 +151,7 @@ Toggle, set or emit without writing any PHP.
 <button wire:click="$emit('someListener', [123, 'bar', true])"
 <button wire:click="$emitTo('layout.block.name', 'someListener', [123, 'bar', true])"
 <button wire:click="$emitSelf('someListener', [123, 'bar', true])"
-        
+
 <!-- Refresh -->
 <button wire:click="$refresh()"
 ```
