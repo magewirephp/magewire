@@ -95,14 +95,16 @@ public function login()
 > **Tip**: Use the power of the layout xml to assign a "switch" template path as a data param assigned to the component.
 > This way your component becomes more dynamic and extensible for other developers.
 
-### Skip Rendering
-Set some data but prevent a frontend DOM replacement while on a subsequent request.
-```php
-public function setSomeProperties(string $value = 'bar')
-{
-    $this->foo = $value;
-    $this->skipRender();
-}
+## Wire Ignore
+Ignore smart DOM diffing on specified elements within a Magewire component.
+
+```html
+<!-- Thanks to the wire:ignore, this button won't be rerenderd when fresh HTML comes in. -->
+<button onclick="this.innerText = Number(this.innerText) + 1" wire:ignore>0</button>
+<!-- Wire model the foo value (your component needs a public $foo property). -->
+<input type="text" wire:model="foo"/>
+<!-- Magewire will return fresh HTML thanks to this echoing out the foo value. -->
+<?= 'Foo: ' . $magewire->getFoo() ?>
 ```
 
 ## Component Types
