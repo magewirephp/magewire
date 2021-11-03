@@ -66,6 +66,13 @@ class Magic
             $value    = $transform['value'];
         }
 
+        // Transform a magic property value
+        if (is_string($value) && strripos($value, '$') === 0 && ($value = ltrim($value, '$'))) {
+            if (array_key_exists($value, $component->getPublicProperties())) {
+                $value = $component->{$value};
+            }
+        }
+
         $component->{$property} = $value;
     }
 
