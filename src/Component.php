@@ -8,12 +8,9 @@
 
 namespace Magewirephp\Magewire;
 
-use Exception;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Framework\View\Element\Template;
-use ReflectionClass;
-use Magewirephp\Magewire\Exception\ComponentException;
 use Magewirephp\Magewire\Model\Concern\BrowserEvent as BrowserEventConcern;
 use Magewirephp\Magewire\Model\Concern\Conversation as ConversationConcern;
 use Magewirephp\Magewire\Model\Concern\Emit as EmitConcern;
@@ -26,10 +23,9 @@ use Magewirephp\Magewire\Model\Concern\Redirect as RedirectConcern;
 use Magewirephp\Magewire\Model\Concern\View as ViewConcern;
 use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
+use ReflectionClass;
 
 /**
- * Class Component
- *
  * @method void boot(RequestInterface $request)
  * @method void mount(RequestInterface $request)
  *
@@ -38,12 +34,10 @@ use Magewirephp\Magewire\Model\ResponseInterface;
  *
  * @method mixed updating($value, string $name)
  * @method mixed updated($value, string $name)
- *
- * @package Magewirephp\Magewire
  */
 abstract class Component implements ArgumentInterface
 {
-    /**
+    /*
      * Still a proof of concept to separate all logic
      * and make it a bit more clear and clean.
      */
@@ -86,27 +80,6 @@ abstract class Component implements ArgumentInterface
     private $parent;
 
     private $publicProperties;
-
-    /**
-     * @deprecared
-     *
-     * @param string $name
-     * @param mixed $value
-     * @return $this
-     */
-    public function assign(string $name, $value): self
-    {
-        try {
-            if (!array_key_exists($name, $this->getPublicProperties())) {
-                throw new ComponentException(__('Public property %1 does\'nt exist', [$name]));
-            }
-        } catch (Exception $exception) {
-            return $this;
-        }
-
-        $this->{$name} = $value;
-        return $this;
-    }
 
     /**
      * Assign/overwrite multiple public class properties at once.
