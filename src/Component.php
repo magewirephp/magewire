@@ -8,6 +8,7 @@
 
 namespace Magewirephp\Magewire;
 
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Framework\View\Element\Template;
@@ -95,6 +96,24 @@ abstract class Component implements ArgumentInterface
             if (array_key_exists($assignee, $properties)) {
                 $this->{$assignee} = $value;
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Reset public properties based on a fresh instance.
+     *
+     * @param array|null $specific
+     * @return $this
+     */
+    public function reset(array $specific = null): self
+    {
+        $properties = $specific ?? array_keys($this->getPublicProperties());
+        $instance = ObjectManager::getInstance()->create(static::class);
+
+        foreach ($properties as $property) {
+            $this->{$property} = $instance->{$property};
         }
 
         return $this;
