@@ -29,10 +29,8 @@ use ReflectionClass;
 /**
  * @method void boot(RequestInterface $request)
  * @method void mount(RequestInterface $request)
- *
  * @method void hydrate(RequestInterface $request)
  * @method void dehydrate(ResponseInterface $response)
- *
  * @method mixed updating($value, string $name)
  * @method mixed updated($value, string $name)
  */
@@ -112,8 +110,15 @@ abstract class Component implements ArgumentInterface
         $properties = $specific ?? array_keys($this->getPublicProperties());
         $instance = ObjectManager::getInstance()->create(static::class);
 
+        /** @var object|array $data */
+        $data = $this->getParent()->getData('magewire');
+
         foreach ($properties as $property) {
-            $this->{$property} = $instance->{$property};
+            if (is_array($data)) {
+                $this->{$property} = $data[$property] ?? $instance->{$property};
+            } else {
+                $this->{$property} = $instance->{$property};
+            }
         }
 
         return $this;
