@@ -5,7 +5,7 @@
 ```php
 <?php declare(strict_types=1);
 
-namespace My\Module\Livewire;
+namespace My\Module\Magewire;
 
 use Magewirephp\Magewire\Livewire\Component;
 
