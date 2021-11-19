@@ -7,7 +7,7 @@
 
 namespace My\Module\Magewire;
 
-use Magewirephp\Magewire\Livewire\Component;
+use Magewirephp\Magewire\Component;
 
 class Explanation extends Component
 {
