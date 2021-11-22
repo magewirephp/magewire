@@ -5,9 +5,9 @@
 ```php
 <?php declare(strict_types=1);
 
-namespace My\Module\Livewire;
+namespace My\Module\Magewire;
 
-use Magewirephp\Magewire\Livewire\Component;
+use Magewirephp\Magewire\Component;
 
 class Explanation extends Component
 {
@@ -71,7 +71,7 @@ Public properties can be set on page load by an optional ```mount()``` method or
             >
                 <arguments>
                     <argument name="magewire" xsi:type="array">
-                        <item name="type">\My\Module\Magewire\Explanation</item>
+                        <item name="type" xsi:type="object">\My\Module\Magewire\Explanation</item>
                         <item name="foo" xsi:type="string">bar</item>
                     </argument>
                 </arguments>
