@@ -107,7 +107,7 @@ abstract class Component implements ArgumentInterface
      */
     public function reset(array $specific = null): self
     {
-        $properties = $specific ?? array_keys($this->getPublicProperties());
+        $properties = array_diff($specific ?? array_keys($this->getPublicProperties()), self::RESERVED_PROPERTIES);
         $instance = ObjectManager::getInstance()->create(static::class);
 
         /** @var object|array $data */
