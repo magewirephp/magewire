@@ -13,4 +13,14 @@ namespace Magewirephp\Magewire\Model;
  */
 interface WireableInterface
 {
+    /**
+     * @return array|string|int|bool
+     */
+    public function wire();
+
+    /**
+     * @param array|string|int|bool $value
+     * @return mixed
+     */
+    public static function dewire($value);
 }
