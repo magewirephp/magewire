@@ -750,3 +750,36 @@ class Explanation extends \Magewirephp\Magewire\Component
     }
 }
 ```
+
+## Reset
+Reset public property values to their initial state.
+```php
+class Explanation extends \Magewirephp\Magewire\Component
+{
+    public $foo;
+    public $bar = true;
+    
+    public function boot(): void
+    {
+        $this->foo = 1337;
+    }
+    
+    // Will reset all available pulbic properties.
+    public function resetAll()
+    {
+        $this->reset();
+    }
+    
+    // Will only reset the 'foo' property.
+    public function resetFoo()
+    {
+        $this->reset(['foo']);
+    }
+    
+    // Will only reset the 'foo' property and run the boot() method afterwards.
+    public function resetFooWithBoot()
+    {
+        $this->reset(['foo'], true);
+    }
+}
+```

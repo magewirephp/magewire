@@ -8,6 +8,7 @@
 
 namespace Magewirephp\Magewire;
 
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Framework\View\Element\Template;
@@ -28,10 +29,8 @@ use ReflectionClass;
 /**
  * @method void boot(RequestInterface $request)
  * @method void mount(RequestInterface $request)
- *
  * @method void hydrate(RequestInterface $request)
  * @method void dehydrate(ResponseInterface $response)
- *
  * @method mixed updating($value, string $name)
  * @method mixed updated($value, string $name)
  */
@@ -94,6 +93,39 @@ abstract class Component implements ArgumentInterface
         foreach ($assignees as $assignee => $value) {
             if (array_key_exists($assignee, $properties)) {
                 $this->{$assignee} = $value;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Reset public properties based on a fresh instance.
+     *
+     * @param array|null $specific
+     * @param bool $boot
+     * @return $this
+     */
+    public function reset(array $specific = null, bool $boot = false): self
+    {
+        $properties = array_diff($specific ?? array_keys($this->getPublicProperties()), self::RESERVED_PROPERTIES);
+        $instance = ObjectManager::getInstance()->create(static::class);
+
+        /** @var object|array $data */
+        $data = $this->getParent()->getData('magewire');
+
+        if (is_array($data)) {
+            unset($data['type']);
+        }
+        if ($boot) {
+            $instance->boot();
+        }
+
+        foreach ($properties as $property) {
+            if (is_array($data)) {
+                $this->{$property} = $data[$property] ?? $instance->{$property};
+            } else {
+                $this->{$property} = $instance->{$property};
             }
         }
 
