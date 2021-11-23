@@ -41,6 +41,9 @@
                 <!-- Pagination -->
                 <item name="26" xsi:type="string">renderPagination</item>
 
+                <item name="27" xsi:type="string">fill</item>
+                <item name="28" xsi:type="string">reset</item>
+
             </argument>
         </arguments>
     </type>
