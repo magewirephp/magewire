@@ -103,15 +103,23 @@ abstract class Component implements ArgumentInterface
      * Reset public properties based on a fresh instance.
      *
      * @param array|null $specific
+     * @param bool $boot
      * @return $this
      */
-    public function reset(array $specific = null): self
+    public function reset(array $specific = null, bool $boot = false): self
     {
         $properties = array_diff($specific ?? array_keys($this->getPublicProperties()), self::RESERVED_PROPERTIES);
         $instance = ObjectManager::getInstance()->create(static::class);
 
         /** @var object|array $data */
         $data = $this->getParent()->getData('magewire');
+
+        if (is_array($data)) {
+            unset($data['type']);
+        }
+        if ($boot) {
+            $instance->boot();
+        }
 
         foreach ($properties as $property) {
             if (is_array($data)) {
