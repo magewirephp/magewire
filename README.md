@@ -33,7 +33,6 @@ section to enable all the Magewire richness in your Blank or Luma projects.
 - Throttling capabilities
 - Wireable Interface concept for public object properties like e.g. DataObject
 - Parent / Children system for Emit Up compatibility
-- Make the ```$wire``` AlpineJS component object accessible
 
 ## Tools
 - [Livewire Devtools](https://chrome.google.com/webstore/detail/livewire-devtools/ahcmcdmhdcgbpklkdhpejphjekpmhkll) by [Beyond Code](https://beyondco.de/)
