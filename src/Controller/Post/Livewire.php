@@ -22,6 +22,7 @@ use Magento\Framework\Encryption\Helper\Security;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Framework\View\Element\BlockInterface;
+use Magento\Framework\View\Result\Page;
 use Magewirephp\Magewire\Exception\MagewireException;
 use Magewirephp\Magewire\Exception\SubsequentRequestException;
 use Magewirephp\Magewire\Helper\Component as ComponentHelper;
@@ -83,7 +84,7 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
 
         try {
             $post = $this->serializer->unserialize(file_get_contents('php://input'));
-            $block = $this->locateWireBlock($post);
+            $block = $this->locateWireComponent($this->resultPageFactory->create(), $post);
 
             $component = $this->componentHelper->extractComponentFromBlock($block);
             $component->setRequest($this->httpFactory->createRequest($post)->isSubsequent(true));
@@ -120,16 +121,15 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
     }
 
     /**
+     * @param Page $page
      * @param array $post
      * @return BlockInterface
      * @throws SubsequentRequestException
      */
-    public function locateWireBlock(array $post): BlockInterface
+    public function locateWireComponent(Page $page, array $post): BlockInterface
     {
-        $resultPage = $this->resultPageFactory->create();
-        $resultPage->addHandle($post['fingerprint']['handle'])->initLayout();
-
-        $block = $resultPage->getLayout()->getBlock($post['fingerprint']['name']);
+        $page->addHandle($post['fingerprint']['handle'])->initLayout();
+        $block = $page->getLayout()->getBlock($post['fingerprint']['name']);
 
         if ($block === false) {
             throw new SubsequentRequestException('Magewire component does not exist');
