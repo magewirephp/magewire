@@ -181,11 +181,7 @@ class ComponentManager
                 'type'   => $component::COMPONENT_TYPE
             ],
             'serverMemo' => [
-                'data'   => $data,
-                'errors' => [],
-
-                // Custom relative to Livewire's core.
-                'custom' => [],
+                'data'   => $data
             ]
         ]);
     }
