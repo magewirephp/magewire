@@ -6,7 +6,7 @@
  * details on copyrights and license information.
  */
 
-namespace Magewirephp\MagewireForm\Component;
+namespace Magewirephp\Magewire\Component;
 
 use Rakit\Validation\Validator;
 use Magewirephp\Magewire\Component;
