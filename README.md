@@ -25,7 +25,6 @@ section to enable all the Magewire richness in your Blank or Luma projects.
 ## Roadmap
 - Unit & Integration tests
 - Single and Multi file upload integrations
-- Form integration including rule & validation options
 - Modal and Dialog integrations
 - Enrich pagination functionality
 - Advanced Query String manipulation

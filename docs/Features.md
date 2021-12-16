@@ -714,43 +714,6 @@ it.
 <referenceContainer name="magewire.plugin" remove="true"/>
 ```
 
-### WIP: Intersect Directive Plugin
-> **Under construction**: This features is still under construction. Don't use this feature in any project until a
-> first and final release.
-
-Magewire has an (unique) ```intersect``` directive. This is a custom plugin can be compared with the ```init``` directive but
-only when the Magewire block is inside the viewport. This can really speed up the page when for instance it's
-dealing with a large dataset on the bottom of the page.
-
-```html
-<div wire:intersect="foo">
-    <input type="text" wire:model="fooPropertyValue"/>
-</div>
-
-<!-- OR -->
-
-<div wire:intersect="bar('hello', 'world')">
-    <input type="text" wire:model="barPropertyValue"/>
-</div>
-```
-
-```php
-class Explanation extends \Magewirephp\Magewire\Component
-{
-    public $fooPropertyValue;
-    
-    public function foo()
-    {
-        $this->fooPropertyValue('bar');
-    }
-    
-    public function bar(string $textOne, string $textTwo)
-    {
-        $this->barPropertyValue($textOne . ' & ' . $textTwo);
-    }
-}
-```
-
 ## Reset
 Reset public property values to their initial state.
 ```php
@@ -780,6 +743,42 @@ class Explanation extends \Magewirephp\Magewire\Component
     public function resetFooWithBoot()
     {
         $this->reset(['foo'], true);
+    }__
+}
+```
+
+## Forms
+Validate forms based on optional rules and messages.
+```php
+class Explanation extends \Magewirephp\Magewire\Component\Form
+{
+    public $foo;
+    
+    // Always make sure the nested 'bar' property has a default value to avoid
+    // bar being seen as a value of key zero.
+    public $nesting = ['bar' => '']
+    
+    // Determine the rules for your properties (optional).
+    protected $rules = [
+        'foo' => 'required|min:2',
+        'nesting.bar' => 'required|min:2|max:6'
+    ]
+    
+    // Overwrite default rule messages or define a global for each property (optional).
+    protected $messages = [
+        'foo:min' => 'He! the minimal input length of :attribute needs to be 2 instead of :value.',
+        'nesting.bar:required' => 'The "Nesting Bar" property can\'t be empty...'
+        'nesting.bar:max' => 'Take it easy, just six characters allowed.'
+    ];
+    
+    public function save()
+    {
+        // Will throw a ValidationException which extends from AcceptableException who won't break the lifecycle when
+        // it gets thrown. Still you can catch it and change course if you need to.
+        $this->validate();
+        
+        $this->dispatchSuccessMessage('Validation succes');
     }
 }
 ```
+Go and read the [Rakit/Validation](https://github.com/rakit/validation) documentation for more information.
