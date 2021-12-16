@@ -23,7 +23,6 @@ section to enable all the Magewire richness in your Blank or Luma projects.
 - [Hydrators](./docs/Hydrators.md)
 
 ## Roadmap
-- Finalizy the Intersect plugin (in beta)
 - Unit & Integration tests
 - Single and Multi file upload integrations
 - Form integration including rule & validation options
