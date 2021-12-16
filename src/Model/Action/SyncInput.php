@@ -42,12 +42,12 @@ class SyncInput implements ActionInterface
         }
 
         $property = $payload['name'];
-        $value    = $payload['value'];
+        $value = $payload['value'];
 
         try {
-            $dots = $this->propertyHelper->containsDots($property);
+            $containsDots = $this->propertyHelper->containsDots($property);
 
-            if ($dots) {
+            if ($containsDots) {
                 // Full property value including its new payload value.
                 $transform = $this->propertyHelper->transformDots($property, $value, $component);
                 // Search for the newly set property value by path.
@@ -62,7 +62,7 @@ class SyncInput implements ActionInterface
 
             foreach ($methods as $method) {
                 if ($method === 'assign') {
-                    if ($dots) {
+                    if ($containsDots) {
                         $component->{$transform['property']} = $transform['data'];
                     } else {
                         $component->{$property} = $value;
@@ -71,7 +71,8 @@ class SyncInput implements ActionInterface
                     try {
                         $value = $component->{$method}(...[$value, $property]);
 
-                        if ($dots) {
+                        if ($containsDots) {
+                            // Put the new value in its original nested spot.
                             $transform = $this->propertyHelper->transformDots($property, $value, $component);
                         }
                     } catch (ValidationException $exception) {
