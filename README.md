@@ -17,7 +17,7 @@ Magento theme out of the box. Go and check out the [compatibility](./docs/Compat
 section to enable all the Magewire richness in your Blank or Luma projects.
 
 ## Documentation
-- [Alpine.js](.docs/Alpine.md)
+- [Alpine.js](./docs/Alpine.md)
 - [Compatibility](./docs/Compatibility.md)
 - [Components](./docs/Component.md)
 - [Features & Examples](./docs/Features.md)
