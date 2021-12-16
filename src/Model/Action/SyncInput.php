@@ -76,7 +76,7 @@ class SyncInput implements ActionInterface
                             $transform = $this->propertyHelper->transformDots($property, $value, $component);
                         }
                     } catch (ValidationException $exception) {
-                        // Error was caught and set, but we don't want to end it here.
+                        // Validation can be done in every single method, so we catch and accept it.
                     }
                 }
             }
