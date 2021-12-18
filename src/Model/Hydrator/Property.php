@@ -56,7 +56,7 @@ class Property implements HydratorInterface
         // Bind regular properties.
         $this->propertyHelper->assign(function (Component $component, $request, $property, $value) {
             $setter = 'set' . ucfirst($property);
-            (method_exists($component,$setter))?$component->$setter($value):$component->{$property} = $value;
+            (method_exists($component, $setter))?$component->$setter($value):$component->{$property} = $value;
         }, $request, $component);
 
         // Flush properties cache.
