@@ -19,7 +19,7 @@ over the rest to ensure the bootstrap lifecycle.
 | 10    | Redirect      | Security      |
 
 ## Make Your Own
-As a developer you can manipulate the Request and/or Response going back and forth. The core concept op hydration is
+As a developer you can manipulate the Request and/or Response going back and forth. The core concept of hydration is
 that it acts as a shell where the core hydrators will encapsulate all extended. This is done to ensure the core always
 has precedent on its attendants.
 
