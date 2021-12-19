@@ -782,3 +782,10 @@ class Explanation extends \Magewirephp\Magewire\Component\Form
 }
 ```
 Go and read the [Rakit/Validation](https://github.com/rakit/validation) documentation for more information.
+
+### Message Translations
+Use Magento's regular i18n translations to translate form validation messages.
+```csv
+":attribute value (:value) has a minimal length of two.",":attribute value (:value) has a minimal length of two."
+```
+> **Note**: Both ```:attribute``` and ```:value``` can be used when required.

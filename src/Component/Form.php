@@ -34,7 +34,6 @@ abstract class Form extends Component
     protected $messages = [];
 
     /**
-     * FormComponent constructor.
      * @param Validator $validator
      */
     public function __construct(
@@ -53,17 +52,20 @@ abstract class Form extends Component
     public function validate(array $rules = [], array $messages = [], array $data = null): bool
     {
         $rules = array_merge($this->rules, $rules);
-        $message = array_merge($this->messages, $messages);
         $data = $data ?? $this->getPublicProperties(true);
 
-        $validation = $this->validator->validate($data, $rules, $message);
+        $messages = array_map(function ($message) {
+            return __($message);
+        }, array_merge($this->messages, $messages));
+
+        $validation = $this->validator->validate($data, $rules, $messages);
 
         if ($validation->fails()) {
             foreach ($validation->errors()->toArray() as $key => $error) {
-                $this->errors[$key] = __(current($error));
+                $this->error($key, current($error));
             }
 
-            throw new ValidationException(__('Form validation failure'));
+            throw new ValidationException(__('Something went wrong while validating your form input.'));
         }
 
         return true;
