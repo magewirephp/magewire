@@ -30,7 +30,7 @@ section to enable all the Magewire richness in your Blank or Luma projects.
 - Enrich pagination functionality
 - Advanced Query String manipulation
 - Throttling capabilities
-- WIP: Wireable Interface concept for public object properties like e.g. DataObject
+- Wireable Interface concept for public object properties like e.g. DataObject
 - Parent / Children system for Emit Up compatibility
 
 ## Tools
@@ -48,4 +48,4 @@ Magewire is open-sourced software licensed under the [MIT license](LICENSE.md).
 > This Magewire port would not have been
 possible without the the existence of the [Laravel Livewire](https://laravel-livewire.com/) project, it's creator [Caleb Porzio](https://github.com/calebporzio) and all contributors
 with their tireless efforts and dedication. A big shoutout and thank you to all of them for the inspiration and
-motivation to make this work in- and outside the Laravel ecosystem! :heart: :heart: :heart:
+motivation to make this work in- and outside the Laravel ecosystem! :heart: :heart:
