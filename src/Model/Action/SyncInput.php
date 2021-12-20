@@ -67,7 +67,7 @@ class SyncInput implements ActionInterface
                     } else {
                         $component->{$property} = $value;
                     }
-                } else if (method_exists($component, $method)) {
+                } elseif (method_exists($component, $method)) {
                     try {
                         $value = $component->{$method}(...[$value, $property]);
 
