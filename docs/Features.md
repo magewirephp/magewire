@@ -789,3 +789,65 @@ Use Magento's regular i18n translations to translate form validation messages.
 ":attribute value (:value) has a minimal length of two.",":attribute value (:value) has a minimal length of two."
 ```
 > **Note**: Both ```:attribute``` and ```:value``` can be used when required.
+
+### Message Displayment
+By default, messages aren't shown on the page after a validation failure. You have to put in some work in order to let
+the user know what happend. This can be done in several ways.
+
+#### Example 1
+
+Show corresponding error messages below the field.
+```html
+<?php $magewire = $block->getMagewire(); ?>
+
+<form>
+    <input type="text" wire:model="foo"/>
+    
+    <?php if ($magewire->hasError('foo')): ?>
+    <span class="text-red-800">
+        <?= $magewire->getError('foo') ?>
+    </span>
+    <?php endif ?>
+</form>
+```
+
+#### Exmaple 2
+
+Display a stack of error messages on above the form.
+```html
+<?php $magewire = $block->getMagewire(); ?>
+
+<?php if ($magewire->hasErrors(): ?>
+<ul>
+    <?php foreach ($magewire->getErrors() as $error): ?>
+    <li class="text-red-800"><?= $error ?></li>    
+    <?php endforeach ?>
+</ul>
+<?php endif ?>
+
+<form>
+    <input type="text" wire:model="foo"/>
+</form>
+```
+
+#### Example 3
+
+Within this example, we use a try-catch structure to catch optional validation failure. This isn't required by default
+where the lifecycle is able to handle these ValidationException's by default.
+```php
+class Explanation extends \Magewirephp\Magewire\Component\Form
+{
+    public $foo;
+    
+    public function save()
+    {
+        try {
+            $this->validate();
+        } catch (\Magewirephp\Magewire\Exception\ValidationException $exception) {
+            foreach ($this->getErrors() as $error) {
+                $this->dispatchErrorMessage($error);
+            }
+        }
+    }
+}
+```
