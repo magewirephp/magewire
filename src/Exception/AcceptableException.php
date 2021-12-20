@@ -8,6 +8,6 @@
 
 namespace Magewirephp\Magewire\Exception;
 
-class ValidationException extends AcceptableException
+class AcceptableException extends MagewireException
 {
 }

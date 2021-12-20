@@ -57,8 +57,12 @@ class Response implements ResponseInterface
     /**
      * @inheritdoc
      */
-    public function getFingerprint()
+    public function getFingerprint(string $index = null)
     {
+        if ($index !== null && is_array($this->memo)) {
+            return $this->fingerprint[$index] ?? null;
+        }
+
         return $this->fingerprint;
     }
 
@@ -74,8 +78,12 @@ class Response implements ResponseInterface
     /**
      * @inheritdoc
      */
-    public function getServerMemo()
+    public function getServerMemo(string $index = null)
     {
+        if ($index !== null && is_array($this->memo)) {
+            return $this->memo[$index] ?? null;
+        }
+
         return $this->memo;
     }
 
@@ -91,8 +99,12 @@ class Response implements ResponseInterface
     /**
      * @inheritdoc
      */
-    public function getEffects()
+    public function getEffects(string $index = null)
     {
+        if ($index !== null && is_array($this->memo)) {
+            return $this->effects[$index] ?? null;
+        }
+
         return $this->effects;
     }
 

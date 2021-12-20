@@ -12,10 +12,10 @@ use Exception;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Locale\Resolver;
 use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Exception\AcceptableException;
 use Magewirephp\Magewire\Exception\ComponentActionException;
 use Magewirephp\Magewire\Exception\LifecycleException;
 use Magewirephp\Magewire\Component;
-use Magewirephp\Magewire\Exception\ValidationException;
 use Magewirephp\Magewire\Model\Context\Hydrator as HydratorContext;
 
 /**
@@ -89,7 +89,7 @@ class ComponentManager
         foreach ($updates as $update) {
             try {
                 $this->updateActionsPool[$update['type']]->handle($component, $update['payload']);
-            } catch (ValidationException $exception) {
+            } catch (AcceptableException $exception) {
                 continue;
             } catch (Exception $exception) {
                 throw new LocalizedException(__($exception->getMessage()));
@@ -181,11 +181,7 @@ class ComponentManager
                 'type'   => $component::COMPONENT_TYPE
             ],
             'serverMemo' => [
-                'data'   => $data,
-                'errors' => [],
-
-                // Custom relative to Livewire's core.
-                'custom' => [],
+                'data'   => $data
             ]
         ]);
     }

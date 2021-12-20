@@ -17,8 +17,8 @@ use Magewirephp\Magewire\Model\Element\FlashMessage as FlashMessageElement;
  */
 trait FlashMessage
 {
-    /** @var FlashMessageElement[] $messages */
-    protected $messages = [];
+    /** @var FlashMessageElement[] $flashMessage */
+    protected $flashMessage = [];
 
     /**
      * @param Phrase|string $message
@@ -63,7 +63,7 @@ trait FlashMessage
      */
     public function dispatchMessage(string $type, $message): FlashMessageElement
     {
-        return $this->messages[] = new FlashMessageElement($message, $type);
+        return $this->flashMessage[] = new FlashMessageElement($message, $type);
     }
 
     /**
@@ -73,7 +73,7 @@ trait FlashMessage
      */
     public function hasFlashMessages(): bool
     {
-        return count($this->messages) !== 0;
+        return count($this->flashMessage) !== 0;
     }
 
     /**
@@ -83,7 +83,7 @@ trait FlashMessage
      */
     public function getFlashMessages(): array
     {
-        return $this->messages;
+        return $this->flashMessage;
     }
 
     /**
@@ -93,6 +93,6 @@ trait FlashMessage
      */
     public function clearFlashMessages(): void
     {
-        $this->messages = [];
+        $this->flashMessage = [];
     }
 }

@@ -19,6 +19,7 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Data\Form\FormKey;
 use Magento\Framework\Encryption\Helper\Security;
+use Magento\Framework\Event\ManagerInterface as EventManagerInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Framework\View\Element\BlockInterface;
@@ -34,21 +35,18 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
 
     /** @var FormKey $formKey */
     protected $formKey;
-
     /** @var ComponentHelper $componentHelper */
-    private $componentHelper;
-
+    protected $componentHelper;
     /** @var PageFactory $resultPageFactory */
-    private $resultPageFactory;
-
+    protected $resultPageFactory;
     /** @var SerializerInterface $serializer */
-    private $serializer;
-
+    protected $serializer;
     /** @var HttpFactory $httpFactory */
-    private $httpFactory;
-
+    protected $httpFactory;
     /** @var JsonFactory $resultJsonFactory */
     protected $resultJsonFactory;
+    /** @var EventManagerInterface $eventManager */
+    protected $eventManager;
 
     /**
      * @param FormKey $formKey
@@ -57,6 +55,7 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
      * @param PageFactory $resultPageFactory
      * @param SerializerInterface $serializer
      * @param HttpFactory $httpFactory
+     * @param EventManagerInterface $eventManager
      */
     public function __construct(
         FormKey $formKey,
@@ -64,7 +63,8 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         ComponentHelper $componentHelper,
         PageFactory $resultPageFactory,
         SerializerInterface $serializer,
-        HttpFactory $httpFactory
+        HttpFactory $httpFactory,
+        EventManagerInterface $eventManager
     ) {
         $this->formKey = $formKey;
         $this->componentHelper = $componentHelper;
@@ -72,6 +72,7 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         $this->serializer = $serializer;
         $this->httpFactory = $httpFactory;
         $this->resultJsonFactory = $resultJsonFactory;
+        $this->eventManager = $eventManager;
     }
 
     /**
@@ -83,7 +84,7 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
 
         try {
             $post = $this->serializer->unserialize(file_get_contents('php://input'));
-            $block = $this->locateWireBlock($post);
+            $block = $this->locateWireComponent($post);
 
             $component = $this->componentHelper->extractComponentFromBlock($block);
             $component->setRequest($this->httpFactory->createRequest($post)->isSubsequent(true));
@@ -124,12 +125,16 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
      * @return BlockInterface
      * @throws SubsequentRequestException
      */
-    public function locateWireBlock(array $post): BlockInterface
+    public function locateWireComponent(array $post): BlockInterface
     {
-        $resultPage = $this->resultPageFactory->create();
-        $resultPage->addHandle($post['fingerprint']['handle'])->initLayout();
+        $page = $this->resultPageFactory->create();
+        $page->addHandle($post['fingerprint']['handle'])->initLayout();
 
-        $block = $resultPage->getLayout()->getBlock($post['fingerprint']['name']);
+        $this->eventManager->dispatch('locate_wire_component_before', [
+            'post' => $post, 'page' => $page
+        ]);
+
+        $block = $page->getLayout()->getBlock($post['fingerprint']['name']);
 
         if ($block === false) {
             throw new SubsequentRequestException('Magewire component does not exist');

@@ -17,16 +17,15 @@ Magento theme out of the box. Go and check out the [compatibility](./docs/Compat
 section to enable all the Magewire richness in your Blank or Luma projects.
 
 ## Documentation
+- [Alpine.js](./docs/Alpine.md)
 - [Compatibility](./docs/Compatibility.md)
 - [Components](./docs/Component.md)
 - [Features & Examples](./docs/Features.md)
 - [Hydrators](./docs/Hydrators.md)
 
 ## Roadmap
-- Finalizy the Intersect plugin (in beta)
 - Unit & Integration tests
 - Single and Multi file upload integrations
-- Form integration including rule & validation options
 - Modal and Dialog integrations
 - Enrich pagination functionality
 - Advanced Query String manipulation
@@ -49,4 +48,4 @@ Magewire is open-sourced software licensed under the [MIT license](LICENSE.md).
 > This Magewire port would not have been
 possible without the the existence of the [Laravel Livewire](https://laravel-livewire.com/) project, it's creator [Caleb Porzio](https://github.com/calebporzio) and all contributors
 with their tireless efforts and dedication. A big shoutout and thank you to all of them for the inspiration and
-motivation to make this work in- and outside the Laravel ecosystem! :heart: :heart: :heart:
+motivation to make this work in- and outside the Laravel ecosystem! :heart: :heart:

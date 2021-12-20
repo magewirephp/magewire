@@ -714,43 +714,6 @@ it.
 <referenceContainer name="magewire.plugin" remove="true"/>
 ```
 
-### WIP: Intersect Directive Plugin
-> **Under construction**: This features is still under construction. Don't use this feature in any project until a
-> first and final release.
-
-Magewire has an (unique) ```intersect``` directive. This is a custom plugin can be compared with the ```init``` directive but
-only when the Magewire block is inside the viewport. This can really speed up the page when for instance it's
-dealing with a large dataset on the bottom of the page.
-
-```html
-<div wire:intersect="foo">
-    <input type="text" wire:model="fooPropertyValue"/>
-</div>
-
-<!-- OR -->
-
-<div wire:intersect="bar('hello', 'world')">
-    <input type="text" wire:model="barPropertyValue"/>
-</div>
-```
-
-```php
-class Explanation extends \Magewirephp\Magewire\Component
-{
-    public $fooPropertyValue;
-    
-    public function foo()
-    {
-        $this->fooPropertyValue('bar');
-    }
-    
-    public function bar(string $textOne, string $textTwo)
-    {
-        $this->barPropertyValue($textOne . ' & ' . $textTwo);
-    }
-}
-```
-
 ## Reset
 Reset public property values to their initial state.
 ```php
@@ -780,6 +743,111 @@ class Explanation extends \Magewirephp\Magewire\Component
     public function resetFooWithBoot()
     {
         $this->reset(['foo'], true);
+    }__
+}
+```
+
+## Forms
+Validate forms based on optional rules and messages.
+```php
+class Explanation extends \Magewirephp\Magewire\Component\Form
+{
+    public $foo;
+    
+    // Always make sure the nested 'bar' property has a default value to avoid
+    // bar being seen as a value of key zero.
+    public $nesting = ['bar' => '']
+    
+    // Determine the rules for your properties (optional).
+    protected $rules = [
+        'foo' => 'required|min:2',
+        'nesting.bar' => 'required|min:2|max:6'
+    ]
+    
+    // Overwrite default rule messages or define a global for each property (optional).
+    protected $messages = [
+        'foo:min' => 'He! the minimal input length of :attribute needs to be 2 instead of :value.',
+        'nesting.bar:required' => 'The "Nesting Bar" property can\'t be empty...'
+        'nesting.bar:max' => 'Take it easy, just six characters allowed.'
+    ];
+    
+    public function save()
+    {
+        // Will throw a ValidationException which extends from AcceptableException who won't break the lifecycle when
+        // it gets thrown. Still you can catch it and change course if you need to.
+        $this->validate();
+        
+        $this->dispatchSuccessMessage('Validation succes');
+    }
+}
+```
+Go and read the [Rakit/Validation](https://github.com/rakit/validation) documentation for more information.
+
+### Message Translations
+Use Magento's regular i18n translations to translate form validation messages.
+```csv
+":attribute value (:value) has a minimal length of two.",":attribute value (:value) has a minimal length of two."
+```
+> **Note**: Both ```:attribute``` and ```:value``` can be used when required.
+
+### Message Displayment
+By default, messages aren't shown on the page after a validation failure. You have to put in some work in order to let
+the user know what happend. This can be done in several ways.
+
+#### Example 1
+
+Show corresponding error messages below the field.
+```html
+<?php $magewire = $block->getMagewire(); ?>
+
+<form>
+    <input type="text" wire:model="foo"/>
+    
+    <?php if ($magewire->hasError('foo')): ?>
+    <span class="text-red-800">
+        <?= $magewire->getError('foo') ?>
+    </span>
+    <?php endif ?>
+</form>
+```
+
+#### Exmaple 2
+
+Display a stack of error messages on above the form.
+```html
+<?php $magewire = $block->getMagewire(); ?>
+
+<?php if ($magewire->hasErrors(): ?>
+<ul>
+    <?php foreach ($magewire->getErrors() as $error): ?>
+    <li class="text-red-800"><?= $error ?></li>    
+    <?php endforeach ?>
+</ul>
+<?php endif ?>
+
+<form>
+    <input type="text" wire:model="foo"/>
+</form>
+```
+
+#### Example 3
+
+Within this example, we use a try-catch structure to catch optional validation failure. This isn't required by default
+where the lifecycle is able to handle these ValidationException's by default.
+```php
+class Explanation extends \Magewirephp\Magewire\Component\Form
+{
+    public $foo;
+    
+    public function save()
+    {
+        try {
+            $this->validate();
+        } catch (\Magewirephp\Magewire\Exception\ValidationException $exception) {
+            foreach ($this->getErrors() as $error) {
+                $this->dispatchErrorMessage($error);
+            }
+        }
     }
 }
 ```

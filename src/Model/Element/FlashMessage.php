@@ -25,7 +25,7 @@ class FlashMessage
     /**
      * @var Phrase
      */
-    protected $message;
+    protected $flashMessage;
 
     /**
      * @var int
@@ -40,7 +40,7 @@ class FlashMessage
     public function __construct($message, string $type)
     {
         // lets for now just assume the developer gives a Phrase or string message.
-        $this->message = is_string($message) ? __($message) : $message;
+        $this->flashMessage = is_string($message) ? __($message) : $message;
         $this->type = $type;
     }
 
@@ -49,7 +49,7 @@ class FlashMessage
      */
     public function getMessage(): Phrase
     {
-        return $this->message;
+        return $this->flashMessage;
     }
 
     /**
