@@ -11,18 +11,14 @@ namespace Magewirephp\Magewire\Model\Action;
 use Exception;
 use Magewirephp\Magewire\Exception\ComponentActionException;
 use Magewirephp\Magewire\Component;
-use Magewirephp\Magewire\Exception\ComponentException;
+use Magewirephp\Magewire\Exception\ValidationException;
 use Magewirephp\Magewire\Helper\Property as PropertyHelper;
 use Magewirephp\Magewire\Model\ActionInterface;
 
-/**
- * Class SyncInput
- * @package Magewirephp\Magewire\Model\Action
- */
 class SyncInput implements ActionInterface
 {
     /** @var PropertyHelper $propertyHelper */
-    private $propertyHelper;
+    protected $propertyHelper;
 
     /**
      * Magic constructor.
@@ -46,56 +42,46 @@ class SyncInput implements ActionInterface
         }
 
         $property = $payload['name'];
-        $value    = $payload['value'];
+        $value = $payload['value'];
 
         try {
-            if ($this->propertyHelper->containsDots($property)) {
+            $containsDots = $this->propertyHelper->containsDots($property);
+
+            if ($containsDots) {
                 // Full property value including its new payload value.
                 $transform = $this->propertyHelper->transformDots($property, $value, $component);
                 // Search for the newly set property value by path.
-                $value = $this->propertyHelper->searchViaDots($transform['path'], $transform['value']);
-                // Process the property value by path.
-                $value = $this->processPropertyByLifecycle($component, $transform['realpath'], $value);
-                // Re-assign the full processed property value.
-                $transform = $this->propertyHelper->transformDots($transform['realpath'], $value, $component);
-
-                $property = $transform['property'];
-                $value    = $transform['value'];
+                $value = $this->propertyHelper->searchViaDots($transform['path'], $transform['data']);
             }
 
-            $value = $this->processPropertyByLifecycle($component, $property, $value);
+            // Prepare lifecycle methods.
+            $before = 'updating' . str_replace(' ', '', ucwords(str_replace(['-', '_', '.'], ' ', $property)));
+            $after  = str_replace('updating', 'updated', $before);
+            // Assign 'updating' result in the middle and re-assign the final result at the end.
+            $methods = [$before, 'updating', 'assign', 'updated', $after, 'assign'];
+
+            foreach ($methods as $method) {
+                if ($method === 'assign') {
+                    if ($containsDots) {
+                        $component->{$transform['property']} = $transform['data'];
+                    } else {
+                        $component->{$property} = $value;
+                    }
+                } elseif (method_exists($component, $method)) {
+                    try {
+                        $value = $component->{$method}(...[$value, $property]);
+
+                        if ($containsDots) {
+                            // Put the new value in its original nested spot.
+                            $transform = $this->propertyHelper->transformDots($property, $value, $component);
+                        }
+                    } catch (ValidationException $exception) {
+                        // Validation can be done in every single method, so we catch and accept it.
+                    }
+                }
+            }
         } catch (Exception $exception) {
             return;
         }
-
-        // Set the property if a lifecycle method succeed or failed.
-        $component->{$property} = $value;
-    }
-
-    /**
-     * Sync regular mixed value
-     *
-     * @param Component $component
-     * @param string $property
-     * @param mixed $value
-     * @return mixed
-     */
-    public function processPropertyByLifecycle(
-        Component $component,
-        string $property,
-        $value
-    ) {
-        $before = 'updating' . str_replace(' ', '', ucwords(str_replace(['-', '_', '.'], ' ', $property)));
-        $after  = str_replace('updating', 'updated', $before);
-
-        $methods = [$before, 'updating', 'updated', $after];
-
-        foreach ($methods as $method) {
-            if (method_exists($component, $method)) {
-                $value = $component->{$method}(...[$value, $property]);
-            }
-        }
-
-        return $value;
     }
 }

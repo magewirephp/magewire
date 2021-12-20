@@ -20,8 +20,6 @@
             <container name="magewire.plugin.scripts">
                 <block name="magewire.plugin.loader"
                        template="Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml"/>
-                <block name="magewire.plugin.intersect"
-                       template="Magewirephp_Magewire::page/js/magewire/plugin/intersect.phtml"/>
             </container>
         </referenceContainer>
 

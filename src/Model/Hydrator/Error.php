@@ -32,6 +32,10 @@ class Error implements HydratorInterface
      */
     public function dehydrate(Component $component, ResponseInterface $response): void
     {
-        $response->memo['errors'] = $component->getErrors();
+        $errors = $component->getErrors();
+
+        if (count($errors) !== 0) {
+            $response->memo['errors'] = $errors;
+        }
     }
 }

@@ -70,12 +70,50 @@ class Property implements HydratorInterface
         if ($response->getRequest()->isSubsequent()) {
             $response->effects['dirty'] = [];
 
-            $this->propertyHelper->assign(function (Component $component, $response, $property) {
-                // A lot have could happen to the property, so lets set it one more time
+            $this->propertyHelper->assign(function (Component $component, ResponseInterface $response, $property) {
+                // A lot have could happen to the property, so lets set it one more time.
                 $response->memo['data'][$property] = $component->{$property};
-                // The property can be seen as changed and dirty data, who needs a refresh
-                $response->effects['dirty'][] = $property;
+
+                // The property can be seen as changed and dirty data, who needs a refresh.
+                if (is_array($component->{$property})) {
+                    $this->processArrayProperty($response, $property);
+                } else {
+                    $this->processProperty($response, $property);
+                }
             }, $response, $component);
         }
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @param string $property
+     */
+    public function processArrayProperty(ResponseInterface $response, string $property): void
+    {
+        $request = $response->getRequest();
+
+        $updates = array_filter($request->getUpdates(), function ($update) {
+            return $update['type'] === 'syncInput' && $this->propertyHelper->containsDots($update['payload']['name']);
+        });
+
+        if (count($updates)) {
+            foreach ($updates as $update) {
+                $a = $this->propertyHelper->searchViaDots($update['payload']['name'], $request->getServerMemo('data'));
+                $b = $this->propertyHelper->searchViaDots($update['payload']['name'], $response->getServerMemo('data'));
+
+                if ($a != $b) {
+                    $response->effects['dirty'][] = $update['payload']['name'];
+                }
+            }
+        }
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @param string $property
+     */
+    public function processProperty(ResponseInterface $response, string $property)
+    {
+        $response->effects['dirty'][] = $property;
     }
 }

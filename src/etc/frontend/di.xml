@@ -44,6 +44,9 @@
                 <item name="27" xsi:type="string">fill</item>
                 <item name="28" xsi:type="string">reset</item>
 
+                <!-- Forms -->
+                <item name="29" xsi:type="string">validate</item>
+
             </argument>
         </arguments>
     </type>
