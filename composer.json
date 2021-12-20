@@ -3,6 +3,9 @@
   "description": "Laravel Livewire port for Magento 2",
   "version": "1.2.0",
   "type": "magento2-module",
+  "require": {
+    "rakit/validation": "^1.0"
+  },
   "authors": [
     {
       "name": "Willem Poortman",
