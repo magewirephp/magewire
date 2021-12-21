@@ -63,7 +63,7 @@ class Magic
             $transform = $this->propertyHelper->transformDots($property, $value, $component);
 
             $property = $transform['property'];
-            $value    = $transform['value'];
+            $value    = $transform['data'];
         }
 
         // Transform a magic property value
