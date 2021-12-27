@@ -29,6 +29,7 @@ use ReflectionClass;
 /**
  * @method void boot(RequestInterface $request)
  * @method void mount(RequestInterface $request)
+ * @method void booted(RequestInterface $request)
  * @method void hydrate(RequestInterface $request)
  * @method void dehydrate(ResponseInterface $response)
  * @method mixed updating($value, string $name)
@@ -209,7 +210,7 @@ abstract class Component implements ArgumentInterface
      */
     public function ignoreCall(string $method): bool
     {
-        if (in_array($method, ['boot', 'mount', 'hydrate', 'dehydrate', 'updating', 'updated'])) {
+        if (in_array($method, ['boot', 'mount', 'booted', 'hydrate', 'dehydrate', 'updating', 'updated'])) {
             return true;
         }
 

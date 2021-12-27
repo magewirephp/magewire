@@ -37,20 +37,25 @@ class Component implements HydratorInterface
      * @lifecyclehook boot
      * @lifecyclehook hydrate
      * @lifecyclehook mount
+     * @lifecyclehook booted
      *
      * @inheritdoc
      */
     public function hydrate(MagewireComponent $component, RequestInterface $request): void
     {
         $data = $this->componentHelper->extractDataFromBlock($component->getParent(), ['request' => $request]);
-        $component->boot(...array_values($data));
+        $dataValues = array_values($data);
+
+        $component->boot(...$dataValues);
 
         if ($request->isSubsequent()) {
             $this->executePropertyLifecycleHook($component, 'hydrate', $request);
             $component->hydrate($request);
         } else {
-            $component->mount(...array_values($data));
+            $component->mount(...$dataValues);
         }
+
+        $component->booted(...$dataValues);
     }
 
     /**
