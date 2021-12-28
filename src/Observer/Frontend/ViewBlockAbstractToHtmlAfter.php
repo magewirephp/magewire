@@ -57,9 +57,9 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
      */
     public function renderToView(ResponseInterface $response, Component $component, string $html): ?string
     {
-        // Bind intended HTML onto the Response
+        // Bind intended HTML onto the Response.
         $response->effects['html'] = $html;
-        // Dehydration lifecycle step
+        // Dehydration lifecycle step.
         $this->getComponentManager()->dehydrate($component);
 
         $data = ['id' => $response->fingerprint['id']];
@@ -71,9 +71,23 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
         if ($component->canRender() === false) {
             $response->effects['html'] = null;
         } elseif (is_string($response->effects['html'])) {
-            $response->effects['html'] = $response->renderWithRootAttribute($data);
+            $response->effects['html'] = $this->wrapWithEndingMarker(
+                $response->renderWithRootAttribute($data), $response->fingerprint['id']
+            );
         }
 
         return $response->effects['html'];
+    }
+
+    /**
+     * Append an ending marker.
+     *
+     * @param string $html
+     * @param string $id
+     * @return string
+     */
+    protected function wrapWithEndingMarker(string $html, string $id): string
+    {
+        return $html . '<!-- Magewire Component wire-end:' . $id . ' -->';
     }
 }
