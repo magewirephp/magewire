@@ -62,6 +62,7 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
         // Dehydration lifecycle step.
         $this->getComponentManager()->dehydrate($component);
 
+        $id = $response->fingerprint['id'];
         $data = ['id' => $response->fingerprint['id']];
 
         if ($response->getRequest()->isPreceding()) {
@@ -71,9 +72,7 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
         if ($component->canRender() === false) {
             $response->effects['html'] = null;
         } elseif (is_string($response->effects['html'])) {
-            $response->effects['html'] = $this->wrapWithEndingMarker(
-                $response->renderWithRootAttribute($data), $response->fingerprint['id']
-            );
+            $response->effects['html'] = $this->wrapWithEndingMarker($response->renderWithRootAttribute($data), $id);
         }
 
         return $response->effects['html'];
