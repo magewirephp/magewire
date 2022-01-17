@@ -11,36 +11,38 @@ namespace Magewirephp\Magewire\ViewModel;
 use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\App\State as ApplicationState;
 use Magento\Framework\Data\Form\FormKey;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\UrlInterface;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
+use Magento\Store\Model\StoreManagerInterface;
 
-/**
- * Class Magewire
- * @package Magewirephp\Magewire\ViewModel
- */
 class Magewire implements ArgumentInterface
 {
     /** @var FormKey $formKey */
     protected $formKey;
-
     /** @var ApplicationState $applicationState */
     protected $applicationState;
-
     /** @var ProductMetadataInterface $productMetaData */
     protected $productMetaData;
+    /** @var StoreManagerInterface $storeManager */
+    protected $storeManager;
 
     /**
      * @param FormKey $formKey
      * @param ApplicationState $applicationState
      * @param ProductMetadataInterface $productMetadata
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         FormKey $formKey,
         ApplicationState $applicationState,
-        ProductMetadataInterface $productMetadata
+        ProductMetadataInterface $productMetadata,
+        StoreManagerInterface $storeManager
     ) {
         $this->formKey = $formKey;
         $this->applicationState = $applicationState;
         $this->productMetaData = $productMetadata;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -65,5 +67,18 @@ class Magewire implements ArgumentInterface
     public function getPostRoute(): string
     {
         return $this->isBeforeTwoFourZero() ? '/magewire/vintage' : '/magewire/post';
+    }
+
+    /**
+     * @return string
+     */
+    public function getApplicationUrl(): string
+    {
+        try {
+            $base = $this->storeManager->getStore()->getBaseUrl(UrlInterface::URL_TYPE_WEB);
+            return $base . trim($this->getPostRoute(), '/');
+        } catch (NoSuchEntityException $exception) {
+            return $this->getPostRoute();
+        }
     }
 }

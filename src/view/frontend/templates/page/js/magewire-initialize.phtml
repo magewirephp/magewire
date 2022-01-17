@@ -26,7 +26,7 @@ $magewireScripts = $viewModels->require(Magewire::class);
 
     window.Livewire = window.magewire
     window.Magewire = window.magewire
-    window.livewire_app_url = '<?= $magewireScripts->getPostRoute() ?>'
+    window.livewire_app_url = '<?= $magewireScripts->getApplicationUrl() ?>'
     window.livewire_token = window.hyva.getFormKey()
 
     /* Make sure Magewire loads first. */
