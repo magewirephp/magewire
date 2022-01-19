@@ -9,28 +9,30 @@
 namespace Magewirephp\Magewire\Model\Hydrator;
 
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Component as MagewireComponent;
+use Magewirephp\Magewire\Helper\Component as ComponentHelper;
 use Magewirephp\Magewire\Helper\Property as PropertyHelper;
 use Magewirephp\Magewire\Model\HydratorInterface;
 use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
-/**
- * Class Property
- * @package Magewirephp\Magewire\Model\Hydrator
- */
 class Property implements HydratorInterface
 {
     /** @var PropertyHelper $propertyHelper */
     private $propertyHelper;
+    /** @var ComponentHelper $componentHelper */
+    private $componentHelper;
 
     /**
-     * Property constructor.
      * @param PropertyHelper $propertyHelper
+     * @param ComponentHelper $componentHelper
      */
     public function __construct(
-        PropertyHelper $propertyHelper
+        PropertyHelper $propertyHelper,
+        ComponentHelper $componentHelper
     ) {
         $this->propertyHelper = $propertyHelper;
+        $this->componentHelper = $componentHelper;
     }
 
     /**
@@ -38,13 +40,31 @@ class Property implements HydratorInterface
      */
     public function hydrate(Component $component, RequestInterface $request): void
     {
+        $data = $this->componentHelper->extractDataFromBlock($component->getParent(), ['request' => $request]);
+        $dataValues = array_values($data);
+
+        /** @lifecyclehook boot */
+        $component->boot(...$dataValues);
+
         if ($request->isPreceding()) {
-            /**
-             * There is one problem with array in the case. When an empty array is assigned
-             * inside the component, it will never be possible to overwrite it with a layout
-             * data array. This is mainly because the merge is not recursive. To temporary fix this,
-             * you should not set an empty array as the default property value, just leave it as null.
-             */
+            /** @lifecyclehook mount */
+            $component->mount(...$dataValues);
+        } else {
+            $overwrite = $request->memo['data'];
+        }
+
+        // Bind regular properties.
+        $this->propertyHelper->assign(function (Component $component, $property, $value) {
+            if ($component->{$property} !== $value) {
+                $component->{$property} = $value;
+            }
+        }, $component, $overwrite ?? null);
+
+        if ($request->isSubsequent()) {
+            $this->executePropertyLifecycleHook($component, 'hydrate', $request);
+            /** @lifecyclehook hydrate */
+            $component->hydrate($request);
+        } else {
             $request->memo['data'] = array_merge(
                 $request->memo['data'],
                 array_filter($component->getPublicProperties(true), function ($value) {
@@ -53,13 +73,10 @@ class Property implements HydratorInterface
             );
         }
 
-        // Bind regular properties.
-        $this->propertyHelper->assign(function (Component $component, $request, $property, $value) {
-            $component->{$property} = $value;
-        }, $request, $component);
-
         // Flush properties cache.
         $component->getPublicProperties(true);
+        /** @lifecyclehook booted */
+        $component->booted(...$dataValues);
     }
 
     /**
@@ -70,7 +87,7 @@ class Property implements HydratorInterface
         if ($response->getRequest()->isSubsequent()) {
             $response->effects['dirty'] = [];
 
-            $this->propertyHelper->assign(function (Component $component, ResponseInterface $response, $property) {
+            $this->propertyHelper->assign(function (Component $component, $property, $value) use ($response) {
                 // A lot have could happen to the property, so lets set it one more time.
                 $response->memo['data'][$property] = $component->{$property};
 
@@ -80,8 +97,11 @@ class Property implements HydratorInterface
                 } else {
                     $this->processProperty($response, $property);
                 }
-            }, $response, $component);
+            }, $component, $response->memo['data']);
         }
+
+        $component->dehydrate($response);
+        $this->executePropertyLifecycleHook($component, 'dehydrate', $response);
     }
 
     /**
@@ -115,5 +135,17 @@ class Property implements HydratorInterface
     public function processProperty(ResponseInterface $response, string $property)
     {
         $response->effects['dirty'][] = $property;
+    }
+
+    /**
+     * @param MagewireComponent $component
+     * @param string $type
+     * @param object $object
+     */
+    public function executePropertyLifecycleHook(MagewireComponent $component, string $type, object $object): void
+    {
+        foreach ($component->getPublicProperties() as $property => $value) {
+            $component->{strtolower($type) . ucfirst($property)}($value, $object);
+        }
     }
 }
