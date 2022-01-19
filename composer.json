@@ -1,7 +1,7 @@
 {
   "name": "magewirephp/magewire",
   "description": "Laravel Livewire port for Magento 2",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "type": "magento2-module",
   "require": {
     "rakit/validation": "^1.0"
