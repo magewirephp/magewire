@@ -40,15 +40,16 @@ class Property implements HydratorInterface
      */
     public function hydrate(Component $component, RequestInterface $request): void
     {
-        $data = $this->componentHelper->extractDataFromBlock($component->getParent(), ['request' => $request]);
-        $dataValues = array_values($data);
-
         /** @lifecyclehook boot */
-        $component->boot(...$dataValues);
+        $component->boot();
 
         if ($request->isPreceding()) {
             /** @lifecyclehook mount */
-            $component->mount(...$dataValues);
+            $component->mount(...array_values(
+                $this->componentHelper->extractDataFromBlock(
+                    $component->getParent()
+                )
+            ));
         } else {
             $overwrite = $request->memo['data'];
         }
@@ -63,11 +64,9 @@ class Property implements HydratorInterface
         if ($request->isSubsequent()) {
             $this->executePropertyLifecycleHook($component, 'hydrate', $request);
             /** @lifecyclehook hydrate */
-            $component->hydrate($request);
+            $component->hydrate();
         } else {
-            $request->memo['data'] = array_merge(
-                $request->memo['data'],
-                array_filter($component->getPublicProperties(true), function ($value) {
+            $request->memo['data'] = array_merge($request->memo['data'], array_filter($component->getPublicProperties(true), function ($value) {
                     return $value !== null;
                 })
             );
@@ -76,7 +75,7 @@ class Property implements HydratorInterface
         // Flush properties cache.
         $component->getPublicProperties(true);
         /** @lifecyclehook booted */
-        $component->booted(...$dataValues);
+        $component->booted();
     }
 
     /**
