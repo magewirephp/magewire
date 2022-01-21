@@ -8,6 +8,7 @@
 
 namespace Magewirephp\Magewire\Model\Hydrator;
 
+use Exception;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Component as MagewireComponent;
 use Magewirephp\Magewire\Helper\Component as ComponentHelper;
@@ -40,21 +41,18 @@ class Property implements HydratorInterface
      */
     public function hydrate(Component $component, RequestInterface $request): void
     {
-        /** @lifecyclehook boot */
-        $component->boot();
+        $this->executeLifecycleHook('boot', $component);
 
         if ($request->isPreceding()) {
-            /** @lifecyclehook mount */
-            $component->mount(...array_values(
+            $this->executeLifecycleHook('mount', $component, array_values(
                 $this->componentHelper->extractDataFromBlock(
                     $component->getParent()
-                )
-            ));
+                ))
+            );
         } else {
             $overwrite = $request->memo['data'];
         }
 
-        // Bind regular properties.
         $this->propertyHelper->assign(function (Component $component, $property, $value) {
             if ($component->{$property} !== $value) {
                 $component->{$property} = $value;
@@ -63,19 +61,17 @@ class Property implements HydratorInterface
 
         if ($request->isSubsequent()) {
             $this->executePropertyLifecycleHook($component, 'hydrate', $request);
-            /** @lifecyclehook hydrate */
-            $component->hydrate();
+            $this->executeLifecycleHook('hydrate', $component);
         } else {
-            $request->memo['data'] = array_merge($request->memo['data'], array_filter($component->getPublicProperties(true), function ($value) {
+            $request->memo['data'] = array_merge($request->memo['data'], array_filter(
+                $component->getPublicProperties(true), function ($value) {
                     return $value !== null;
                 })
             );
         }
 
-        // Flush properties cache.
         $component->getPublicProperties(true);
-        /** @lifecyclehook booted */
-        $component->booted();
+        $this->executeLifecycleHook('booted', $component);
     }
 
     /**
@@ -99,7 +95,7 @@ class Property implements HydratorInterface
             }, $component, $response->memo['data']);
         }
 
-        $component->dehydrate($response);
+        $this->executeLifecycleHook('dehydrate', $component);
         $this->executePropertyLifecycleHook($component, 'dehydrate', $response);
     }
 
@@ -134,6 +130,20 @@ class Property implements HydratorInterface
     public function processProperty(ResponseInterface $response, string $property)
     {
         $response->effects['dirty'][] = $property;
+    }
+
+    /**
+     * @param string $method
+     * @param MagewireComponent $component
+     * @param array $params
+     */
+    public function executeLifecycleHook(string $method, Component $component, array $params = [])
+    {
+        try {
+            $component->{$method}(...$params);
+        } catch (Exception $exception) {
+
+        }
     }
 
     /**
