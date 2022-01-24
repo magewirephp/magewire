@@ -165,7 +165,6 @@ class Property implements HydratorInterface
         try {
             $component->{$method}(...$params);
         } catch (Exception $exception) {
-
         }
     }
 
