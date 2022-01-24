@@ -55,7 +55,7 @@ class Property implements HydratorInterface
                 'mount',
                 $component,
                 array_values(
-                        $this->componentHelper->extractDataFromBlock(
+                    $this->componentHelper->extractDataFromBlock(
                         $component->getParent()
                     )
                 )
