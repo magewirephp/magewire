@@ -55,10 +55,10 @@ class Property implements HydratorInterface
                 'mount',
                 $component,
                 array_values(
-                $this->componentHelper->extractDataFromBlock(
-                    $component->getParent()
+                        $this->componentHelper->extractDataFromBlock(
+                        $component->getParent()
+                    )
                 )
-            )
             );
         } else {
             $overwrite = $request->memo['data'];
@@ -85,11 +85,11 @@ class Property implements HydratorInterface
             $request->memo['data'] = array_merge(
                 $request->memo['data'],
                 array_filter(
-                $component->getPublicProperties(true),
-                function ($value) {
-                    return $value !== null;
-                }
-            )
+                    $component->getPublicProperties(true),
+                    function ($value) {
+                        return $value !== null;
+                    }
+                )
             );
         }
 
