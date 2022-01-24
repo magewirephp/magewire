@@ -9,6 +9,7 @@
 namespace Magewirephp\Magewire\Model\Hydrator;
 
 use Exception;
+use Magento\Framework\Serialize\SerializerInterface;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Component as MagewireComponent;
 use Magewirephp\Magewire\Helper\Component as ComponentHelper;
@@ -23,17 +24,22 @@ class Property implements HydratorInterface
     private $propertyHelper;
     /** @var ComponentHelper $componentHelper */
     private $componentHelper;
+    /** @var SerializerInterface $serializer */
+    protected $serializer;
 
     /**
      * @param PropertyHelper $propertyHelper
      * @param ComponentHelper $componentHelper
+     * @param SerializerInterface $serializer
      */
     public function __construct(
         PropertyHelper $propertyHelper,
-        ComponentHelper $componentHelper
+        ComponentHelper $componentHelper,
+        SerializerInterface $serializer
     ) {
         $this->propertyHelper = $propertyHelper;
         $this->componentHelper = $componentHelper;
+        $this->serializer = $serializer;
     }
 
     /**
@@ -54,7 +60,14 @@ class Property implements HydratorInterface
         }
 
         $this->propertyHelper->assign(function (Component $component, $property, $value) {
-            if ($component->{$property} !== $value) {
+            if (is_array($component->{$property}) && is_array($value)) {
+                $a = $this->serializer->serialize($component->{$property});
+                $b = $this->serializer->serialize($value);
+
+                if ($a !== $b) {
+                    $component->{$property} = $value;
+                }
+            } elseif ($component->{$property} === $value) {
                 $component->{$property} = $value;
             }
         }, $component, $overwrite ?? null);
