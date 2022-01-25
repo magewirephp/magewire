@@ -47,19 +47,11 @@ class Property implements HydratorInterface
      */
     public function hydrate(Component $component, RequestInterface $request): void
     {
-        $this->executeLifecycleHook('boot', $component);
+        $data = array_values($this->componentHelper->extractDataFromBlock($component->getParent()));
+        $this->executeLifecycleHook('boot', $component, $data);
 
-        /* @todo StyleCI keeps failing until this ugly style is applied. Need's to get more / better readable. */
         if ($request->isPreceding()) {
-            $this->executeLifecycleHook(
-                'mount',
-                $component,
-                array_values(
-                    $this->componentHelper->extractDataFromBlock(
-                        $component->getParent()
-                    )
-                )
-            );
+            $this->executeLifecycleHook('mount', $component, $data);
         } else {
             $overwrite = $request->memo['data'];
         }
@@ -81,7 +73,6 @@ class Property implements HydratorInterface
             $this->executePropertyLifecycleHook($component, 'hydrate', $request);
             $this->executeLifecycleHook('hydrate', $component);
         } else {
-            /* @todo StyleCI keeps failing until this ugly style is applied. Need's to get more / better readable. */
             $request->memo['data'] = array_merge(
                 $request->memo['data'],
                 array_filter(
