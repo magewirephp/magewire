@@ -64,7 +64,7 @@ class Property implements HydratorInterface
                 if ($a !== $b) {
                     $component->{$property} = $value;
                 }
-            } elseif ($component->{$property} === $value) {
+            } elseif ($component->{$property} !== $value) {
                 $component->{$property} = $value;
             }
         }, $component, $overwrite ?? null);
