@@ -39,9 +39,6 @@ class Hydrator
     /** @var BrowserEvent $browserEventHydrator */
     protected $browserEventHydrator;
 
-    /** @var Component $componentHydrator */
-    protected $componentHydrator;
-
     /** @var Property $propertyHydrator */
     protected $propertyHydrator;
 
@@ -69,7 +66,6 @@ class Hydrator
      * @param Emit $emit
      * @param BrowserEvent $browserEventHydrator
      * @param FlashMessage $flashMessageHydrator
-     * @param Component $componentHydrator
      * @param Property $propertyHydrator
      * @param QueryString $queryString
      * @param Error $errorHydrator
@@ -83,7 +79,6 @@ class Hydrator
         Emit $emit,
         BrowserEvent $browserEventHydrator,
         FlashMessage $flashMessageHydrator,
-        Component $componentHydrator,
         Property $propertyHydrator,
         QueryString $queryStringHydrator,
         Error $errorHydrator,
@@ -94,7 +89,6 @@ class Hydrator
         $this->hashHydrator = $hashHydrator;
         $this->listenerHydrator = $listenerHydrator;
         $this->emit = $emit;
-        $this->componentHydrator = $componentHydrator;
         $this->propertyHydrator = $propertyHydrator;
         $this->queryStringHydrator = $queryStringHydrator;
         $this->errorHydrator = $errorHydrator;
@@ -135,14 +129,6 @@ class Hydrator
     public function getBrowserEventHydrator(): BrowserEvent
     {
         return $this->browserEventHydrator;
-    }
-
-    /**
-     * @return Component
-     */
-    public function getComponentHydrator(): Component
-    {
-        return $this->componentHydrator;
     }
 
     /**

@@ -22,18 +22,16 @@ use Magewirephp\Magewire\Model\Concern\Method as MethodConcern;
 use Magewirephp\Magewire\Model\Concern\QueryString as QueryStringConcern;
 use Magewirephp\Magewire\Model\Concern\Redirect as RedirectConcern;
 use Magewirephp\Magewire\Model\Concern\View as ViewConcern;
-use Magewirephp\Magewire\Model\RequestInterface;
-use Magewirephp\Magewire\Model\ResponseInterface;
 use ReflectionClass;
 
 /**
- * @method void boot(RequestInterface $request)
- * @method void mount(RequestInterface $request)
- * @method void booted(RequestInterface $request)
- * @method void hydrate(RequestInterface $request)
- * @method void dehydrate(ResponseInterface $response)
- * @method mixed updating($value, string $name)
- * @method mixed updated($value, string $name)
+ * @method void boot()
+ * @method void mount()
+ * @method void booted()
+ * @method void hydrate()
+ * @method void dehydrate()
+ * @method mixed updating(mixed $value, string $name)
+ * @method mixed updated(mixed $value, string $name)
  */
 abstract class Component implements ArgumentInterface
 {

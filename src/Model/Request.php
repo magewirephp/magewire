@@ -114,7 +114,7 @@ class Request implements RequestInterface
             return $this->isSubsequent ?? false;
         }
 
-        // Lock this property so it can't be changed later on
+        // Lock this property, so it can't be changed later on
         if ($this->isSubsequent === null) {
             $this->isSubsequent = $flag;
         }

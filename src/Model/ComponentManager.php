@@ -55,16 +55,13 @@ class ComponentManager
         $this->updateActionsPool = $updateActionsPool;
         $this->httpFactory = $httpFactory;
 
-        /**
-         * Important: specific order, don't change this spontaneously!
-         */
+        // Core Hydrate & Dehydrate lifecycle sort order.
         $this->hydrationPool = $this->sortHydrators($hydrationPool, [
             $hydratorContext->getSecurityHydrator(),
             $hydratorContext->getBrowserEventHydrator(),
             $hydratorContext->getFlashMessageHydrator(),
             $hydratorContext->getErrorHydrator(),
             $hydratorContext->getHashHydrator(),
-            $hydratorContext->getComponentHydrator(),
             $hydratorContext->getQueryStringHydrator(),
             $hydratorContext->getPropertyHydrator(),
             $hydratorContext->getListenerHydrator(),
