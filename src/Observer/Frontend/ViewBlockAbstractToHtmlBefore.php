@@ -63,6 +63,7 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
 
                 // Finalize component with its Response object
                 $component->setResponse($this->getHttpFactory()->createResponse($component->getRequest()));
+
                 // Re-attach the component onto the block
                 $block->setData('magewire', $component);
             } catch (Exception $exception) {

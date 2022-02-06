@@ -389,31 +389,31 @@ OR
 ## Lifecycle Hooks
 Each component undergoes a lifecycle. Lifecycle hooks allow you to run code at any part of the component's lifecyle, or before specific properties are updated.
 ```php
-// Runs first and both on subsequent and preceding requests.
-public function boot(...$params) {}
-// Runs once, immediately after the component is instantiated, but before render() is called.
+// Called on all requests, immediately after the component is instantiated, but before any other lifecycle methods are called.
+public function boot() {}
+// Called on all requests, after the component is mounted or hydrated, but before any update methods are called
+public function booted() {}
+// Called when a Livewire component is newed up (think of it like a constructor)
 public function mount(...$params) {}
-// Runs on every request, after the component is hydrated, but before an action is performed, or render() is called.
-public function hydrate($request) {}
-// Runs after a property called $foo is hydrated.
+// Called on subsequent Livewire requests after the component has been hydrated, but before any other action occurs
+public function hydrate() {}
+// Runs after a property called $foo is hydrated
 public function hydrateFoo($value, $request) {}
-// Runs before a property called $foo will be updated.
-
+// Runs before a property called $foo is updated
 public function updatingFoo($value) {}
-// Run before a nested array value 'bar' will be updated (Using wire:model, not directly inside PHP).
+// Runs before updating a nested property bar on the $foo property
 public function updatingFooBar($value) {}
-// Runs before any update to the Livewire component's data (Using wire:model, not directly inside PHP).
+// Runs before any update to the Livewire component's data (Using wire:model, not directly inside PHP)
 public function updating($value, $name) {}
-// Runs after any update to the Livewire component's data (Using wire:model, not directly inside PHP).
+// Called after a property has been updated
 public function updated($value, $name) {}
-// Runs after a property called $foo is updated (Using wire:model, not directly inside PHP).
+// Called after the "foo" property has been updated
 public function updatedFoo($value) {}
-// Run after a nested array value 'bar' is updated (Using wire:model, not directly inside PHP).
+// Called after the nested "bar" key on the "foo" property has been updated
 public function updatedFooBar($value) {}
-
-// Runs on every request, before the component is dehydrated, but after render() is called.
-public function dehydrate($response) {}
-// Runs before a property called $foo is dehydrated (COMING SOON).
+// Called after rendering, but before the component has been dehydrated and sent to the frontend
+public function dehydrate() {}
+// Runs before a property called $foo is dehydrated
 public function dehydrateFoo($value, $response) {}
 ```
 > **Note**: Be aware of the fact that a Magewire component state will get cached when for example FPC is enabled. This

@@ -79,20 +79,21 @@ class Property
      * values except default reserved properties.
      *
      * @param callable $callback
-     * @param RequestInterface|ResponseInterface $subject (waiting for PHP 8.x support)
      * @param Component $component
+     * @param array|null $data
      * @return void
      */
-    public function assign(callable $callback, $subject, Component $component): void
+    public function assign(callable $callback, Component $component, array $data = null): void
     {
         $publicProperties = $component->getPublicProperties(true);
+        $data = $data === null ? $publicProperties : array_merge($publicProperties, $data);
 
-        foreach ($subject->memo['data'] as $property => $value) {
+        foreach ($data as $property => $value) {
             if (in_array($property, Component::RESERVED_PROPERTIES, true)) {
                 continue;
             }
-            if (array_key_exists($property, $publicProperties) && ($component->{$property} !== $value)) {
-                $callback($component, $subject, $property, $value);
+            if (array_key_exists($property, $publicProperties)) {
+                $callback($component, $property, $value);
             }
         }
     }
