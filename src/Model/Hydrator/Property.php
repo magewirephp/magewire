@@ -65,7 +65,7 @@ class Property implements HydratorInterface
                 if ($a !== $b) {
                     $component->{$property} = $value;
                 }
-            } else if ($component->{$property} instanceof WireableInterface && version_compare(PHP_VERSION, '7.4', '>=')) {
+            } elseif ($component->{$property} instanceof WireableInterface && version_compare(PHP_VERSION, '7.4', '>=')) {
                 $component->{$property} = $component->{$property}->unwire($value);
             } elseif ($component->{$property} !== $value) {
                 $component->{$property} = $value;
