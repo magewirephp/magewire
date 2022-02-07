@@ -17,6 +17,7 @@ use Magewirephp\Magewire\Helper\Property as PropertyHelper;
 use Magewirephp\Magewire\Model\HydratorInterface;
 use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
+use Magewirephp\Magewire\Model\WireableInterface;
 
 class Property implements HydratorInterface
 {
@@ -64,6 +65,8 @@ class Property implements HydratorInterface
                 if ($a !== $b) {
                     $component->{$property} = $value;
                 }
+            } else if ($component->{$property} instanceof WireableInterface && version_compare(PHP_VERSION, '7.4', '>=')) {
+                $component->{$property} = $component->{$property}->unwire($value);
             } elseif ($component->{$property} !== $value) {
                 $component->{$property} = $value;
             }
@@ -103,6 +106,8 @@ class Property implements HydratorInterface
                 // The property can be seen as changed and dirty data, who needs a refresh.
                 if (is_array($component->{$property})) {
                     $this->processArrayProperty($response, $property);
+                } elseif ($component->{$property} instanceof WireableInterface) {
+                    $this->processWireableProperty($response, $property);
                 } else {
                     $this->processProperty($response, $property);
                 }
@@ -135,6 +140,15 @@ class Property implements HydratorInterface
                 }
             }
         }
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @param string $property
+     */
+    public function processWireableProperty(ResponseInterface $response, string $property)
+    {
+        $response->effects['dirty'][] = $property;
     }
 
     /**
