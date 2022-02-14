@@ -11,6 +11,7 @@ namespace Magewirephp\Magewire\Model\Action\Type;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exception\ComponentException;
 use Magewirephp\Magewire\Helper\Property as PropertyHelper;
+use Magewirephp\Magewire\Model\WireableInterface;
 
 /**
  * Class Magic
@@ -54,10 +55,10 @@ class Magic
      * @param string $property
      * @param $value
      * @param Component $component
-     * @return void
+     * @return mixed
      * @throws ComponentException
      */
-    public function set(string $property, $value, Component $component): void
+    public function set(string $property, $value, Component $component)
     {
         if ($this->propertyHelper->containsDots($property)) {
             $transform = $this->propertyHelper->transformDots($property, $value, $component);
@@ -73,7 +74,11 @@ class Magic
             }
         }
 
-        $component->{$property} = $value;
+        if ($component->{$property} instanceof WireableInterface) {
+            return $component->{$property} = $component->{$property}->unwire($value);
+        }
+
+        return $component->{$property} = $value;
     }
 
     public function refresh(): void

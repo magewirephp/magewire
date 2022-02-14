@@ -80,17 +80,20 @@ class ViewBlockAbstract
     /**
      * @param Template $block
      * @param Exception $exception
-     * @throws SubsequentRequestException
      */
     public function throwException(Template $block, Exception $exception): void
     {
-        $magewire = $block->getMagewire();
+        try {
+            $component = $this->componentHelper->extractComponentFromBlock($block);
 
-        if ($magewire->getRequest() && $magewire->getRequest()->isSubsequent()) {
-            throw new SubsequentRequestException($exception->getMessage());
+            if ($component->getRequest() && $component->getRequest()->isSubsequent()) {
+                throw new SubsequentRequestException($exception->getMessage());
+            }
+        } catch (Exception $exception) {
+            // We accept the $exception at this stage.
         }
 
-        // Detach the component who's given the problems
+        // Detach the component who's given the problems.
         $block->unsetData('magewire');
 
         $block->setTemplate('Magewirephp_Magewire::component/exception.phtml');

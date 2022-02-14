@@ -65,8 +65,10 @@ class Property implements HydratorInterface
                 if ($a !== $b) {
                     $component->{$property} = $value;
                 }
-            } elseif ($component->{$property} instanceof WireableInterface && version_compare(PHP_VERSION, '7.4', '>=')) {
-                $component->{$property} = $component->{$property}->unwire($value);
+            } elseif ($component->{$property} instanceof WireableInterface) {
+                if ($value instanceof WireableInterface) {
+                    $component->{$property} = $value;
+                }
             } elseif ($component->{$property} !== $value) {
                 $component->{$property} = $value;
             }
@@ -76,7 +78,7 @@ class Property implements HydratorInterface
             $this->executePropertyLifecycleHook($component, 'hydrate', $request);
             $this->executeLifecycleHook('hydrate', $component);
         } else {
-            $request->memo['data'] = array_merge(
+            array_merge(
                 $request->memo['data'],
                 array_filter(
                     $component->getPublicProperties(true),

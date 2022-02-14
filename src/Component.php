@@ -166,7 +166,7 @@ abstract class Component implements ArgumentInterface
             $data = [];
 
             foreach ($properties as $property) {
-                $data[$property->getName()] = $property->getValue($this);
+                $data[$property->getName()] = $property->isInitialized($this) ? $property->getValue($this) : null;
             }
 
             $this->publicProperties = array_diff_key($data, array_flip(self::RESERVED_PROPERTIES));

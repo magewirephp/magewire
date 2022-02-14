@@ -17,6 +17,7 @@ use Magewirephp\Magewire\Exception\ComponentActionException;
 use Magewirephp\Magewire\Exception\LifecycleException;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Model\Context\Hydrator as HydratorContext;
+use ReflectionClass;
 
 /**
  * Class ComponentManager
@@ -94,6 +95,21 @@ class ComponentManager
         }
     }
 
+    public function compose(Component $component, array $data = []): array
+    {
+        $properties = array_filter((new ReflectionClass($component))->getProperties(), static function ($property) {
+            return $property->isPublic() && !$property->isStatic();
+        });
+
+        foreach ($properties as $property) {
+            $component->{$property->getName()} = $property->isInitialized($component)
+                ? $property->getValue($component)
+                : $data[$property->getName()] ?? null;
+        }
+
+        return $properties;
+    }
+
     /**
      * Runs on every request, after the component is hydrated,
      * but before an action is performed, or the layout block
@@ -139,7 +155,6 @@ class ComponentManager
     /**
      * @param Template $block
      * @param Component $component
-     * @param array $arguments
      * @param string|null $handle
      * @return Request
      * @throws LocalizedException
@@ -147,12 +162,11 @@ class ComponentManager
     public function createInitialRequest(
         Template $block,
         Component $component,
-        array $arguments,
         string $handle = null
     ): Request {
-        $properties = $component->getPublicProperties();
+        $properties = $component->getPublicProperties(false);
         $request = $block->getRequest();
-        $data = array_intersect_key(array_replace($properties, $arguments), $properties);
+        //$data = array_intersect_key(array_replace($properties, $arguments), $properties);
 
         /**
          * SHA1 hashing the wire:id value is an idea which can change in the future. I'm still tumbling around the
@@ -178,7 +192,7 @@ class ComponentManager
                 'type'   => $component::COMPONENT_TYPE
             ],
             'serverMemo' => [
-                'data'   => $data
+                'data'   => $properties
             ]
         ]);
     }

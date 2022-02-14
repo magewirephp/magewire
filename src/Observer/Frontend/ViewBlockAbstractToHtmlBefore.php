@@ -39,7 +39,11 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
                 $component->setParent($this->determineTemplate($block));
 
                 $request = $component->getRequest();
-                $data = $this->getComponentHelper()->extractDataFromBlock($block);
+
+                $this->getComponentManager()->compose(
+                    $component,
+                    $this->getComponentHelper()->extractDataFromBlock($block)
+                );
 
                 // Fix for subsequent rendered wired children via e.g. a getChildHtml()
                 if ($request !== null && $request->isSubsequent()) {
@@ -49,7 +53,6 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
                     $request = $this->getComponentManager()->createInitialRequest(
                         $block,
                         $component,
-                        $data,
                         $this->getUpdateHandle()
                     );
                 }
