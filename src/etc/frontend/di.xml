@@ -50,4 +50,8 @@
             </argument>
         </arguments>
     </type>
+
+    <type name="Magento\Framework\View\TemplateEngine\Php">
+        <plugin name="magewire_template_variable" type="Magewirephp\Magewire\Plugin\MagewireTemplateVariable"/>
+    </type>
 </config>
