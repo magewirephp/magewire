@@ -4,8 +4,9 @@
 1. Use the Magewire naming conventions and structures.
 2. Use Hydrators to manipulate data before or after a method gets called.
 3. Contribute or create an issue when you found bugs or sucurity issues.
-4. Keep components small and clean
+4. Keep components small and clean.
 5. Use the ```My/Module/Magewire/Component``` folder when you introduce a new component type.
+6. The ```$magewire``` component object is available in the template by default.
 
 ## Folder Structure
 | Folder | Description                                                                                        |
@@ -58,14 +59,12 @@ inside the [Livewire docs](https://laravel-livewire.com/docs/2.x/reference#globa
 > create a foo.phtml inside the /view/templates/magewire folder.
 
 ## Templates
-Options within your block template.
+Options within your block template. The ```$magewire``` variable is by default available in your Component template.
 ```php
 <?php
 
 /** @var Explanation $magewire */
 use My\Module\Magewire\Explanation;
-
-$magewire = $block->getMagewire();
 
 // Check if property exists or is not null.
 $magewire->hasFoo();
@@ -798,8 +797,6 @@ the user know what happend. This can be done in several ways.
 
 Show corresponding error messages below the field.
 ```html
-<?php $magewire = $block->getMagewire(); ?>
-
 <form>
     <input type="text" wire:model="foo"/>
     
@@ -815,8 +812,6 @@ Show corresponding error messages below the field.
 
 Display a stack of error messages on above the form.
 ```html
-<?php $magewire = $block->getMagewire(); ?>
-
 <?php if ($magewire->hasErrors(): ?>
 <ul>
     <?php foreach ($magewire->getErrors() as $error): ?>

@@ -6,16 +6,25 @@
  * details on copyrights and license information.
  */
 
-namespace Magewirephp\Magewire\Plugin;
+namespace Magewirephp\Magewire\Plugin\Magento\Framework\View\TemplateEngine;
 
 use Magento\Framework\DataObject;
 use Magento\Framework\View\Element\BlockInterface;
-use Magento\Framework\View\TemplateEngine\Php;
+use Magento\Framework\View\TemplateEngine\Php as Subject;
 use Magewirephp\Magewire\Component;
 
-class MagewireTemplateVariable
+class Php
 {
-    public function beforeRender(Php $subject, BlockInterface $block, $filename, array $dictionary = [])
+    /**
+     * Automatically assign $magewire as template Block variable.
+     *
+     * @param Subject $subject
+     * @param BlockInterface $block
+     * @param $filename
+     * @param array $dictionary
+     * @return array
+     */
+    public function beforeRender(Subject $subject, BlockInterface $block, $filename, array $dictionary = []): array
     {
         if ($block instanceof DataObject && $block->hasData('magewire')) {
             $magewire = $block->getData('magewire');
@@ -24,6 +33,7 @@ class MagewireTemplateVariable
                 $dictionary['magewire'] = $magewire;
             }
         }
+
         return [$block, $filename, $dictionary];
     }
 }
