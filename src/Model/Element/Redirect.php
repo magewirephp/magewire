@@ -8,14 +8,10 @@
 
 namespace Magewirephp\Magewire\Model\Element;
 
-/**
- * Class Redirect
- * @package Magewirephp\Magewire\Model\Element
- */
 class Redirect
 {
-    protected $url;
-    protected $params = [];
+    protected string $url;
+    protected array $params = [];
 
     /**
      * Redirect constructor.

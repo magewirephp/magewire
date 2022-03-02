@@ -8,10 +8,6 @@
 
 namespace Magewirephp\Magewire\Exception;
 
-/**
- * Class ComponentActionException
- * @package Magewirephp\Magewire\Exception
- */
 class ComponentActionException extends MagewireException
 {
 }

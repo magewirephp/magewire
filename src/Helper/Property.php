@@ -11,17 +11,10 @@ namespace Magewirephp\Magewire\Helper;
 use Magento\Framework\Stdlib\ArrayManager;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exception\ComponentException;
-use Magewirephp\Magewire\Model\RequestInterface;
-use Magewirephp\Magewire\Model\ResponseInterface;
 
-/**
- * Class Property
- * @package Magewirephp\Magewire\Helper
- */
 class Property
 {
-    /** @var ArrayManager $arrayManager */
-    protected $arrayManager;
+    protected ArrayManager $arrayManager;
 
     /**
      * Magic constructor.

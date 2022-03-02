@@ -10,10 +10,6 @@ namespace Magewirephp\Magewire\Exception;
 
 use Exception;
 
-/**
- * Class CorruptPayloadException
- * @package Magewirephp\Magewire\Exception
- */
 class CorruptPayloadException extends MagewireException
 {
     /**

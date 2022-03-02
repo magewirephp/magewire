@@ -10,10 +10,6 @@ namespace Magewirephp\Magewire\Exception;
 
 use Exception;
 
-/**
- * Class RootTagMissingFromViewException
- * @package Magewirephp\Magewire\Exception
- */
 class RootTagMissingFromViewException extends MagewireException
 {
     /**

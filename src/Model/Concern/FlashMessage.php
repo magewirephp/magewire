@@ -11,14 +11,10 @@ namespace Magewirephp\Magewire\Model\Concern;
 use Magento\Framework\Phrase;
 use Magewirephp\Magewire\Model\Element\FlashMessage as FlashMessageElement;
 
-/**
- * Trait FlashMessage
- * @package Magewirephp\Magewire\Model\Concern
- */
 trait FlashMessage
 {
     /** @var FlashMessageElement[] $flashMessage */
-    protected $flashMessage = [];
+    protected array $flashMessage = [];
 
     /**
      * @param Phrase|string $message

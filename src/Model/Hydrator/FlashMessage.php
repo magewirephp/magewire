@@ -14,14 +14,9 @@ use Magewirephp\Magewire\Model\HydratorInterface;
 use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
-/**
- * Class FlashMessage
- * @package Magewirephp\Magewire\Model\Hydrator
- */
 class FlashMessage implements HydratorInterface
 {
-    /** @var ManagerInterface $messageManager */
-    private $messageManager;
+    protected ManagerInterface $messageManager;
 
     /**
      * FlashMessage constructor.

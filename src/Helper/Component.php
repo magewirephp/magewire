@@ -12,10 +12,6 @@ use Magento\Framework\View\Element\BlockInterface;
 use Magewirephp\Magewire\Exception\MissingComponentException;
 use Magewirephp\Magewire\Component as MagewireComponent;
 
-/**
- * Class Component
- * @package Magewirephp\Magewire\Helper
- */
 class Component
 {
     /**
