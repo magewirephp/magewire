@@ -47,10 +47,10 @@ $magewireScripts = $viewModels->require(Magewire::class);
     };
 
     document.addEventListener('DOMContentLoaded', () => {
-        window.magewire.start()
+        window.magewire.start();
     });
 
-    /* Dispatch prefixed window events */
+    /* Dispatch prefixed window events. */
     Magewire.dispatchEvent = (name, data = null) => {
 
         const event = document.createEvent('Events')
@@ -61,8 +61,8 @@ $magewireScripts = $viewModels->require(Magewire::class);
         document.dispatchEvent(event)
     }
 
-    /* Mirror Livewire events */
-    ['load', 'available', 'update'].forEach(function (target, index) {
+    /* Mirror Livewire events. */
+    ['load', 'update'].forEach(function (target, index) {
         document.addEventListener('livewire:' + target, () => {
             Magewire.dispatchEvent(target)
         })
