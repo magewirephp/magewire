@@ -20,12 +20,9 @@ use Magewirephp\Magewire\Model\ResponseInterface;
 
 class Property implements HydratorInterface
 {
-    /** @var PropertyHelper $propertyHelper */
-    private $propertyHelper;
-    /** @var ComponentHelper $componentHelper */
-    private $componentHelper;
-    /** @var SerializerInterface $serializer */
-    protected $serializer;
+    protected PropertyHelper $propertyHelper;
+    protected ComponentHelper $componentHelper;
+    protected SerializerInterface $serializer;
 
     /**
      * @param PropertyHelper $propertyHelper

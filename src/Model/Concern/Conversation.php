@@ -12,23 +12,16 @@ use Magento\Framework\Exception\LocalizedException;
 use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
-/**
- * Trait Conversation
- * @package Magewirephp\Magewire\Model\Concern
- */
 trait Conversation
 {
-    /** @var RequestInterface|null $request */
     protected $request;
-
-    /** @var ResponseInterface|null $response */
     protected $response;
 
     /**
      * @param string|null $section
      * @return bool
      */
-    public function hasRequest($section = null): bool
+    public function hasRequest(string $section = null): bool
     {
         if (is_string($section)) {
             return $this->hasRequest() && is_array($this->request->getSectionByName($section));
@@ -41,7 +34,7 @@ trait Conversation
      * @param string|null $section
      * @return RequestInterface|array|null
      */
-    public function getRequest($section = null)
+    public function getRequest(string $section = null)
     {
         if (is_string($section)) {
             return $this->request->getSectionByName($section);
@@ -64,7 +57,7 @@ trait Conversation
      * @param string|null $section
      * @return bool
      */
-    public function hasResponse($section = null): bool
+    public function hasResponse(string $section = null): bool
     {
         if (is_string($section)) {
             try {
@@ -81,7 +74,7 @@ trait Conversation
      * @param string|null $section
      * @return ResponseInterface|array
      */
-    public function getResponse($section = null)
+    public function getResponse(string $section = null)
     {
         if (is_string($section)) {
             return $this->response->getSectionByName($section);

@@ -9,9 +9,6 @@
 namespace Magewirephp\Magewire\Model;
 
 /**
- * Interface RequestInterface
- * @package Magewirephp\Magewire\Model
- *
  * @api
  */
 interface RequestInterface
