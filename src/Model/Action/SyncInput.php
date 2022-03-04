@@ -17,8 +17,7 @@ use Magewirephp\Magewire\Model\ActionInterface;
 
 class SyncInput implements ActionInterface
 {
-    /** @var PropertyHelper $propertyHelper */
-    protected $propertyHelper;
+    protected PropertyHelper $propertyHelper;
 
     /**
      * Magic constructor.

@@ -15,14 +15,9 @@ use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Exception\MissingComponentException;
 use Magewirephp\Magewire\Exception\SubsequentRequestException;
 
-/**
- * Class ViewBlockAbstractToHtmlBefore
- * @package Magewirephp\Magewire\Observer\Frontend
- */
 class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements ObserverInterface
 {
-    /** @var $updateHandle null|string */
-    protected $updateHandle;
+    protected ?string $updateHandle = null;
 
     /**
      * @param Observer $observer

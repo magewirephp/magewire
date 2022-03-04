@@ -8,10 +8,6 @@
 
 namespace Magewirephp\Magewire\Exception;
 
-/**
- * Class LifecycleException
- * @package Magewirephp\Magewire\Exception
- */
 class LifecycleException extends MagewireException
 {
 }

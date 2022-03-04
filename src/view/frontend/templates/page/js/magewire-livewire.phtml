@@ -11,4 +11,13 @@
  * @link https://laravel-livewire.com/
  */
 ?>
+<script>
+    document.addEventListener('livewire:available', () => {
+        const event = document.createEvent('Events')
+
+        event.initEvent('magewire:available', true, true)
+        document.dispatchEvent(event)
+    })
+</script>
+
 <script src="<?= $block->escapeUrl($block->getViewFileUrl('Magewirephp_Magewire::js/livewire.js')) ?>"></script>

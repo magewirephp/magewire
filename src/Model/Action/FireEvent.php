@@ -14,17 +14,10 @@ use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Model\ActionInterface;
 use Magewirephp\Magewire\Model\Hydrator\Listener as ListenerHydrator;
 
-/**
- * Class FireEvent
- * @package Magewirephp\Magewire\Model\Action
- */
 class FireEvent implements ActionInterface
 {
-    /** @var CallMethod $callMethodHandler */
-    private $callMethodHandler;
-
-    /** @var ListenerHydrator $listenerHydrator */
-    private $listenerHydrator;
+    protected CallMethod $callMethodHandler;
+    protected ListenerHydrator $listenerHydrator;
 
     /**
      * FireEvent constructor.

@@ -1,7 +1,9 @@
 # Magewire
+[![Latest Stable Version](http://poser.pugx.org/magewirephp/magewire/v)](https://packagist.org/packages/magewirephp/magewire)
+[![Total Downloads](http://poser.pugx.org/magewirephp/magewire/downloads)](https://packagist.org/packages/magewirephp/magewire)
 ![style CI](https://github.styleci.io/repos/414967404/shield?style=flat&branch=main)
 ![hyva](https://img.shields.io/badge/Hyva_Themes-Compatible-1abc9c)
-![Open Source](https://img.shields.io/badge/Open-Source-1abc9c)
+[![License](http://poser.pugx.org/magewirephp/magewire/license)](https://packagist.org/packages/magewirephp/magewire)
 
 Magewire is a [Laravel Livewire](https://laravel-livewire.com/) port for Magento 2. The goal is to make it fun and easy
 to build modern, reactive and dynamic interfaces, without leaving the comfort of Magento's core layout and template
@@ -17,16 +19,15 @@ Magento theme out of the box. Go and check out the [compatibility](./docs/Compat
 section to enable all the Magewire richness in your Blank or Luma projects.
 
 ## Documentation
-- [Alpine.js](./docs/Alpine.md)
-- [Compatibility](./docs/Compatibility.md)
-- [Components](./docs/Component.md)
+- [Work with Alpine.js](./docs/Alpine.md)
 - [Features & Examples](./docs/Features.md)
-- [Hydrators](./docs/Hydrators.md)
+- [More about Compatibility](./docs/Compatibility.md)
+- [More about Components](./docs/Component.md)
+- [More about Hydrators](./docs/Hydrators.md)
 
 ## Roadmap
 - Unit & Integration tests
 - Single and Multi file upload integrations
-- Modal and Dialog integrations
 - Enrich pagination functionality
 - Advanced Query String manipulation
 - Throttling capabilities

@@ -19,23 +19,12 @@ use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Model\Context\Hydrator as HydratorContext;
 use ReflectionClass;
 
-/**
- * Class ComponentManager
- * @package Magewirephp\Magewire\Model
- */
 class ComponentManager
 {
-    /** @var Resolver $localeResolver */
-    private $localeResolver;
-
-    /** @var HttpFactory $httpFactory */
-    private $httpFactory;
-
-    /** @var array $updateActionsPool */
-    private $updateActionsPool;
-
-    /** @var array $hydrationPool */
-    private $hydrationPool;
+    protected Resolver $localeResolver;
+    protected HttpFactory $httpFactory;
+    protected array $updateActionsPool;
+    protected array $hydrationPool;
 
     /**
      * ComponentManager constructor.

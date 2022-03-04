@@ -16,23 +16,12 @@ use Magewirephp\Magewire\Helper\Component as ComponentHelper;
 use Magewirephp\Magewire\Model\ComponentManager;
 use Magewirephp\Magewire\Model\HttpFactory;
 
-/**
- * Class ViewBlockAbstract
- * @package Magewirephp\Magewire\Observer\Frontend
- */
 class ViewBlockAbstract
 {
-    /** @var ApplicationState $applicationState */
-    private $applicationState;
-
-    /** @var ComponentHelper $componentHelper */
-    private $componentHelper;
-
-    /** @var ComponentManager $componentManager */
-    private $componentManager;
-
-    /** @var HttpFactory $httpFactory */
-    private $httpFactory;
+    protected ApplicationState $applicationState;
+    protected ComponentHelper $componentHelper;
+    protected ComponentManager $componentManager;
+    protected HttpFactory $httpFactory;
 
     /**
      * ViewBlockAbstract constructor.

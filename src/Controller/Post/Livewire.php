@@ -33,20 +33,13 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
 {
     public const HANDLE = 'magewire_post_livewire';
 
-    /** @var FormKey $formKey */
-    protected $formKey;
-    /** @var ComponentHelper $componentHelper */
-    protected $componentHelper;
-    /** @var PageFactory $resultPageFactory */
-    protected $resultPageFactory;
-    /** @var SerializerInterface $serializer */
-    protected $serializer;
-    /** @var HttpFactory $httpFactory */
-    protected $httpFactory;
-    /** @var JsonFactory $resultJsonFactory */
-    protected $resultJsonFactory;
-    /** @var EventManagerInterface $eventManager */
-    protected $eventManager;
+    protected FormKey $formKey;
+    protected ComponentHelper $componentHelper;
+    protected PageFactory $resultPageFactory;
+    protected SerializerInterface $serializer;
+    protected HttpFactory $httpFactory;
+    protected JsonFactory $resultJsonFactory;
+    protected EventManagerInterface $eventManager;
 
     /**
      * @param FormKey $formKey
@@ -96,7 +89,7 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
                 throw new MagewireException(__('Response object not found for component'));
             }
 
-            // Set final HTML for response
+            // Set final HTML for response.
             $response->effects['html'] = $html;
 
             return $result->setData([

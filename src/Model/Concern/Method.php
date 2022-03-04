@@ -16,7 +16,7 @@ trait Method
      * @see getUncallables()
      * @var string[]
      */
-    protected $uncallables = [];
+    protected array $uncallables = [];
 
     /**
      * Returns an optional array with uncallable method names

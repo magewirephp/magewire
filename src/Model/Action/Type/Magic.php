@@ -13,14 +13,9 @@ use Magewirephp\Magewire\Exception\ComponentException;
 use Magewirephp\Magewire\Helper\Property as PropertyHelper;
 use Magewirephp\Magewire\Model\WireableInterface;
 
-/**
- * Class Magic
- * @package Magewirephp\Magewire\Model\Action\Type
- */
 class Magic
 {
-    /** @var PropertyHelper $propertyHelper */
-    protected $propertyHelper;
+    protected PropertyHelper $propertyHelper;
 
     /**
      * Magic constructor.
@@ -67,7 +62,7 @@ class Magic
             $value    = $transform['data'];
         }
 
-        // Transform a magic property value
+        // Transform a magic property value.
         if (is_string($value) && strripos($value, '$') === 0 && ($value = ltrim($value, '$'))) {
             if (array_key_exists($value, $component->getPublicProperties())) {
                 $value = $component->{$value};
@@ -81,6 +76,9 @@ class Magic
         return $component->{$property} = $value;
     }
 
+    /**
+     * Magic method ($refresh).
+     */
     public function refresh(): void
     {
         return;

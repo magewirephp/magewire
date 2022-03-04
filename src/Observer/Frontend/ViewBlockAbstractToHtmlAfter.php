@@ -16,10 +16,6 @@ use Magewirephp\Magewire\Exception\LifecycleException;
 use Magewirephp\Magewire\Exception\SubsequentRequestException;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
-/**
- * Class ViewBlockAbstractToHtmlAfter
- * @package Magewirephp\Magewire\Observer\Frontend
- */
 class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements ObserverInterface
 {
     /**

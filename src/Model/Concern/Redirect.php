@@ -10,10 +10,6 @@ namespace Magewirephp\Magewire\Model\Concern;
 
 use Magewirephp\Magewire\Model\Element\Redirect as RedirectElement;
 
-/**
- * Trait Redirect
- * @package Magewirephp\Magewire\Model\Concern
- */
 trait Redirect
 {
     /** @var RedirectElement|null $redirect */
