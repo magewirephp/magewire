@@ -12,14 +12,9 @@ use Magento\Framework\Exception\LocalizedException;
 use Magewirephp\Magewire\Exception\RootTagMissingFromViewException;
 use Magewirephp\Magewire\Helper\Functions as FunctionsHelper;
 
-/**
- * Class Response
- * @package Magewirephp\Magewire\Model
- */
 class Response implements ResponseInterface
 {
-    /** @var FunctionsHelper $functionsHelper */
-    private $functionsHelper;
+    protected FunctionsHelper $functionsHelper;
 
     protected $request;
 
@@ -157,5 +152,19 @@ class Response implements ResponseInterface
         }, $data)));
 
         return substr_replace($html, ' ' . $attributes, $matches[1][1] + strlen($matches[1][0]), 0);
+    }
+
+    /**
+     * @inheritdoc
+     *
+     * @throws LocalizedException
+     */
+    public function getSectionByName(string $section): ?array
+    {
+        if (in_array($section, ['fingerprint', 'serverMemo', 'updates'])) {
+            return $this->{$section};
+        }
+
+        throw new LocalizedException(__('Request section %s does not exist', $section));
     }
 }

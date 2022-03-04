@@ -15,17 +15,10 @@ use Magewirephp\Magewire\Model\HydratorInterface;
 use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
-/**
- * Class QueryString
- * @package Magewirephp\Magewire\Model\Hydrator
- */
 class QueryString implements HydratorInterface
 {
-    /** @var AppRequestInterface $request */
-    private $request;
-
-    /** @var FunctionsHelper $functionsHelper */
-    private $functionsHelper;
+    protected AppRequestInterface $request;
+    protected FunctionsHelper $functionsHelper;
 
     /**
      * Property constructor.

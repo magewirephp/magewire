@@ -4,7 +4,9 @@
   "version": "1.3.0",
   "type": "magento2-module",
   "require": {
-    "rakit/validation": "^1.0"
+    "magento/framework": "*",
+    "rakit/validation": "^1.0",
+    "php": ">=7.4"
   },
   "authors": [
     {

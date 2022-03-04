@@ -14,14 +14,9 @@ use Magewirephp\Magewire\Model\HydratorInterface;
 use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
-/**
- * Class Redirect
- * @package Magewirephp\Magewire\Model\Hydrator
- */
 class Redirect implements HydratorInterface
 {
-    /** @var UrlInterface $builder */
-    protected $builder;
+    protected UrlInterface $builder;
 
     /**
      * Redirect constructor.

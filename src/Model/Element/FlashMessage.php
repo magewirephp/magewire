@@ -11,10 +11,6 @@ namespace Magewirephp\Magewire\Model\Element;
 use Magento\Framework\Message\MessageInterface;
 use Magento\Framework\Phrase;
 
-/**
- * Class FlashMessage
- * @package Magewirephp\Magewire\Model\Element
- */
 class FlashMessage
 {
     public const ERROR   = MessageInterface::TYPE_ERROR;
@@ -22,15 +18,9 @@ class FlashMessage
     public const NOTICE  = MessageInterface::TYPE_NOTICE;
     public const SUCCESS = MessageInterface::TYPE_SUCCESS;
 
-    /**
-     * @var Phrase
-     */
+    /** @var Phrase|string $flashMessage */
     protected $flashMessage;
-
-    /**
-     * @var int
-     */
-    protected $type;
+    protected string $type;
 
     /**
      * Message constructor.
@@ -39,7 +29,7 @@ class FlashMessage
      */
     public function __construct($message, string $type)
     {
-        // lets for now just assume the developer gives a Phrase or string message.
+        // Lets for now just assume the developer gives a Phrase or string message.
         $this->flashMessage = is_string($message) ? __($message) : $message;
         $this->type = $type;
     }

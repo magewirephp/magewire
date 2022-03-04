@@ -10,10 +10,6 @@ namespace Magewirephp\Magewire\Exception;
 
 use Magento\Framework\Exception\LocalizedException;
 
-/**
- * Class MagewireException
- * @package Magewirephp\Magewire\Exception
- */
 class MagewireException extends LocalizedException
 {
 }

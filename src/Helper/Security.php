@@ -13,17 +13,10 @@ use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Exception\RuntimeException;
 use Magento\Framework\Serialize\SerializerInterface;
 
-/**
- * Class Security
- * @package Magewirephp\Magewire\Helper
- */
 class Security
 {
-    /** @var DeploymentConfig $deployConfig */
-    private $deployConfig;
-
-    /** @var SerializerInterface $serializer */
-    private $serializer;
+    protected DeploymentConfig $deployConfig;
+    protected SerializerInterface $serializer;
 
     /**
      * Component constructor.

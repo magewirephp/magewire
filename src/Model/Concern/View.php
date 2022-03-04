@@ -8,14 +8,10 @@
 
 namespace Magewirephp\Magewire\Model\Concern;
 
-/**
- * Trait View
- * @package Magewirephp\Magewire\Model\Concern
- */
 trait View
 {
     /** @var bool $skipRender */
-    protected $skipRender = false;
+    protected bool $skipRender = false;
 
     /** @var bool|array $loader  */
     protected $loader = false;

@@ -8,10 +8,6 @@
 
 namespace Magewirephp\Magewire\Exception;
 
-/**
- * Class SubsequentRequestException
- * @package Magewirephp\Magewire\Exception
- */
 class SubsequentRequestException extends \Exception
 {
 }

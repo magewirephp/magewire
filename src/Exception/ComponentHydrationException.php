@@ -8,10 +8,6 @@
 
 namespace Magewirephp\Magewire\Exception;
 
-/**
- * Class ComponentHydrationException
- * @package Magewirephp\Magewire\Exception
- */
 class ComponentHydrationException extends MagewireException
 {
 }

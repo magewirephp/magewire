@@ -17,14 +17,9 @@ use Magewirephp\Magewire\Model\HydratorInterface;
 use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
-/**
- * Class Security
- * @package Magewirephp\Magewire\Model\Hydrator
- */
 class Security implements HydratorInterface
 {
-    /** @var SecurityHelper $securityHelper */
-    private $securityHelper;
+    protected SecurityHelper $securityHelper;
 
     /**
      * Security constructor.

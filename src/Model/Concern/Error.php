@@ -10,14 +10,10 @@ namespace Magewirephp\Magewire\Model\Concern;
 
 use Magento\Framework\Phrase;
 
-/**
- * Trait Error
- * @package Magewirephp\Magewire\Model\Concern
- */
 trait Error
 {
     /** @var Phrase[] $errors */
-    protected $errors = [];
+    protected array $errors = [];
 
     /**
      * Throw an error.

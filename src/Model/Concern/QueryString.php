@@ -8,13 +8,9 @@
 
 namespace Magewirephp\Magewire\Model\Concern;
 
-/**
- * Trait QueryString
- * @package Magewirephp\Magewire\Model\Concern
- */
 trait QueryString
 {
-    protected $queryString = [];
+    protected array $queryString = [];
 
     /**
      * @return array

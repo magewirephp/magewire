@@ -13,10 +13,6 @@ use Magewirephp\Magewire\Model\HydratorInterface;
 use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
-/**
- * Class Loader
- * @package Magewirephp\Magewire\Model\Hydrator
- */
 class Loader implements HydratorInterface
 {
     /**

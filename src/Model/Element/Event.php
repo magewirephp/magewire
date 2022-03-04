@@ -8,10 +8,6 @@
 
 namespace Magewirephp\Magewire\Model\Element;
 
-/**
- * Class Event
- * @package Magewirephp\Magewire\Model\Element
- */
 class Event
 {
     protected $name;

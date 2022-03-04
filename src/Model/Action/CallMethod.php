@@ -15,17 +15,10 @@ use Magewirephp\Magewire\Model\Action\Type\Factory as TypeFactory;
 use Magewirephp\Magewire\Model\Action\Type\Magic;
 use Magewirephp\Magewire\Model\ActionInterface;
 
-/**
- * Class CallMethod
- * @package Magewirephp\Magewire\Model\Action
- */
 class CallMethod implements ActionInterface
 {
-    /** @var TypeFactory $typeFactory */
-    protected $typeFactory;
-
-    /** @var string[] $uncallableMethods */
-    private $uncallableMethods;
+    protected TypeFactory $typeFactory;
+    private array $uncallableMethods;
 
     /**
      * CallMethod constructor.

@@ -8,14 +8,9 @@
 
 namespace Magewirephp\Magewire\Model\Concern;
 
-/**
- * Trait BrowserEvent
- * @package Magewirephp\Magewire\Model\Concern
- */
 trait BrowserEvent
 {
-    /** @var array $dispatchQueue */
-    protected $dispatchQueue = [];
+    protected array $dispatchQueue = [];
 
     /**
      * @return array

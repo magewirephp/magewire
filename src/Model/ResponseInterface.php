@@ -9,9 +9,6 @@
 namespace Magewirephp\Magewire\Model;
 
 /**
- * Interface ResponseInterface
- * @package Magewirephp\Magewire\Model
- *
  * @api
  */
 interface ResponseInterface
@@ -59,6 +56,12 @@ interface ResponseInterface
      * @return \Magewirephp\Magewire\Model\ResponseInterface
      */
     public function setEffects($effects): \Magewirephp\Magewire\Model\ResponseInterface;
+
+    /**
+     * @param string $section
+     * @return array|null
+     */
+    public function getSectionByName(string $section): ?array;
 
     /**
      * Renders the effects html with additional root attribute(s).

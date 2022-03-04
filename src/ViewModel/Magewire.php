@@ -18,14 +18,10 @@ use Magento\Store\Model\StoreManagerInterface;
 
 class Magewire implements ArgumentInterface
 {
-    /** @var FormKey $formKey */
-    protected $formKey;
-    /** @var ApplicationState $applicationState */
-    protected $applicationState;
-    /** @var ProductMetadataInterface $productMetaData */
-    protected $productMetaData;
-    /** @var StoreManagerInterface $storeManager */
-    protected $storeManager;
+    protected FormKey $formKey;
+    protected ApplicationState $applicationState;
+    protected ProductMetadataInterface $productMetaData;
+    protected StoreManagerInterface $storeManager;
 
     /**
      * @param FormKey $formKey

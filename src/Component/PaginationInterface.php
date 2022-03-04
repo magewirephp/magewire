@@ -9,9 +9,6 @@
 namespace Magewirephp\Magewire\Component;
 
 /**
- * Interface ActionInterface
- * @package Magewirephp\Magewire\Model\Component
- *
  * @api
  */
 interface PaginationInterface

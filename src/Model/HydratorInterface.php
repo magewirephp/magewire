@@ -11,9 +11,6 @@ namespace Magewirephp\Magewire\Model;
 use Magewirephp\Magewire\Component;
 
 /**
- * Interface HydratorInterface
- * @package Magewirephp\Magewire\Model
- *
  * @api
  */
 interface HydratorInterface

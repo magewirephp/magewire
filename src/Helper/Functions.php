@@ -10,14 +10,9 @@ namespace Magewirephp\Magewire\Helper;
 
 use Magento\Framework\Serialize\SerializerInterface;
 
-/**
- * Class Component
- * @package Magewirephp\Magewire\Helper
- */
 class Functions
 {
-    /** @var SerializerInterface $serializer */
-    private $serializer;
+    protected SerializerInterface $serializer;
 
     /**
      * Functions constructor.

@@ -10,14 +10,9 @@ namespace Magewirephp\Magewire\Model\Action\Type;
 
 use Magento\Framework\ObjectManagerInterface;
 
-/**
- * Class Factory
- * @package Magewirephp\Magewire\Model\Action\Type
- */
 class Factory
 {
-    /** @var ObjectManagerInterface|null $objectManager */
-    protected $objectManager;
+    protected ?ObjectManagerInterface $objectManager;
 
     /**
      * Factory constructor.

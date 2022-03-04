@@ -18,47 +18,21 @@ use Magewirephp\Magewire\Model\Hydrator\Property;
 use Magewirephp\Magewire\Model\Hydrator\QueryString;
 use Magewirephp\Magewire\Model\Hydrator\Redirect;
 use Magewirephp\Magewire\Model\Hydrator\Security;
-use Magewirephp\Magewire\Model\Hydrator\Component;
 use Magewirephp\Magewire\Model\Hydrator\Loader;
 
-/**
- * Class Hydrator
- * @package Magewirephp\Magewire\Model\Context
- */
 class Hydrator
 {
-    /** @var Hash $hashHydrator */
-    private $hashHydrator;
-
-    /** @var Listener $listenerHydrator */
-    protected $listenerHydrator;
-
-    /** @var Emit $emit */
-    protected $emit;
-
-    /** @var BrowserEvent $browserEventHydrator */
-    protected $browserEventHydrator;
-
-    /** @var Property $propertyHydrator */
-    protected $propertyHydrator;
-
-    /** @var QueryString $queryStringHydrator */
-    protected $queryStringHydrator;
-
-    /** @var Error $errorHydrator */
-    protected $errorHydrator;
-
-    /** @var Redirect $redirectHydrator */
-    protected $redirectHydrator;
-
-    /** @var FlashMessage $flashMessageHydrator */
-    protected $flashMessageHydrator;
-
-    /** @var Security $securityHydrator */
-    protected $securityHydrator;
-
-    /** @var Loader $loaderHydrator */
-    protected $loaderHydrator;
+    protected Hash $hashHydrator;
+    protected Listener $listenerHydrator;
+    protected Emit $emit;
+    protected BrowserEvent $browserEventHydrator;
+    protected Property $propertyHydrator;
+    protected QueryString $queryStringHydrator;
+    protected Error $errorHydrator;
+    protected Redirect $redirectHydrator;
+    protected FlashMessage $flashMessageHydrator;
+    protected Security $securityHydrator;
+    protected Loader $loaderHydrator;
 
     /**
      * @param Hash $hashHydrator
@@ -67,7 +41,7 @@ class Hydrator
      * @param BrowserEvent $browserEventHydrator
      * @param FlashMessage $flashMessageHydrator
      * @param Property $propertyHydrator
-     * @param QueryString $queryString
+     * @param QueryString $queryStringHydrator
      * @param Error $errorHydrator
      * @param Redirect $redirectHydrator
      * @param Security $securityHydrator

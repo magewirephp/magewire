@@ -11,14 +11,9 @@ namespace Magewirephp\Magewire\Model;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Webapi\ServiceInputProcessor;
 
-/**
- * Class HttpFactory
- * @package Magewirephp\Magewire\Model
- */
 class HttpFactory
 {
-    /** @var ServiceInputProcessor $serviceInputProcessor */
-    private $serviceInputProcessor;
+    protected ServiceInputProcessor $serviceInputProcessor;
 
     /**
      * HttpFactory constructor.

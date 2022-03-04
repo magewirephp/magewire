@@ -9,23 +9,14 @@
 namespace Magewirephp\Magewire\Model;
 
 use Magento\Framework\Exception\LocalizedException;
-use Magewirephp\Magewire\Exception\MagewireException;
-use Magewirephp\Magewire\Exception\SubsequentRequestException;
 
-/**
- * Class Request
- * @package Magewirephp\Magewire\Model
- */
 class Request implements RequestInterface
 {
     public $fingerprint;
     public $memo;
     public $updates;
 
-    /**
-     * @var bool|null
-     */
-    protected $isSubsequent;
+    protected bool $isSubsequent = false;
 
     /**
      * @inheritdoc
@@ -109,13 +100,13 @@ class Request implements RequestInterface
      */
     public function isSubsequent(bool $flag = null)
     {
-        // Just return the update status
+        // Just return the update status.
         if ($flag === null) {
-            return $this->isSubsequent ?? false;
+            return $this->isSubsequent;
         }
 
-        // Lock this property, so it can't be changed later on
-        if ($this->isSubsequent === null) {
+        // Lock this property, so it can't be changed later on.
+        if ($this->isSubsequent === false) {
             $this->isSubsequent = $flag;
         }
 

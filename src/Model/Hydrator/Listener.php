@@ -14,16 +14,10 @@ use Magewirephp\Magewire\Model\HydratorInterface;
 use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
-/**
- * Class Listener
- * @package Magewirephp\Magewire\Model\Hydrator
- */
 class Listener implements HydratorInterface
 {
-    /** @var FunctionsHelper $functionsHelper */
-    private $functionsHelper;
-    /** @var array $listeners */
-    protected $listeners;
+    protected FunctionsHelper $functionsHelper;
+    protected array $listeners;
 
     /**
      * @param FunctionsHelper $functionsHelper

@@ -10,14 +10,10 @@ namespace Magewirephp\Magewire\Model\Concern;
 
 use Magewirephp\Magewire\Model\Element\Event;
 
-/**
- * Trait Emit
- * @package Magewirephp\Magewire\Model\Concern
- */
 trait Emit
 {
     /** @var Event[] $eventQueue */
-    protected $eventQueue = [];
+    protected array $eventQueue = [];
 
     /**
      * @return array

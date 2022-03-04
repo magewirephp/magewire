@@ -8,10 +8,6 @@
 
 namespace Magewirephp\Magewire\Model\Concern;
 
-/**
- * Trait Event
- * @package Magewirephp\Magewire\Model\Concern
- */
 trait Event
 {
     /** @var array $listeners */

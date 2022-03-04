@@ -13,29 +13,25 @@ use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exception\ComponentException;
 
 /**
- * Class Pagination
- *
  * @method int getPage()
  * @method bool hasPage()
  *
  * @method int getPageSize()
  * @method bool hasPageSize()
- *
- * @package Magewirephp\Magewire\Component
  */
 abstract class Pagination extends Component implements PaginationInterface
 {
     public const COMPONENT_TYPE = 'pagination';
 
-    public $page = 1;
-    public $pageSize = 10;
+    public int $page = 1;
+    public int $pageSize = 10;
 
-    protected $queryString = [
+    protected array $queryString = [
         'page',
         'pageSize'
     ];
 
-    protected $pagerTemplate = 'Magewirephp_Magewire::html/pagination/pager.phtml';
+    protected string $pagerTemplate = 'Magewirephp_Magewire::html/pagination/pager.phtml';
 
     /**
      * Renders a default pagination block.

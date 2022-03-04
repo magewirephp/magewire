@@ -14,14 +14,9 @@ use Magewirephp\Magewire\Model\HydratorInterface;
 use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
-/**
- * Class Hash
- * @package Magewirephp\Magewire\Model\Hydrator
- */
 class Hash implements HydratorInterface
 {
-    /** @var array $domHashes */
-    protected $domHashes = [];
+    protected array $domHashes = [];
 
     /**
      * @inheritdoc
