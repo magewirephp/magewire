@@ -54,7 +54,7 @@ class Property implements HydratorInterface
             $overwrite = $request->memo['data'];
         }
 
-        $this->propertyHelper->assign(function (Component $component, $property, $value) {
+        $this->propertyHelper->assign(function (Component $component, $property, $value) use ($request) {
             if (is_array($component->{$property}) && is_array($value)) {
                 $a = $this->serializer->serialize($component->{$property});
                 $b = $this->serializer->serialize($value);
@@ -62,11 +62,7 @@ class Property implements HydratorInterface
                 if ($a !== $b) {
                     $component->{$property} = $value;
                 }
-            } elseif ($component->{$property} instanceof WireableInterface) {
-                if ($value instanceof WireableInterface) {
-                    $component->{$property} = $value;
-                }
-            } elseif ($component->{$property} !== $value) {
+            } elseif ($component->{$property} !== $value && !$component->{$property} instanceof WireableInterface) {
                 $component->{$property} = $value;
             }
         }, $component, $overwrite ?? null);
@@ -75,13 +71,10 @@ class Property implements HydratorInterface
             $this->executePropertyLifecycleHook($component, 'hydrate', $request);
             $this->executeLifecycleHook('hydrate', $component);
         } else {
-            array_merge(
+            $request->memo['data'] = array_merge(
                 $request->memo['data'],
                 array_filter(
-                    $component->getPublicProperties(true),
-                    function ($value) {
-                        return $value !== null;
-                    }
+                    $component->getPublicProperties(true)
                 )
             );
         }
@@ -105,8 +98,6 @@ class Property implements HydratorInterface
                 // The property can be seen as changed and dirty data, who needs a refresh.
                 if (is_array($component->{$property})) {
                     $this->processArrayProperty($response, $property);
-                } elseif ($component->{$property} instanceof WireableInterface) {
-                    $this->processWireableProperty($response, $property);
                 } else {
                     $this->processProperty($response, $property);
                 }
@@ -143,11 +134,11 @@ class Property implements HydratorInterface
 
     /**
      * @param ResponseInterface $response
-     * @param string $property
+     * @param WireableInterface $property
      */
-    public function processWireableProperty(ResponseInterface $response, string $property)
+    public function processWireableProperty(ResponseInterface $response, WireableInterface $property)
     {
-        $response->effects['dirty'][] = $property;
+        $response->effects['dirty'][] = $property->wire();
     }
 
     /**

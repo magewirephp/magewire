@@ -22,7 +22,9 @@ use Magewirephp\Magewire\Model\Concern\Method as MethodConcern;
 use Magewirephp\Magewire\Model\Concern\QueryString as QueryStringConcern;
 use Magewirephp\Magewire\Model\Concern\Redirect as RedirectConcern;
 use Magewirephp\Magewire\Model\Concern\View as ViewConcern;
+use Magewirephp\Magewire\Model\WireableInterface;
 use ReflectionClass;
+use ReflectionException;
 
 /**
  * @method void boot()
@@ -158,18 +160,30 @@ abstract class Component implements ArgumentInterface
      */
     public function getPublicProperties(bool $refresh = false): array
     {
-        if (($refresh ? null : $this->publicProperties) === null) {
-            $properties = array_filter((new ReflectionClass($this))->getProperties(), static function ($property) {
-                return $property->isPublic() && !$property->isStatic();
-            });
-
-            $data = [];
-
-            foreach ($properties as $property) {
-                $data[$property->getName()] = $property->isInitialized($this) ? $property->getValue($this) : null;
+        $bind = function($object) {
+            try {
+                $properties = array_filter((new ReflectionClass($object))->getProperties(), static function ($property) {
+                    return $property->isPublic() && !$property->isStatic();
+                });
+            } catch (ReflectionException $exception) {
+                return [];
             }
 
-            $this->publicProperties = array_diff_key($data, array_flip(self::RESERVED_PROPERTIES));
+            foreach ($properties as $property) {
+                $data[$property->getName()] = $property->getValue($object);
+            }
+
+            return $data ?? [];
+        };
+
+        if (($refresh ? null : $this->publicProperties) === null) {
+            $this->publicProperties = array_diff_key(array_map(function ($value) use ($bind) {
+                if ($value instanceof WireableInterface) {
+                    return $bind($value);
+                }
+
+                return $value;
+            }, $bind($this)), array_flip(self::RESERVED_PROPERTIES));
         }
 
         return $this->publicProperties;

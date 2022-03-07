@@ -69,10 +69,6 @@ class Magic
             }
         }
 
-        if ($component->{$property} instanceof WireableInterface) {
-            return $component->{$property} = $component->{$property}->unwire($value);
-        }
-
         return $component->{$property} = $value;
     }
 

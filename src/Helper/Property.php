@@ -51,8 +51,8 @@ class Property
             throw new ComponentException(__('Public property %1 does\'nt exist', [$property]));
         }
 
-        $path   = substr(strstr($path, '.'), 1);
-        $data   = $this->arrayManager->set($path, $component->{$property}, $value, '.');
+        $path = substr(strstr($path, '.'), 1);
+        $data = $this->arrayManager->set($path, $component->{$property}, $value, '.');
 
         return compact('property', 'data', 'realpath', 'path');
     }
