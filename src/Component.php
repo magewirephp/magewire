@@ -58,7 +58,7 @@ abstract class Component implements ArgumentInterface
      * Component id.
      *
      * @reserved
-     * @var string
+     * @var string|null
      */
     public $id;
 
@@ -66,7 +66,7 @@ abstract class Component implements ArgumentInterface
      * Component name.
      *
      * @reserved
-     * @var string
+     * @var string|null
      */
     public $name;
 
@@ -77,6 +77,9 @@ abstract class Component implements ArgumentInterface
      */
     private $parent;
 
+    /**
+     * @var array<string, mixed>|null
+     */
     private $publicProperties;
 
     /**
@@ -128,6 +131,9 @@ abstract class Component implements ArgumentInterface
             }
         }
 
+        if ($boot) {
+            $instance->booted();
+        }
         return $this;
     }
 

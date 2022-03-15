@@ -12,7 +12,7 @@ use Magento\Framework\Phrase;
 
 trait Error
 {
-    /** @var Phrase[] $errors */
+    /** @var Phrase[] */
     protected array $errors = [];
 
     /**

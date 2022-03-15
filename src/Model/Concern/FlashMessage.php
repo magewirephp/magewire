@@ -13,7 +13,7 @@ use Magewirephp\Magewire\Model\Element\FlashMessage as FlashMessageElement;
 
 trait FlashMessage
 {
-    /** @var FlashMessageElement[] $flashMessage */
+    /** @var FlashMessageElement[] */
     protected array $flashMessage = [];
 
     /**

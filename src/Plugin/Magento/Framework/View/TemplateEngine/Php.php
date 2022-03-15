@@ -20,12 +20,16 @@ class Php
      *
      * @param Subject $subject
      * @param BlockInterface $block
-     * @param $filename
+     * @param string $filename
      * @param array $dictionary
      * @return array
      */
-    public function beforeRender(Subject $subject, BlockInterface $block, $filename, array $dictionary = []): array
-    {
+    public function beforeRender(
+        Subject $subject,
+        BlockInterface $block,
+        string $filename,
+        array $dictionary = []
+    ): array {
         if ($block instanceof DataObject && $block->hasData('magewire')) {
             $magewire = $block->getData('magewire');
 
