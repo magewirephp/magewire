@@ -12,7 +12,6 @@ use Magewirephp\Magewire\Model\Element\Redirect as RedirectElement;
 
 trait Redirect
 {
-    /** @var RedirectElement|null $redirect */
     protected $redirect;
 
     /**

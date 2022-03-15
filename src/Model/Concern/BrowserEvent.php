@@ -10,7 +10,7 @@ namespace Magewirephp\Magewire\Model\Concern;
 
 trait BrowserEvent
 {
-    protected array $dispatchQueue = [];
+    protected $dispatchQueue = [];
 
     /**
      * @return array

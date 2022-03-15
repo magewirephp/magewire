@@ -12,8 +12,8 @@ use Magewirephp\Magewire\Model\Element\Event;
 
 trait Emit
 {
-    /** @var Event[] $eventQueue */
-    protected array $eventQueue = [];
+    /** @var Event[] */
+    protected $eventQueue = [];
 
     /**
      * @return array
