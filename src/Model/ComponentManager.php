@@ -148,7 +148,7 @@ class ComponentManager
          * acceptance of just using the block name which has to be unique which is the most important part. I need to
          * look into the security aspect when switching to an un-hashed version of the wire:id attribute.
          */
-        $id = $component->id ?? sha1($block->getNameInLayout());
+        $id = $component->id ?? $block->getNameInLayout();
 
         $name   = $block->getNameInLayout();
         $handle = $handle ?? $request->getFullActionName();
