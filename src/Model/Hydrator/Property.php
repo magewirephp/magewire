@@ -8,7 +8,6 @@
 
 namespace Magewirephp\Magewire\Model\Hydrator;
 
-use Exception;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Component as MagewireComponent;
@@ -150,8 +149,7 @@ class Property implements HydratorInterface
      */
     public function executeLifecycleHook(string $method, Component $component, array $params = [])
     {
-            $component->{$method}(...$params);
-
+        $component->{$method}(...$params);
     }
 
     /**

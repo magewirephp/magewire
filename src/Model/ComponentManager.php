@@ -14,10 +14,8 @@ use Magento\Framework\Locale\Resolver;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Exception\AcceptableException;
 use Magewirephp\Magewire\Exception\ComponentActionException;
-use Magewirephp\Magewire\Exception\LifecycleException;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Model\Context\Hydrator as HydratorContext;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ComponentManager
 {

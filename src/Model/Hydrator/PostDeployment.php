@@ -24,7 +24,9 @@ class PostDeployment implements HydratorInterface
     public function hydrate(Component $component, RequestInterface $request): void
     {
         if ($request->isSubsequent()) {
-            if (!isset($request->fingerprint['v'])) return;
+            if (!isset($request->fingerprint['v'])) {
+                return;
+            }
 
             if ($v = $request->fingerprint['v']) {
                 if ($v != self::DEPLOYMENT_INVALIDATION_HASH) {

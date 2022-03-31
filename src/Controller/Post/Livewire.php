@@ -22,7 +22,6 @@ use Magento\Framework\Event\ManagerInterface as EventManagerInterface;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Framework\View\Element\BlockInterface;
 use Magewirephp\Magewire\Exception\LifecycleException;
-use Magewirephp\Magewire\Exception\MagewireException;
 use Magewirephp\Magewire\Helper\Component as ComponentHelper;
 use Magento\Framework\View\Result\PageFactory;
 use Magewirephp\Magewire\Model\HttpFactory;
