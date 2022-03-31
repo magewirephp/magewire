@@ -13,7 +13,6 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Exception\MissingComponentException;
-use Magewirephp\Magewire\Exception\SubsequentRequestException;
 
 class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements ObserverInterface
 {
@@ -21,7 +20,7 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
 
     /**
      * @param Observer $observer
-     * @throws SubsequentRequestException
+     * @throws Exception
      */
     public function execute(Observer $observer): void
     {

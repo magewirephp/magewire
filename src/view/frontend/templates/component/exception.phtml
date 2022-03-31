@@ -5,13 +5,20 @@
  * Please read the README and LICENSE files for more
  * details on copyrights and license information.
  */
+
+use Magento\Framework\App\State;
+use Magento\Framework\View\Element\Template;
+
+/** @var $block Template */
 ?>
-<?php if ($block->getApplicationState()->getMode() === \Magento\Framework\App\State::MODE_DEVELOPER): ?>
 <div class="overflow-x-auto">
+    <p>
+        <?= __('We\'re sorry, but we can\'t display this part of the page due to an error. Please try again later.') ?>
+    </p>
+
+    <?php if ($block->getApplicationState()->getMode() === State::MODE_DEVELOPER): ?>
     <pre class="whitespace-nowrap text-xs">
         <?= $block->getException()->getMessage() ?>
     </pre>
+    <?php endif; ?>
 </div>
-<?php else: ?>
-<p>Something went wrong. Please try again later.</p>
-<?php endif; ?>

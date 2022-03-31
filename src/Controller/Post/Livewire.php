@@ -10,30 +10,27 @@ namespace Magewirephp\Magewire\Controller\Post;
 
 use Exception;
 use Laminas\Http\AbstractMessage;
-use Laminas\Http\Response;
+use Magento\Framework\Exception\NotFoundException;
+use Symfony\Component\HttpFoundation\Response;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\Result\Json;
-use Magento\Framework\Data\Form\FormKey;
-use Magento\Framework\Encryption\Helper\Security;
 use Magento\Framework\Event\ManagerInterface as EventManagerInterface;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Framework\View\Element\BlockInterface;
-use Magewirephp\Magewire\Exception\MagewireException;
-use Magewirephp\Magewire\Exception\SubsequentRequestException;
+use Magewirephp\Magewire\Exception\LifecycleException;
 use Magewirephp\Magewire\Helper\Component as ComponentHelper;
 use Magento\Framework\View\Result\PageFactory;
 use Magewirephp\Magewire\Model\HttpFactory;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
 {
     public const HANDLE = 'magewire_post_livewire';
 
-    protected FormKey $formKey;
     protected ComponentHelper $componentHelper;
     protected PageFactory $resultPageFactory;
     protected SerializerInterface $serializer;
@@ -42,7 +39,6 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
     protected EventManagerInterface $eventManager;
 
     /**
-     * @param FormKey $formKey
      * @param JsonFactory $resultJsonFactory
      * @param ComponentHelper $componentHelper
      * @param PageFactory $resultPageFactory
@@ -51,7 +47,6 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
      * @param EventManagerInterface $eventManager
      */
     public function __construct(
-        FormKey $formKey,
         JsonFactory $resultJsonFactory,
         ComponentHelper $componentHelper,
         PageFactory $resultPageFactory,
@@ -59,7 +54,6 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         HttpFactory $httpFactory,
         EventManagerInterface $eventManager
     ) {
-        $this->formKey = $formKey;
         $this->componentHelper = $componentHelper;
         $this->resultPageFactory = $resultPageFactory;
         $this->serializer = $serializer;
@@ -86,7 +80,7 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
             $response = $component->getResponse();
 
             if ($response === null) {
-                throw new MagewireException(__('Response object not found for component'));
+                throw new LifecycleException(__('Response object not found for component'));
             }
 
             // Set final HTML for response.
@@ -96,19 +90,22 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
                 'effects' => $response->getEffects(),
                 'serverMemo' => $response->getServerMemo()
             ]);
-        } catch (SubsequentRequestException $exception) {
-            $result->setStatusHeader(Response::STATUS_CODE_500, AbstractMessage::VERSION_11, 'Bad Request');
-
-            return $result->setData([
-                'message' => 'Something went wrong during the subsequent request lifecycle: ' . $exception->getMessage(),
-                'code' => $exception->getCode()
-            ]);
         } catch (Exception $exception) {
-            $result->setStatusHeader(Response::STATUS_CODE_500, AbstractMessage::VERSION_11, 'Bad Request');
+            $code = $exception->getCode() === 0 ? Response::HTTP_INTERNAL_SERVER_ERROR : $exception->getCode();
+            $phrase = Response::$statusTexts[$code] ?? Response::$statusTexts[Response::HTTP_INTERNAL_SERVER_ERROR];
+
+            if ($exception instanceof LifecycleException) {
+                $message = 'Something went wrong during the request lifecycle: ' . $exception->getMessage();
+                $result->setStatusHeader($code, AbstractMessage::VERSION_11, $phrase);
+            } elseif ($exception instanceof HttpException) {
+                $result->setStatusHeader($exception->getStatusCode(), AbstractMessage::VERSION_11, $phrase);
+            } else {
+                $result->setStatusHeader($code, AbstractMessage::VERSION_11, $phrase);
+            }
 
             return $result->setData([
-                'message' => 'Something went wrong outside the component: ' . $exception->getMessage(),
-                'code' => $exception->getCode()
+                'message' => $message ?? $exception->getMessage(),
+                'code' => $code
             ]);
         }
     }
@@ -116,7 +113,7 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
     /**
      * @param array $post
      * @return BlockInterface
-     * @throws SubsequentRequestException
+     * @throws NotFoundException
      */
     public function locateWireComponent(array $post): BlockInterface
     {
@@ -130,15 +127,14 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         $block = $page->getLayout()->getBlock($post['fingerprint']['name']);
 
         if ($block === false) {
-            throw new SubsequentRequestException('Magewire component does not exist');
+            throw new NotFoundException(
+                __('Magewire component "%1" could not be found', [$post['fingerprint']['name']])
+            );
         }
 
         return $block;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
     {
         return null;
@@ -146,10 +142,9 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
 
     /**
      * @inheritDoc
-     * @throws LocalizedException
      */
     public function validateForCsrf(RequestInterface $request): ?bool
     {
-        return $request->isPost() && Security::compareStrings($request->getHeader('X-CSRF-TOKEN'), $this->formKey->getFormKey());
+        return true;
     }
 }

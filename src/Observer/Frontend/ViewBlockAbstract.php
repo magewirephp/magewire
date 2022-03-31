@@ -11,7 +11,6 @@ namespace Magewirephp\Magewire\Observer\Frontend;
 use Exception;
 use Magento\Framework\App\State as ApplicationState;
 use Magento\Framework\View\Element\Template;
-use Magewirephp\Magewire\Exception\SubsequentRequestException;
 use Magewirephp\Magewire\Helper\Component as ComponentHelper;
 use Magewirephp\Magewire\Model\ComponentManager;
 use Magewirephp\Magewire\Model\HttpFactory;
@@ -67,16 +66,18 @@ class ViewBlockAbstract
     }
 
     /**
+     * Handle both preceding and subsequent request exceptions.
+     *
      * @param Template $block
      * @param Exception $exception
-     * @throws SubsequentRequestException
+     * @throws Exception
      */
     public function throwException(Template $block, Exception $exception): void
     {
         $magewire = $block->getMagewire();
 
         if ($magewire->getRequest() && $magewire->getRequest()->isSubsequent()) {
-            throw new SubsequentRequestException($exception->getMessage());
+            throw $exception;
         }
 
         // Detach the component who's given the problems

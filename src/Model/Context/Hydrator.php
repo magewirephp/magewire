@@ -8,12 +8,14 @@
 
 namespace Magewirephp\Magewire\Model\Context;
 
+use Magewirephp\Magewire\Model\Hydrator\FormKey;
 use Magewirephp\Magewire\Model\Hydrator\Hash;
 use Magewirephp\Magewire\Model\Hydrator\BrowserEvent;
 use Magewirephp\Magewire\Model\Hydrator\Emit;
 use Magewirephp\Magewire\Model\Hydrator\Error;
 use Magewirephp\Magewire\Model\Hydrator\FlashMessage;
 use Magewirephp\Magewire\Model\Hydrator\Listener;
+use Magewirephp\Magewire\Model\Hydrator\PostDeployment;
 use Magewirephp\Magewire\Model\Hydrator\Property;
 use Magewirephp\Magewire\Model\Hydrator\QueryString;
 use Magewirephp\Magewire\Model\Hydrator\Redirect;
@@ -33,6 +35,8 @@ class Hydrator
     protected FlashMessage $flashMessageHydrator;
     protected Security $securityHydrator;
     protected Loader $loaderHydrator;
+    protected PostDeployment $postDeploymentHydrator;
+    protected FormKey $formKeyHydrator;
 
     /**
      * @param Hash $hashHydrator
@@ -46,6 +50,8 @@ class Hydrator
      * @param Redirect $redirectHydrator
      * @param Security $securityHydrator
      * @param Loader $loaderHydrator
+     * @param PostDeployment $postDeploymentHydrator
+     * @param FormKey $formKeyHydrator
      */
     public function __construct(
         Hash $hashHydrator,
@@ -58,7 +64,9 @@ class Hydrator
         Error $errorHydrator,
         Redirect $redirectHydrator,
         Security $securityHydrator,
-        Loader $loaderHydrator
+        Loader $loaderHydrator,
+        PostDeployment $postDeploymentHydrator,
+        FormKey $formKeyHydrator
     ) {
         $this->hashHydrator = $hashHydrator;
         $this->listenerHydrator = $listenerHydrator;
@@ -71,6 +79,8 @@ class Hydrator
         $this->browserEventHydrator = $browserEventHydrator;
         $this->securityHydrator = $securityHydrator;
         $this->loaderHydrator = $loaderHydrator;
+        $this->postDeploymentHydrator = $postDeploymentHydrator;
+        $this->formKeyHydrator = $formKeyHydrator;
     }
 
     /**
@@ -159,5 +169,21 @@ class Hydrator
     public function getLoaderHydrator(): Loader
     {
         return $this->loaderHydrator;
+    }
+
+    /**
+     * @return PostDeployment
+     */
+    public function getPostDeploymentHydrator(): PostDeployment
+    {
+        return $this->postDeploymentHydrator;
+    }
+
+    /**
+     * @return FormKey
+     */
+    public function getFormKeyHydrator(): FormKey
+    {
+        return $this->formKeyHydrator;
     }
 }
