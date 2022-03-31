@@ -14,7 +14,6 @@ use Magento\Framework\Locale\Resolver;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Exception\AcceptableException;
 use Magewirephp\Magewire\Exception\ComponentActionException;
-use Magewirephp\Magewire\Exception\LifecycleException;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Model\Context\Hydrator as HydratorContext;
 
@@ -46,7 +45,9 @@ class ComponentManager
 
         // Core Hydrate & Dehydrate lifecycle sort order.
         $this->hydrationPool = $this->sortHydrators($hydrationPool, [
+            $hydratorContext->getFormKeyHydrator(),
             $hydratorContext->getSecurityHydrator(),
+            $hydratorContext->getPostDeploymentHydrator(),
             $hydratorContext->getBrowserEventHydrator(),
             $hydratorContext->getFlashMessageHydrator(),
             $hydratorContext->getErrorHydrator(),
@@ -56,7 +57,7 @@ class ComponentManager
             $hydratorContext->getListenerHydrator(),
             $hydratorContext->getLoaderHydrator(),
             $hydratorContext->getEmitHydrator(),
-            $hydratorContext->getRedirectHydrator()
+            $hydratorContext->getRedirectHydrator(),
         ]);
     }
 
@@ -90,18 +91,11 @@ class ComponentManager
      *
      * @param Component $component
      * @return void
-     * @throws LifecycleException
      */
     public function hydrate(Component $component): void
     {
         foreach ($this->hydrationPool as $hydrator) {
-            try {
-                $hydrator->hydrate($component, $component->getRequest());
-            } catch (Exception $exception) {
-                throw new LifecycleException(
-                    __('An error occurred while hydrating %1: %2', [get_class($hydrator), $exception->getMessage()])
-                );
-            }
+            $hydrator->hydrate($component, $component->getRequest());
         }
     }
 
@@ -110,18 +104,11 @@ class ComponentManager
      * right before the layout block gets rendered.
      *
      * @param Component $component
-     * @throws LifecycleException
      */
     public function dehydrate(Component $component): void
     {
         foreach (array_reverse($this->hydrationPool) as $dehydrator) {
-            try {
-                $dehydrator->dehydrate($component, $component->getResponse());
-            } catch (Exception $exception) {
-                throw new LifecycleException(
-                    __('An error occurred while dehydrating %1: %2', [get_class($dehydrator), $exception->getMessage()])
-                );
-            }
+            $dehydrator->dehydrate($component, $component->getResponse());
         }
     }
 

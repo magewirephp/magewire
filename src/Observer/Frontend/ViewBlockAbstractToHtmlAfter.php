@@ -13,14 +13,13 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exception\LifecycleException;
-use Magewirephp\Magewire\Exception\SubsequentRequestException;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
 class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements ObserverInterface
 {
     /**
      * @param Observer $observer
-     * @throws SubsequentRequestException
+     * @throws Exception
      */
     public function execute(Observer $observer): void
     {
@@ -49,7 +48,6 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
      * @param Component $component
      * @param string $html
      * @return string|null
-     * @throws LifecycleException
      */
     public function renderToView(ResponseInterface $response, Component $component, string $html): ?string
     {

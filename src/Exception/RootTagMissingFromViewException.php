@@ -13,12 +13,11 @@ use Exception;
 class RootTagMissingFromViewException extends MagewireException
 {
     /**
-     * RootTagMissingFromViewException constructor.
      * @param Exception|null $cause
      * @param int $code
      */
     public function __construct(Exception $cause = null, $code = 0)
     {
-        parent::__construct(__('Magewire encountered a missing root tag when trying to render a component'), $cause, $code);
+        parent::__construct(__('Missing root tag when trying to render the Magewire component'), $cause, $code);
     }
 }
