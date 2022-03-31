@@ -150,10 +150,8 @@ class Property implements HydratorInterface
      */
     public function executeLifecycleHook(string $method, Component $component, array $params = [])
     {
-        try {
             $component->{$method}(...$params);
-        } catch (Exception $exception) {
-        }
+
     }
 
     /**
