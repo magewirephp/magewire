@@ -17,21 +17,21 @@ abstract class Form extends Component
     public const COMPONENT_TYPE = 'form';
 
     /** @var Validator $validator */
-    protected Validator $validator;
+    protected $validator;
 
     /**
      * Validation rules.
      *
      * @var array
      */
-    protected array $rules = [];
+    protected $rules = [];
 
     /**
      * Validation messages.
      *
      * @var array
      */
-    protected array $messages = [];
+    protected $messages = [];
 
     /**
      * @param Validator $validator
