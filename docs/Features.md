@@ -626,13 +626,13 @@ class Explanation extends \Magewirephp\Magewire\Component
     // Show a loading state for all methods.
     protected $loader = true;
     // Show a loading state for specific methods.
-    protected $loader = ['foo'];`
+    protected $loader = ['foo'];
     
     public function foo() {
     
         // Loading state will stay active until the listener has run
         // Loading state will disapear when there are no active listeners
-        $this->emit('some_event')
+        $this->emit('some_event');
         
     }
     
@@ -658,7 +658,7 @@ class Explanation extends \Magewirephp\Magewire\Component
 ```html
 <script>
     window.addEventListener('magewire:loader:start', () => {
-        document.body.style.cursor = 'wait';
+        document.body.style.cursor = 'wait'
     })
     window.addEventListener('magewire:loader:stop', () => {
         document.body.style.cursor = 'pointer'
@@ -742,7 +742,7 @@ class Explanation extends \Magewirephp\Magewire\Component
     public function resetFooWithBoot()
     {
         $this->reset(['foo'], true);
-    }__
+    }
 }
 ```
 
@@ -755,19 +755,19 @@ class Explanation extends \Magewirephp\Magewire\Component\Form
     
     // Always make sure the nested 'bar' property has a default value to avoid
     // bar being seen as a value of key zero.
-    public $nesting = ['bar' => '']
+    public $nesting = ['bar' => ''];
     
     // Determine the rules for your properties (optional).
     protected $rules = [
         'foo' => 'required|min:2',
-        'nesting.bar' => 'required|min:2|max:6'
-    ]
+        'nesting.bar' => 'required|min:2|max:6',
+    ];
     
     // Overwrite default rule messages or define a global for each property (optional).
     protected $messages = [
         'foo:min' => 'He! the minimal input length of :attribute needs to be 2 instead of :value.',
-        'nesting.bar:required' => 'The "Nesting Bar" property can\'t be empty...'
-        'nesting.bar:max' => 'Take it easy, just six characters allowed.'
+        'nesting.bar:required' => 'The "Nesting Bar" property can\'t be empty...',
+        'nesting.bar:max' => 'Take it easy, just six characters allowed.',
     ];
     
     public function save()
