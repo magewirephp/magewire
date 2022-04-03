@@ -794,7 +794,6 @@ By default, messages aren't shown on the page after a validation failure. You ha
 the user know what happend. This can be done in several ways.
 
 #### Example 1
-
 Show corresponding error messages below the field.
 ```html
 <form>
@@ -809,7 +808,6 @@ Show corresponding error messages below the field.
 ```
 
 #### Exmaple 2
-
 Display a stack of error messages on above the form.
 ```html
 <?php if ($magewire->hasErrors(): ?>
@@ -826,13 +824,16 @@ Display a stack of error messages on above the form.
 ```
 
 #### Example 3
-
 Within this example, we use a try-catch structure to catch optional validation failure. This isn't required by default
 where the lifecycle is able to handle these ValidationException's by default.
 ```php
 class Explanation extends \Magewirephp\Magewire\Component\Form
 {
     public $foo;
+    
+    public $rules = [
+        'foo' => 'required|min:2',
+    ];
     
     public function save()
     {
@@ -845,4 +846,38 @@ class Explanation extends \Magewirephp\Magewire\Component\Form
         }
     }
 }
+```
+
+#### Example 4
+Catch global validation exceptions.
+```php
+class Explanation extends \Magewirephp\Magewire\Component\Form
+{
+    public $foo;
+    
+    public $rules = [
+        'foo' => 'required|min:2',
+    ];
+    
+    public function save()
+    {
+        try {
+            $this->validate();
+        } catch (\Magewirephp\Magewire\Exception\AcceptableException $exception) {
+            // When you want to render the error in the view (key can be changed if required).
+            $this->clearErrors()->error('validation_exception', $exception->getMessage());
+            // When you want to notify the customer with a flash message.
+            $this->dispatchErrorMessage($exception->getMessage());
+        }
+    }
+}
+```
+```html
+<form>
+    <?php if ($magewire->hasError('validation_exception'): ?>
+    <p>Form exception thrown: <?= $magewire->getError('validation_exception') ?></p>
+    <?php endif ?>
+    
+    <input type="text" wire:model="foo"/>
+</form>
 ```

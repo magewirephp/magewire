@@ -28,11 +28,11 @@ section to enable all the Magewire richness in your Blank or Luma projects.
 ## Roadmap
 - Unit & Integration tests
 - Single and Multi file upload integrations
-- Enrich pagination functionality
-- Advanced Query String manipulation
 - Throttling capabilities
 - Wireable Interface concept for public object properties like e.g. DataObject
 - Parent / Children system for Emit Up compatibility
+- Enrich pagination functionality (long term)
+- Advanced Query String manipulation (long term)
 
 ## Tools
 - [Livewire Devtools](https://chrome.google.com/webstore/detail/livewire-devtools/ahcmcdmhdcgbpklkdhpejphjekpmhkll) by [Beyond Code](https://beyondco.de/)
