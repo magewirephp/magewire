@@ -35,7 +35,7 @@ section to enable all the Magewire richness in your Blank or Luma projects.
 - Advanced Query String manipulation (long term)
 
 ## Tools
-- [Livewire Devtools](https://chrome.google.com/webstore/detail/livewire-devtools/ahcmcdmhdcgbpklkdhpejphjekpmhkll) by [Beyond Code](https://beyondco.de/)
+- [A list of helpful developer tools](./docs/Tools.md)
 
 ## Security Vulnerabilities
 If you discover a security vulnerability within Magewire, please create a PR or send an e-mail to Willem Poortman via
