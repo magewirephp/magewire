@@ -11,13 +11,13 @@ namespace Magewirephp\Magewire\Model\Action\Type;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exception\ComponentException;
 use Magewirephp\Magewire\Helper\Property as PropertyHelper;
+use Magewirephp\Magewire\Model\Upload\UploadAdapterInterface;
 
 class Magic
 {
     protected PropertyHelper $propertyHelper;
 
     /**
-     * Magic constructor.
      * @param PropertyHelper $propertyHelper
      */
     public function __construct(
