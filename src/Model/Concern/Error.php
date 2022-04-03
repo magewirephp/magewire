@@ -73,4 +73,13 @@ trait Error
     {
         return $this->hasError($property) ? $this->errors[$property] : __('No %1 error found', [$property]);
     }
+
+    /**
+     * @return $this
+     */
+    public function clearErrors(): self
+    {
+        $this->errors = [];
+        return $this;
+    }
 }

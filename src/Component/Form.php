@@ -8,6 +8,8 @@
 
 namespace Magewirephp\Magewire\Component;
 
+use Exception;
+use Magewirephp\Magewire\Exception\AcceptableException;
 use Rakit\Validation\Validator;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exception\ValidationException;
@@ -48,6 +50,7 @@ abstract class Form extends Component
      * @param array|null $data
      * @return bool
      * @throws ValidationException
+     * @throws AcceptableException
      */
     public function validate(array $rules = [], array $messages = [], array $data = null): bool
     {
@@ -58,14 +61,18 @@ abstract class Form extends Component
             return __($message);
         }, array_merge($this->messages, $messages));
 
-        $validation = $this->validator->validate($data, $rules, $messages);
+        try {
+            $validation = $this->validator->validate($data, $rules, $messages);
 
-        if ($validation->fails()) {
-            foreach ($validation->errors()->toArray() as $key => $error) {
-                $this->error($key, current($error));
+            if ($validation->fails()) {
+                foreach ($validation->errors()->toArray() as $key => $error) {
+                    $this->error($key, current($error));
+                }
+
+                throw new ValidationException(__('Something went wrong while validating the form input'));
             }
-
-            throw new ValidationException(__('Something went wrong while validating your form input.'));
+        } catch (Exception $exception) {
+            throw new AcceptableException(__($exception->getMessage()));
         }
 
         return true;
