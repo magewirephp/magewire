@@ -8,10 +8,12 @@
 
 namespace Magewirephp\Magewire\Model;
 
+use Magento\Framework\View\Element\Block\ArgumentInterface;
+
 /**
  * @api
  */
-interface WireableInterface
+interface WireableInterface extends ArgumentInterface
 {
     /**
      * @return array|string|int|bool
@@ -19,8 +21,8 @@ interface WireableInterface
     public function wire();
 
     /**
-     * @param array|string|int|bool $value
-     * @return mixed
+     * @param $value
+     * @return WireableInterface
      */
-    public static function dewire($value);
+    public function unwire($value): WireableInterface;
 }

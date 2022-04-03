@@ -32,14 +32,19 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
                 $component = $this->getComponentHelper()->extractComponentFromBlock($block);
                 $component->setParent($this->determineTemplate($block));
 
-                $request = $component->getRequest();
-                $data = $this->getComponentHelper()->extractDataFromBlock($block);
+                $data = $this->componentHelper->extractDataFromBlock($block);
+                $component->boot(...array_values($data));
 
-                // Fix for subsequent rendered wired children via e.g. a getChildHtml()
+                $request = $component->getRequest();
+
+                // Fix for subsequent rendered wired children via e.g. a getChildHtml().
                 if ($request !== null && $request->isSubsequent()) {
                     $this->overwriteUpdateHandle($request->getFingerprint('handle'));
                 }
-                if (($request === null) || ($request->isPreceding())) {
+
+                if ($request === null || $request->isPreceding()) {
+                    $component->mount(...array_values($data));
+
                     $request = $this->getComponentManager()->createInitialRequest(
                         $block,
                         $component,
@@ -48,17 +53,17 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
                     );
                 }
 
-                // Hydration lifecycle step
                 $this->getComponentManager()->hydrate($component->setRequest($request));
+                // Runs on every request, after the component is mounted or hydrated, but before any update methods are called.
+                $component->booted();
 
                 if ($component->hasRequest('updates')) {
                     $this->getComponentManager()->processUpdates($component, $request->getUpdates());
                 }
 
-                // Finalize component with its Response object
+                // Finalize component with its Response object.
                 $component->setResponse($this->getHttpFactory()->createResponse($component->getRequest()));
-
-                // Re-attach the component onto the block
+                // Re-attach the component onto the block.
                 $block->setData('magewire', $component);
             } catch (Exception $exception) {
                 $this->throwException($block, $exception);

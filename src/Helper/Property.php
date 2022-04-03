@@ -60,11 +60,12 @@ class Property
     /**
      * @param string $path
      * @param array $value
+     * @param null $default
      * @return mixed|null
      */
-    public function searchViaDots(string $path, array $value)
+    public function searchViaDots(string $path, array $value, $default = null)
     {
-        return $this->arrayManager->get($path, $value, null, '.');
+        return $this->arrayManager->get($path, $value, null, '.') ?? $default;
     }
 
     /**
