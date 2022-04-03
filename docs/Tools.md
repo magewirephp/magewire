@@ -5,7 +5,7 @@ Below is a collection of tools that work well together when developing with Mage
 
 ## Tools
 - [Livewire Devtools](https://chrome.google.com/webstore/detail/livewire-devtools/ahcmcdmhdcgbpklkdhpejphjekpmhkll) by [Beyond Code](https://beyondco.de/)
-- [The VarDumper Component](https://https://symfony.com/doc/current/components/var_dumper.html) by [Symfony](https://symfony.com/)
+- [The VarDumper Component](https://symfony.com/doc/current/components/var_dumper.html) by [Symfony](https://symfony.com/)
 - [Ray](https://spatie.be/docs/ray/v1/introduction) by [Spatie](https://spatie.be/)
 
 ## Livewire Devtools
@@ -16,7 +16,6 @@ Chrome and Firefox DevTools extension for debugging Livewire applications.
 The Livewire Devtools extension allows you to quickly inspect all available Livewire components and it's state on your Laravel sites. All changes that occurred in your Livewire component will be visible in the devtools as they happen.
 
 ## The VarDumper Component
-
 The VarDumper component creates a global `dump()` && `dd()` function that you can use instead of e.g. `var_dump`
 
 To Install: 
@@ -30,7 +29,6 @@ By using it, you'll gain:
 - [For a full list of features]('https://symfony.com/doc/current/components/var_dumper.html')
 
 ### Example Usage
-
 ```php
 <?php
 
@@ -60,7 +58,6 @@ Ray is similar to `The VarDumper Component` listed above, but is an independent 
 Allowing to dump data during requests. 
 
 ### Example Usage
-
 ```php
 <?php
 
