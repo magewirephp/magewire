@@ -24,6 +24,7 @@ section to enable all the Magewire richness in your Blank or Luma projects.
 - [More about Compatibility](./docs/Compatibility.md)
 - [More about Components](./docs/Component.md)
 - [More about Hydrators](./docs/Hydrators.md)
+- [Developer Tools](./docs/Tools.md)
 
 ## Roadmap
 - Unit & Integration tests
@@ -33,9 +34,6 @@ section to enable all the Magewire richness in your Blank or Luma projects.
 - Parent / Children system for Emit Up compatibility
 - Enrich pagination functionality (long term)
 - Advanced Query String manipulation (long term)
-
-## Tools
-- [A list of helpful developer tools](./docs/Tools.md)
 
 ## Security Vulnerabilities
 If you discover a security vulnerability within Magewire, please create a PR or send an e-mail to Willem Poortman via
