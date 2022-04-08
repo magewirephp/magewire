@@ -11,14 +11,14 @@ use Magento\Framework\View\Element\Template;
 
 /** @var $block Template */
 ?>
-<div class="overflow-x-auto">
-    <p>
-        <?= __('We\'re sorry, but we can\'t display this part of the page due to an error. Please try again later.') ?>
-    </p>
-
-    <?php if ($block->getApplicationState()->getMode() === State::MODE_DEVELOPER): ?>
-    <pre class="whitespace-nowrap text-xs">
-        <?= $block->getException()->getMessage() ?>
+<?php if ($block->getApplicationState()->getMode() === State::MODE_DEVELOPER): ?>
+<div class="magewire-exception">
+    <pre class="whitespace-pre-line text-sm text-gray-600 border rounded border-gray-600 p-4">
+        <span class="text-red-600 font-bold">Exception:</span> <?= $block->getException()->getMessage() ?>
     </pre>
-    <?php endif; ?>
+
+    <p class="text-xs mt-2">This exception was thrown while parsing and/or rendering the Magewire component with block name "<?= $block->getNameInLayout() ?>".</p>
 </div>
+<?php endif; ?>
+<!-- Magewire Component wire-exception: <?= $block->getNameInLayout() ?>-->
+

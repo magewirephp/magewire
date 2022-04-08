@@ -66,25 +66,35 @@ class ViewBlockAbstract
     }
 
     /**
-     * Handle both preceding and subsequent request exceptions.
-     *
      * @param Template $block
      * @param Exception $exception
-     * @throws Exception
+     * @return Template
+     * @throws Exception // when on a subsequent update request.
      */
-    public function throwException(Template $block, Exception $exception): void
+    public function transformToExceptionBlock(Template $block, Exception $exception): Template
     {
         $magewire = $block->getMagewire();
 
+        /*
+         * Just throw the exception went the request is in a subsequent state. This exception
+         * will get caught within the controller action who will respond and show the
+         * user a modal with the current given exception.
+         */
         if ($magewire->getRequest() && $magewire->getRequest()->isSubsequent()) {
             throw $exception;
         }
 
-        // Detach the component who's given the problems
+        /*
+         * In this stage, we know the page is in a preceding state, which means it on a
+         * regular page load where it just needs to grep the block and change it's template
+         * into the default Magewire exception template.
+         */
         $block->unsetData('magewire');
 
         $block->setTemplate('Magewirephp_Magewire::component/exception.phtml');
         $block->setException($exception);
         $block->setApplicationState($this->applicationState);
+
+        return $block;
     }
 }
