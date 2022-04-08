@@ -65,6 +65,7 @@ abstract class Component implements ArgumentInterface
     /**
      * Component name.
      *
+     * @deprecated
      * @reserved
      * @var string|null
      */
