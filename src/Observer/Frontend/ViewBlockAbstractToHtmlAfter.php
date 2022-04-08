@@ -34,11 +34,16 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
                     throw new LifecycleException(__('Component response object not found'));
                 }
 
+                if ($block->getNameInLayout() === 'price-summary.coupon-code') {
+                    throw new Exception('bla');
+                }
+
                 $observer->getTransport()->setHtml(
                     $this->renderToView($response, $component, $observer->getTransport()->getHtml())
                 );
             } catch (Exception $exception) {
-                $this->throwException($block, $exception);
+                $block = $this->transformToExceptionBlock($block, $exception);
+                $observer->getTransport()->setHtml($block->toHtml());
             }
         }
     }

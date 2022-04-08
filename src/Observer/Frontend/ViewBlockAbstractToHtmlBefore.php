@@ -35,7 +35,7 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
                 $request = $component->getRequest();
                 $data = $this->getComponentHelper()->extractDataFromBlock($block);
 
-                // Fix for subsequent rendered wired children via e.g. a getChildHtml()
+                // Fix for subsequent rendered wired children via e.g. a getChildHtml().
                 if ($request !== null && $request->isSubsequent()) {
                     $this->overwriteUpdateHandle($request->getFingerprint('handle'));
                 }
@@ -48,20 +48,19 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
                     );
                 }
 
-                // Hydration lifecycle step
+                // Hydration lifecycle step.
                 $this->getComponentManager()->hydrate($component->setRequest($request));
 
                 if ($component->hasRequest('updates')) {
                     $this->getComponentManager()->processUpdates($component, $request->getUpdates());
                 }
 
-                // Finalize component with its Response object
+                // Finalize component with its Response object.
                 $component->setResponse($this->getHttpFactory()->createResponse($component->getRequest()));
-
-                // Re-attach the component onto the block
+                // Re-attach the component onto the block.
                 $block->setData('magewire', $component);
             } catch (Exception $exception) {
-                $this->throwException($block, $exception);
+                $observer->setBlock($this->transformToExceptionBlock($block, $exception));
             }
         }
     }
