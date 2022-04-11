@@ -9,26 +9,46 @@
 namespace Magewirephp\Magewire\Helper;
 
 use Magento\Framework\View\Element\BlockInterface;
+use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Exception\MissingComponentException;
 use Magewirephp\Magewire\Component as MagewireComponent;
+use Magewirephp\Magewire\Model\ComponentFactory;
 
 class Component
 {
+    protected ComponentFactory $componentFactory;
+
     /**
-     * @param BlockInterface $block
+     * @param ComponentFactory $componentFactory
+     */
+    public function __construct(
+        ComponentFactory $componentFactory
+    ) {
+        $this->componentFactory = $componentFactory;
+    }
+
+    /**
+     * @param Template $block
+     * @param bool $init
      * @return MagewireComponent
      * @throws MissingComponentException
      */
-    public function extractComponentFromBlock(BlockInterface $block): MagewireComponent
+    public function extractComponentFromBlock(Template $block, bool $init = false): MagewireComponent
     {
-        $magewire = $block->getMagewire();
+        $magewire = $block->getData('magewire');
 
         if ($magewire) {
-            if (is_array($magewire)) {
-                return $magewire['type'];
-            }
-            if (is_object($magewire)) {
-                return $magewire;
+            $component = is_array($magewire) ? $magewire['type'] : (is_object($magewire) ? $magewire : null);
+
+            if ($component instanceof MagewireComponent) {
+                if ($init) {
+                    $component = $this->componentFactory->create($component);
+                }
+
+                $component->name = $block->getNameInLayout();
+                $component->id = $component->id ?? $component->name;
+
+                return $component->setParent($block);
             }
         }
 

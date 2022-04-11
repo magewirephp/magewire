@@ -66,26 +66,6 @@ class ComponentManager
 
     /**
      * @param Component $component
-     * @param Template $block
-     * @return $this
-     */
-    public function initComponent(Component $component, Template $block): self
-    {
-        $type = get_class($component);
-        $nameInLayout = $block->getNameInLayout();
-
-        // Fix until v2 to avoid strange component ID behavior.
-        if ((isset($this->entityRegistry[$type]) && $component->id === $this->entityRegistry[$type]) || $component->id === null) {
-            $component->id = $nameInLayout;
-            $this->entityRegistry[$type] = $component->id;
-        }
-
-        $component->name = $nameInLayout;
-        return $this;
-    }
-
-    /**
-     * @param Component $component
      * @param array $updates
      * @throws LocalizedException
      * @throws ComponentActionException
