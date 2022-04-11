@@ -13,6 +13,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Model\Concern\BrowserEvent as BrowserEventConcern;
+use Magewirephp\Magewire\Model\Concern\Children as ChildrenConcern;
 use Magewirephp\Magewire\Model\Concern\Conversation as ConversationConcern;
 use Magewirephp\Magewire\Model\Concern\Emit as EmitConcern;
 use Magewirephp\Magewire\Model\Concern\Error as ErrorConcern;
@@ -40,6 +41,7 @@ abstract class Component implements ArgumentInterface
      * and make it a bit more clear and clean.
      */
     use BrowserEventConcern,
+        ChildrenConcern,
         ConversationConcern,
         EmitConcern,
         ErrorConcern,
@@ -65,7 +67,6 @@ abstract class Component implements ArgumentInterface
     /**
      * Component name.
      *
-     * @deprecated
      * @reserved
      * @var string|null
      */

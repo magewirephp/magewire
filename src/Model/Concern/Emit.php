@@ -33,15 +33,15 @@ trait Emit
         return $this->eventQueue[] = new Event($event, $params);
     }
 
-//    /**
-//     * @param string $event
-//     * @param ...$params
-//     * @return Event
-//     */
-//    public function emitUp(string $event, ...$params): Event
-//    {
-//        return $this->emit($event, ...$params)->up();
-//    }
+    /**
+     * @param string $event
+     * @param ...$params
+     * @return Event
+     */
+    public function emitUp(string $event, ...$params): Event
+    {
+        return $this->emit($event, ...$params)->up();
+    }
 
     /**
      * Only emit an event on the component that fired the event.
@@ -78,5 +78,16 @@ trait Emit
     public function emitToRefresh(string $name, ...$params): Event
     {
         return $this->emitTo($name, 'refresh', $params);
+    }
+
+    /**
+     * Refresh all parents.
+     *
+     * @param ...$params
+     * @return Event
+     */
+    public function emitToRefreshUp(...$params): Event
+    {
+        return $this->emitUp('refresh', $params);
     }
 }

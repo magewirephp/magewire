@@ -1,5 +1,53 @@
 # Magewire - Features
 
+## Index
+- [Best Practices](#best-practices)
+- [Folder Structure](#folder-structure)
+- [Javascript](#javascript)
+    - [Document Events](#document-events)
+    - [Lifecycle Hooks](#lifecycle-hooks)
+- [Block Structure](#block-structure)
+- [Templates](#templates)
+  - [Switch Template](#switch-template)
+- [Wire Ignore](#wire-ignore)
+  - [Childr Block Rendering](#child-block-rendering)
+- [Component Types](#component-types)
+- [Magic Actions & Properties](#magic-actions--properties)
+  - [Overwrites](#overwrites)
+- [Properties](#properties)
+  - [Name Specific](#name-specific)
+  - [Nesting](#nesting)
+- [Flash Messages](#flash-messages)
+- [Redirects](#redirects)
+- [Listeners & Emits](#listeners--emits)
+  - [Javascript](#javascript-el)
+  - [Magic Actions Compatibility](#magic-actions-compatibility)
+  - [Global Refresh Listener](#global-refresh-listener)
+- [Lifecycle Hooks](#lifecycle-hooks)
+- [Browser Events](#browser-events)
+- [Prefetching](#prefetching)
+- [Lazy Updating](#lazy-updating)
+- [Keydown Modifiers](#keydown-modifiers)
+- [Restricted Public Methods](#restricted-public-methods)
+  - [Global](#global-rpm)
+  - [Component](#component-rpm)
+- [Pagination](#pagination)
+- [Query String](#query-string)
+- [Set A Predictable wire:id](#set-a-predictable-wireid)
+- [Display Loading State](#display-loading-state)
+  - [Indicator Customization](#indicator-customization)
+  - [Indicator Removal](#indicator-removal)
+  - [Custom Example](#custom-example-dls)
+- [Plugins](#plugins)
+- [Reset](#reset)
+- [Forms](#forms)
+  - [Message Translations](#message-translations-f)
+  - [Message Displayment](#message-displayment-f)
+    - [Example 1](#example-1-md)
+    - [Example 2](#example-2-md)
+    - [Example 3](#example-3-md)
+    - [Example 4](#example-4-md)
+
 ## Best Practices
 1. Use the Magewire naming conventions and structures.
 2. Use Hydrators to manipulate data before or after a method gets called.
@@ -55,8 +103,8 @@ inside the [Livewire docs](https://laravel-livewire.com/docs/2.x/reference#globa
     </arguments>
 </block>
 ```
-> **Note**: Template will automatically be set if a Magewire component has been set. When your component is named Foo, just
-> create a foo.phtml inside the /view/templates/magewire folder.
+> **Note**: Template will automatically be set if a Magewire component has been set. When your component is named Foo,
+> just  create a foo.phtml inside the /view/templates/magewire folder.
 
 ## Templates
 Options within your block template. The ```$magewire``` variable is by default available in your Component template.
@@ -320,7 +368,7 @@ class B extends \Magewirephp\Magewire\Component
 }
 ```
 
-### JavaScript
+### JavaScript (E&L)
 ```js
 // Emit to every component who listens to 'youCanCallMe'.
 Magewire.emit('youCanCallMe', {value: 'hi there'})
@@ -515,7 +563,7 @@ public function keyDown()
 Public methods can be restricted from subsequent request executions. Prevent method executions who are meant for
 inside the phtml template only. It's not a best practice and you should use a ViewModel in most cases.
 
-### Global
+### Global (rpm)
 ```xml
 <type name="Magewirephp\Magewire\Model\Action\CallMethod">
     <arguments>
@@ -527,7 +575,7 @@ inside the phtml template only. It's not a best practice and you should use a Vi
 ```
 **File**: etc/frontend/di.xml
 
-### Component
+### Component (rpm)
 ```php
 class Explanation extends \Magewirephp\Magewire\Component
 {
@@ -681,7 +729,7 @@ needed for the project.
 ```
 **File**: view/frontend/layout/default_hyva.xml
 
-### Custom Example
+### Custom Example (dls)
 Ofcourse you're able to build it more custom for your wired component only.
 ```html
 <div x-data="{d: false}">
@@ -782,18 +830,18 @@ class Explanation extends \Magewirephp\Magewire\Component\Form
 ```
 Go and read the [Rakit/Validation](https://github.com/rakit/validation) documentation for more information.
 
-### Message Translations
+### Message Translations (f)
 Use Magento's regular i18n translations to translate form validation messages.
 ```csv
 ":attribute value (:value) has a minimal length of two.",":attribute value (:value) has a minimal length of two."
 ```
 > **Note**: Both ```:attribute``` and ```:value``` can be used when required.
 
-### Message Displayment
+### Message Displayment (f)
 By default, messages aren't shown on the page after a validation failure. You have to put in some work in order to let
 the user know what happend. This can be done in several ways.
 
-#### Example 1
+#### Example 1 (md)
 Show corresponding error messages below the field.
 ```html
 <form>
@@ -807,7 +855,7 @@ Show corresponding error messages below the field.
 </form>
 ```
 
-#### Exmaple 2
+#### Exmaple 2 (md)
 Display a stack of error messages on above the form.
 ```html
 <?php if ($magewire->hasErrors(): ?>
@@ -823,7 +871,7 @@ Display a stack of error messages on above the form.
 </form>
 ```
 
-#### Example 3
+#### Example 3 (md)
 Within this example, we use a try-catch structure to catch optional validation failure. This isn't required by default
 where the lifecycle is able to handle these ValidationException's by default.
 ```php
@@ -848,7 +896,7 @@ class Explanation extends \Magewirephp\Magewire\Component\Form
 }
 ```
 
-#### Example 4
+#### Example 4 (md)
 Catch global validation exceptions.
 ```php
 class Explanation extends \Magewirephp\Magewire\Component\Form
