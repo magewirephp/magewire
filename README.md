@@ -31,7 +31,6 @@ section to enable all the Magewire richness in your Blank or Luma projects.
 - Single and Multi file upload integrations
 - Throttling capabilities
 - Wireable Interface concept for public object properties like e.g. DataObject
-- Parent / Children system for Emit Up compatibility
 - Enrich pagination functionality (long term)
 - Advanced Query String manipulation (long term)
 
