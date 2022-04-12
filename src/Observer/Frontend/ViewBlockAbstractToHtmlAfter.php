@@ -25,9 +25,10 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
      */
     public function execute(Observer $observer): void
     {
+        /** @var Template $block */
         $block = $observer->getBlock();
 
-        if ($block->hasMagewire()) {
+        if ($block->hasData('magewire')) {
             try {
                 $component = $this->getComponentHelper()->extractComponentFromBlock($block);
                 $response  = $component->getResponse();
@@ -38,7 +39,7 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
                 }
 
                 // Add previous rendered components as children of the current component.
-                $this->registerChildren($block, $component, $html);
+                $this->registerChildren($block->getNameInLayout(), $component, $html);
 
                 $observer->getTransport()->setHtml(
                     $this->renderToView($response, $component, $html)
@@ -82,32 +83,38 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
     /**
      * Assign children to the component.
      *
-     * @param Template $block
+     * @param string $nameInLayout
      * @param Component $component
      * @param string $html
      * @throws RootTagMissingFromViewException
      */
-    public function registerChildren(Template $block, Component $component, string $html)
+    public function registerChildren(string $nameInLayout, Component $component, string $html)
     {
-        $id = $block->getNameInLayout();
+        if ($this->getRenderLifecycle()->exists($nameInLayout) === false) {
+            return;
+        }
 
-        if ($this->tree->inTree($id)) {
-            preg_match('/(<[a-zA-Z0-9\-]*)/', $html, $matches, PREG_OFFSET_CAPTURE);
+        // Try to grep first DOM element of the current rendered component.
+        preg_match('/(<[a-zA-Z0-9\-]*)/', $html, $matches, PREG_OFFSET_CAPTURE);
 
-            if (count($matches) === 0) {
-                throw new RootTagMissingFromViewException();
-            }
+        if (count($matches) === 0) {
+            throw new RootTagMissingFromViewException();
+        }
 
-            $this->tree->registerTag(trim($matches[0][0], '<'), $id);
-            $tree = $this->tree->getTree();
+        $this->getRenderLifecycle()->setStartTag(trim($matches[0][0], '<'), $nameInLayout);
 
-            if ($id !== array_key_last($tree)) {
-                $children = $this->tree->getComplete($id);
-                $this->tree->unregister($id);
-
-                foreach ($children as $id => $tag) {
-                    $component->logRenderedChild($id, $tag);
+        if ($this->getRenderLifecycle()->canStop($nameInLayout)) {
+            $children = $this->getRenderLifecycle()->getViewsWithFilter(function ($value, string $key) use ($nameInLayout) {
+                if ((is_string($value) && $key !== $nameInLayout)) {
+                    return $value;
                 }
+
+                return false;
+            });
+            $this->getRenderLifecycle()->stop($nameInLayout);
+
+            foreach ($children as $name => $tag) {
+                $component->logRenderedChild($name, $tag);
             }
         }
     }

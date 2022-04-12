@@ -30,7 +30,7 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
         if ($block->hasMagewire()) {
             try {
                 $component = $this->getComponentHelper()->extractComponentFromBlock($block, true);
-                $this->tree->register($block->getNameInLayout());
+                $this->getRenderLifecycle()->start($block->getNameInLayout());
 
                 $request = $component->getRequest();
                 $data = $this->getComponentHelper()->extractDataFromBlock($block);

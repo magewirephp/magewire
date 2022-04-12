@@ -38,7 +38,9 @@ class Component
         $magewire = $block->getData('magewire');
 
         if ($magewire) {
-            $component = is_array($magewire) ? $magewire['type'] : (is_object($magewire) ? $magewire : null);
+            $component = is_array($magewire)
+                ? $magewire['type'] : (is_object($magewire)
+                    ? $magewire : $this->componentFactory->create());
 
             if ($component instanceof MagewireComponent) {
                 if ($init) {
