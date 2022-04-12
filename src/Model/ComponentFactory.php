@@ -26,13 +26,13 @@ class ComponentFactory
     }
 
     /**
-     * @param Component $component
+     * @param Component|null $component
      * @param array $data
-     * @return mixed|string
+     * @return Component
      */
-    public function create(Component $component, array $data = [])
+    public function create(Component $component = null, array $data = []): Component
     {
-        $class = get_class($component);
+        $class = $component ? get_class($component) : Component::class;
 
         if (isset($this->instances[$class])) {
             return $this->objectManager->create($class, [$data]);
