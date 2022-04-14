@@ -14,6 +14,8 @@ use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Helper\Component as ComponentHelper;
 use Magewirephp\Magewire\Model\ComponentManager;
 use Magewirephp\Magewire\Model\HttpFactory;
+use Magewirephp\Magewire\Model\RenderLifecycle;
+use Magewirephp\Magewire\Model\TreeMaster;
 
 class ViewBlockAbstract
 {
@@ -21,24 +23,27 @@ class ViewBlockAbstract
     protected ComponentHelper $componentHelper;
     protected ComponentManager $componentManager;
     protected HttpFactory $httpFactory;
+    protected RenderLifecycle $renderLifecycle;
 
     /**
-     * ViewBlockAbstract constructor.
      * @param ApplicationState $applicationState
      * @param ComponentManager $componentManager
      * @param ComponentHelper $componentHelper
      * @param HttpFactory $httpFactory
+     * @param RenderLifecycle $renderLifecycle
      */
     public function __construct(
         ApplicationState $applicationState,
         ComponentManager $componentManager,
         ComponentHelper $componentHelper,
-        HttpFactory $httpFactory
+        HttpFactory $httpFactory,
+        RenderLifecycle $renderLifecycle
     ) {
         $this->applicationState = $applicationState;
         $this->componentHelper = $componentHelper;
         $this->componentManager = $componentManager;
         $this->httpFactory = $httpFactory;
+        $this->renderLifecycle = $renderLifecycle;
     }
 
     /**
@@ -63,6 +68,14 @@ class ViewBlockAbstract
     public function getHttpFactory(): HttpFactory
     {
         return $this->httpFactory;
+    }
+
+    /**
+     * @return RenderLifecycle
+     */
+    public function getRenderLifecycle(): RenderLifecycle
+    {
+        return $this->renderLifecycle;
     }
 
     /**

@@ -28,9 +28,6 @@ class Hash implements HydratorInterface
             throw new ComponentHydrationException(__('Request fingerprint doesn\'t have all data available'));
         }
 
-        $component->id   = $request->fingerprint['id'];
-        $component->name = $request->fingerprint['name'];
-
         if (isset($request->memo['htmlHash'])) {
             $this->domHashes[$component->id] = $request->memo['htmlHash'];
         }
