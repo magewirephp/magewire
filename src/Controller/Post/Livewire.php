@@ -10,7 +10,9 @@ namespace Magewirephp\Magewire\Controller\Post;
 
 use Exception;
 use Laminas\Http\AbstractMessage;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NotFoundException;
+use Magewirephp\Magewire\Helper\Security as SecurityHelper;
 use Symfony\Component\HttpFoundation\Response;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\CsrfAwareActionInterface;
@@ -37,6 +39,8 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
     protected HttpFactory $httpFactory;
     protected JsonFactory $resultJsonFactory;
     protected EventManagerInterface $eventManager;
+    protected SecurityHelper $securityHelper;
+    protected RequestInterface $request;
 
     /**
      * @param JsonFactory $resultJsonFactory
@@ -45,6 +49,8 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
      * @param SerializerInterface $serializer
      * @param HttpFactory $httpFactory
      * @param EventManagerInterface $eventManager
+     * @param SecurityHelper $securityHelper
+     * @param RequestInterface $request
      */
     public function __construct(
         JsonFactory $resultJsonFactory,
@@ -52,7 +58,9 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         PageFactory $resultPageFactory,
         SerializerInterface $serializer,
         HttpFactory $httpFactory,
-        EventManagerInterface $eventManager
+        EventManagerInterface $eventManager,
+        SecurityHelper $securityHelper,
+        RequestInterface $request
     ) {
         $this->componentHelper = $componentHelper;
         $this->resultPageFactory = $resultPageFactory;
@@ -60,6 +68,8 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         $this->httpFactory = $httpFactory;
         $this->resultJsonFactory = $resultJsonFactory;
         $this->eventManager = $eventManager;
+        $this->securityHelper = $securityHelper;
+        $this->request = $request;
     }
 
     /**
@@ -70,6 +80,8 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         $result = $this->resultJsonFactory->create();
 
         try {
+            $this->validateForUpdateRequest();
+
             $post = $this->serializer->unserialize(file_get_contents('php://input'));
             $block = $this->locateWireComponent($post);
 
@@ -135,6 +147,9 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         return $block;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
     {
         return null;
@@ -143,8 +158,18 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
     /**
      * @inheritDoc
      */
-    public function validateForCsrf(RequestInterface $request): ?bool
+    public function validateForCsrf(RequestInterface $request): bool
     {
         return true;
+    }
+
+    /**
+     * @throws LocalizedException
+     */
+    public function validateForUpdateRequest(): void
+    {
+        if ($this->securityHelper->validateFormKey($this->request) === false) {
+            throw new HttpException(419, 'Form key expired. Please refresh and try again.');
+        }
     }
 }

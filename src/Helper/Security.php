@@ -9,7 +9,11 @@
 namespace Magewirephp\Magewire\Helper;
 
 use Magento\Framework\App\DeploymentConfig;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Data\Form\FormKey as ApplicationFormKey;
+use Magento\Framework\Encryption\Helper\Security as EncryptionSecurityHelper;
 use Magento\Framework\Exception\FileSystemException;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\RuntimeException;
 use Magento\Framework\Serialize\SerializerInterface;
 
@@ -17,18 +21,21 @@ class Security
 {
     protected DeploymentConfig $deployConfig;
     protected SerializerInterface $serializer;
+    protected ApplicationFormKey $formkey;
 
     /**
-     * Component constructor.
      * @param DeploymentConfig $deployConfig
      * @param SerializerInterface $serializer
+     * @param ApplicationFormKey $formkey
      */
     public function __construct(
         DeploymentConfig $deployConfig,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        ApplicationFormKey $formkey
     ) {
         $this->deployConfig = $deployConfig;
         $this->serializer = $serializer;
+        $this->formkey = $formkey;
     }
 
     /**
@@ -57,5 +64,15 @@ class Security
     public function validateChecksum(string $checksum, array $data1, array $data2): bool
     {
         return hash_equals($this->generateChecksum($data1, $data2), $checksum);
+    }
+
+    /**
+     * @param RequestInterface $request
+     * @return bool
+     * @throws LocalizedException
+     */
+    public function validateFormKey(RequestInterface $request): bool
+    {
+        return EncryptionSecurityHelper::compareStrings($request->getHeader('X-CSRF-TOKEN'), $this->formkey->getFormKey());
     }
 }
