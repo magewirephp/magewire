@@ -11,8 +11,10 @@ namespace Magewirephp\Magewire\Observer\Frontend;
 use Exception;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exception\LifecycleException;
+use Magewirephp\Magewire\Exception\RootTagMissingFromViewException;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
 class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements ObserverInterface
@@ -23,19 +25,24 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
      */
     public function execute(Observer $observer): void
     {
+        /** @var Template $block */
         $block = $observer->getBlock();
 
-        if ($block->hasMagewire()) {
+        if ($block->hasData('magewire')) {
             try {
                 $component = $this->getComponentHelper()->extractComponentFromBlock($block);
                 $response  = $component->getResponse();
+                $html      = $observer->getTransport()->getHtml();
 
                 if ($response === null) {
                     throw new LifecycleException(__('Component response object not found'));
                 }
 
+                // Add previous rendered components as children of the current component.
+                $this->registerChildren($block->getNameInLayout(), $component, $html);
+
                 $observer->getTransport()->setHtml(
-                    $this->renderToView($response, $component, $observer->getTransport()->getHtml())
+                    $this->renderToView($response, $component, $html)
                 );
             } catch (Exception $exception) {
                 $block = $this->transformToExceptionBlock($block, $exception);
@@ -71,6 +78,45 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
         }
 
         return $response->effects['html'];
+    }
+
+    /**
+     * Assign children to the component.
+     *
+     * @param string $nameInLayout
+     * @param Component $component
+     * @param string $html
+     * @throws RootTagMissingFromViewException
+     */
+    public function registerChildren(string $nameInLayout, Component $component, string $html)
+    {
+        if ($this->getRenderLifecycle()->exists($nameInLayout) === false) {
+            return;
+        }
+
+        // Try to grep first DOM element of the current rendered component.
+        preg_match('/(<[a-zA-Z0-9\-]*)/', $html, $matches, PREG_OFFSET_CAPTURE);
+
+        if (count($matches) === 0) {
+            throw new RootTagMissingFromViewException();
+        }
+
+        $this->getRenderLifecycle()->setStartTag(trim($matches[0][0], '<'), $nameInLayout);
+
+        if ($this->getRenderLifecycle()->canStop($nameInLayout)) {
+            $children = $this->getRenderLifecycle()->getViewsWithFilter(function ($value, string $key) use ($nameInLayout) {
+                if ((is_string($value) && $key !== $nameInLayout)) {
+                    return $value;
+                }
+
+                return false;
+            });
+            $this->getRenderLifecycle()->stop($nameInLayout);
+
+            foreach ($children as $name => $tag) {
+                $component->logRenderedChild($name, $tag);
+            }
+        }
     }
 
     /**

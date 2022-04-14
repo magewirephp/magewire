@@ -64,6 +64,7 @@ class Security implements HydratorInterface
      */
     public function dehydrate(Component $component, ResponseInterface $response): void
     {
-        $response->memo['checksum'] = $this->securityHelper->generateChecksum($response->getFingerprint(), $response->getServerMemo());
+        $memo = array_diff_key($response->getServerMemo(), array_flip(['children']));
+        $response->memo['checksum'] = $this->securityHelper->generateChecksum($response->getFingerprint(), $memo);
     }
 }

@@ -8,6 +8,7 @@
 
 namespace Magewirephp\Magewire\Model\Context;
 
+use Magewirephp\Magewire\Model\Hydrator\Children;
 use Magewirephp\Magewire\Model\Hydrator\FormKey;
 use Magewirephp\Magewire\Model\Hydrator\Hash;
 use Magewirephp\Magewire\Model\Hydrator\BrowserEvent;
@@ -37,6 +38,7 @@ class Hydrator
     protected Loader $loaderHydrator;
     protected PostDeployment $postDeploymentHydrator;
     protected FormKey $formKeyHydrator;
+    protected Children $childrenHydrator;
 
     /**
      * @param Hash $hashHydrator
@@ -66,7 +68,8 @@ class Hydrator
         Security $securityHydrator,
         Loader $loaderHydrator,
         PostDeployment $postDeploymentHydrator,
-        FormKey $formKeyHydrator
+        FormKey $formKeyHydrator,
+        Children $childrenHydrator
     ) {
         $this->hashHydrator = $hashHydrator;
         $this->listenerHydrator = $listenerHydrator;
@@ -81,6 +84,7 @@ class Hydrator
         $this->loaderHydrator = $loaderHydrator;
         $this->postDeploymentHydrator = $postDeploymentHydrator;
         $this->formKeyHydrator = $formKeyHydrator;
+        $this->childrenHydrator = $childrenHydrator;
     }
 
     /**
@@ -185,5 +189,13 @@ class Hydrator
     public function getFormKeyHydrator(): FormKey
     {
         return $this->formKeyHydrator;
+    }
+
+    /**
+     * @return Children
+     */
+    public function getChildrenHydrator(): Children
+    {
+        return $this->childrenHydrator;
     }
 }

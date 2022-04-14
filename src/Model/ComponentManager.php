@@ -24,6 +24,8 @@ class ComponentManager
     protected array $updateActionsPool;
     protected array $hydrationPool;
 
+    private array $entityRegistry = [];
+
     /**
      * ComponentManager constructor.
      * @param HydratorContext $hydratorContext
@@ -48,6 +50,7 @@ class ComponentManager
             $hydratorContext->getFormKeyHydrator(),
             $hydratorContext->getSecurityHydrator(),
             $hydratorContext->getPostDeploymentHydrator(),
+            $hydratorContext->getChildrenHydrator(),
             $hydratorContext->getBrowserEventHydrator(),
             $hydratorContext->getFlashMessageHydrator(),
             $hydratorContext->getErrorHydrator(),
@@ -130,31 +133,23 @@ class ComponentManager
         $request = $block->getRequest();
         $data = array_intersect_key(array_replace($properties, $arguments), $properties);
 
-        /**
-         * SHA1 hashing the wire:id value is an idea which can change in the future. I'm still tumbling around the
-         * acceptance of just using the block name which has to be unique which is the most important part. I need to
-         * look into the security aspect when switching to an un-hashed version of the wire:id attribute.
-         */
-        $id = $component->id ?? $block->getNameInLayout();
-
-        $name   = $block->getNameInLayout();
         $handle = $handle ?? $request->getFullActionName();
         $locale = $this->localeResolver->getLocale();
 
         return $this->httpFactory->createRequest([
             'fingerprint' => [
-                'id'     => $id,
-                'name'   => $name,
+                'id' => $component->id,
+                'name' => $component->name,
                 'locale' => $locale,
-                'path'   => '/',
+                'path' => '/',
                 'method' => 'GET',
 
                 // Custom relative to Livewire's core.
                 'handle' => $handle,
-                'type'   => $component::COMPONENT_TYPE
+                'type' => $component::COMPONENT_TYPE
             ],
             'serverMemo' => [
-                'data'   => $data
+                'data' => $data
             ]
         ]);
     }
