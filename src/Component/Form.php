@@ -26,7 +26,7 @@ abstract class Form extends Component
      *
      * @var array
      */
-    protected $rules = [];
+    protected array $rules = [];
 
     /**
      * Validation messages.
