@@ -12,7 +12,9 @@ use Exception;
 use Laminas\Http\AbstractMessage;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NotFoundException;
+use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Helper\Security as SecurityHelper;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\CsrfAwareActionInterface;
@@ -41,6 +43,7 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
     protected EventManagerInterface $eventManager;
     protected SecurityHelper $securityHelper;
     protected RequestInterface $request;
+    protected LoggerInterface $logger;
 
     /**
      * @param JsonFactory $resultJsonFactory
@@ -51,6 +54,7 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
      * @param EventManagerInterface $eventManager
      * @param SecurityHelper $securityHelper
      * @param RequestInterface $request
+     * @param LoggerInterface $logger
      */
     public function __construct(
         JsonFactory $resultJsonFactory,
@@ -60,7 +64,8 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         HttpFactory $httpFactory,
         EventManagerInterface $eventManager,
         SecurityHelper $securityHelper,
-        RequestInterface $request
+        RequestInterface $request,
+        LoggerInterface $logger
     ) {
         $this->componentHelper = $componentHelper;
         $this->resultPageFactory = $resultPageFactory;
@@ -70,6 +75,7 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         $this->eventManager = $eventManager;
         $this->securityHelper = $securityHelper;
         $this->request = $request;
+        $this->logger = $logger;
     }
 
     /**
@@ -83,6 +89,7 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
             $this->validateForUpdateRequest();
 
             $post = $this->serializer->unserialize(file_get_contents('php://input'));
+            /** @var Template $block */
             $block = $this->locateWireComponent($post);
 
             $component = $this->componentHelper->extractComponentFromBlock($block);
@@ -103,20 +110,16 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
                 'serverMemo' => $response->getServerMemo()
             ]);
         } catch (Exception $exception) {
-            $code = $exception->getCode() === 0 ? Response::HTTP_INTERNAL_SERVER_ERROR : $exception->getCode();
-            $phrase = Response::$statusTexts[$code] ?? Response::$statusTexts[Response::HTTP_INTERNAL_SERVER_ERROR];
+            $code = $exception instanceof HttpException ? $exception->getStatusCode() : $exception->getCode();
 
-            if ($exception instanceof LifecycleException) {
-                $message = 'Something went wrong during the request lifecycle: ' . $exception->getMessage();
-                $result->setStatusHeader($code, AbstractMessage::VERSION_11, $phrase);
-            } elseif ($exception instanceof HttpException) {
-                $result->setStatusHeader($exception->getStatusCode(), AbstractMessage::VERSION_11, $phrase);
-            } else {
-                $result->setStatusHeader($code, AbstractMessage::VERSION_11, $phrase);
-            }
+            $code   = Response::$statusTexts[$code] ?? Response::HTTP_INTERNAL_SERVER_ERROR;
+            $phrase = Response::$statusTexts[$code] . ': ' . $exception->getMessage();
+
+            $result->setStatusHeader($code, AbstractMessage::VERSION_11, $phrase);
+            $this->logger->critical('Magewire: ' . $phrase);
 
             return $result->setData([
-                'message' => $message ?? $exception->getMessage(),
+                'message' => $phrase,
                 'code' => $code
             ]);
         }
