@@ -66,11 +66,9 @@ class RenderLifecycle
     }
 
     /**
-     * @param string $name
-     * @param bool $include
      * @return array
      */
-    public function getViews(string $name, bool $include = false): array
+    public function getViews(): array
     {
         return $this->views;
     }
@@ -94,5 +92,23 @@ class RenderLifecycle
     {
         $this->views[$for] = $tag;
         return $this;
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function isParent(string $name): bool
+    {
+        return array_search($name, array_keys($this->getViews())) === 0;
+    }
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function isChild(string $name): bool
+    {
+        return !$this->isParent($name);
     }
 }

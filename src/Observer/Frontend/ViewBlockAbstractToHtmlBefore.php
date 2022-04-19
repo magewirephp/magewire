@@ -17,6 +17,7 @@ use Magewirephp\Magewire\Exception\MissingComponentException;
 class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements ObserverInterface
 {
     protected ?string $updateHandle = null;
+    protected ?bool $isSubsequent = null;
 
     /**
      * @param Observer $observer
@@ -35,17 +36,29 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
                 $request = $component->getRequest();
                 $data = $this->getComponentHelper()->extractDataFromBlock($block);
 
-                // Fix for subsequent rendered wired children via e.g. a getChildHtml().
-                if ($request !== null && $request->isSubsequent()) {
-                    $this->overwriteUpdateHandle($request->getFingerprint('handle'));
+                if ($this->getRenderLifecycle()->isParent($block->getNameInLayout())) {
+                    if ($request) {
+                        $this->overwriteUpdateHandle($request->getFingerprint('handle'));
+                    }
+
+                    $this->overwriteSubsequentState($request !== null);
                 }
-                if (($request === null) || ($request->isPreceding())) {
+
+                if ($request === null) {
                     $request = $this->getComponentManager()->createInitialRequest(
                         $block,
                         $component,
                         $data,
                         $this->getUpdateHandle()
                     );
+                }
+
+                $request->isSubsequent($this->isSubsequent);
+
+                $component->boot(...[$data, $request]);
+
+                if ($request->isPreceding()) {
+                    $component->mount(...[$data, $request]);
                 }
 
                 // Hydration lifecycle step.
@@ -55,8 +68,9 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
                     $this->getComponentManager()->processUpdates($component, $request->getUpdates());
                 }
 
-                // Finalize component with its Response object.
                 $component->setResponse($this->getHttpFactory()->createResponse($component->getRequest()));
+                $component->booted(...[$request]);
+
                 // Re-attach the component onto the block.
                 $block->setData('magewire', $component);
             } catch (Exception $exception) {
@@ -100,10 +114,27 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
     }
 
     /**
+     * @param bool $subsequent
+     * @return bool
+     */
+    public function overwriteSubsequentState(bool $subsequent): bool
+    {
+        return $this->isSubsequent = $subsequent;
+    }
+
+    /**
      * @return string|null
      */
     public function getUpdateHandle(): ?string
     {
         return $this->updateHandle;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function getSubsequentState(): ?bool
+    {
+        return $this->isSubsequent;
     }
 }
