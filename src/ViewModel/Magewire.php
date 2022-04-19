@@ -71,8 +71,7 @@ class Magewire implements ArgumentInterface
     public function getApplicationUrl(): string
     {
         try {
-            $base = $this->storeManager->getStore()->getBaseUrl(UrlInterface::URL_TYPE_WEB);
-            return $base . trim($this->getPostRoute(), '/');
+            return $this->storeManager->getStore()->getBaseUrl() . trim($this->getPostRoute(), '/');
         } catch (NoSuchEntityException $exception) {
             return $this->getPostRoute();
         }
