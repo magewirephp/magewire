@@ -59,10 +59,6 @@ class Listener implements HydratorInterface
     {
         $listeners = $component->getListeners();
 
-        if (isset($this->listeners[$component->name])) {
-            $listeners = array_merge($this->listeners[$component->name], $listeners);
-        }
-
         // Global event's for each component
         $listeners['refresh'] = '$refresh';
 
