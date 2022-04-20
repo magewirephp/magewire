@@ -61,6 +61,13 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
     {
         // Bind intended HTML onto the Response.
         $response->effects['html'] = $html;
+
+        /**
+         * @lifecycle Runs on every subsequent request, before the component is dehydrated,
+         * but after it's been rendered.
+         */
+        $component->dehydrate();
+
         // Dehydration lifecycle step.
         $this->getComponentManager()->dehydrate($component);
 
@@ -109,7 +116,7 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
                     if ((is_string($value) && $key !== $nameInLayout)) {
                         return $value;
                     }
-
+                  
                     return false;
                 }
             );
