@@ -116,7 +116,7 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
                     if ((is_string($value) && $key !== $nameInLayout)) {
                         return $value;
                     }
-
+                  
                     return false;
                 }
             );
