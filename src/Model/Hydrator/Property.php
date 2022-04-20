@@ -43,12 +43,7 @@ class Property implements HydratorInterface
      */
     public function hydrate(Component $component, RequestInterface $request): void
     {
-        $data = array_values($this->componentHelper->extractDataFromBlock($component->getParent()));
-        $this->executeLifecycleHook('boot', $component, $data);
-
-        if ($request->isPreceding()) {
-            $this->executeLifecycleHook('mount', $component, $data);
-        } else {
+        if ($request->isSubsequent()) {
             $overwrite = $request->memo['data'];
         }
 
@@ -117,7 +112,7 @@ class Property implements HydratorInterface
     {
         $request = $response->getRequest();
 
-        $updates = array_filter($request->getUpdates(), function ($update) {
+        $updates = array_filter($request->getUpdates() ?? [], function ($update) {
             return $update['type'] === 'syncInput' && $this->propertyHelper->containsDots($update['payload']['name']);
         });
 

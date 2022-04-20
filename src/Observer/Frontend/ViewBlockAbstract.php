@@ -14,8 +14,7 @@ use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Helper\Component as ComponentHelper;
 use Magewirephp\Magewire\Model\ComponentManager;
 use Magewirephp\Magewire\Model\HttpFactory;
-use Magewirephp\Magewire\Model\RenderLifecycle;
-use Magewirephp\Magewire\Model\TreeMaster;
+use Magewirephp\Magewire\Model\LayoutRenderLifecycle;
 
 class ViewBlockAbstract
 {
@@ -23,27 +22,27 @@ class ViewBlockAbstract
     protected ComponentHelper $componentHelper;
     protected ComponentManager $componentManager;
     protected HttpFactory $httpFactory;
-    protected RenderLifecycle $renderLifecycle;
+    protected LayoutRenderLifecycle $layoutRenderLifecycle;
 
     /**
      * @param ApplicationState $applicationState
      * @param ComponentManager $componentManager
      * @param ComponentHelper $componentHelper
      * @param HttpFactory $httpFactory
-     * @param RenderLifecycle $renderLifecycle
+     * @param LayoutRenderLifecycle $layoutRenderLifecycle
      */
     public function __construct(
         ApplicationState $applicationState,
         ComponentManager $componentManager,
         ComponentHelper $componentHelper,
         HttpFactory $httpFactory,
-        RenderLifecycle $renderLifecycle
+        LayoutRenderLifecycle $layoutRenderLifecycle
     ) {
         $this->applicationState = $applicationState;
         $this->componentHelper = $componentHelper;
         $this->componentManager = $componentManager;
         $this->httpFactory = $httpFactory;
-        $this->renderLifecycle = $renderLifecycle;
+        $this->layoutRenderLifecycle = $layoutRenderLifecycle;
     }
 
     /**
@@ -71,11 +70,11 @@ class ViewBlockAbstract
     }
 
     /**
-     * @return RenderLifecycle
+     * @return LayoutRenderLifecycle
      */
-    public function getRenderLifecycle(): RenderLifecycle
+    public function getLayoutRenderLifecycle(): LayoutRenderLifecycle
     {
-        return $this->renderLifecycle;
+        return $this->layoutRenderLifecycle;
     }
 
     /**

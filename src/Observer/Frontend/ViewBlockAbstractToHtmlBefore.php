@@ -30,33 +30,41 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
         if ($block->hasMagewire()) {
             try {
                 $component = $this->getComponentHelper()->extractComponentFromBlock($block, true);
-                $this->getRenderLifecycle()->start($block->getNameInLayout());
+                $this->getLayoutRenderLifecycle()->start($block->getNameInLayout());
 
                 $request = $component->getRequest();
                 $data = $this->getComponentHelper()->extractDataFromBlock($block);
 
-                // Fix for subsequent rendered wired children via e.g. a getChildHtml().
-                if ($request !== null && $request->isSubsequent()) {
-                    $this->overwriteUpdateHandle($request->getFingerprint('handle'));
+                if ($request && $this->getLayoutRenderLifecycle()->isParent($block->getNameInLayout())) {
+                    $this->setLayoutUpdateHandle($request->getFingerprint('handle'));
                 }
-                if (($request === null) || ($request->isPreceding())) {
+
+                if ($request === null) {
                     $request = $this->getComponentManager()->createInitialRequest(
                         $block,
                         $component,
                         $data,
-                        $this->getUpdateHandle()
-                    );
+                        $this->getLayoutUpdateHandle()
+                    )->isSubsequent(false);
+                }
+
+                $component->setRequest($request);
+                $component->boot(...[$data, $component->getRequest()]);
+
+                if ($request->isPreceding()) {
+                    $component->mount(...[$data, $component->getRequest()]);
                 }
 
                 // Hydration lifecycle step.
-                $this->getComponentManager()->hydrate($component->setRequest($request));
+                $this->getComponentManager()->hydrate($component);
 
                 if ($component->hasRequest('updates')) {
-                    $this->getComponentManager()->processUpdates($component, $request->getUpdates());
+                    $this->getComponentManager()->processUpdates($component, $component->getRequest()->getUpdates());
                 }
 
-                // Finalize component with its Response object.
                 $component->setResponse($this->getHttpFactory()->createResponse($component->getRequest()));
+                $component->booted(...[$component->getRequest()]);
+
                 // Re-attach the component onto the block.
                 $block->setData('magewire', $component);
             } catch (Exception $exception) {
@@ -94,7 +102,7 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
      * @param string $handle
      * @return string
      */
-    public function overwriteUpdateHandle(string $handle): string
+    public function setLayoutUpdateHandle(string $handle): string
     {
         return $this->updateHandle = $handle;
     }
@@ -102,7 +110,7 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
     /**
      * @return string|null
      */
-    public function getUpdateHandle(): ?string
+    public function getLayoutUpdateHandle(): ?string
     {
         return $this->updateHandle;
     }
