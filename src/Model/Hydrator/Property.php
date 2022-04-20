@@ -62,7 +62,6 @@ class Property implements HydratorInterface
 
         if ($request->isSubsequent()) {
             $this->executePropertyLifecycleHook($component, 'hydrate', $request);
-            $this->executeLifecycleHook('hydrate', $component);
         } else {
             $request->memo['data'] = array_merge(
                 $request->memo['data'],
@@ -76,7 +75,6 @@ class Property implements HydratorInterface
         }
 
         $component->getPublicProperties(true);
-        $this->executeLifecycleHook('booted', $component);
     }
 
     /**
@@ -100,7 +98,6 @@ class Property implements HydratorInterface
             }, $component, $response->memo['data']);
         }
 
-        $this->executeLifecycleHook('dehydrate', $component);
         $this->executePropertyLifecycleHook($component, 'dehydrate', $response);
     }
 
@@ -135,16 +132,6 @@ class Property implements HydratorInterface
     public function processProperty(ResponseInterface $response, string $property)
     {
         $response->effects['dirty'][] = $property;
-    }
-
-    /**
-     * @param string $method
-     * @param MagewireComponent $component
-     * @param array $params
-     */
-    public function executeLifecycleHook(string $method, Component $component, array $params = [])
-    {
-        $component->{$method}(...$params);
     }
 
     /**

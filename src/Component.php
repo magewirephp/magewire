@@ -29,7 +29,7 @@ use ReflectionClass;
 /**
  * @method void boot(...$properties, ...$request)
  * @method void mount(...$properties, ...$request)
- * @method void booted(...$request)
+ * @method void booted()
  * @method void hydrate()
  * @method void dehydrate()
  * @method mixed updating(mixed $value, string $name)

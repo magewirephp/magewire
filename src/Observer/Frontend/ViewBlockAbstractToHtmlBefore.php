@@ -49,23 +49,44 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
                 }
 
                 $component->setRequest($request);
-                $component->boot(...[$data, $component->getRequest()]);
+
+                /**
+                 * @lifecycle Runs on every request, immediately after the component is instantiated, but before
+                 * any other lifecycle methods are called.
+                 */
+                $component->boot(...[$data, $request]);
 
                 if ($request->isPreceding()) {
-                    $component->mount(...[$data, $component->getRequest()]);
+                    /**
+                     * @lifecycle Runs once, immediately after the component is instantiated, but before render()
+                     * is called. This is only called once on initial page load and never called again, even on
+                     * component refreshes.
+                     */
+                    $component->mount(...[$data, $request]);
                 }
 
-                // Hydration lifecycle step.
                 $this->getComponentManager()->hydrate($component);
 
-                if ($component->hasRequest('updates')) {
-                    $this->getComponentManager()->processUpdates($component, $component->getRequest()->getUpdates());
+                if ($request->isSubsequent()) {
+                    /**
+                     * @lifecycle Runs on every subsequent request, after the component is hydrated, but before
+                     * an action is performed or rendering.
+                     */
+                    $component->hydrate();
                 }
 
-                $component->setResponse($this->getHttpFactory()->createResponse($component->getRequest()));
-                $component->booted(...[$component->getRequest()]);
+                /**
+                 * @lifecycle Runs on every request, after the component is mounted or hydrated, but before
+                 * any update methods are called.
+                 */
+                $component->booted();
 
-                // Re-attach the component onto the block.
+                if ($component->hasRequest('updates')) {
+                    $this->getComponentManager()->processUpdates($component, $request->getUpdates());
+                }
+
+                $component->setResponse($this->getHttpFactory()->createResponse($request));
+                // Set the latest request and reattach the component onto the block.
                 $block->setData('magewire', $component);
             } catch (Exception $exception) {
                 $observer->setBlock($this->transformToExceptionBlock($block, $exception));
