@@ -23,13 +23,12 @@ use Magewirephp\Magewire\Model\Concern\Method as MethodConcern;
 use Magewirephp\Magewire\Model\Concern\QueryString as QueryStringConcern;
 use Magewirephp\Magewire\Model\Concern\Redirect as RedirectConcern;
 use Magewirephp\Magewire\Model\Concern\View as ViewConcern;
-use Magewirephp\Magewire\Model\RequestInterface;
 use ReflectionClass;
 
 /**
  * @method void boot(...$properties, ...$request)
  * @method void mount(...$properties, ...$request)
- * @method void booted(...$request)
+ * @method void booted()
  * @method void hydrate()
  * @method void dehydrate()
  * @method mixed updating(mixed $value, string $name)
