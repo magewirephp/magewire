@@ -90,7 +90,7 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
      */
     public function registerChildren(string $nameInLayout, Component $component, string $html)
     {
-        if ($this->getRenderLifecycle()->exists($nameInLayout) === false) {
+        if ($this->getLayoutRenderLifecycle()->exists($nameInLayout) === false) {
             return;
         }
 
@@ -101,17 +101,20 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
             throw new RootTagMissingFromViewException();
         }
 
-        $this->getRenderLifecycle()->setStartTag(trim($matches[0][0], '<'), $nameInLayout);
+        $this->getLayoutRenderLifecycle()->setStartTag(trim($matches[0][0], '<'), $nameInLayout);
 
-        if ($this->getRenderLifecycle()->canStop($nameInLayout)) {
-            $children = $this->getRenderLifecycle()->getViewsWithFilter(function ($value, string $key) use ($nameInLayout) {
-                if ((is_string($value) && $key !== $nameInLayout)) {
-                    return $value;
+        if ($this->getLayoutRenderLifecycle()->canStop($nameInLayout)) {
+            $children = $this->getLayoutRenderLifecycle()->getViewsWithFilter(
+                function ($value, string $key) use ($nameInLayout) {
+                    if ((is_string($value) && $key !== $nameInLayout)) {
+                        return $value;
+                    }
+
+                    return false;
                 }
+            );
 
-                return false;
-            });
-            $this->getRenderLifecycle()->stop($nameInLayout);
+            $this->getLayoutRenderLifecycle()->stop($nameInLayout);
 
             foreach ($children as $name => $tag) {
                 $component->logRenderedChild($name, $tag);

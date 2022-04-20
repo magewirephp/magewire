@@ -21,7 +21,11 @@ class Children implements HydratorInterface
     public function hydrate(Component $component, RequestInterface $request): void
     {
         if ($request->isSubsequent()) {
-            $component->setPreviouslyRenderedChildren($request->memo['children']);
+            $children = $request->getServerMemo('children');
+
+            if ($children !== null) {
+                $component->setPreviouslyRenderedChildren($children);
+            }
         }
     }
 
