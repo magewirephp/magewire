@@ -8,7 +8,7 @@
 
 namespace Magewirephp\Magewire\Model;
 
-class RenderLifecycle
+class LayoutRenderLifecycle
 {
     private array $views = [];
 
@@ -18,7 +18,7 @@ class RenderLifecycle
      * @param string $name
      * @return $this
      */
-    public function start(string $name): RenderLifecycle
+    public function start(string $name): LayoutRenderLifecycle
     {
         $this->views[$name] = null;
         return $this;
@@ -30,7 +30,7 @@ class RenderLifecycle
      * @param string $parent
      * @return $this
      */
-    public function stop(string $parent): RenderLifecycle
+    public function stop(string $parent): LayoutRenderLifecycle
     {
         $children = $this->getViewsWithFilter(function ($value, string $key) use ($parent) {
             if ((is_string($value) && $key !== $parent)) {
@@ -88,7 +88,7 @@ class RenderLifecycle
      * @param string $for
      * @return $this
      */
-    public function setStartTag(string $tag, string $for): RenderLifecycle
+    public function setStartTag(string $tag, string $for): LayoutRenderLifecycle
     {
         $this->views[$for] = $tag;
         return $this;
