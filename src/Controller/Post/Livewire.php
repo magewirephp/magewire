@@ -111,15 +111,19 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
             ]);
         } catch (Exception $exception) {
             $code = $exception instanceof HttpException ? $exception->getStatusCode() : $exception->getCode();
+            $statuses = $this->getHttpResponseStatuses();
 
-            $code   = Response::$statusTexts[$code] ?? Response::HTTP_INTERNAL_SERVER_ERROR;
-            $phrase = Response::$statusTexts[$code] . ': ' . $exception->getMessage();
+            // Try and grep the status from the available stack or get 500 when it's unavailable.
+            $code = $statuses[$code] ? $code : Response::HTTP_INTERNAL_SERVER_ERROR;
+            // Set the status header with the returned code and belonging response phrase.
+            $result->setStatusHeader($code, AbstractMessage::VERSION_11, $statuses[$code]);
 
-            $result->setStatusHeader($code, AbstractMessage::VERSION_11, $phrase);
-            $this->logger->critical('Magewire: ' . $phrase);
+            if ($code === 500) {
+                $this->logger->critical($exception->getMessage());
+            }
 
             return $result->setData([
-                'message' => $phrase,
+                'message' => $exception->getMessage(),
                 'code' => $code
             ]);
         }
@@ -174,5 +178,16 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         if ($this->securityHelper->validateFormKey($this->request) === false) {
             throw new HttpException(419, 'Form key expired. Please refresh and try again.');
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getHttpResponseStatuses(): array
+    {
+        $statuses = Response::$statusTexts;
+        $statuses[419] = 'Form key expired';
+
+        return $statuses;
     }
 }
