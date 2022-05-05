@@ -130,7 +130,7 @@ class Response implements ResponseInterface
      * @throws LocalizedException
      * @throws RootTagMissingFromViewException
      */
-    public function renderWithRootAttribute(array $data, bool $secure = false): string
+    public function renderWithRootAttribute(array $data, bool $includeBody = true): string
     {
         $effects = $this->getEffects();
         $html = $effects['html'] ?? false;
@@ -150,6 +150,10 @@ class Response implements ResponseInterface
         }, $this->functionsHelper->mapWithKeys(function ($value, $key) {
             return ["wire:{$key}" => $this->functionsHelper->escapeStringForHtml($value)];
         }, $data)));
+
+        if ($includeBody === false) {
+            $html = sprintf('<%1$s></%1$s>', $matches[1][0]);
+        }
 
         return substr_replace($html, ' ' . $attributes, $matches[1][1] + strlen($matches[1][0]), 0);
     }

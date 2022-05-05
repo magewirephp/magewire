@@ -67,8 +67,8 @@ interface ResponseInterface
      * Renders the effects html with additional root attribute(s).
      *
      * @param array $data
-     * @param bool $secure
+     * @param bool $includeBody
      * @return string
      */
-    public function renderWithRootAttribute(array $data, bool $secure = false): string;
+    public function renderWithRootAttribute(array $data, bool $includeBody = true): string;
 }
