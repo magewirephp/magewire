@@ -77,11 +77,8 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
         if ($response->getRequest()->isPreceding()) {
             $data['initial-data'] = $response->toArrayWithoutHtml();
         }
-
         if (is_string($response->effects['html'])) {
-            $response->effects['html'] = $this->wrapWithEndingMarker(
-                $response->renderWithRootAttribute($data, $component->canRender()), $id
-            );
+            $response->effects['html'] = $this->wrapWithEndingMarker($response->renderWithRootAttribute($data, $component->canRender()), $id);
         }
 
         return $response->effects['html'];
