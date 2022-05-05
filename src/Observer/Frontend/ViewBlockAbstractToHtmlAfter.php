@@ -78,10 +78,10 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
             $data['initial-data'] = $response->toArrayWithoutHtml();
         }
 
-        if ($component->canRender() === false) {
-            $response->effects['html'] = null;
-        } elseif (is_string($response->effects['html'])) {
-            $response->effects['html'] = $this->wrapWithEndingMarker($response->renderWithRootAttribute($data), $id);
+        if (is_string($response->effects['html'])) {
+            $response->effects['html'] = $this->wrapWithEndingMarker(
+                $response->renderWithRootAttribute($data, $component->canRender()), $id
+            );
         }
 
         return $response->effects['html'];
@@ -116,7 +116,7 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
                     if ((is_string($value) && $key !== $nameInLayout)) {
                         return $value;
                     }
-                  
+
                     return false;
                 }
             );
