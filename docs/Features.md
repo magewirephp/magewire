@@ -579,7 +579,7 @@ inside the phtml template only. It's not a best practice and you should use a Vi
 ```php
 class Explanation extends \Magewirephp\Magewire\Component
 {
-    private $uncallables = ['myCustomSetMethod'];
+    protected array $uncallables = ['myCustomSetMethod'];
 }
 ```
 
