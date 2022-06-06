@@ -43,6 +43,8 @@ class Explanation extends \Magewirephp\Magewire\Component
 <div>
     <div x-data>
         <!-- Output 'bar' -->
+        <span x-text="$wire.foo[0].foo"></span>
+        <span x-text="$wire.foo['0'].foo"></span>
         <span x-text="$wire.foo[0]['foo']"></span>
         
         <!-- Output 'fooBar' -->
