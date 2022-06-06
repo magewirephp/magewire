@@ -46,6 +46,8 @@ class Explanation extends \Magewirephp\Magewire\Component
         <span x-text="$wire.foo[0]['foo']"></span>
         
         <!-- Output 'fooBar' -->
+        <span x-text="$wire.foo.nonNumericKey[0]"></span>
+        <span x-text="$wire.foo.nonNumericKey['0']"><span>
         <span x-text="$wire.foo['nonNumericKey'][0]"></span>
     </div>
 </div>
