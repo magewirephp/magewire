@@ -23,3 +23,30 @@ class Explanation extends \Magewirephp\Magewire\Component
 > ```$wire``` gives you access to the Magewire component properties using AlpineJS. To avoid a misunderstanding your could
 > also use ```wire:click="$set('foo', Math.random())'"``` to set the ```foo``` property value. It just to demonstrate
 > how ```x-text``` could be used in combination with Magewire.
+
+### Accessing Component Array Properties
+```php
+class Explanation extends \Magewirephp\Magewire\Component
+{
+    public $foo = [
+        0 => [    
+            'foo' => 'bar',
+        ],
+        'nonNumericKey' => [
+            0 => 'fooBar',
+        ],
+    ];
+}
+```
+
+```html
+<div>
+    <div x-data>
+        <!-- Output 'bar' -->
+        <span x-text="$wire.foo[0]['foo']"></span>
+        
+        <!-- Output 'fooBar' -->
+        <span x-text="$wire.foo['nonNumericKey'][0]"></span>
+    </div>
+</div>
+```
