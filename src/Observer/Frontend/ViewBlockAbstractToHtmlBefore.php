@@ -12,7 +12,6 @@ use Exception;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\View\Element\Template;
-use Magewirephp\Magewire\Exception\MissingComponentException;
 
 class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements ObserverInterface
 {
@@ -92,31 +91,6 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
                 $observer->setBlock($this->transformToExceptionBlock($block, $exception));
             }
         }
-    }
-
-    /**
-     * Determines the template by a default template path
-     * when the path is not defined within the layout.
-     *
-     * Results in: {Module_Name::magewire/dashed-class-name.phtml}
-     *
-     * @param Template $block
-     * @return Template
-     * @throws MissingComponentException
-     */
-    public function determineTemplate(Template $block): Template
-    {
-        if ($block->getTemplate() === null) {
-            $magewire = $this->getComponentHelper()->extractComponentFromBlock($block);
-            $module = explode('\\', get_class($magewire));
-
-            $prefix = $module[0] . '_' . $module[1];
-            $affix  = strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', end($module)));
-
-            $block->setTemplate($prefix . '::magewire/' . $affix . '.phtml');
-        }
-
-        return $block;
     }
 
     /**

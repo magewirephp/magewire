@@ -50,7 +50,7 @@ class Component
                 $component->name = $block->getNameInLayout();
                 $component->id = $component->id ?? $component->name;
 
-                return $component->setParent($block);
+                return $component->setParent($this->determineTemplate($block, $component));
             }
         }
 
@@ -64,7 +64,7 @@ class Component
      */
     public function extractDataFromBlock(BlockInterface $block, array $addition = []): array
     {
-        $magewire = $block->getMagewire();
+        $magewire = $block->getData('magewire');
 
         if ($magewire && is_array($magewire)) {
             unset($magewire['type']);
@@ -72,5 +72,29 @@ class Component
         }
 
         return $addition;
+    }
+
+    /**
+     * Determines the template by a default template path
+     * when the path is not defined within the layout.
+     *
+     * Results in: {Module_Name::magewire/dashed-class-name.phtml}
+     *
+     * @param Template $block
+     * @param MagewireComponent $component
+     * @return Template
+     */
+    public function determineTemplate(Template $block, MagewireComponent $component): Template
+    {
+        if ($block->getTemplate() === null) {
+            $module = explode('\\', get_class($component));
+
+            $prefix = $module[0] . '_' . $module[1];
+            $affix  = strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', end($module)));
+
+            $block->setTemplate($prefix . '::magewire/' . $affix . '.phtml');
+        }
+
+        return $block;
     }
 }
