@@ -463,8 +463,10 @@ public function dehydrate() {}
 // Runs before a property called $foo is dehydrated
 public function dehydrateFoo($value, $response) {}
 ```
-> **Note**: Be aware of the fact that a Magewire component state will get cached when for example FPC is enabled. This
+> **Notes**:
+> - Be aware of the fact that a Magewire component state will get cached when for example FPC is enabled. This
 > means the ```mount()``` method will only run once during an initial page load.
+> - Lifecycle hooks that take a `$value` parameter must return a value - this is usually the `$value` parameter itself.
 
 ## Browser Events
 You're able to trigger browser events from within your component.
