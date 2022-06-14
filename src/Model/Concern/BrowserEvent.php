@@ -22,7 +22,7 @@ trait BrowserEvent
 
     /**
      * @param $event
-     * @param null $data
+     * @param mixed|null $data
      */
     public function dispatchBrowserEvent($event, $data = null): void
     {
