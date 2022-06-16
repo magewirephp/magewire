@@ -10,7 +10,7 @@ namespace Magewirephp\Magewire\Model\Concern;
 
 trait Event
 {
-    protected $listeners = [];
+    protected array $listeners = [];
 
     /**
      * @return array
