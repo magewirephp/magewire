@@ -312,9 +312,12 @@ public function myCustomMessageMethod(string $message)
     $this->dispatchWarningMessage($message);
     $this->dispatchNoticeMessage($message);
     $this->dispatchSuccessMessage($message);
+    $this->dispatchMessage($messageType, $message);
 }
 ```
 > **Translations**: Messages will automatically be transformed into a translatable phrase.
+
+> **Message Types**: When using the `dispatchMessage()` function, the first parameter must be [one of the message types implemented by `Magento\Framework\Message\MessageInterface`](https://github.com/magento/magento2/blob/2.4-develop/lib/internal/Magento/Framework/Message/MessageInterface.php#L24-L39).
 
 ## Redirects
 Redirect your customer with or without additional parameters.
