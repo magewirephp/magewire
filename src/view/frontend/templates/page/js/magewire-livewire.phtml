@@ -6,10 +6,17 @@
  * details on copyrights and license information.
  *
  * ----------------------------- <3 -----------------------------
- * @version 2.6.7
+ * @version 2.10.5
  * @author Caleb Porzio (Laravel Livewire)
  * @link https://laravel-livewire.com/
+ *
+ * @var Escaper $escaper
+ * @var AbstractBlock $block
  */
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\AbstractBlock;
+
 ?>
 <script>
     document.addEventListener('livewire:available', () => {
@@ -20,4 +27,4 @@
     })
 </script>
 
-<script src="<?= $block->escapeUrl($block->getViewFileUrl('Magewirephp_Magewire::js/livewire.js')) ?>"></script>
+<script src="<?= $escaper->escapeUrl($block->getViewFileUrl('Magewirephp_Magewire::js/livewire.js')) ?>"></script>
