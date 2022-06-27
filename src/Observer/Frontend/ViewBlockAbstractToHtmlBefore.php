@@ -26,7 +26,7 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
         /** @var Template $block */
         $block = $observer->getBlock();
 
-        if ($block->hasMagewire()) {
+        if ($block->getMagewire()) {
             try {
                 $component = $this->getComponentHelper()->extractComponentFromBlock($block, true);
                 $this->getLayoutRenderLifecycle()->start($block->getNameInLayout());

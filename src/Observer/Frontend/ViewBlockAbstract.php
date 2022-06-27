@@ -92,7 +92,7 @@ class ViewBlockAbstract
          * will get caught within the controller action who will respond and show the
          * user a modal with the current given exception.
          */
-        if ($magewire->getRequest() && $magewire->getRequest()->isSubsequent()) {
+        if ($magewire && $magewire->getRequest() && $magewire->getRequest()->isSubsequent()) {
             throw $exception;
         }
 

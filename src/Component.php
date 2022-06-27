@@ -23,7 +23,6 @@ use Magewirephp\Magewire\Model\Concern\Method as MethodConcern;
 use Magewirephp\Magewire\Model\Concern\QueryString as QueryStringConcern;
 use Magewirephp\Magewire\Model\Concern\Redirect as RedirectConcern;
 use Magewirephp\Magewire\Model\Concern\View as ViewConcern;
-use Magewirephp\Magewire\Model\RequestInterface;
 use ReflectionClass;
 
 /**

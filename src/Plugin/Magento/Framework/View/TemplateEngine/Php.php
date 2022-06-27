@@ -30,12 +30,10 @@ class Php
         string $filename,
         array $dictionary = []
     ): array {
-        if ($block instanceof DataObject && $block->hasData('magewire')) {
-            $magewire = $block->getData('magewire');
+        $magewire = $block->getData('magewire');
 
-            if ($magewire instanceof Component) {
-                $dictionary['magewire'] = $magewire;
-            }
+        if ($block instanceof DataObject && $magewire instanceof Component) {
+            $dictionary['magewire'] = $magewire;
         }
 
         return [$block, $filename, $dictionary];

@@ -40,7 +40,8 @@ class Component
         if ($magewire) {
             $component = is_array($magewire)
                 ? $magewire['type'] : (is_object($magewire)
-                    ? $magewire : $this->componentFactory->create());
+                    ? $magewire : ($magewire === true
+                        ? $this->componentFactory->virtual($block) : $this->componentFactory->create()));
 
             if ($component instanceof MagewireComponent) {
                 if ($init) {
@@ -86,6 +87,10 @@ class Component
      */
     public function determineTemplate(Template $block, MagewireComponent $component): Template
     {
+        if ($component instanceof MagewireComponent\Virtual) {
+            return $block;
+        }
+
         if ($block->getTemplate() === null) {
             $module = explode('\\', get_class($component));
 

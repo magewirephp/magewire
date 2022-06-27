@@ -28,7 +28,7 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
         /** @var Template $block */
         $block = $observer->getBlock();
 
-        if ($block->hasData('magewire')) {
+        if ($block->getData('magewire')) {
             try {
                 $component = $this->getComponentHelper()->extractComponentFromBlock($block);
                 $response  = $component->getResponse();

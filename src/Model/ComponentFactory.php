@@ -9,6 +9,7 @@
 namespace Magewirephp\Magewire\Model;
 
 use Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Component;
 
 class ComponentFactory
@@ -39,6 +40,20 @@ class ComponentFactory
         }
 
         $this->instances[$class] = $component;
+        return $component;
+    }
+
+    /**
+     * @param AbstractBlock $block
+     * @return Component
+     */
+    public function virtual(AbstractBlock $block): Component
+    {
+        $component = $this->objectManager->create(Component\Virtual::class);
+
+        $component->id = $block->getNameInLayout();
+        $component->name = $component->id;
+
         return $component;
     }
 }
