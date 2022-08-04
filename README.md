@@ -7,8 +7,8 @@
 
 Magewire is a [Laravel Livewire](https://laravel-livewire.com/) port for Magento 2. The goal is to make it fun and easy
 to build modern, reactive and dynamic interfaces, without leaving the comfort of Magento's core layout and template
-systems. Magewire can be the missing piece when you intend to build dynamic and reactive features, but don't require or
-feel comfortable working with a full JavaScript framework like Vue or React.
+systems. Magewire can be the missing piece when you intend to build dynamic and reactive features, but don't require
+working with a full JavaScript framework like Vue or React.
 
 ## Installation
 ```
@@ -26,13 +26,11 @@ section to enable all the Magewire richness in your Blank or Luma projects.
 - [More about Hydrators](./docs/Hydrators.md)
 - [Developer Tools](./docs/Tools.md)
 
-## Roadmap
-- Unit & Integration tests
-- Single and Multi file upload integrations
-- Throttling capabilities
-- Wireable Interface concept for public object properties like e.g. DataObject
-- Enrich pagination functionality (long term)
-- Advanced Query String manipulation (long term)
+## Developers say
+> Working with Magewire is fun, refreshing, and has added another tool to my arsenal. It expands my set of potential
+> solutions and enables me to think differently about implementations. Magewire is a win for developers and merchants!
+
+**Kiel Pykett** - Technical Lead Magento Developer @ [Fisheye](https://www.fisheye.co.uk/)
 
 ## Security Vulnerabilities
 If you discover a security vulnerability within Magewire, please create a PR or send an e-mail to Willem Poortman via
