@@ -114,7 +114,7 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
             $statuses = $this->getHttpResponseStatuses();
 
             // Make an exception for optional outsiders.
-            $code = in_array($code, [0, -1]) ? Response::HTTP_INTERNAL_SERVER_ERROR : $code;
+            $code = in_array($code, [0, -1], true) ? Response::HTTP_INTERNAL_SERVER_ERROR : $code;
             // Try and grep the status from the available stack or get 500 when it's unavailable.
             $code = $statuses[$code] ? $code : Response::HTTP_INTERNAL_SERVER_ERROR;
             // Set the status header with the returned code and belonging response phrase.
