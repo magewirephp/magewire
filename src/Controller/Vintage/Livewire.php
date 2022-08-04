@@ -17,6 +17,9 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\Json;
 use Magewirephp\Magewire\Controller\Post\Livewire as Origin;
 
+/**
+ * @deprecated (since 1.7)
+ */
 class Livewire extends Action implements HttpPostActionInterface, CsrfAwareActionInterface
 {
     /** @var Origin $origin */
