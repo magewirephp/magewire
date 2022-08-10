@@ -32,6 +32,12 @@ section to enable all the Magewire richness in your Blank or Luma projects.
 
 **Kiel Pykett** - Technical Lead Magento Developer @ [Fisheye](https://www.fisheye.co.uk/)
 
+> Magewire is an awesome tool for Magento developers to build great interactive frontend features. It brings the
+> backend closer to the frontend and speeds up development times. We are now using Magewire in all our projects where
+> it makes sense to do so. I highly recommend it to Magento developers.
+
+**Ryan Copeland** - Founder, Solution Architect & Developer @ [Foundation Commerce](https://foundationcommerce.co.uk/)
+
 ## Security Vulnerabilities
 If you discover a security vulnerability within Magewire, please create a PR or send an e-mail to Willem Poortman via
 [magewirephp@wpoortman.nl](mailto:magewirephp@wpoortman.nl). All security vulnerabilities will be promptly addressed.
