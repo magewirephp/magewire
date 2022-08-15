@@ -13,7 +13,7 @@ use Magento\Framework\View\Element\Template;
 ?>
 <?php if ($block->getApplicationState()->getMode() === State::MODE_DEVELOPER): ?>
 <div class="magewire-exception">
-    <pre class="whitespace-pre-line text-sm text-gray-600 border rounded border-gray-600 p-4">
+    <pre class="whitespace-pre-line text-sm text-gray-600 border rounded border-gray-600 p-4 overflow-auto">
         <span class="text-red-600 font-bold">Exception:</span> <?= $block->getException()->getMessage() ?>
     </pre>
 
