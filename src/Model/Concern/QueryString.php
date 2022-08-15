@@ -10,7 +10,7 @@ namespace Magewirephp\Magewire\Model\Concern;
 
 trait QueryString
 {
-    protected array $queryString = [];
+    protected $queryString = [];
 
     /**
      * @return array
@@ -25,6 +25,6 @@ trait QueryString
      */
     public function hasQueryString(): bool
     {
-        return !empty($this->getQueryString());
+        return ! empty($this->getQueryString());
     }
 }

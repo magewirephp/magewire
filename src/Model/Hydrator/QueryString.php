@@ -9,6 +9,7 @@
 namespace Magewirephp\Magewire\Model\Hydrator;
 
 use Magento\Framework\App\RequestInterface as AppRequestInterface;
+use Magento\Framework\UrlInterface;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Helper\Functions as FunctionsHelper;
 use Magewirephp\Magewire\Model\HydratorInterface;
@@ -19,18 +20,23 @@ class QueryString implements HydratorInterface
 {
     protected AppRequestInterface $request;
     protected FunctionsHelper $functionsHelper;
+    protected UrlInterface $urlBuilder;
+
+    private array $queryParams = [];
 
     /**
-     * Property constructor.
      * @param AppRequestInterface $request
      * @param FunctionsHelper $functionsHelper
+     * @param UrlInterface $urlBuilder
      */
     public function __construct(
         AppRequestInterface $request,
-        FunctionsHelper $functionsHelper
+        FunctionsHelper $functionsHelper,
+        UrlInterface $urlBuilder
     ) {
         $this->request = $request;
         $this->functionsHelper = $functionsHelper;
+        $this->urlBuilder = $urlBuilder;
     }
 
     /**
@@ -40,7 +46,7 @@ class QueryString implements HydratorInterface
     {
         if ($request->isPreceding() && $component->hasQueryString()) {
             $properties = $this->getQueryParamsFromComponentProperties($component);
-            $aliases = $this->filterQueryStringSetting($component, 'alias');
+            $aliases = $this->filterQueryStringSetting($component, 'as');
 
             foreach (array_keys($properties) as $property) {
                 if ($value = $this->request->getParam($aliases[$property] ?? $property)) {
@@ -55,7 +61,13 @@ class QueryString implements HydratorInterface
      */
     public function dehydrate(Component $component, ResponseInterface $response): void
     {
-        //
+        if ($response->getRequest()->isPreceding()) {
+            //$response->effects['path'] = 'https://magento-os244-hyva.test/checkout/?current=shipping';
+        }
+
+        if ($response->getRequest()->isSubsequent()) {
+            $wip = true;
+        }
     }
 
     /**
