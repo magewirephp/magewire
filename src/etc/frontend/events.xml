@@ -15,4 +15,11 @@
                   instance="Magewirephp\Magewire\Observer\Frontend\ViewBlockAbstractToHtmlAfter"
         />
     </event>
+
+    <!-- Hyvä Themes compatibility: Registering a module for inclusion in hyva-themes.json -->
+    <!-- @see https://docs.hyva.io/hyva-themes/compatibility-modules/tailwind-config-merging.html -->
+    <event name="hyva_config_generate_before">
+        <observer name="Magewirephp_Magewire_Hyva_Config_Generate_Before"
+                  instance="Magewirephp\Magewire\Observer\Frontend\HyvaConfigGenerateBefore"/>
+    </event>
 </config>
