@@ -12,12 +12,18 @@
  *
  * @var Escaper $escaper
  * @var AbstractBlock $block
+ * @var Magewire $magewireScripts
+ * @var ViewModelRegistry $viewModels
  */
 
+use Hyva\Theme\Model\ViewModelRegistry;
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\AbstractBlock;
+use Magewirephp\Magewire\ViewModel\Magewire;
 
+$magewireScripts = $viewModels->require(Magewire::class);
 ?>
+<?php if ($magewireScripts->pageRequiresMagewire()): ?>
 <script>
     document.addEventListener('livewire:available', () => {
         const event = document.createEvent('Events')
@@ -28,3 +34,4 @@ use Magento\Framework\View\Element\AbstractBlock;
 </script>
 
 <script src="<?= $escaper->escapeUrl($block->getViewFileUrl('Magewirephp_Magewire::js/livewire.js')) ?>"></script>
+<?php endif ?>

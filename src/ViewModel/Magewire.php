@@ -15,6 +15,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\UrlInterface;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Magewirephp\Magewire\Model\LayoutRenderLifecycle;
 
 class Magewire implements ArgumentInterface
 {
@@ -22,23 +23,27 @@ class Magewire implements ArgumentInterface
     protected ApplicationState $applicationState;
     protected ProductMetadataInterface $productMetaData;
     protected StoreManagerInterface $storeManager;
+    protected LayoutRenderLifecycle $layoutRenderLifecycle;
 
     /**
      * @param FormKey $formKey
      * @param ApplicationState $applicationState
      * @param ProductMetadataInterface $productMetadata
      * @param StoreManagerInterface $storeManager
+     * @param LayoutRenderLifecycle $layoutRenderLifecycle
      */
     public function __construct(
         FormKey $formKey,
         ApplicationState $applicationState,
         ProductMetadataInterface $productMetadata,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        LayoutRenderLifecycle $layoutRenderLifecycle
     ) {
         $this->formKey = $formKey;
         $this->applicationState = $applicationState;
         $this->productMetaData = $productMetadata;
         $this->storeManager = $storeManager;
+        $this->layoutRenderLifecycle = $layoutRenderLifecycle;
     }
 
     /**
@@ -75,5 +80,10 @@ class Magewire implements ArgumentInterface
         } catch (NoSuchEntityException $exception) {
             return $this->getPostRoute();
         }
+    }
+
+    public function pageRequiresMagewire(): bool
+    {
+        return $this->layoutRenderLifecycle->hasHistory();
     }
 }

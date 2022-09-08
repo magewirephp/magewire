@@ -8,8 +8,10 @@
 
 /** @var Magewire $magewireScripts */
 /** @var ViewModelRegistry $viewModels */
+/** @var Escaper $escaper */
 
 use Hyva\Theme\Model\ViewModelRegistry;
+use Magento\Framework\Escaper;
 use Magewirephp\Magewire\ViewModel\Magewire;
 
 $magewireScripts = $viewModels->require(Magewire::class);
@@ -28,7 +30,7 @@ $magewireScripts = $viewModels->require(Magewire::class);
 
     window.Livewire = window.magewire
     window.Magewire = window.magewire
-    window.livewire_app_url = '<?= $magewireScripts->getApplicationUrl() ?>'
+    window.livewire_app_url = '<?= $escaper->escapeUrl($magewireScripts->getApplicationUrl()) ?>'
     window.livewire_token = window.hyva.getFormKey()
 
     /* Make sure Magewire loads first. */
