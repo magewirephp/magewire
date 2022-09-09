@@ -53,10 +53,10 @@ $magewireScripts = $viewModels->require(Magewire::class);
     });
 
     /* Dispatch "magewire:" prefixed window events. */
-    Magewire.dispatchEvent = (name, event) => {
+    Magewire.dispatchEvent = (name, event = {}) => {
         document.dispatchEvent(new Event(`magewire:${ name }`, {
             'bubbles': event.bubbles || true,
-            'cancelable': event.cancelable || true
+            'cancelable': event.cancelable ?? false
         }))
     }
 
