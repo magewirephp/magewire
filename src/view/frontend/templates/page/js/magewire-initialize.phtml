@@ -52,21 +52,18 @@ $magewireScripts = $viewModels->require(Magewire::class);
         window.magewire.start();
     });
 
-    /* Dispatch prefixed window events. */
-    Magewire.dispatchEvent = (name, data = null) => {
-
-        const event = document.createEvent('Events')
-
-        event.initEvent('magewire:' + name, true, true)
-        event.detail = data
-
-        document.dispatchEvent(event)
+    /* Dispatch "magewire:" prefixed window events. */
+    Magewire.dispatchEvent = (name, event) => {
+        document.dispatchEvent(new Event(`magewire:${ name }`, {
+            'bubbles': event.bubbles || true,
+            'cancelable': event.cancelable || true
+        }))
     }
 
     /* Mirror Livewire events. */
     ['load', 'update'].forEach(function (target, index) {
-        document.addEventListener('livewire:' + target, () => {
-            Magewire.dispatchEvent(target)
+        document.addEventListener('livewire:' + target, (event) => {
+            Magewire.dispatchEvent(target, event)
         })
     });
 </script>

@@ -24,8 +24,6 @@ class ComponentManager
     protected array $updateActionsPool;
     protected array $hydrationPool;
 
-    private array $entityRegistry = [];
-
     /**
      * ComponentManager constructor.
      * @param HydratorContext $hydratorContext

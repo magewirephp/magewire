@@ -19,11 +19,11 @@ use Magento\Framework\View\Element\AbstractBlock;
 
 ?>
 <script>
-    document.addEventListener('livewire:available', () => {
-        const event = document.createEvent('Events')
-
-        event.initEvent('magewire:available', true, true)
-        document.dispatchEvent(event)
+    document.addEventListener('livewire:available', (event) => {
+        document.dispatchEvent(new Event('magewire:available', {
+            'bubbles': event.bubbles || true,
+            'cancelable': event.cancelable || true
+        }))
     })
 </script>
 
