@@ -49,9 +49,17 @@ class QueryString implements HydratorInterface
             $aliases = $this->filterQueryStringSetting($component, 'as');
 
             foreach (array_keys($properties) as $property) {
-                if ($value = $this->request->getParam($aliases[$property] ?? $property)) {
-                    $component->{$property} = $value;
+                $fromQueryString = $this->request->getParam($aliases[$property] ?? $property);
+
+                if ($fromQueryString === null) {
+                    continue;
                 }
+
+                $decoded = is_array($fromQueryString)
+                    ? json_decode(json_encode($fromQueryString), true)
+                    : json_decode($fromQueryString, true);
+
+                $component->{$property} = $decoded ?? $fromQueryString;
             }
         }
     }
@@ -61,8 +69,17 @@ class QueryString implements HydratorInterface
      */
     public function dehydrate(Component $component, ResponseInterface $response): void
     {
-        if ($response->getRequest()->isPreceding()) {
-            //$response->effects['path'] = 'https://magento-os244-hyva.test/checkout/?current=shipping';
+        // WIP
+        if (($referer = $this->request->getHeader('Referer')) && $this->request->getHeader('x-livewire')) {
+//                $this->getPathFromReferer($referer, $component, $response);
+        } else {
+//            if (! $this->shouldSendPath($component)) return;
+//
+//                $queryParams = $this->mergeComponentPropertiesWithExistingQueryParamsFromOtherComponentsAndTheRequest($component);
+//
+//                $response->effects['path'] = url()->current().$this->stringifyQueryParams($queryParams);
+            $url = $this->urlBuilder->getCurrentUrl();
+            $url = $this->urlBuilder->getDirectUrl($url, ['foo' => 'bar']);
         }
 
         if ($response->getRequest()->isSubsequent()) {
