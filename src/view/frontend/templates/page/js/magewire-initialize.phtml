@@ -16,6 +16,7 @@ use Magewirephp\Magewire\ViewModel\Magewire;
 
 $magewireScripts = $viewModels->require(Magewire::class);
 ?>
+<?php if ($magewireScripts->pageRequiresMagewire()): ?>
 <script>
     'use strict';
 
@@ -72,3 +73,4 @@ $magewireScripts = $viewModels->require(Magewire::class);
         })
     });
 </script>
+<?php endif ?>
