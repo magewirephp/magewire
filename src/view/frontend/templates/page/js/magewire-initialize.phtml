@@ -48,19 +48,19 @@ $magewireScripts = $viewModels->require(Magewire::class);
     window.deferLoadingAlpine = function (callback) {
         window.addEventListener('magewire:load', () => {
             callback()
-        });
-    };
+        })
+    }
 
     document.addEventListener('DOMContentLoaded', () => {
         window.magewire.start();
-    });
+    })
 
     /* Dispatch "magewire:" prefixed window events. */
     Magewire.dispatchEvent = (name, event = {}) => {
-        document.dispatchEvent(new Event(`magewire:${ name }`, {
-            'bubbles': event.bubbles || true,
-            'cancelable': event.cancelable ?? false
-        }))
+        document.dispatchEvent(new Event(`magewire:${ name }`, Object.assign({
+            'bubbles': true,
+            'cancelable': false
+        }, event)))
     }
 
     /* Mirror Livewire events. */
@@ -68,6 +68,6 @@ $magewireScripts = $viewModels->require(Magewire::class);
         document.addEventListener('livewire:' + target, (event) => {
             Magewire.dispatchEvent(target, event)
         })
-    });
+    })
 </script>
 <?php endif ?>
