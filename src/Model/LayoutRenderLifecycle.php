@@ -10,6 +10,17 @@ namespace Magewirephp\Magewire\Model;
 
 class LayoutRenderLifecycle
 {
+    /**
+     * @var array<string, array{
+     *     string: string
+     *   }
+     * >
+     */
+    private array $history = [];
+
+    /**
+     * @var array<string, null|string>
+     */
     private array $views = [];
 
     /**
@@ -41,6 +52,7 @@ class LayoutRenderLifecycle
         });
 
         foreach ($children as $key => $value) {
+            $this->history[$parent][$key] = $value;
             unset($this->views[$key]);
         }
 
@@ -74,6 +86,22 @@ class LayoutRenderLifecycle
     }
 
     /**
+     * @return bool
+     */
+    public function hasHistory(): bool
+    {
+        return count($this->getHistory()) !== 0;
+    }
+
+    /**
+     * @return array
+     */
+    public function getHistory(): array
+    {
+        return $this->history;
+    }
+
+    /**
      * @param callable $filter
      * @param int $mode
      * @return array
@@ -100,7 +128,7 @@ class LayoutRenderLifecycle
      */
     public function isParent(string $name): bool
     {
-        return array_search($name, array_keys($this->getViews())) === 0;
+        return array_search($name, array_keys($this->getViews()), true) === 0;
     }
 
     /**

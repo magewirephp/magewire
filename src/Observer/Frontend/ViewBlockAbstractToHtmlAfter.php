@@ -92,7 +92,7 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
      * @param string $html
      * @throws RootTagMissingFromViewException
      */
-    public function registerChildren(string $nameInLayout, Component $component, string $html)
+    public function registerChildren(string $nameInLayout, Component $component, string $html): void
     {
         if ($this->getLayoutRenderLifecycle()->exists($nameInLayout) === false) {
             return;
