@@ -55,7 +55,7 @@ class ComponentManager
             $hydratorContext->getFlashMessageHydrator(),
             $hydratorContext->getErrorHydrator(),
             $hydratorContext->getHashHydrator(),
-            $hydratorContext->getQueryStringHydrator(),
+            $hydratorContext->getBrowserHistoryHydrator(),
             $hydratorContext->getPropertyHydrator(),
             $hydratorContext->getListenerHydrator(),
             $hydratorContext->getLoaderHydrator(),

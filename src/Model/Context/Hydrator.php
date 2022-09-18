@@ -18,7 +18,7 @@ use Magewirephp\Magewire\Model\Hydrator\FlashMessage;
 use Magewirephp\Magewire\Model\Hydrator\Listener;
 use Magewirephp\Magewire\Model\Hydrator\PostDeployment;
 use Magewirephp\Magewire\Model\Hydrator\Property;
-use Magewirephp\Magewire\Model\Hydrator\QueryString;
+use Magewirephp\Magewire\Model\Hydrator\BrowserHistory;
 use Magewirephp\Magewire\Model\Hydrator\Redirect;
 use Magewirephp\Magewire\Model\Hydrator\Security;
 use Magewirephp\Magewire\Model\Hydrator\Loader;
@@ -30,7 +30,7 @@ class Hydrator
     protected Emit $emit;
     protected BrowserEvent $browserEventHydrator;
     protected Property $propertyHydrator;
-    protected QueryString $queryStringHydrator;
+    protected BrowserHistory $browserHistoryHydrator;
     protected Error $errorHydrator;
     protected Redirect $redirectHydrator;
     protected FlashMessage $flashMessageHydrator;
@@ -47,35 +47,36 @@ class Hydrator
      * @param BrowserEvent $browserEventHydrator
      * @param FlashMessage $flashMessageHydrator
      * @param Property $propertyHydrator
-     * @param QueryString $queryStringHydrator
+     * @param BrowserHistory $browserHistoryHydrator
      * @param Error $errorHydrator
      * @param Redirect $redirectHydrator
      * @param Security $securityHydrator
      * @param Loader $loaderHydrator
      * @param PostDeployment $postDeploymentHydrator
      * @param FormKey $formKeyHydrator
+     * @param Children $childrenHydrator
      */
     public function __construct(
-        Hash $hashHydrator,
-        Listener $listenerHydrator,
-        Emit $emit,
-        BrowserEvent $browserEventHydrator,
-        FlashMessage $flashMessageHydrator,
-        Property $propertyHydrator,
-        QueryString $queryStringHydrator,
-        Error $errorHydrator,
-        Redirect $redirectHydrator,
-        Security $securityHydrator,
-        Loader $loaderHydrator,
+        Hash           $hashHydrator,
+        Listener       $listenerHydrator,
+        Emit           $emit,
+        BrowserEvent   $browserEventHydrator,
+        FlashMessage   $flashMessageHydrator,
+        Property       $propertyHydrator,
+        BrowserHistory $browserHistoryHydrator,
+        Error          $errorHydrator,
+        Redirect       $redirectHydrator,
+        Security       $securityHydrator,
+        Loader         $loaderHydrator,
         PostDeployment $postDeploymentHydrator,
-        FormKey $formKeyHydrator,
-        Children $childrenHydrator
+        FormKey        $formKeyHydrator,
+        Children       $childrenHydrator
     ) {
         $this->hashHydrator = $hashHydrator;
         $this->listenerHydrator = $listenerHydrator;
         $this->emit = $emit;
         $this->propertyHydrator = $propertyHydrator;
-        $this->queryStringHydrator = $queryStringHydrator;
+        $this->browserHistoryHydrator = $browserHistoryHydrator;
         $this->errorHydrator = $errorHydrator;
         $this->redirectHydrator = $redirectHydrator;
         $this->flashMessageHydrator = $flashMessageHydrator;
@@ -120,11 +121,11 @@ class Hydrator
     }
 
     /**
-     * @return QueryString
+     * @return BrowserHistory
      */
-    public function getQueryStringHydrator(): QueryString
+    public function getBrowserHistoryHydrator(): BrowserHistory
     {
-        return $this->queryStringHydrator;
+        return $this->browserHistoryHydrator;
     }
 
     /**
