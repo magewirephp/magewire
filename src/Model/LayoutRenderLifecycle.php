@@ -137,6 +137,6 @@ class LayoutRenderLifecycle
      */
     public function isChild(string $name): bool
     {
-        return !$this->isParent($name);
+        return ! $this->isParent($name);
     }
 }

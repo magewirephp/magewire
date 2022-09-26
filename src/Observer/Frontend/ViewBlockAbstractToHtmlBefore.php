@@ -11,7 +11,11 @@ namespace Magewirephp\Magewire\Observer\Frontend;
 use Exception;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Exception\ComponentActionException;
+use Magewirephp\Magewire\Exception\MissingComponentException;
 
 class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements ObserverInterface
 {
@@ -28,69 +32,78 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
 
         if ($block->hasMagewire()) {
             try {
-                $component = $this->getComponentHelper()->extractComponentFromBlock($block, true);
-                $this->getLayoutRenderLifecycle()->start($block->getNameInLayout());
-
-                $request = $component->getRequest();
-                $data = $this->getComponentHelper()->extractDataFromBlock($block);
-
-                if ($request && $this->getLayoutRenderLifecycle()->isParent($block->getNameInLayout())) {
-                    $this->setLayoutUpdateHandle($request->getFingerprint('handle'));
-                }
-
-                if ($request === null) {
-                    $request = $this->getComponentManager()->createInitialRequest(
-                        $block,
-                        $component,
-                        $data,
-                        $this->getLayoutUpdateHandle()
-                    )->isSubsequent(false);
-                }
-
-                $component->setRequest($request);
-
-                /**
-                 * @lifecycle Runs on every request, immediately after the component is instantiated, but before
-                 * any other lifecycle methods are called.
-                 */
-                $component->boot(...[$data, $request]);
-
-                if ($request->isPreceding()) {
-                    /**
-                     * @lifecycle Runs once, immediately after the component is instantiated, but before render()
-                     * is called. This is only called once on initial page load and never called again, even on
-                     * component refreshes.
-                     */
-                    $component->mount(...[$data, $request]);
-                }
-
-                $this->getComponentManager()->hydrate($component);
-
-                if ($request->isSubsequent()) {
-                    /**
-                     * @lifecycle Runs on every subsequent request, after the component is hydrated, but before
-                     * an action is performed or rendering.
-                     */
-                    $component->hydrate();
-                }
-
-                /**
-                 * @lifecycle Runs on every request, after the component is mounted or hydrated, but before
-                 * any update methods are called.
-                 */
-                $component->booted();
-
-                if ($component->hasRequest('updates')) {
-                    $this->getComponentManager()->processUpdates($component, $request->getUpdates());
-                }
-
-                $component->setResponse($this->getHttpFactory()->createResponse($request));
-                // Set the latest request and reattach the component onto the block.
-                $block->setData('magewire', $component);
+                $block->setData('magewire', $this->processMagewireBlock($block));
             } catch (Exception $exception) {
                 $observer->setBlock($this->transformToExceptionBlock($block, $exception));
             }
         }
+    }
+
+    /**
+     * @throws ComponentActionException
+     * @throws MissingComponentException
+     * @throws LocalizedException
+     */
+    public function processMagewireBlock($block): Component
+    {
+        $component = $this->getComponentHelper()->extractComponentFromBlock($block, true);
+        $this->getLayoutRenderLifecycle()->start($block->getNameInLayout());
+
+        $request = $component->getRequest();
+        $data = $this->getComponentHelper()->extractDataFromBlock($block);
+
+        if ($request && $this->getLayoutRenderLifecycle()->isParent($block->getNameInLayout())) {
+            $this->setLayoutUpdateHandle($request->getFingerprint('handle'));
+        }
+
+        if ($request === null) {
+            $request = $this->getComponentManager()->createInitialRequest(
+                $block,
+                $component,
+                $data,
+                $this->getLayoutUpdateHandle()
+            )->isSubsequent(false);
+        }
+
+        $component->setRequest($request);
+
+        /**
+         * @lifecycle Runs on every request, immediately after the component is instantiated, but before
+         * any other lifecycle methods are called.
+         */
+        $component->boot(...[$data, $request]);
+
+        if ($request->isPreceding()) {
+            /**
+             * @lifecycle Runs once, immediately after the component is instantiated, but before render()
+             * is called. This is only called once on initial page load and never called again, even on
+             * component refreshes.
+             */
+            $component->mount(...[$data, $request]);
+        }
+
+        $this->getComponentManager()->hydrate($component);
+
+        if ($request->isSubsequent()) {
+            /**
+             * @lifecycle Runs on every subsequent request, after the component is hydrated, but before
+             * an action is performed or rendering.
+             */
+            $component->hydrate();
+        }
+
+        /**
+         * @lifecycle Runs on every request, after the component is mounted or hydrated, but before
+         * any update methods are called.
+         */
+        $component->booted();
+
+        if ($component->hasRequest('updates')) {
+            $this->getComponentManager()->processUpdates($component, $request->getUpdates());
+        }
+
+        $component->setResponse($this->getHttpFactory()->createResponse($request));
+        return $component;
     }
 
     /**
