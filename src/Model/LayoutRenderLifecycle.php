@@ -23,6 +23,8 @@ class LayoutRenderLifecycle
      */
     private array $views = [];
 
+    private ?string $start = null;
+
     /**
      * Marks view as 'start rendering'
      *
@@ -31,6 +33,10 @@ class LayoutRenderLifecycle
      */
     public function start(string $name): LayoutRenderLifecycle
     {
+        if ($this->start === null) {
+            $this->start = $name;
+        }
+
         $this->views[$name] = null;
         return $this;
     }
@@ -51,8 +57,18 @@ class LayoutRenderLifecycle
             return false;
         });
 
+        // Special use case where a single component on the page doesn't have a child.
+        if (isset($this->views[$parent]) && $parent === $this->start) {
+            $children[$parent] = $this->views[$parent];
+        }
+
         foreach ($children as $key => $value) {
-            $this->history[$parent][$key] = $value;
+            if ($parent === $this->start) {
+                $this->history[$key] = $value;
+            } else {
+                $this->history[$parent][$key] = $value;
+            }
+
             unset($this->views[$key]);
         }
 
@@ -74,7 +90,7 @@ class LayoutRenderLifecycle
      */
     public function canStop(string $name): bool
     {
-        return $name !== array_key_last($this->views);
+        return $name !== array_search($name, array_reverse($this->views), true) || $name === $this->start;
     }
 
     /**
