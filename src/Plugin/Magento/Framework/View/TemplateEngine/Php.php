@@ -56,7 +56,7 @@ class Php
             $views  = $this->layoutRenderLifecycle->getViews();
             $latest = array_search(null, array_reverse($views), true);
 
-            if (array_key_exists($latest, $this->registry) && $block instanceof DataObject) {
+            if (is_string($latest) && array_key_exists($latest, $this->registry) && $block instanceof DataObject) {
                 $dictionary['magewire'] = $this->registry[$latest];
             }
         }
