@@ -108,21 +108,18 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
         $this->getLayoutRenderLifecycle()->setStartTag(trim($matches[0][0], '<'), $nameInLayout);
 
         if ($this->getLayoutRenderLifecycle()->canStop($nameInLayout)) {
-            $children = $this->getLayoutRenderLifecycle()->getViewsWithFilter(
-                function ($value, string $key) use ($nameInLayout) {
-                    if ((is_string($value) && $key !== $nameInLayout)) {
-                        return $value;
-                    }
+            $views = $this->layoutRenderLifecycle->getViews();
+            $position = array_search($nameInLayout, array_keys($views), true);
 
-                    return false;
+            if ($position !== false) {
+                $children = array_slice($views, $position + 1, count($views), true);
+
+                foreach ($children as $name => $tag) {
+                    $component->logRenderedChild($name, $tag);
                 }
-            );
+            }
 
             $this->getLayoutRenderLifecycle()->stop($nameInLayout);
-
-            foreach ($children as $name => $tag) {
-                $component->logRenderedChild($name, $tag);
-            }
         }
     }
 

@@ -49,13 +49,14 @@ class LayoutRenderLifecycle
      */
     public function stop(string $parent): LayoutRenderLifecycle
     {
-        $children = $this->getViewsWithFilter(function ($value, string $key) use ($parent) {
-            if ((is_string($value) && $key !== $parent)) {
-                return $value;
-            }
+        $views = $this->getViews();
+        $position = array_search($parent, array_keys($views), true);
 
-            return false;
-        });
+        if ($position === false) {
+            return $this;
+        }
+
+        $children = array_slice($views, $position + 1, count($views), true);
 
         // Special use case where a single component on the page doesn't have a child.
         if (isset($this->views[$parent]) && $parent === $this->start) {
@@ -118,16 +119,6 @@ class LayoutRenderLifecycle
     }
 
     /**
-     * @param callable $filter
-     * @param int $mode
-     * @return array
-     */
-    public function getViewsWithFilter(callable $filter, int $mode = ARRAY_FILTER_USE_BOTH): array
-    {
-        return array_filter($this->views, $filter, $mode);
-    }
-
-    /**
      * @param string $tag
      * @param string $for
      * @return $this
@@ -153,6 +144,6 @@ class LayoutRenderLifecycle
      */
     public function isChild(string $name): bool
     {
-        return !$this->isParent($name);
+        return ! $this->isParent($name);
     }
 }

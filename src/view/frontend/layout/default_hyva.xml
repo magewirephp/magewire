@@ -15,12 +15,13 @@
                    template="Magewirephp_Magewire::page/js/magewire-livewire.phtml"/>
             <block name="magewire.initialize"
                    after="magewire.livewire"
-                   template="Magewirephp_Magewire::page/js/magewire-initialize.phtml"/>
-
-            <container name="magewire.plugin.scripts">
-                <block name="magewire.plugin.loader"
-                       template="Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml"/>
-            </container>
+                   template="Magewirephp_Magewire::page/js/magewire-initialize.phtml"
+            >
+                <container name="magewire.plugin.scripts" as="magewire.plugins">
+                    <block name="magewire.plugin.loader"
+                           template="Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml"/>
+                </container>
+            </block>
         </referenceContainer>
 
         <!-- Global Magewire pager placeholder -->
