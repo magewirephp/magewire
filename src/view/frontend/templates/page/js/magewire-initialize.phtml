@@ -9,9 +9,11 @@
 /** @var Magewire $magewireScripts */
 /** @var ViewModelRegistry $viewModels */
 /** @var Escaper $escaper */
+/** @var Template $block */
 
 use Hyva\Theme\Model\ViewModelRegistry;
 use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\ViewModel\Magewire;
 
 $magewireScripts = $viewModels->require(Magewire::class);
@@ -70,4 +72,6 @@ $magewireScripts = $viewModels->require(Magewire::class);
         })
     })
 </script>
+
+    <?= /* @noEscape */ $block->getChildHtml('magewire.plugins') ?>
 <?php endif ?>

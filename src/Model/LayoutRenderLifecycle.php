@@ -23,6 +23,8 @@ class LayoutRenderLifecycle
      */
     private array $views = [];
 
+    private ?string $start = null;
+
     /**
      * Marks view as 'start rendering'
      *
@@ -31,6 +33,10 @@ class LayoutRenderLifecycle
      */
     public function start(string $name): LayoutRenderLifecycle
     {
+        if ($this->start === null) {
+            $this->start = $name;
+        }
+
         $this->views[$name] = null;
         return $this;
     }
@@ -43,16 +49,27 @@ class LayoutRenderLifecycle
      */
     public function stop(string $parent): LayoutRenderLifecycle
     {
-        $children = $this->getViewsWithFilter(function ($value, string $key) use ($parent) {
-            if ((is_string($value) && $key !== $parent)) {
-                return $value;
-            }
+        $views = $this->getViews();
+        $position = array_search($parent, array_keys($views), true);
 
-            return false;
-        });
+        if ($position === false) {
+            return $this;
+        }
+
+        $children = array_slice($views, $position + 1, count($views), true);
+
+        // Special use case where a single component on the page doesn't have a child.
+        if (isset($this->views[$parent]) && $parent === $this->start) {
+            $children[$parent] = $this->views[$parent];
+        }
 
         foreach ($children as $key => $value) {
-            $this->history[$parent][$key] = $value;
+            if ($parent === $this->start) {
+                $this->history[$key] = $value;
+            } else {
+                $this->history[$parent][$key] = $value;
+            }
+
             unset($this->views[$key]);
         }
 
@@ -74,7 +91,7 @@ class LayoutRenderLifecycle
      */
     public function canStop(string $name): bool
     {
-        return $name !== array_key_last($this->views);
+        return $name !== array_search($name, array_reverse($this->views), true) || $name === $this->start;
     }
 
     /**
@@ -99,16 +116,6 @@ class LayoutRenderLifecycle
     public function getHistory(): array
     {
         return $this->history;
-    }
-
-    /**
-     * @param callable $filter
-     * @param int $mode
-     * @return array
-     */
-    public function getViewsWithFilter(callable $filter, int $mode = ARRAY_FILTER_USE_BOTH): array
-    {
-        return array_filter($this->views, $filter, $mode);
     }
 
     /**
@@ -137,6 +144,6 @@ class LayoutRenderLifecycle
      */
     public function isChild(string $name): bool
     {
-        return !$this->isParent($name);
+        return ! $this->isParent($name);
     }
 }
