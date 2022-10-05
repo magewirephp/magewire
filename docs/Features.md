@@ -162,7 +162,7 @@ This can be very powerful when you are in the situation where you want to keep t
     <button wire:click="$set('foo', 'bar')">Set Foo</button>
     <!-- Fresh HTML will be injected after you've clicked the Set Foo button. -->
     <span>
-        <?= 'Foo: ' . $getFoo() ?>
+        <?= 'Foo: ' . $magewire->getFoo() ?>
     </span>
     <!-- Wont change to its original state as long as the wire:ignore sits there. -->
     <div wire:ignore>
