@@ -47,11 +47,14 @@ $magewireScripts = $viewModels->require(Magewire::class);
     }
 
     /* Make Alpine wait until Magewire is finished rendering to do its thing. */
-    window.deferLoadingAlpine = function (callback) {
-        window.addEventListener('magewire:load', () => {
-            callback()
-        })
-    }
+    (() => {
+        const initAlpine = window.deferLoadingAlpine || ((callback) => callback());
+        window.deferLoadingAlpine = (callback) => {
+            window.addEventListener('magewire:load', () => {
+                initAlpine(callback)
+            });
+        }
+    })();
 
     document.addEventListener('DOMContentLoaded', () => {
         window.magewire.start();
