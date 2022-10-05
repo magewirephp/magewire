@@ -10,7 +10,7 @@
 - [Templates](#templates)
   - [Switch Template](#switch-template)
 - [Wire Ignore](#wire-ignore)
-  - [Childr Block Rendering](#child-block-rendering)
+  - [Children Block Rendering](#child-block-rendering)
 - [Component Types](#component-types)
 - [Magic Actions & Properties](#magic-actions--properties)
   - [Overwrites](#overwrites)
@@ -33,7 +33,6 @@
   - [Component](#component-rpm)
 - [Pagination](#pagination)
 - [Query String](#query-string)
-- [Set A Predictable wire:id](#set-a-predictable-wireid)
 - [Display Loading State](#display-loading-state)
   - [Indicator Customization](#indicator-customization)
   - [Indicator Removal](#indicator-removal)
@@ -634,41 +633,6 @@ class MySearchForm extends \Magewirephp\Magewire\Component
         ]
     ];
 }
-```
-
-## Set A Predictable wire:id
-Magewire generates a SHA1 hash wire:id attribute value by default. This is based on the component's layout block name.
-```php
-class Explanation extends \Magewirephp\Magewire\Component
-{
-    public $id = 'my-predictable-wire-id';
-    
-    public $bar;
-    
-    public function foo(string $bar)
-    {
-        $this->bar($bar);
-    }
-}
-```
-
-Will output as:
-```html
-<div wire:id="my-predictable-wire-id"></div>
-```
-
-> **Note**: SHA1 hashing the wire:id value is an idea which can change in the future. I'm still tumbling around the
-> acceptance of just using the block name which has to be unique which is the most important part. I need to look into
-> the security aspect when switching to an un-hashed version of the wire:id attribute.
-> 
-> On of the benefits would be that Magewire components are more predictable when it comes to trying to find them with
-> for example Livewire.find().
-
-Find the component and trigger the ```foo``` method:
-```js
-document.addEventListener('livewire:load', function () {
-    Magewire.find(['my-predictable-wire-id']).foo('Some Value')
-});
 ```
 
 ## Display Loading State
