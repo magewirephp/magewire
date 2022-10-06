@@ -15,6 +15,7 @@ use Magewirephp\Magewire\Helper\Component as ComponentHelper;
 use Magewirephp\Magewire\Model\ComponentManager;
 use Magewirephp\Magewire\Model\HttpFactory;
 use Magewirephp\Magewire\Model\LayoutRenderLifecycle;
+use Psr\Log\LoggerInterface;
 
 class ViewBlockAbstract
 {
@@ -23,6 +24,7 @@ class ViewBlockAbstract
     protected ComponentManager $componentManager;
     protected HttpFactory $httpFactory;
     protected LayoutRenderLifecycle $layoutRenderLifecycle;
+    protected LoggerInterface $logger;
 
     /**
      * @param ApplicationState $applicationState
@@ -30,19 +32,22 @@ class ViewBlockAbstract
      * @param ComponentHelper $componentHelper
      * @param HttpFactory $httpFactory
      * @param LayoutRenderLifecycle $layoutRenderLifecycle
+     * @param LoggerInterface $logger
      */
     public function __construct(
         ApplicationState $applicationState,
         ComponentManager $componentManager,
         ComponentHelper $componentHelper,
         HttpFactory $httpFactory,
-        LayoutRenderLifecycle $layoutRenderLifecycle
+        LayoutRenderLifecycle $layoutRenderLifecycle,
+        LoggerInterface $logger
     ) {
         $this->applicationState = $applicationState;
         $this->componentHelper = $componentHelper;
         $this->componentManager = $componentManager;
         $this->httpFactory = $httpFactory;
         $this->layoutRenderLifecycle = $layoutRenderLifecycle;
+        $this->logger = $logger;
     }
 
     /**
@@ -85,7 +90,7 @@ class ViewBlockAbstract
      */
     public function transformToExceptionBlock(Template $block, Exception $exception): Template
     {
-        $magewire = $block->getMagewire();
+        $magewire = $block->getData('magewire');
 
         /*
          * Just throw the exception went the request is in a subsequent state. This exception

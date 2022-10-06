@@ -9,6 +9,7 @@
 namespace Magewirephp\Magewire\Observer\Frontend;
 
 use Exception;
+use Magento\Framework\App\State as ApplicationState;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Exception\LocalizedException;
@@ -16,6 +17,10 @@ use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exception\ComponentActionException;
 use Magewirephp\Magewire\Exception\MissingComponentException;
+use Magewirephp\Magewire\Helper\Component as ComponentHelper;
+use Magewirephp\Magewire\Model\ComponentManager;
+use Magewirephp\Magewire\Model\HttpFactory;
+use Magewirephp\Magewire\Model\LayoutRenderLifecycle;
 
 class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements ObserverInterface
 {
@@ -71,7 +76,11 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
          * @lifecycle Runs on every request, immediately after the component is instantiated, but before
          * any other lifecycle methods are called.
          */
-        $component->boot(...[$data, $request]);
+        try {
+            $component->boot($data, $request);
+        } catch (Exception $exception) {
+            $this->logger->critical('Magewire:' . $exception->getMessage());
+        }
 
         if ($request->isPreceding()) {
             /**
@@ -79,7 +88,11 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
              * is called. This is only called once on initial page load and never called again, even on
              * component refreshes.
              */
-            $component->mount(...[$data, $request]);
+            try {
+                $component->mount($data, $request);
+            } catch (Exception $exception) {
+                $this->logger->critical('Magewire:' . $exception->getMessage());
+            }
         }
 
         $this->getComponentManager()->hydrate($component);
@@ -96,7 +109,11 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
          * @lifecycle Runs on every request, after the component is mounted or hydrated, but before
          * any update methods are called.
          */
-        $component->booted();
+        try {
+            $component->booted();
+        } catch (Exception $exception) {
+            $this->logger->critical('Magewire:' . $exception->getMessage());
+        }
 
         if ($component->hasRequest('updates')) {
             $this->getComponentManager()->processUpdates($component, $request->getUpdates());
