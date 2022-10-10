@@ -8,20 +8,24 @@
 
 namespace Magewirephp\Magewire\Helper;
 
+use Magento\Framework\Escaper;
 use Magento\Framework\Serialize\SerializerInterface;
 
 class Functions
 {
     protected SerializerInterface $serializer;
+    protected Escaper $escape;
 
     /**
-     * Functions constructor.
      * @param SerializerInterface $serializer
+     * @param Escaper $escape
      */
     public function __construct(
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        Escaper $escape
     ) {
         $this->serializer = $serializer;
+        $this->escape = $escape;
     }
 
     /**
@@ -64,9 +68,9 @@ class Functions
     public function escapeStringForHtml($subject): string
     {
         if (is_string($subject) || is_numeric($subject)) {
-            return htmlspecialchars($subject);
+            return $this->escape->escapeHtml($subject);
         }
 
-        return htmlspecialchars($this->serializer->serialize($subject));
+        return $this->escape->escapeHtml($this->serializer->serialize($subject));
     }
 }
