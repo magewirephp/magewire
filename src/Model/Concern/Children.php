@@ -36,7 +36,7 @@ trait Children
      * @param string $tag
      * @param string|null $cacheEntity
      */
-    public function logRenderedChild(string $id, string $tag, string $cacheEntity = null)
+    public function logRenderedChild(string $id, string $tag, string $cacheEntity = null): void
     {
         $this->renderedChildren[$cacheEntity ?? $id] = ['id' => $id, 'tag' => $tag];
     }
@@ -44,7 +44,7 @@ trait Children
     /**
      * @param string $id
      */
-    public function preserveRenderedChild(string $id)
+    public function preserveRenderedChild(string $id): void
     {
         $this->renderedChildren[$id] = $this->previouslyRenderedChildren[$id];
     }
@@ -55,13 +55,13 @@ trait Children
      */
     public function childHasBeenRendered(string $id): bool
     {
-        return in_array($id, array_keys($this->previouslyRenderedChildren), true);
+        return array_key_exists($id, $this->previouslyRenderedChildren);
     }
 
     /**
      * @param array $children
      */
-    public function setPreviouslyRenderedChildren(array $children)
+    public function setPreviouslyRenderedChildren(array $children): void
     {
         $this->previouslyRenderedChildren = $children;
     }
