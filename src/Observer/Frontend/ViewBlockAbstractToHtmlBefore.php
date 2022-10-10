@@ -79,7 +79,7 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
         try {
             $component->boot($data, $request);
         } catch (Exception $exception) {
-            $this->logger->critical('Magewire:' . $exception->getMessage());
+            $this->logger->critical('Magewire: ' . $exception->getMessage());
         }
 
         if ($request->isPreceding()) {
@@ -91,7 +91,7 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
             try {
                 $component->mount($data, $request);
             } catch (Exception $exception) {
-                $this->logger->critical('Magewire:' . $exception->getMessage());
+                $this->logger->critical('Magewire: ' . $exception->getMessage());
             }
         }
 
@@ -112,7 +112,7 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
         try {
             $component->booted();
         } catch (Exception $exception) {
-            $this->logger->critical('Magewire:' . $exception->getMessage());
+            $this->logger->critical('Magewire: ' . $exception->getMessage());
         }
 
         if ($component->hasRequest('updates')) {
