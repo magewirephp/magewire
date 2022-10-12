@@ -49,9 +49,9 @@ class CallMethod implements ActionInterface
             return $component->{$method}(...$params);
         }
 
-        // Determine the required type class by method in specific order
+        // Determine the required type class by method in specific order.
         $type = $this->determineType($method);
-        // Add the component as a dynamic last method param
+        // Add the component as a dynamic last method param.
         $params[] = $component;
 
         if ($this->isCallable($method, $type)) {
@@ -84,6 +84,7 @@ class CallMethod implements ActionInterface
      */
     public function determineType(string $method)
     {
+        // Upload class will be added in the future when this feature will get implemented.
         foreach ([Magic::class] as $type) {
             if (method_exists($type, $method)) {
                 return $this->typeFactory->create($type);

@@ -35,7 +35,8 @@ class FireEvent implements ActionInterface
     /**
      * @inheritdoc
      *
-     * @throws ComponentActionException|LocalizedException
+     * @throws ComponentActionException
+     * @throws LocalizedException
      */
     public function handle(Component $component, array $payload)
     {
@@ -44,7 +45,7 @@ class FireEvent implements ActionInterface
         $parameters = $payload['params'][0] ?? [];
 
         if ($method === false) {
-            throw new ComponentActionException(__('Method %1 does not exist or can not be called', [$method]));
+            throw new ComponentActionException(__('Method does not exist or can not be called'));
         }
 
         $this->callMethodHandler->handle($component, [

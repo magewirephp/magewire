@@ -11,7 +11,6 @@ namespace Magewirephp\Magewire\Model\Action\Type;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exception\ComponentException;
 use Magewirephp\Magewire\Helper\Property as PropertyHelper;
-use Magewirephp\Magewire\Model\Upload\UploadAdapterInterface;
 
 class Magic
 {
@@ -62,10 +61,11 @@ class Magic
         }
 
         // Transform a magic property value.
-        if (is_string($value) && strripos($value, '$') === 0 && ($value = ltrim($value, '$'))) {
-            if (array_key_exists($value, $component->getPublicProperties())) {
-                $value = $component->{$value};
-            }
+        if (is_string($value)
+            && strrpos($value, '$') === 0
+            && ($value = ltrim($value, '$'))
+            && array_key_exists($value, $component->getPublicProperties())) {
+            $value = $component->{$value};
         }
 
         $component->{$property} = $value;
@@ -74,8 +74,7 @@ class Magic
     /**
      * Magic method ($refresh).
      */
-    public function refresh(): void
+    public function refresh(): void //phpcs:ignore
     {
-        return;
     }
 }
