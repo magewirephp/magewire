@@ -14,13 +14,13 @@ use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exception\ValidationException;
 use Magewirephp\Magewire\Helper\Property as PropertyHelper;
 use Magewirephp\Magewire\Model\ActionInterface;
+use Psr\Log\LoggerInterface;
 
 class SyncInput implements ActionInterface
 {
     protected PropertyHelper $propertyHelper;
 
     /**
-     * Magic constructor.
      * @param PropertyHelper $propertyHelper
      */
     public function __construct(
@@ -68,7 +68,7 @@ class SyncInput implements ActionInterface
                     }
                 } elseif (method_exists($component, $method)) {
                     try {
-                        $value = $component->{$method}(...[$value, $property]);
+                        $value = $component->{$method}($value, $property);
 
                         if ($containsDots) {
                             // Put the new value in its original nested spot.
