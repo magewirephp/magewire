@@ -98,7 +98,7 @@ class Request implements RequestInterface
     /**
      * @inheritdoc
      */
-    public function isSubsequent(bool $flag = null)
+    public function isSubsequent(bool $flag = null, bool $force = false)
     {
         // Just return the update status.
         if ($flag === null) {
@@ -106,7 +106,7 @@ class Request implements RequestInterface
         }
 
         // Lock this property, so it can't be changed later on.
-        if ($this->isSubsequent === false) {
+        if ($force === true || $this->isSubsequent === false) {
             $this->isSubsequent = $flag;
         }
 
