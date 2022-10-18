@@ -44,7 +44,7 @@ class Property implements HydratorInterface
     public function hydrate(Component $component, RequestInterface $request): void
     {
         if ($request->isSubsequent()) {
-            $overwrite = $request->memo['data'];
+            $overwrite = array_replace_recursive($request->getServerMemo('data'), $component->getPublicProperties());
         }
 
         $this->propertyHelper->assign(function (Component $component, $property, $value) {
@@ -67,7 +67,7 @@ class Property implements HydratorInterface
                 $request->memo['data'],
                 array_filter(
                     $component->getPublicProperties(true),
-                    function ($value) {
+                    static function ($value) {
                         return $value !== null;
                     }
                 )
@@ -118,7 +118,7 @@ class Property implements HydratorInterface
                 $a = $this->propertyHelper->searchViaDots($update['payload']['name'], $request->getServerMemo('data'));
                 $b = $this->propertyHelper->searchViaDots($update['payload']['name'], $response->getServerMemo('data'));
 
-                if ($a != $b) {
+                if ($a !== $b) {
                     $response->effects['dirty'][] = $update['payload']['name'];
                 }
             }
@@ -129,7 +129,7 @@ class Property implements HydratorInterface
      * @param ResponseInterface $response
      * @param string $property
      */
-    public function processProperty(ResponseInterface $response, string $property)
+    public function processProperty(ResponseInterface $response, string $property): void
     {
         $response->effects['dirty'][] = $property;
     }

@@ -13,7 +13,6 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Locale\Resolver;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Exception\AcceptableException;
-use Magewirephp\Magewire\Exception\ComponentActionException;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Model\Context\Hydrator as HydratorContext;
 
@@ -65,10 +64,10 @@ class ComponentManager
     /**
      * @param Component $component
      * @param array $updates
+     * @return Component
      * @throws LocalizedException
-     * @throws ComponentActionException
      */
-    public function processUpdates(Component $component, array $updates): void
+    public function processUpdates(Component $component, array $updates): Component
     {
         if ($component->hasRequest() === false) {
             throw new LocalizedException(__('No request object found'));
@@ -83,6 +82,8 @@ class ComponentManager
                 throw new LocalizedException(__($exception->getMessage()));
             }
         }
+
+        return $component;
     }
 
     /**

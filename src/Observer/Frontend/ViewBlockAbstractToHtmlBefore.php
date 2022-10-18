@@ -116,7 +116,7 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
         }
 
         if ($component->hasRequest('updates')) {
-            $this->getComponentManager()->processUpdates($component, $request->getUpdates());
+            $component = $this->getComponentManager()->processUpdates($component, $request->getUpdates());
         }
 
         $component->setResponse($this->getHttpFactory()->createResponse($request));
