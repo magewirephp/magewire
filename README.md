@@ -10,6 +10,8 @@ to build modern, reactive and dynamic interfaces, without leaving the comfort of
 systems. Magewire can be the missing piece when you intend to build dynamic and reactive features, but don't require
 working with a full JavaScript framework like Vue or React.
 
+[![Twitter](https://img.shields.io/twitter/url/https/twitter.com/magewirephp.svg?style=social&label=Follow%20%40magewirephp)](https://twitter.com/magewirephp)
+
 ## Installation
 ```
 composer require magewirephp/magewire
