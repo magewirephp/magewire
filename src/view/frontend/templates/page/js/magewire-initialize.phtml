@@ -46,19 +46,27 @@ $magewireScripts = $viewModels->require(Magewire::class);
         })
     }
 
-    /* Make Alpine wait until Magewire is finished rendering to do its thing. */
+    /* Initialize Alpine after Magewire */
     (() => {
+        /* At this time Alpine is not yet loaded, so it is impossible to check how to defer Alpine initialization. */
+        const startMagewireOnce = () => {
+            window.removeEventListener('DOMContentLoaded', startMagewireOnce);
+            window.removeEventListener('alpine:init', startMagewireOnce);
+            window.magewire.start();
+        }
+
+        /* Initialize Alpine v2 after Magewire */
         const initAlpine = window.deferLoadingAlpine || ((callback) => callback());
         window.deferLoadingAlpine = (callback) => {
             window.addEventListener('magewire:load', () => {
                 initAlpine(callback)
             });
         }
-    })();
+        document.addEventListener('DOMContentLoaded', startMagewireOnce)
 
-    document.addEventListener('DOMContentLoaded', () => {
-        window.magewire.start();
-    })
+        /* Initialize Alpine v3 after Magewire */
+        window.addEventListener('alpine:init', startMagewireOnce);
+    })();
 
     /* Dispatch "magewire:" prefixed window events. */
     Magewire.dispatchEvent = (name, event = {}) => {
