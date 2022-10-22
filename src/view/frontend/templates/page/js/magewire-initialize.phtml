@@ -50,7 +50,7 @@ $magewireScripts = $viewModels->require(Magewire::class);
     (() => {
         /* At this time Alpine is not yet loaded, so it is impossible to check how to defer Alpine initialization. */
         const startMagewireOnce = () => {
-            window.removeEventListener('DOMContentLoaded', startMagewireOnce);
+            document.removeEventListener('DOMContentLoaded', startMagewireOnce);
             window.removeEventListener('alpine:init', startMagewireOnce);
             window.magewire.start();
         }
