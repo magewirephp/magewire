@@ -44,7 +44,7 @@ class Property implements HydratorInterface
     public function hydrate(Component $component, RequestInterface $request): void
     {
         if ($request->isSubsequent()) {
-            $overwrite = array_replace_recursive($request->getServerMemo('data'), $component->getPublicProperties());
+            $overwrite = array_replace_recursive($component->getPublicProperties(), $request->getServerMemo('data'));
         }
 
         $this->propertyHelper->assign(function (Component $component, $property, $value) {
