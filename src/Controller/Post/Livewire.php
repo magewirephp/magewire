@@ -139,7 +139,7 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
     public function locateWireComponent(array $post): BlockInterface
     {
         $page = $this->resultPageFactory->create();
-        $page->addHandle($post['fingerprint']['handle'])->initLayout();
+        $page->addHandle(strtolower($post['fingerprint']['handle']))->initLayout();
 
         $this->eventManager->dispatch('locate_wire_component_before', [
             'post' => $post, 'page' => $page
