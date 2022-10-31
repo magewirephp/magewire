@@ -48,18 +48,22 @@ abstract class Form extends Component
      * @param array $rules
      * @param array $messages
      * @param array|null $data
+     * @param bool $mergeWithClassProperties
      * @return bool
-     * @throws ValidationException
      * @throws AcceptableException
      */
-    public function validate(array $rules = [], array $messages = [], array $data = null): bool
-    {
-        $rules = array_merge($this->rules, $rules);
+    public function validate(
+        array $rules = [],
+        array $messages = [],
+        array $data = null,
+        bool $mergeWithClassProperties = true
+    ): bool {
+        $rules = $mergeWithClassProperties ? array_merge($this->rules, $rules) : $rules;
         $data = $data ?? $this->getPublicProperties(true);
 
-        $messages = array_map(function ($message) {
+        $messages = array_map(static function ($message) {
             return __($message);
-        }, array_merge($this->messages, $messages));
+        }, $mergeWithClassProperties ? array_merge($this->messages, $messages) : $messages);
 
         try {
             $validation = $this->validator->validate($data, $rules, $messages);
@@ -76,5 +80,13 @@ abstract class Form extends Component
         }
 
         return true;
+    }
+
+    /**
+     * @throws AcceptableException
+     */
+    public function validateOnly(array $rules = [], array $messages = [], array $data = null): bool
+    {
+        return $this->validate($rules, $messages, $data, false);
     }
 }
