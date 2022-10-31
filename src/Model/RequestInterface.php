@@ -59,9 +59,10 @@ interface RequestInterface
      * Check if request is an component update request.
      *
      * @param bool|null $flag
+     * @param bool $force
      * @return \Magewirephp\Magewire\Model\RequestInterface|bool
      */
-    public function isSubsequent(bool $flag = null);
+    public function isSubsequent(bool $flag = null, bool $force = false);
 
     /**
      * Check if on a component initialization request.
@@ -69,4 +70,12 @@ interface RequestInterface
      * @return bool
      */
     public function isPreceding(): bool;
+
+    /**
+     * Check if request is on a refresh update event.
+     *
+     * @param bool|null $flag
+     * @return \Magewirephp\Magewire\Model\RequestInterface|bool
+     */
+    public function isRefreshing(bool $flag = null);
 }

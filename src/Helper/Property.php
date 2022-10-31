@@ -90,4 +90,9 @@ class Property
             }
         }
     }
+
+    public function resyncPropsWithRequestData(Component $component): Component
+    {
+        return $component;
+    }
 }

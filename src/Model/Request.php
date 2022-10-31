@@ -17,6 +17,7 @@ class Request implements RequestInterface
     public $updates;
 
     protected bool $isSubsequent = false;
+    protected bool $isRefreshing = false;
 
     /**
      * @inheritdoc
@@ -100,7 +101,6 @@ class Request implements RequestInterface
      */
     public function isSubsequent(bool $flag = null, bool $force = false)
     {
-        // Just return the update status.
         if ($flag === null) {
             return $this->isSubsequent;
         }
@@ -118,6 +118,19 @@ class Request implements RequestInterface
      */
     public function isPreceding(): bool
     {
-        return !$this->isSubsequent();
+        return ! $this->isSubsequent();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isRefreshing(bool $flag = null)
+    {
+        if ($flag === null) {
+            return $this->isRefreshing;
+        }
+
+        $this->isRefreshing = $flag;
+        return $this;
     }
 }
