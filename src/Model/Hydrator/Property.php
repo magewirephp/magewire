@@ -8,6 +8,8 @@
 
 namespace Magewirephp\Magewire\Model\Hydrator;
 
+use Exception;
+use Hyva\CheckoutDefault\Magewire\ShippingDetails\AddressList;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Component as MagewireComponent;
@@ -16,26 +18,31 @@ use Magewirephp\Magewire\Helper\Property as PropertyHelper;
 use Magewirephp\Magewire\Model\HydratorInterface;
 use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
+use Psr\Log\LoggerInterface;
 
 class Property implements HydratorInterface
 {
     protected PropertyHelper $propertyHelper;
     protected ComponentHelper $componentHelper;
     protected SerializerInterface $serializer;
+    protected LoggerInterface $logger;
 
     /**
      * @param PropertyHelper $propertyHelper
      * @param ComponentHelper $componentHelper
      * @param SerializerInterface $serializer
+     * @param LoggerInterface $logger
      */
     public function __construct(
         PropertyHelper $propertyHelper,
         ComponentHelper $componentHelper,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        LoggerInterface $logger
     ) {
         $this->propertyHelper = $propertyHelper;
         $this->componentHelper = $componentHelper;
         $this->serializer = $serializer;
+        $this->logger = $logger;
     }
 
     /**
@@ -44,7 +51,11 @@ class Property implements HydratorInterface
     public function hydrate(Component $component, RequestInterface $request): void
     {
         if ($request->isSubsequent()) {
-            $overwrite = array_replace_recursive($request->getServerMemo('data'), $component->getPublicProperties());
+            try {
+                $overwrite = $component->getRequest()->isRefreshing() ? $component->getPublicProperties(true) : $request->getServerMemo('data');
+            } catch (Exception $exception) {
+                $this->logger->critical('Magewire: ' . $exception->getMessage());
+            }
         }
 
         $this->propertyHelper->assign(function (Component $component, $property, $value) {

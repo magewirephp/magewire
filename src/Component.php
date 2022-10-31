@@ -23,12 +23,11 @@ use Magewirephp\Magewire\Model\Concern\Method as MethodConcern;
 use Magewirephp\Magewire\Model\Concern\QueryString as QueryStringConcern;
 use Magewirephp\Magewire\Model\Concern\Redirect as RedirectConcern;
 use Magewirephp\Magewire\Model\Concern\View as ViewConcern;
-use Magewirephp\Magewire\Model\RequestInterface;
 use ReflectionClass;
 
 /**
- * @method void boot(...$properties, ...$request)
- * @method void mount(...$properties, ...$request)
+ * @method void boot()
+ * @method void mount()
  * @method void booted()
  * @method void hydrate()
  * @method void dehydrate()
@@ -56,6 +55,7 @@ abstract class Component implements ArgumentInterface
     public const LAYOUT_ITEM_TYPE = 'type';
     public const RESERVED_PROPERTIES = ['id', 'name'];
     public const COMPONENT_TYPE = 'default';
+    public const REFRESH_METHOD = 'refresh';
 
     /**
      * Component id.
@@ -163,11 +163,12 @@ abstract class Component implements ArgumentInterface
      * (non-static) public property objects.
      *
      * @param bool $refresh
+     * @param bool $origin
      * @return array
      */
-    public function getPublicProperties(bool $refresh = false): array
+    public function getPublicProperties(bool $refresh = false, bool $origin = false): array
     {
-        if (($refresh ? null : $this->publicProperties) === null) {
+        if ($origin || ($refresh ? null : $this->publicProperties) === null) {
             $properties = array_filter((new ReflectionClass($this))->getProperties(), static function ($property) {
                 return $property->isPublic() && !$property->isStatic();
             });
@@ -178,7 +179,13 @@ abstract class Component implements ArgumentInterface
                 $data[$property->getName()] = $property->getValue($this);
             }
 
-            $this->publicProperties = array_diff_key($data, array_flip(self::RESERVED_PROPERTIES));
+            $diffs = array_diff_key($data, array_flip(self::RESERVED_PROPERTIES));
+
+            if ($origin) {
+                return $diffs;
+            }
+
+            $this->publicProperties = $diffs;
         }
 
         return $this->publicProperties;

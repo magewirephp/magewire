@@ -10,13 +10,17 @@
                 <item name="syncInput" xsi:type="object">Magewirephp\Magewire\Model\Action\SyncInput</item>
             </argument>
         </arguments>
+
+        <!-- Execute lifecycle methods -->
+        <plugin name="Magewirephp_Magewire_Plugin_Model_ComponentManager"
+                type="Magewirephp\Magewire\Plugin\Model\ComponentManager"
+                sortOrder="50"/>
     </type>
 
     <type name="Magewirephp\Magewire\Model\Action\CallMethod">
         <arguments>
             <!-- Define public methods as protected to avoid being called on a subsequent request -->
             <argument name="uncallableMethods" xsi:type="array">
-
                 <!-- Lifecycle -->
                 <item name="10" xsi:type="string">mount</item>
                 <item name="11" xsi:type="string">hydrate</item>
@@ -46,7 +50,6 @@
 
                 <!-- Forms -->
                 <item name="29" xsi:type="string">validate</item>
-
             </argument>
         </arguments>
     </type>

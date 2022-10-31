@@ -92,13 +92,15 @@ class ComponentManager
      * has been rendered.
      *
      * @param Component $component
-     * @return void
+     * @return Component
      */
-    public function hydrate(Component $component): void
+    public function hydrate(Component $component): Component
     {
         foreach ($this->hydrationPool as $hydrator) {
             $hydrator->hydrate($component, $component->getRequest());
         }
+
+        return $component;
     }
 
     /**
@@ -106,12 +108,15 @@ class ComponentManager
      * right before the layout block gets rendered.
      *
      * @param Component $component
+     * @return Component
      */
-    public function dehydrate(Component $component): void
+    public function dehydrate(Component $component): Component
     {
         foreach (array_reverse($this->hydrationPool) as $dehydrator) {
             $dehydrator->dehydrate($component, $component->getResponse());
         }
+
+        return $component;
     }
 
     /**
