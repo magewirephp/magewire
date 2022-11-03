@@ -16,6 +16,8 @@ use Magewirephp\Magewire\Model\Hydrator\Listener as ListenerHydrator;
 
 class FireEvent implements ActionInterface
 {
+    public const ACTION = 'fireEvent';
+
     protected CallMethod $callMethodHandler;
     protected ListenerHydrator $listenerHydrator;
 

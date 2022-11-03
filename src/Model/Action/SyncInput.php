@@ -18,15 +18,21 @@ use Psr\Log\LoggerInterface;
 
 class SyncInput implements ActionInterface
 {
+    public const ACTION = 'syncInput';
+
     protected PropertyHelper $propertyHelper;
+    protected LoggerInterface $logger;
 
     /**
      * @param PropertyHelper $propertyHelper
+     * @param LoggerInterface $logger
      */
     public function __construct(
-        PropertyHelper $propertyHelper
+        PropertyHelper $propertyHelper,
+        LoggerInterface $logger
     ) {
         $this->propertyHelper = $propertyHelper;
+        $this->logger = $logger;
     }
 
     /**
@@ -75,7 +81,7 @@ class SyncInput implements ActionInterface
                             $transform = $this->propertyHelper->transformDots($property, $value, $component);
                         }
                     } catch (ValidationException $exception) {
-                        // Validation can be done in every single method, so we catch and accept it.
+                        $this->logger->critical('Magewire:' . $exception->getMessage());
                     }
                 }
             }

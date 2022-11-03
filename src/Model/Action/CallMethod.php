@@ -17,6 +17,8 @@ use Magewirephp\Magewire\Model\ActionInterface;
 
 class CallMethod implements ActionInterface
 {
+    public const ACTION = 'callMethod';
+
     protected TypeFactory $typeFactory;
     private array $uncallableMethods;
 
