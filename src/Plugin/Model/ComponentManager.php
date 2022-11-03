@@ -11,6 +11,7 @@ namespace Magewirephp\Magewire\Plugin\Model;
 use Exception;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Helper\Property as PropertyHelper;
+use Magewirephp\Magewire\Model\Action\FireEvent;
 use Magewirephp\Magewire\Model\ComponentManager as Subject;
 use Magewirephp\Magewire\Model\Hydrator\Listener as ListenerHydrator;
 use Psr\Log\LoggerInterface;
@@ -66,6 +67,11 @@ class ComponentManager
             $this->logger->critical('Magewire: ' . $exception->getMessage());
         }
 
+        /**
+         * @lifecycle Mark the component request as refreshing in order to prevent weird
+         * behaviour where a component is trying to refresh itself during a subsequent
+         * request using the update server memo as it's state.
+         */
         try {
             $component->getRequest()->isRefreshing($this->isComponentTryingToRefresh($component));
         } catch (Exception $exception) {
@@ -107,12 +113,19 @@ class ComponentManager
         return $component;
     }
 
+    /**
+     * @param Component $component
+     * @return bool
+     */
     public function isComponentTryingToRefresh(Component $component): bool
     {
         try {
             $updates = $component->getRequest('updates');
 
-            if (is_array($updates) && count($updates) === 1) {
+            if (is_array($updates)
+                && count($updates) === 1
+                && $updates[0]['type'] === FireEvent::ACTION
+            ) {
                 $listeners = $this->listenerHydrator->assimilateListeners($component);
                 return ltrim($listeners[$updates[0]['payload']['event']], '$') === $component::REFRESH_METHOD;
             }
