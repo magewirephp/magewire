@@ -14,6 +14,8 @@ use Magento\Framework\Locale\Resolver;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Exception\AcceptableException;
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Exception\ComponentActionException;
+use Magewirephp\Magewire\Model\Context\Action as ActionContext;
 use Magewirephp\Magewire\Model\Context\Hydrator as HydratorContext;
 
 class ComponentManager
@@ -24,8 +26,8 @@ class ComponentManager
     protected array $hydrationPool;
 
     /**
-     * ComponentManager constructor.
      * @param HydratorContext $hydratorContext
+     * @param ActionContext $actionContext
      * @param Resolver $localeResolver
      * @param HttpFactory $httpFactory
      * @param array $updateActionsPool
@@ -33,17 +35,22 @@ class ComponentManager
      */
     public function __construct(
         HydratorContext $hydratorContext,
+        ActionContext $actionContext,
         Resolver $localeResolver,
         HttpFactory $httpFactory,
         array $updateActionsPool = [],
         array $hydrationPool = []
     ) {
         $this->localeResolver = $localeResolver;
-        $this->updateActionsPool = $updateActionsPool;
         $this->httpFactory = $httpFactory;
 
-        // Core Hydrate & Dehydrate lifecycle sort order.
-        $this->hydrationPool = $this->sortHydrators($hydrationPool, [
+        $this->updateActionsPool = $this->sort($updateActionsPool, [
+            $actionContext->getCallMethodAction(),
+            $actionContext->getFireEventAction(),
+            $actionContext->getSyncInputAction(),
+        ], true);
+
+        $this->hydrationPool = $this->sort($hydrationPool, [
             $hydratorContext->getFormKeyHydrator(),
             $hydratorContext->getSecurityHydrator(),
             $hydratorContext->getPostDeploymentHydrator(),
@@ -63,7 +70,7 @@ class ComponentManager
 
     /**
      * @param Component $component
-     * @param array $updates
+     * @param array<string, array> $updates
      * @return Component
      * @throws LocalizedException
      */
@@ -75,7 +82,7 @@ class ComponentManager
 
         foreach ($updates as $update) {
             try {
-                $this->updateActionsPool[$update['type']]->handle($component, $update['payload']);
+                $component = $this->executeUpdate($component, $update['type'], $update['payload']);
             } catch (AcceptableException $exception) {
                 continue;
             } catch (Exception $exception) {
@@ -84,6 +91,29 @@ class ComponentManager
         }
 
         return $component;
+    }
+
+    /**
+     * @param Component $component
+     * @param string $type
+     * @param array $payload
+     * @return Component
+     * @throws AcceptableException
+     * @throws ComponentActionException
+     */
+    public function executeUpdate(Component $component, string $type, array $payload): Component
+    {
+        /** @var UpdateActionInterface $updateAction */
+        foreach ($this->updateActionsPool as $updateAction) {
+            if ($updateAction->belongsToMe($component, $type, $payload) === false) {
+                continue;
+            }
+
+            $updateAction->handle($component, $payload);
+            return $component;
+        }
+
+        throw new ComponentActionException(__('No update action handler available'));
     }
 
     /**
@@ -164,19 +194,18 @@ class ComponentManager
      *   "order" => int
      * ]
      *
-     * @param array $hydrators
-     * @param $systemHydrators
+     * @param array $prioritized
+     * @param $system
+     * @param bool $reverse
      * @return array
-     *
-     * @see ComponentManager::dehydrate()
-     * @see ComponentManager::hydrate()
      */
-    protected function sortHydrators(array $hydrators, $systemHydrators): array
+    protected function sort(array $prioritized, $system, bool $reverse = false): array
     {
-        usort($hydrators, static function ($x, $y) {
+        usort($prioritized, static function ($x, $y) {
             return $x['order'] - $y['order'];
         });
 
-        return array_merge($systemHydrators, array_column($hydrators, 'class'));
+        $result = array_merge($system, array_column($prioritized, 'class'));
+        return $reverse ? array_reverse($result) : $result;
     }
 }

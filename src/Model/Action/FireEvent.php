@@ -11,10 +11,10 @@ namespace Magewirephp\Magewire\Model\Action;
 use Magento\Framework\Exception\LocalizedException;
 use Magewirephp\Magewire\Exception\ComponentActionException;
 use Magewirephp\Magewire\Component;
-use Magewirephp\Magewire\Model\ActionInterface;
+use Magewirephp\Magewire\Model\UpdateActionInterface;
 use Magewirephp\Magewire\Model\Hydrator\Listener as ListenerHydrator;
 
-class FireEvent implements ActionInterface
+class FireEvent implements UpdateActionInterface
 {
     public const ACTION = 'fireEvent';
 
@@ -54,5 +54,13 @@ class FireEvent implements ActionInterface
             'method' => $method,
             'params' => $parameters
         ]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function belongsToMe(Component $component, string $type, array $payload): bool
+    {
+        return self::ACTION === $type;
     }
 }

@@ -3,14 +3,6 @@
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd"
 >
     <type name="Magewirephp\Magewire\Model\ComponentManager">
-        <arguments>
-            <argument name="updateActionsPool" xsi:type="array">
-                <item name="callMethod" xsi:type="object">Magewirephp\Magewire\Model\Action\CallMethod</item>
-                <item name="fireEvent" xsi:type="object">Magewirephp\Magewire\Model\Action\FireEvent</item>
-                <item name="syncInput" xsi:type="object">Magewirephp\Magewire\Model\Action\SyncInput</item>
-            </argument>
-        </arguments>
-
         <!-- Execute lifecycle methods -->
         <plugin name="Magewirephp_Magewire_Plugin_Model_ComponentManager"
                 type="Magewirephp\Magewire\Plugin\Model\ComponentManager"

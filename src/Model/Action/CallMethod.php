@@ -13,9 +13,9 @@ use Magewirephp\Magewire\Exception\ComponentActionException;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Model\Action\Type\Factory as TypeFactory;
 use Magewirephp\Magewire\Model\Action\Type\Magic;
-use Magewirephp\Magewire\Model\ActionInterface;
+use Magewirephp\Magewire\Model\UpdateActionInterface;
 
-class CallMethod implements ActionInterface
+class CallMethod implements UpdateActionInterface
 {
     public const ACTION = 'callMethod';
 
@@ -94,5 +94,13 @@ class CallMethod implements ActionInterface
         }
 
         throw new LocalizedException(__('Method %1 does not exist', [$method]));
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function belongsToMe(Component $component, string $type, array $payload): bool
+    {
+        return self::ACTION === $type;
     }
 }

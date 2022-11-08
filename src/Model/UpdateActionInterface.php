@@ -8,12 +8,14 @@
 
 namespace Magewirephp\Magewire\Model;
 
+use Exception;
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Exception\AcceptableException;
 
 /**
  * @api
  */
-interface ActionInterface
+interface UpdateActionInterface
 {
     /**
      * Handle update action.
@@ -22,6 +24,18 @@ interface ActionInterface
      * @param array $payload
      *
      * @return mixed
+     * @throws AcceptableException
+     * @throws Exception
      */
     public function handle(Component $component, array $payload);
+
+    /**
+     * Asks the ActionInterface if the given update can be handled yes/no.
+     *
+     * @param Component $component
+     * @param string $type
+     * @param array $payload
+     * @return bool
+     */
+    public function belongsToMe(Component $component, string $type, array $payload): bool;
 }

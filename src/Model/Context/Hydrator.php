@@ -27,7 +27,7 @@ class Hydrator
 {
     protected Hash $hashHydrator;
     protected Listener $listenerHydrator;
-    protected Emit $emit;
+    protected Emit $emitHydrator;
     protected BrowserEvent $browserEventHydrator;
     protected Property $propertyHydrator;
     protected QueryString $queryStringHydrator;
@@ -43,7 +43,7 @@ class Hydrator
     /**
      * @param Hash $hashHydrator
      * @param Listener $listenerHydrator
-     * @param Emit $emit
+     * @param Emit $emitHydrator
      * @param BrowserEvent $browserEventHydrator
      * @param FlashMessage $flashMessageHydrator
      * @param Property $propertyHydrator
@@ -54,11 +54,12 @@ class Hydrator
      * @param Loader $loaderHydrator
      * @param PostDeployment $postDeploymentHydrator
      * @param FormKey $formKeyHydrator
+     * @param Children $childrenHydrator
      */
     public function __construct(
         Hash $hashHydrator,
         Listener $listenerHydrator,
-        Emit $emit,
+        Emit $emitHydrator,
         BrowserEvent $browserEventHydrator,
         FlashMessage $flashMessageHydrator,
         Property $propertyHydrator,
@@ -73,7 +74,7 @@ class Hydrator
     ) {
         $this->hashHydrator = $hashHydrator;
         $this->listenerHydrator = $listenerHydrator;
-        $this->emit = $emit;
+        $this->emitHydrator = $emitHydrator;
         $this->propertyHydrator = $propertyHydrator;
         $this->queryStringHydrator = $queryStringHydrator;
         $this->errorHydrator = $errorHydrator;
@@ -108,7 +109,7 @@ class Hydrator
      */
     public function getEmitHydrator(): Emit
     {
-        return $this->emit;
+        return $this->emitHydrator;
     }
 
     /**

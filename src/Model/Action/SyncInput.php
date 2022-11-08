@@ -13,10 +13,10 @@ use Magewirephp\Magewire\Exception\ComponentActionException;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exception\ValidationException;
 use Magewirephp\Magewire\Helper\Property as PropertyHelper;
-use Magewirephp\Magewire\Model\ActionInterface;
+use Magewirephp\Magewire\Model\UpdateActionInterface;
 use Psr\Log\LoggerInterface;
 
-class SyncInput implements ActionInterface
+class SyncInput implements UpdateActionInterface
 {
     public const ACTION = 'syncInput';
 
@@ -88,5 +88,13 @@ class SyncInput implements ActionInterface
         } catch (Exception $exception) {
             return;
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function belongsToMe(Component $component, string $type, array $payload): bool
+    {
+        return self::ACTION === $type;
     }
 }
