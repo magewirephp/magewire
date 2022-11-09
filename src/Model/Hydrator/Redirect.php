@@ -8,7 +8,11 @@
 
 namespace Magewirephp\Magewire\Model\Hydrator;
 
+use Laminas\Uri\UriFactory;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Url\HostChecker;
 use Magento\Framework\UrlInterface;
+use Magento\Store\Model\ScopeInterface;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Model\HydratorInterface;
 use Magewirephp\Magewire\Model\RequestInterface;
@@ -17,15 +21,22 @@ use Magewirephp\Magewire\Model\ResponseInterface;
 class Redirect implements HydratorInterface
 {
     protected UrlInterface $builder;
+    protected HostChecker $hostChecker;
+    protected ScopeConfigInterface $scopeConfig;
 
     /**
-     * Redirect constructor.
      * @param UrlInterface $builder
+     * @param HostChecker $hostChecker
+     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
-        UrlInterface $builder
+        UrlInterface $builder,
+        HostChecker $hostChecker,
+        ScopeConfigInterface $scopeConfig
     ) {
         $this->builder = $builder;
+        $this->hostChecker = $hostChecker;
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
@@ -43,14 +54,42 @@ class Redirect implements HydratorInterface
      */
     public function dehydrate(Component $component, ResponseInterface $response): void
     {
-        if ($redirect = $component->getRedirect()) {
-            $url = $redirect->getUrl();
+        $redirect = $component->getRedirect();
 
-            if ($redirect->hasParams()) {
-                $url = $this->builder->getUrl($url, $redirect->getParams());
+        if ($redirect === null) {
+            return;
+        }
+
+        $url = $redirect->getUrl();
+
+        if (strncmp('www.', $url, 4) === 0) {
+            $url = ($redirect->isSecure() ? 'https://' : 'http://') . str_replace('www.', '', $url);
+        }
+
+        $parse = UriFactory::factory($url);
+
+        if ($this->hostChecker->isOwnOrigin($parse->toString())) {
+            if ($url === '/' && $redirect->hasParams()) {
+                $url = $this->getDefaultWebUrl();
             }
 
-            $response->effects['redirect'] = $url;
+            $url = $url === '/' ? $url : ltrim($url, '\/');
+
+            $parse = UriFactory::factory(
+                $this->builder->getUrl($url, $redirect->hasParams() ? $redirect->getParams() : null)
+            );
+        } elseif ($redirect->hasParams() && count($parse->getQueryAsArray()) === 0) {
+            $parse->setQuery($redirect->getParams());
         }
+
+        $response->effects['redirect'] = $parse->toString();
+    }
+
+    /**
+     * @return string
+     */
+    public function getDefaultWebUrl(): string
+    {
+        return $this->scopeConfig->getValue('web/default/front', ScopeInterface::SCOPE_STORE);
     }
 }
