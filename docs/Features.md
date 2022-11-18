@@ -468,6 +468,15 @@ class MyModuleMagewireFooEntitySaved implements \Magento\Framework\Event\Observe
     {
         $entity = $event->getData('entity');
         $this->session->setData('foo_entity_id' => $entity->getId());
+        
+        // Check if the event was targeted to parent Magewire components only.
+        $event->getMetaData()->isAncestorsOnly(); // boolean
+        // Check if the event was targeted to itself only.
+        $event->getMetaData()->isSelfOnly(); // boolean
+        // Check if the event was targeted for a specific Magewire component.
+        $event->getMetaData()->isToComponent() // boolean
+        // Gets the layout block name of the targeted component.
+        $event->getMetaData()->getToComponent() // string (layout block name)
     }
 }
 ```

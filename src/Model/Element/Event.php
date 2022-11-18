@@ -10,6 +10,10 @@ namespace Magewirephp\Magewire\Model\Element;
 
 class Event
 {
+    public const KEY_ANCESTORS_ONLY = 'ancestorsOnly';
+    public const KEY_SELF_ONLY = 'selfOnly';
+    public const KEY_TO = 'to';
+
     protected string $name;
     protected array $params;
     protected bool $up = false;
@@ -74,13 +78,13 @@ class Event
         ];
 
         if ($this->up) {
-            $output['ancestorsOnly'] = true;
+            $output[self::KEY_ANCESTORS_ONLY] = true;
         }
         if ($this->self) {
-            $output['selfOnly'] = true;
+            $output[self::KEY_SELF_ONLY] = true;
         }
         if ($this->component) {
-            $output['to'] = $this->component;
+            $output[self::KEY_TO] = $this->component;
         }
 
         return $output;
@@ -89,5 +93,20 @@ class Event
     public function getParams(): array
     {
         return $this->params;
+    }
+
+    public function isAncestorsOnly(): bool
+    {
+        return $this->up === true;
+    }
+
+    public function isSelfOnly(): bool
+    {
+        return $this->self === true;
+    }
+
+    public function getToComponent(): ?string
+    {
+        return $this->component;
     }
 }
