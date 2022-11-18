@@ -23,10 +23,6 @@ class SyncInput implements ActionInterface
     protected PropertyHelper $propertyHelper;
     protected LoggerInterface $logger;
 
-    /**
-     * @param PropertyHelper $propertyHelper
-     * @param LoggerInterface $logger
-     */
     public function __construct(
         PropertyHelper $propertyHelper,
         LoggerInterface $logger
@@ -36,8 +32,6 @@ class SyncInput implements ActionInterface
     }
 
     /**
-     * @inheritdoc
-     *
      * @throws ComponentActionException
      */
     public function handle(Component $component, array $payload)

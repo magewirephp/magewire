@@ -21,11 +21,6 @@ class FireEvent implements ActionInterface
     protected CallMethod $callMethodHandler;
     protected ListenerHydrator $listenerHydrator;
 
-    /**
-     * FireEvent constructor.
-     * @param CallMethod $callMethodHandler
-     * @param ListenerHydrator $listenerHydrator
-     */
     public function __construct(
         CallMethod $callMethodHandler,
         ListenerHydrator $listenerHydrator
@@ -35,8 +30,6 @@ class FireEvent implements ActionInterface
     }
 
     /**
-     * @inheritdoc
-     *
      * @throws ComponentActionException
      * @throws LocalizedException
      */
