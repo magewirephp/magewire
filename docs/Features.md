@@ -346,20 +346,6 @@ Emit functionality in targeted or non-targeted components based on event listene
  */
 class A extends \Magewirephp\Magewire\Component
 {
-    protected $listeners = ['youCanCallMe'];
-    public function youCanCallMe($value) {}
-    
-    // OR
-    
-    protected $listeners = ['youCanCallMe' => 'toDoSomething'];
-    public function toDoSomething($value) {}
-}
-
-/**
- * Component B.
- */
-class B extends \Magewirephp\Magewire\Component
-{
     public function letsCallSomeone()
     {
         // Emit to every component who listens to 'youCanCallMe'.
@@ -367,6 +353,20 @@ class B extends \Magewirephp\Magewire\Component
         // Emit only to the 'my.custom.block.name' component.
         $this->emitTo('my.custom.block.name', 'youCanCallMe', ['value' => 'hi there']);
     }
+}
+
+/**
+ * Component B.
+ */
+class B extends \Magewirephp\Magewire\Component
+{
+    protected $listeners = ['youCanCallMe'];
+    public function youCanCallMe($value) {}
+    
+    // OR
+    
+    protected $listeners = ['youCanCallMe' => 'toDoSomething'];
+    public function toDoSomething($value) {}
 }
 ```
 
@@ -386,6 +386,22 @@ You are able to use magic methods within your emits if this is required. Thanks 
  * @block my.custom.block.name
  */
 class A extends \Magewirephp\Magewire\Component
+{    
+    public function setSomeProperties()
+    {
+        // Force refreshes for a separate component who is listening.
+        $this->emit('$refresh', []);
+        // Set a public property value for a separate component who is listening.
+        $this->emitTo('layout.block.name', '$set', ['property' => 'someProperty', 'message' => 'hello world']);
+        // Toggle a property value for a separate component who is listening.
+        $this->emitTo('layout.block.name', '$toggle', ['value' => 'boolProperty']);
+    }
+}
+
+/**
+ * Component B.
+ */
+class B extends \Magewirephp\Magewire\Component
 {
     public $stringProperty;
     public $boolProperty = false;
@@ -395,22 +411,6 @@ class A extends \Magewirephp\Magewire\Component
     protected $listeners = ['$set']; // OR ['myEventName' => '$set']
     // OR
     protected $listeners = ['$toggle']; // OR ['myEventName' => '$toggle']
-}
-
-/**
- * Component B.
- */
-class B extends \Magewirephp\Magewire\Component
-{
-    public function setSomeProperties()
-    {
-        // Force refresh for a separate component who is listening.
-        $this->emit('$refresh', []);
-        // Set a public property value for a separate component who is listening.
-        $this->emitTo('layout.block.name', '$set', ['stringProperty', 'hello world']);
-        // Toggle a property value for a separate component who is listening.
-        $this->emitTo('layout.block.name', '$toggle', ['boolProperty']);
-    }
 }
 ```
 > **Note**: Emits only work during subsequent requests. They won't be dispatched on page load when you emit them
@@ -434,6 +434,45 @@ OR
 ```html
 <button wire:click="$emitTo('layout.block.name', 'refresh')"
 ```
+
+### Observer events (since v1.7.4)
+Emits can also be caught as an Observer Event. By default, all emits are automatically transformed into an observable
+event prefixed with ```magewire_```. This is deliberately done, so it doesn't accidentally interfere with existing
+Magento events and also to make it more recognizable.
+
+```php
+class A extends \Magewirephp\Magewire\Component
+{
+    public function save()
+    {
+        $entity = $this->fooEntityFactory->create(['data' => ['foo' => 'bar']]);
+        $this->fooRepository->save($entity);
+        
+        $this->emit('foo_entity_saved', ['entity' => $entity]);
+    }
+}
+```
+
+Event ```foo_entity_saved``` is now published as ```magewire_foo_entity_saved```.
+```xml
+<event name="magewire_foo_entity_saved">
+    <observer name="MyModuleMagewireFooEntitySaved"
+              instance="My\Module\Observer\Frontend\MyModuleMagewireFooEntitySaved"/>
+</event>
+```
+
+```php
+class MyModuleMagewireFooEntitySaved implements \Magento\Framework\Event\ObserverInterface
+{
+    public function execute(\Magento\Framework\Event\Observer $event): void
+    {
+        $entity = $event->getData('entity');
+        $this->session->setData('foo_entity_id' => $entity->getId());
+    }
+}
+```
+
+More info about Events and observers can be found [here](https://developer.adobe.com/commerce/php/development/components/events-and-observers/).
 
 ## Lifecycle Hooks
 Each component undergoes a lifecycle. Lifecycle hooks allow you to run code at any part of the component's lifecyle, or before specific properties are updated.
