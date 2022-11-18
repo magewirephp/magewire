@@ -35,5 +35,7 @@ input:-webkit-autofill, select:-webkit-autofill, textarea:-webkit-autofill {
 @keyframes livewireautofill { from {} }
 
 #livewire-error iframe {
-    @apply !bg-white !rounded !rounded-md !px-4 py-3;
+    background-color: rgb(255 255 255) !important;
+    border-radius: 0.375rem !important;
+    padding: 0.75rem 1rem !important;
 }
