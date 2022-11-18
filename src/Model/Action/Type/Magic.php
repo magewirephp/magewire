@@ -16,9 +16,6 @@ class Magic
 {
     protected PropertyHelper $propertyHelper;
 
-    /**
-     * @param PropertyHelper $propertyHelper
-     */
     public function __construct(
         PropertyHelper $propertyHelper
     ) {
