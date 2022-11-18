@@ -10,18 +10,18 @@ namespace Magewirephp\Magewire\Model\Element;
 
 class Event
 {
-    protected $name;
-    protected $params;
-    protected $up;
-    protected $self;
-    protected $component;
+    protected string $name;
+    protected array $params;
+    protected bool $up = false;
+    protected bool $self = false;
+    protected ?string $component = null;
 
     /**
      * Event constructor.
-     * @param $name
-     * @param $params
+     * @param string $name
+     * @param array $params
      */
-    public function __construct($name, $params)
+    public function __construct(string $name, array $params = [])
     {
         $this->name = $name;
         $this->params = $params;
@@ -70,7 +70,7 @@ class Event
     {
         $output = [
             'event'  => $this->name,
-            'params' => $this->params,
+            'params' => array_values($this->params),
         ];
 
         if ($this->up) {
@@ -84,5 +84,10 @@ class Event
         }
 
         return $output;
+    }
+
+    public function getParams(): array
+    {
+        return $this->params;
     }
 }
