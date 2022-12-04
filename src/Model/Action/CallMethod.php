@@ -13,6 +13,7 @@ use Magewirephp\Magewire\Exception\ComponentActionException;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Model\Action\Type\Factory as TypeFactory;
 use Magewirephp\Magewire\Model\Action\Type\Magic;
+use Magewirephp\Magewire\Model\Action\Type\Upload;
 use Magewirephp\Magewire\Model\ActionInterface;
 
 class CallMethod implements ActionInterface
@@ -85,8 +86,7 @@ class CallMethod implements ActionInterface
      */
     public function determineType(string $method)
     {
-        // Upload class will be added in the future when this feature will get implemented.
-        foreach ([Magic::class] as $type) {
+        foreach ([Magic::class, Upload::class] as $type) {
             if (method_exists($type, $method)) {
                 return $this->typeFactory->create($type);
             }
