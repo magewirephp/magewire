@@ -9,6 +9,7 @@
 namespace Magewirephp\Magewire\Model\Action\Type;
 
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Exception\ComponentActionException;
 use Magewirephp\Magewire\Model\Action\SyncInput;
 use Magewirephp\Magewire\Model\Upload\UploadAdapterInterface;
 
@@ -31,8 +32,6 @@ class Upload
 
     public function startUpload(string $property, $file, $isMultiple, Component $component)
     {
-        // Maybe check if the property exists... or that is done elsewhere (DUNNO)
-
         $component->emit(
             $this->uploadAdapter->getGenerateSignedUploadUrlEvent(),
             $property,
@@ -40,23 +39,19 @@ class Upload
         )->self();
     }
 
-    public function finishUpload(string $property, $tmpPath, $isMultiple, Component $component)
+    /**
+     * @throws ComponentActionException
+     */
+    public function finishUpload(string $property, $tmpPath, $isMultiple, Component $component): void
     {
         if ($isMultiple) {
 //            $file = collect($tmpPath)->map(function ($i) {
 //                return TemporaryUploadedFile::createFromLivewire($i);
 //            })->toArray();
-//            $component->emit('upload:finished', $name, collect($file)->map->getFilename()->toArray())->self();
+//            $component->emitSelf('upload:finished', $name, collect($file)->map->getFilename()->toArray())->self();
         } else {
             $component->emit('upload:finished', $property, [$tmpPath[0]])->self();
-
-//            // If the property is an array, but the upload ISNT set to "multiple"
-//            // then APPEND the upload to the array, rather than replacing it.
-//            if (is_array($value = $this->getPropertyValue($name))) {
-//                $file = array_merge($value, [$file]);
-//            }
+            $this->syncInput->handle($component, ['name' => $property, 'value' => $tmpPath[0] ?? null]);
         }
-
-        $this->syncInput->handle($component, ['name' => $property, 'value' => $tmpPath[0]]);
     }
 }

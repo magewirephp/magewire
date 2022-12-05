@@ -12,7 +12,6 @@ use Magento\Framework\App\DeploymentConfig;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Data\Form\FormKey as ApplicationFormKey;
 use Magento\Framework\Encryption\Helper\Security as EncryptionSecurityHelper;
-use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\RuntimeException;
@@ -26,17 +25,10 @@ class Security
     protected ApplicationFormKey $formkey;
     protected UrlInterface $urlBuilder;
 
-    /**
-     * @param DeploymentConfig $deployConfig
-     * @param SerializerInterface $serializer
-     * @param ApplicationFormKey $formkey
-     * @param UrlInterface $urlBuilder
-     */
     public function __construct(
         DeploymentConfig $deployConfig,
         SerializerInterface $serializer,
-        ApplicationFormKey $formkey
-        SerializerInterface $serializer,
+        ApplicationFormKey $formkey,
         UrlInterface $urlBuilder
     ) {
         $this->deployConfig = $deployConfig;
@@ -46,9 +38,6 @@ class Security
     }
 
     /**
-     * @param array $data1
-     * @param array $data2
-     * @return string
      * @throws FileSystemException
      * @throws RuntimeException
      */
@@ -61,10 +50,6 @@ class Security
     }
 
     /**
-     * @param string $checksum
-     * @param array $data1
-     * @param array $data2
-     * @return bool
      * @throws FileSystemException
      * @throws RuntimeException
      */
@@ -74,8 +59,6 @@ class Security
     }
 
     /**
-     * @param RequestInterface $request
-     * @return bool
      * @throws LocalizedException
      */
     public function validateFormKey(RequestInterface $request): bool
@@ -84,28 +67,20 @@ class Security
     }
 
     /**
-     * @param string $route
-     * @param array $params
-     * @return string
      * @throws FileSystemException
      * @throws RuntimeException
      */
     public function generateRouteSignature(string $route, array $params = []): string
     {
-        $key = $this->deployConfig->get('crypt/key');
-
-        $signature = hash_hmac('sha256', $this->urlBuilder->getRouteUrl($route, $params), $key);
-        return $this->urlBuilder->getRouteUrl($route, $params + ['signature' => $signature]);
+        return hash_hmac('sha256', $this->urlBuilder->getRouteUrl($route, $params), $this->deployConfig->get('crypt/key'));
     }
 
     /**
-     * @param RequestInterface $request
-     * @return bool
+     * @throws FileSystemException
+     * @throws RuntimeException
      */
-    public function validateRouteSignature(RequestInterface $request): bool
+    public function generateRouteSignatureUrl(string $route, array $params = []): string
     {
-        // return $this->hasCorrectSignature($request, $absolute)
-        //     && $this->signatureHasNotExpired($request);
-        return true;
+        return $this->urlBuilder->getRouteUrl($route, $params + ['signature' => $this->generateRouteSignature($route, $params)]);
     }
 }

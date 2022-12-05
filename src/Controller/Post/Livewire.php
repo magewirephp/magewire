@@ -156,17 +156,11 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         return $block;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
     {
         return null;
     }
 
-    /**
-     * @inheritDoc
-     */
     public function validateForCsrf(RequestInterface $request): bool
     {
         return true;

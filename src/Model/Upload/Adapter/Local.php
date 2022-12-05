@@ -8,64 +8,76 @@
 
 namespace Magewirephp\Magewire\Model\Upload\Adapter;
 
-use Magento\Framework\App\Response\Http\FileFactory;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Exception\FileSystemException;
+use Magento\Framework\Exception\RuntimeException;
 use Magento\Framework\Filesystem;
-use Magento\Framework\Filesystem\Directory\WriteInterface;
+use Magento\Framework\Filesystem\Driver\File as FileDriver;
 use Magento\Framework\Stdlib\DateTime\DateTime;
-use Magento\MediaStorage\Model\File\UploaderFactory;
 use Magewirephp\Magewire\Helper\Security as SecurityHelper;
 use Magewirephp\Magewire\Model\Upload\UploadAdapterInterface;
-use Magento\Framework\App\Filesystem\DirectoryList;
 
 class Local implements UploadAdapterInterface
 {
-    protected DateTime $time;
-    protected Filesystem $fileSystem;
-    protected UploaderFactory $uploaderFactory;
-    protected WriteInterface $varDirectory;
+    protected DateTime $dateTime;
     protected SecurityHelper $securityHelper;
-    protected FileFactory $fileFactory;
+    protected FileDriver $fileDriver;
+    protected RequestInterface $request;
 
-    /**
-     * @param Filesystem $filesystem
-     * @param UploaderFactory $uploaderFactory
-     * @param DateTime $time
-     * @param SecurityHelper $securityHelper
-     * @param FileFactory $fileFactory
-     * @throws FileSystemException
-     */
     public function __construct(
-        Filesystem $filesystem,
-        UploaderFactory $uploaderFactory,
-        DateTime $time,
+        DateTime $dateTime,
         SecurityHelper $securityHelper,
-        FileFactory $fileFactory
+        FileDriver $fileDriver,
+        RequestInterface $request
     ) {
-        $this->fileSystem = $filesystem;
-        $this->uploaderFactory = $uploaderFactory;
-        $this->varDirectory = $filesystem->getDirectoryWrite(DirectoryList::VAR_DIR);
-        $this->time = $time;
+        $this->dateTime = $dateTime;
         $this->securityHelper = $securityHelper;
-        $this->fileFactory = $fileFactory;
+        $this->fileDriver = $fileDriver;
+        $this->request = $request;
     }
 
     /**
-     * @param array $file
-     * @param bool $isMultiple
-     * @return string
      * @throws FileSystemException
-     * @throws \Magento\Framework\Exception\RuntimeException
+     * @throws RuntimeException
      */
     public function generateSignedUploadUrl(array $file, bool $isMultiple): string
     {
-        return $this->securityHelper->generateRouteSignature('magewire/post/upload_local', [
-            'expires' => $this->time->gmtTimestamp() + 1900
+        return $this->securityHelper->generateRouteSignatureUrl($this->getRoute(), [
+            'expires' => $this->dateTime->gmtTimestamp() + 1900
         ]);
     }
 
     public function getGenerateSignedUploadUrlEvent(): string
     {
         return 'upload:generatedSignedUrl';
+    }
+
+    public function getDriver(): Filesystem\DriverInterface
+    {
+        return $this->fileDriver;
+    }
+
+    public function getRoute(): string
+    {
+        return 'magewire/post/upload_local';
+    }
+
+    /**
+     * @throws FileSystemException
+     * @throws RuntimeException
+     */
+    public function hasCorrectSignature(): bool
+    {
+        $signature = $this->securityHelper->generateRouteSignature($this->getRoute(), [
+            'expires' => $this->request->getUserParam('expires', 0)
+        ]);
+
+        return $this->request->getUserParam('signature') === $signature;
+    }
+
+    public function signatureHasNotExpired(): bool
+    {
+        $timestamp = $this->dateTime->gmtTimestamp();
+        return $timestamp > (int) $this->request->getUserParam('expires', $timestamp);
     }
 }

@@ -8,6 +8,8 @@
 
 namespace Magewirephp\Magewire\Model\Upload;
 
+use Magento\Framework\Filesystem\DriverInterface;
+
 interface UploadAdapterInterface
 {
     /**
@@ -23,4 +25,14 @@ interface UploadAdapterInterface
      * @return string
      */
     public function getGenerateSignedUploadUrlEvent(): string;
+
+    /**
+     * @return DriverInterface
+     */
+    public function getDriver(): DriverInterface;
+
+    /**
+     * @return string
+     */
+    public function getRoute(): string;
 }
