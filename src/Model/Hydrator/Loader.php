@@ -9,26 +9,43 @@
 namespace Magewirephp\Magewire\Model\Hydrator;
 
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Helper\Functions as FunctionsHelper;
 use Magewirephp\Magewire\Model\HydratorInterface;
 use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
 
 class Loader implements HydratorInterface
 {
-    /**
-     * @inheritdoc
-     */
-    public function hydrate(Component $component, RequestInterface $request): void
-    {
-        //
+    protected FunctionsHelper $functionsHelper;
+
+    public function __construct(
+        FunctionsHelper $functionsHelper
+    ) {
+        $this->functionsHelper = $functionsHelper;
     }
 
-    /**
-     * @inheritdoc
-     */
+    public function hydrate(Component $component, RequestInterface $request): void //phpcs:ignore
+    {
+    }
+
     public function dehydrate(Component $component, ResponseInterface $response): void
     {
-        if (($loader = $component->getLoader()) && $loader && $response->getRequest()->isPreceding()) {
+        $loader = $component->getLoader();
+
+        if ($loader && $response->getRequest()->isPreceding()) {
+            if (is_array($loader)) {
+                $loader = $this->functionsHelper->mapWithKeys(function ($value, $key) {
+                    if (is_string($key) === false && is_string($value)) {
+                        return [$value => true];
+                    }
+                    if (is_string($value)) {
+                        $value = __($value);
+                    }
+
+                    return [$key => $value];
+                }, $loader);
+            }
+
             $response->effects['loader'] = $loader;
         }
     }

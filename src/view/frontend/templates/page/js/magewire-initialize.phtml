@@ -70,7 +70,7 @@ $magewireScripts = $viewModels->require(Magewire::class);
 
     /* Dispatch "magewire:" prefixed window events. */
     Magewire.dispatchEvent = (name, event = {}) => {
-        document.dispatchEvent(new Event(`magewire:${ name }`, Object.assign({
+        document.dispatchEvent(new CustomEvent(`magewire:${ name }`, Object.assign({
             'bubbles': true,
             'cancelable': false
         }, event)))

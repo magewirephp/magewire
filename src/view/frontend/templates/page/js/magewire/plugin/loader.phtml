@@ -3,41 +3,64 @@
 
     (() => {
         document.addEventListener('DOMContentLoaded', () => {
-            let hasEmits = false
+            let emitsAreAvailable = false
 
-            const canShowLoader = (message, component) => {
-                if (Array.isArray(component.effects.loader)) {
-                    for (const item of message.updateQueue) {
-                        if (item.type !== 'callMethod') {
-                            continue
+            const grepLoaderData = (message, component) => {
+                if ('loader' in component.effects ) {
+                    let data = {}
+
+                    for (let item of message.updateQueue) {
+                        if (typeof component.effects.loader === 'object') {
+                            data[component.id] = Object.assign(item, {
+                                title: component.effects.loader[item.method]
+                            })
+                        } else if (component.effects.loader === true) {
+                            data[component.id] = Object.assign(item, {
+                                title: null
+                            })
                         }
-
-                        return component.effects.loader.includes(item.method)
                     }
+
+                    return data
                 }
 
-                return 'loader' in component.effects || hasEmits
+                return null
             }
 
             Magewire.hook('message.sent', (message, component) => {
-                if (canShowLoader(message, component)) {
-                    hasEmits = false
+                let loaderData = grepLoaderData(message, component) ?? {}
+
+                if (component.id in loaderData || emitsAreAvailable) {
+                    emitsAreAvailable = false
+                    loaderData = component.id in loaderData ? loaderData[component.id] : null
 
                     Magewire.dispatchEvent('loader:start', {
-                        message: message, component: component
+                        detail: {
+                            message: message,
+                            component: component,
+                            loader: loaderData
+                        }
                     })
                 }
             })
+
             Magewire.hook('message.processed', (message, component) => {
-                hasEmits = 'loader' in component.effects && 'emits' in message.response.effects
+                emitsAreAvailable = 'loader' in component.effects && 'emits' in message.response.effects
 
                 Magewire.dispatchEvent('loader:stop', {
-                    message: message, component: component
+                    detail: {
+                        message: message,
+                        component: component
+                    }
                 })
             })
+
             Magewire.hook('message.failed', (message, component) => {
                 Magewire.dispatchEvent('loader:stop', {
-                    message: message, component: component
+                    detail: {
+                        message: message,
+                        component: component
+                    }
                 })
             })
         })
