@@ -32,9 +32,11 @@ class Version
         ) {
             $post = json_decode($this->httpRequest->getContent(), true);
 
-            $reloadSectionData = (bool)($post['serverMemo']['reloadSectionData'] ?? true);
-            if (!$reloadSectionData) {
-                return;
+            if (isset($post['serverMemo']['reloadSectionData'])) {
+                $reloadSectionData = (bool)($post['serverMemo']['reloadSectionData'] ?? true);
+                if (!$reloadSectionData) {
+                    return;
+                }
             }
         }
 
