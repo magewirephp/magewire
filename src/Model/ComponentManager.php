@@ -58,6 +58,7 @@ class ComponentManager
             $hydratorContext->getLoaderHydrator(),
             $hydratorContext->getEmitHydrator(),
             $hydratorContext->getRedirectHydrator(),
+            $hydratorContext->getReloadSectionDataHydrator(),
         ]);
     }
 

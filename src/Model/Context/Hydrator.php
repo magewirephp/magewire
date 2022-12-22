@@ -20,6 +20,7 @@ use Magewirephp\Magewire\Model\Hydrator\PostDeployment;
 use Magewirephp\Magewire\Model\Hydrator\Property;
 use Magewirephp\Magewire\Model\Hydrator\QueryString;
 use Magewirephp\Magewire\Model\Hydrator\Redirect;
+use Magewirephp\Magewire\Model\Hydrator\ReloadSectionData;
 use Magewirephp\Magewire\Model\Hydrator\Security;
 use Magewirephp\Magewire\Model\Hydrator\Loader;
 
@@ -39,6 +40,7 @@ class Hydrator
     protected PostDeployment $postDeploymentHydrator;
     protected FormKey $formKeyHydrator;
     protected Children $childrenHydrator;
+    protected ReloadSectionData $reloadSectionDataHydrator;
 
     /**
      * @param Hash $hashHydrator
@@ -54,6 +56,7 @@ class Hydrator
      * @param Loader $loaderHydrator
      * @param PostDeployment $postDeploymentHydrator
      * @param FormKey $formKeyHydrator
+     * @param ReloadSectionData $reloadSectionDataHydrator
      */
     public function __construct(
         Hash $hashHydrator,
@@ -69,7 +72,8 @@ class Hydrator
         Loader $loaderHydrator,
         PostDeployment $postDeploymentHydrator,
         FormKey $formKeyHydrator,
-        Children $childrenHydrator
+        Children $childrenHydrator,
+        ReloadSectionData $reloadSectionDataHydrator
     ) {
         $this->hashHydrator = $hashHydrator;
         $this->listenerHydrator = $listenerHydrator;
@@ -85,6 +89,7 @@ class Hydrator
         $this->postDeploymentHydrator = $postDeploymentHydrator;
         $this->formKeyHydrator = $formKeyHydrator;
         $this->childrenHydrator = $childrenHydrator;
+        $this->reloadSectionDataHydrator = $reloadSectionDataHydrator;
     }
 
     /**
@@ -197,5 +202,13 @@ class Hydrator
     public function getChildrenHydrator(): Children
     {
         return $this->childrenHydrator;
+    }
+
+    /**
+     * @return ReloadSectionData
+     */
+    public function getReloadSectionDataHydrator(): ReloadSectionData
+    {
+        return $this->reloadSectionDataHydrator;
     }
 }

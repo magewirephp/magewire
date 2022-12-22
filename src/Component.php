@@ -23,6 +23,7 @@ use Magewirephp\Magewire\Model\Concern\Method as MethodConcern;
 use Magewirephp\Magewire\Model\Concern\QueryString as QueryStringConcern;
 use Magewirephp\Magewire\Model\Concern\Redirect as RedirectConcern;
 use Magewirephp\Magewire\Model\Concern\View as ViewConcern;
+use Magewirephp\Magewire\Model\Concern\ReloadSectionData as ReloadSectionDataConcern;
 use ReflectionClass;
 
 /**
@@ -50,7 +51,8 @@ abstract class Component implements ArgumentInterface
         MethodConcern,
         QueryStringConcern,
         RedirectConcern,
-        ViewConcern;
+        ViewConcern,
+        ReloadSectionDataConcern;
 
     public const LAYOUT_ITEM_TYPE = 'type';
     public const RESERVED_PROPERTIES = ['id', 'name'];

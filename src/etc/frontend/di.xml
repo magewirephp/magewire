@@ -59,4 +59,10 @@
         <plugin name="Magewirephp_Magewire_Plugin_Magento_Framework_View_TemplateEngine_Php"
                 type="Magewirephp\Magewire\Plugin\Magento\Framework\View\TemplateEngine\Php"/>
     </type>
+
+    <!-- Handle $reloadSectionData flag -->
+    <type name="Magento\Framework\App\PageCache\Version">
+        <plugin name="Magewirephp_Magewire_Plugin_Magento_Framework_App_Cache_Version"
+                type="Magewirephp\Magewire\Plugin\Magento\Framework\App\Cache\Version"/>
+    </type>
 </config>
