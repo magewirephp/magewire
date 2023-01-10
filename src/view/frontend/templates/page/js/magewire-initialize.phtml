@@ -64,7 +64,8 @@ $magewireScripts = $viewModels->require(Magewire::class);
         }
         document.addEventListener('DOMContentLoaded', startMagewireOnce)
 
-        /* Initialize Alpine v3 after Magewire */
+        /* Init Alpine v3 after Magewire */
+        /* (Note: with v3 alpine:init is dispatched before DOMContentLoaded. In v2 it is not used) */
         window.addEventListener('alpine:init', startMagewireOnce);
     })();
 
@@ -82,6 +83,9 @@ $magewireScripts = $viewModels->require(Magewire::class);
             Magewire.dispatchEvent(target, event)
         })
     })
+
+    /* Allow component.initialize hooks to be registered before the components are initialized */
+    window.dispatchEvent(new Event('magewire:available'));
 </script>
 
     <?= /* @noEscape */ $block->getChildHtml('magewire.plugins') ?>
