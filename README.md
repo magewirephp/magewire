@@ -35,10 +35,16 @@ section to enable all the Magewire richness in your Blank or Luma projects.
 
 **Vinai Kopp** - Technical Director and Partner @ [Hyvä Themes](https://hyva.io/)
 
+> Magewire gives you the ability to add reactivity without the use of a a bloated JS framework or package. Useing
+> Magewire is intuitive, quick and easy to learn. It feels like a breath of fresh air to work with and takes away a lot
+> headaches compared to using Luma and RequireJS.
+
+**Jesse de Boer** - Frontend Developer @ [Elgentos Ecommerce Solutions](https://elgentos.nl)
+
 > Magewire is one of my favourite tools! It even makes frontend morons like me capable of dynamic UIs! More people
 > should check it out.
 
-**Kiel Pykett** - Technical Lead Magento Developer @ [Fisheye - a Youwe company](https://www.fisheye.co.uk/)
+**Kiel Pykett** - Technical Lead Magento Developer @ [Fisheye - a Youwe company](https://fisheye.co.uk/)
 
 > Magewire is an awesome tool for Magento developers to build great interactive frontend features. It brings the
 > backend closer to the frontend and speeds up development times. We are now using Magewire in all our projects where
