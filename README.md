@@ -10,7 +10,8 @@ to build modern, reactive and dynamic interfaces, without leaving the comfort of
 systems. Magewire can be the missing piece when you intend to build dynamic and reactive features, but don't require
 working with a full JavaScript framework like Vue or React.
 
-[![Twitter](https://img.shields.io/twitter/url/https/twitter.com/magewirephp.svg?style=social&label=Follow%20%40magewirephp)](https://twitter.com/magewirephp)
+[![Twitter](https://img.shields.io/twitter/url/https/twitter.com/magewirephp.svg?style=social&label=Follow:%20%40magewirephp)](https://twitter.com/magewirephp)
+[![Twitter](https://img.shields.io/twitter/url/https/twitter.com/wpoortman.svg?style=social&label=Author:%20%40wpoortman)](https://twitter.com/wpoortman)
 
 ## Installation
 ```
@@ -29,10 +30,15 @@ section to enable all the Magewire richness in your Blank or Luma projects.
 - [Developer Tools](./docs/Tools.md)
 
 ## Developers say
-> Working with Magewire is fun, refreshing, and has added another tool to my arsenal. It expands my set of potential
-> solutions and enables me to think differently about implementations. Magewire is a win for developers and merchants!
+> Magewire is like magic sauce that can save a ton of time implementing features!
+> It’s great to see more tools from the Laravel ecosystem being made available within Magento - thanks [Willem](https://github.com/wpoortman/)!
 
-**Kiel Pykett** - Technical Lead Magento Developer @ [Fisheye](https://www.fisheye.co.uk/)
+**Vinai Kopp** - Technical Director and Partner @ [Hyvä Themes](https://hyva.io/)
+
+> Magewire is one of my favourite tools! It even makes frontend morons like me capable of dynamic UIs! More people
+> should check it out.
+
+**Kiel Pykett** - Technical Lead Magento Developer @ [Fisheye - a Youwe company](https://www.fisheye.co.uk/)
 
 > Magewire is an awesome tool for Magento developers to build great interactive frontend features. It brings the
 > backend closer to the frontend and speeds up development times. We are now using Magewire in all our projects where
