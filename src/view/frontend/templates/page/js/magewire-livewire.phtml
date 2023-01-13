@@ -32,10 +32,6 @@ $magewireScripts = $viewModels->require(Magewire::class);
             if (Alpine && Alpine.version.substring(0, 1) === '2' && ! name) return;
             orig.call(this, name, value);
         }
-        document.dispatchEvent(new Event('magewire:available', {
-            'bubbles': event.bubbles || true,
-            'cancelable': event.cancelable || true
-        }))
     })
 </script>
 
