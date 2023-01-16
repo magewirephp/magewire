@@ -1,3 +1,20 @@
+<?php declare(strict_types=1);
+/**
+ * Copyright © Willem Poortman 2021-present. All rights reserved.
+ *
+ * Please read the README and LICENSE files for more
+ * details on copyrights and license information.
+ */
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Model\Action\SyncInput;
+use Magewirephp\Magewire\Model\Action\CallMethod;
+use Magewirephp\Magewire\Model\Action\FireEvent;
+?>
 <script defer>
     'use strict';
 
@@ -10,14 +27,36 @@
                     let data = {}
 
                     for (let item of message.updateQueue) {
-                        if (typeof component.effects.loader === 'object') {
-                            data[component.id] = Object.assign(item, {
-                                title: component.effects.loader[item.method]
-                            })
-                        } else if (component.effects.loader === true) {
-                            data[component.id] = Object.assign(item, {
-                                title: null
-                            })
+                        let loader = component.effects.loader
+
+                        if (['<?= SyncInput::ACTION ?>', '<?= CallMethod::ACTION ?>', '<?= FireEvent::ACTION ?>'].includes(item.type)) {
+                            let value = null
+
+                            switch (item.type) {
+                                case '<?= SyncInput::ACTION ?>':
+                                    value = loader[item.payload.name + '.' + item.payload.value] || loader[item.payload.name]
+                                    break
+                                case '<?= CallMethod::ACTION ?>':
+                                    value = loader[item.method]
+                                    break
+                                case '<?= FireEvent::ACTION ?>':
+                                    value = loader[item.payload.event]
+                                    break
+                            }
+
+                            if (value) {
+                                if (typeof value === 'object') {
+                                    data[component.id] = {
+                                        title: value[item.payload.name]
+                                    }
+                                } else if (typeof value === 'string') {
+                                    data[component.id] = {
+                                        title: value
+                                    }
+                                } else if (value === true) {
+                                    data[component.id] = item
+                                }
+                            }
                         }
                     }
 
@@ -34,13 +73,15 @@
                     emitsAreAvailable = false
                     loaderData = component.id in loaderData ? loaderData[component.id] : null
 
-                    Magewire.dispatchEvent('loader:start', {
-                        detail: {
-                            message: message,
-                            component: component,
-                            loader: loaderData
-                        }
-                    })
+                    if (loaderData || emitsAreAvailable) {
+                        Magewire.dispatchEvent('loader:start', {
+                            detail: {
+                                message: message,
+                                component: component,
+                                loader: Object.assign(loaderData)
+                            }
+                        })
+                    }
                 }
             })
 

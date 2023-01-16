@@ -85,7 +85,7 @@ $magewireScripts = $viewModels->require(Magewire::class);
     })
 
     <?php /* Allow component.initialize hooks to be registered before the components are initialized */ ?>
-    window.dispatchEvent(new Event('magewire:available'));
+    Magewire.dispatchEvent('available');
 </script>
 
     <?= /* @noEscape */ $block->getChildHtml('magewire.plugins') ?>
