@@ -21,17 +21,18 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
     (() => {
         document.addEventListener('DOMContentLoaded', () => {
             let emitsAreAvailable = false
+            let loaderUpdates = {}
 
             const grepLoaderData = (message, component) => {
-                if ('loader' in component.effects ) {
+                let loader = loaderUpdates[component.id] || component.effects.loader || null
+
+                if (loader) {
                     let data = {}
 
                     for (let item of message.updateQueue) {
-                        let loader = component.effects.loader
+                        let value = null
 
-                        if (['<?= SyncInput::ACTION ?>', '<?= CallMethod::ACTION ?>', '<?= FireEvent::ACTION ?>'].includes(item.type)) {
-                            let value = null
-
+                        if (typeof loader === 'object') {
                             switch (item.type) {
                                 case '<?= SyncInput::ACTION ?>':
                                     value = loader[item.payload.name + '.' + item.payload.value] || loader[item.payload.name]
@@ -43,19 +44,21 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                                     value = loader[item.payload.event]
                                     break
                             }
+                        } else {
+                            value = true
+                        }
 
-                            if (value) {
-                                if (typeof value === 'object') {
-                                    data[component.id] = {
-                                        title: value[item.payload.name]
-                                    }
-                                } else if (typeof value === 'string') {
-                                    data[component.id] = {
-                                        title: value
-                                    }
-                                } else if (value === true) {
-                                    data[component.id] = item
+                        if (value) {
+                            if (typeof value === 'object') {
+                                data[component.id] = {
+                                    title: value[item.payload.name]
                                 }
+                            } else if (typeof value === 'string') {
+                                data[component.id] = {
+                                    title: value
+                                }
+                            } else if (value === true) {
+                                data[component.id] = item
                             }
                         }
                     }
@@ -78,7 +81,7 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                             detail: {
                                 message: message,
                                 component: component,
-                                loader: Object.assign(loaderData)
+                                loader: loaderData
                             }
                         })
                     }
@@ -86,7 +89,10 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
             })
 
             Magewire.hook('message.processed', (message, component) => {
-                emitsAreAvailable = 'loader' in component.effects && 'emits' in message.response.effects
+                if ('loader' in message.response.effects) {
+                    emitsAreAvailable = 'emits' in message.response.effects
+                    loaderUpdates[component.id] = message.response.effects.loader
+                }
 
                 Magewire.dispatchEvent('loader:stop', {
                     detail: {

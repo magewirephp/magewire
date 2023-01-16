@@ -34,7 +34,7 @@ class Loader implements HydratorInterface
     {
         $loader = $component->getLoader();
 
-        if ($loader && $response->getRequest()->isPreceding()) {
+        if ($loader) {
             if (is_array($loader)) {
                 $loader = $this->functionsHelper->mapWithKeys(function ($value, $key) {
                     if (is_string($key) === false && is_string($value)) {
