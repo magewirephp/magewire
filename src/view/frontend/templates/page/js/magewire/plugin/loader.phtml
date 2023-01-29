@@ -20,7 +20,7 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
 
     (() => {
         document.addEventListener('DOMContentLoaded', () => {
-            let filterLoaderData = (message, component) => {
+            let filterLoaderData = function(message, component) {
                 let loader = component.effects.loader || null
 
                 if (loader) {
@@ -29,7 +29,6 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                     for (let item of message.updateQueue) {
                         let value = true
 
-                        <?php /* Component $loader variable is an array. */ ?>
                         if (typeof loader === 'object') {
                             switch (item.type) {
                                 case '<?= SyncInput::ACTION ?>':
@@ -51,7 +50,8 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                             key: Date.now(),
                             id: component.id,
                             title: null,
-                            type: item.type.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`),
+                            type: item.type,
+                            class: item.type.replace(/[A-Z]/g, subject => `-${ subject.toLowerCase() }`)
                         }
 
                         if (typeof value === 'object') {
@@ -69,43 +69,53 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                 return null
             }
 
-            let queue = {}
-            let previous = null
+            let tryToStop = function(message, component, force = false) {
+                queue = queue.filter(item => component.id !== item.component.id)
+                let emits = message.response.effects.emits || null
 
-            let stop = (id, hasEmits, failure = false) => {
-                if (id in queue) {
-                    if (failure || (hasEmits === false && Object.keys(queue).length === 1)) {
-                        Magewire.dispatchEvent('loader:stop', {
-                            detail: Object.assign(queue[id], { failure: failure })
+                if (emits) {
+                    emits.forEach((emit) => {
+                        Magewire.components.componentsListeningForEvent(emit.event).forEach((component) => {
+                            queue.push({ component: component, emit: true })
                         })
-                    }
+                    })
+                }
 
-                    delete(queue[id])
+                if (force || queue.length === 0) {
+                    let stop = Date.now()
+
+                    Magewire.dispatchEvent('loader:stop', {
+                        detail: { component: component, stop: stop, duration:  stop - start, force: force }
+                    })
                 }
             }
 
-            Magewire.hook('message.sent', (ms, msc) => {
-                let loader = filterLoaderData(ms, msc) ?? {}
+            let queue = [],
+                start = null
 
-                if (msc.id in loader || previous) {
-                    queue[msc.id] = loader[msc.id] || previous
+            Magewire.hook('message.sent', (message, component) => {
+                let loader = filterLoaderData(message, component) ?? {}
 
-                    if (loader[msc.id]) {
-                        previous = Object.assign(queue[msc.id], { id: msc.id })
+                if (component.id in loader) {
+                    loader = loader[component.id]
+                    let first = queue.filter(item => item.emit || false).length === 0
+
+                    if (first) {
+                        start = Date.now()
+                        queue.push({ loader: loader, component: component })
                     }
 
-                    Magewire.dispatchEvent('loader:start', {
-                        detail: queue[msc.id]
+                    Magewire.dispatchEvent(`loader:${ first ? 'start' : 'stopover' }`, {
+                        detail: Object.assign(loader, { component: component, start: start })
                     })
                 }
             })
 
-            Magewire.hook('message.processed', (mp, mpc) => {
-                let emits = mp.response.effects.emits || {}
-                stop(mpc.id, !! emits.length === 0)
+            Magewire.hook('message.processed', (message, component) => {
+                tryToStop(message, component)
             })
-            Magewire.hook('message.failed', (mf, mfc) => {
-                stop(mfc.id, false, true)
+            Magewire.hook('message.failed', (message, component) => {
+                tryToStop(message, component)
             })
         })
     })();
