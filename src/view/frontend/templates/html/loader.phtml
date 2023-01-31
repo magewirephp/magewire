@@ -36,7 +36,9 @@ $magewireScripts = $block->getViewModel();
          current = $event.detail.title ? notifications.length - 1 : current
      "
      x-on:magewire:loader:fail.window="
-         notifications[current].failed = true
+         if (notifications[current] !== undefined) {
+             notifications[current].failed = true
+         }
      "
      x-on:magewire:loader:stop.window="
          if (notifications[current] !== undefined) {
