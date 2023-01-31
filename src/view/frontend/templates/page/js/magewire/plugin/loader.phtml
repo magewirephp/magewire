@@ -78,8 +78,8 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                 queue = queue.filter(item => component.id !== item.component.id)
                 let emits = null
 
-                if (message.response && message.response.effects) {
-                    let emits = message.response.effects.emits || null
+                if (message.response.effects.emits) {
+                    emits = message.response.effects.emits || null
                 }
 
                 if (emits) {
@@ -118,7 +118,7 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                         queue.push({ loader: loader, component: component })
                     }
 
-                    Magewire.dispatchEvent(`loader:${ first ? 'start' : 'restart' }`, {
+                    Magewire.dispatchEvent(`loader:${ first ? 'start' : 'tick' }`, {
                         detail: Object.assign(loader, { component: component, start: start })
                     })
                 }

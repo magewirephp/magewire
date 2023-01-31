@@ -27,7 +27,7 @@ $magewireScripts = $block->getViewModel();
          notifications.push(Object.assign($event.detail, { active: true, show: true, failed: false }))
          current = $event.detail.title ? notifications.length - 1 : current
      "
-     x-on:magewire:loader:restart.window="
+     x-on:magewire:loader:tick.window="
          if (notifications[current] !== undefined) {
              notifications[current].active = false
          }

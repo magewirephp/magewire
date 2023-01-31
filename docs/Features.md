@@ -752,7 +752,7 @@ class Explanation extends \Magewirephp\Magewire\Component
 ```magewire:loader:start```
 > Dispatched as soon as the first ```$loader``` driven component is active.
 
-```magewire:loader:restart```
+```magewire:loader:tick```
 > Dispatched when another component has ```$loader``` settings.
 
 ```magewire:loader:fail```
