@@ -76,7 +76,11 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
 
             tryToStop = function(message, component, failed = false) {
                 queue = queue.filter(item => component.id !== item.component.id)
-                let emits = message.response.effects.emits || null
+                let emits = null
+
+                if (message.response && message.response.effects) {
+                    let emits = message.response.effects.emits || null
+                }
 
                 if (emits) {
                     emits.forEach((emit) => {
