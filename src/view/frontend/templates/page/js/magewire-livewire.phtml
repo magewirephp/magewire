@@ -16,12 +16,11 @@
  * @var ViewModelRegistry $viewModels
  */
 
-use Hyva\Theme\Model\ViewModelRegistry;
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\ViewModel\Magewire;
 
-$magewireScripts = $viewModels->require(Magewire::class);
+$magewireScripts = $block->getViewModel();
 ?>
 <?php if ($magewireScripts->pageRequiresMagewire()): ?>
 <script>

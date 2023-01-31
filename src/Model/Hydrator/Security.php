@@ -21,10 +21,6 @@ class Security implements HydratorInterface
 {
     protected SecurityHelper $securityHelper;
 
-    /**
-     * Security constructor.
-     * @param SecurityHelper $securityHelper
-     */
     public function __construct(
         SecurityHelper $securityHelper
     ) {
@@ -32,17 +28,13 @@ class Security implements HydratorInterface
     }
 
     /**
-     * @inheritdoc
-     *
-     * @param Component $component
-     * @param RequestInterface $request
      * @throws CorruptPayloadException
      * @throws FileSystemException
      * @throws RuntimeException
      */
     public function hydrate(Component $component, RequestInterface $request): void
     {
-        if (!isset($request->memo['checksum'])) {
+        if (! isset($request->memo['checksum'])) {
             return;
         }
 
@@ -51,14 +43,12 @@ class Security implements HydratorInterface
 
         $memo = array_diff_key($request->getServerMemo(), array_flip(['children']));
 
-        if (!$this->securityHelper->validateChecksum($checksum, $request->getFingerprint(), $memo)) {
+        if (! $this->securityHelper->validateChecksum($checksum, $request->getFingerprint(), $memo)) {
             throw new CorruptPayloadException(get_class($component));
         }
     }
 
     /**
-     * @inheritdoc
-     *
      * @throws FileSystemException
      * @throws RuntimeException
      */
