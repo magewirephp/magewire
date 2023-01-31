@@ -11,12 +11,11 @@
 /** @var Escaper $escaper */
 /** @var Template $block */
 
-use Hyva\Theme\Model\ViewModelRegistry;
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\ViewModel\Magewire;
 
-$magewireScripts = $viewModels->require(Magewire::class);
+$magewireScripts = $block->getViewModel();
 ?>
 <?php if ($magewireScripts->pageRequiresMagewire()): ?>
 <script>
@@ -34,6 +33,7 @@ $magewireScripts = $viewModels->require(Magewire::class);
     window.Livewire = window.magewire
     window.Magewire = window.magewire
     window.livewire_app_url = '<?= $escaper->escapeUrl($magewireScripts->getApplicationUrl()) ?>'
+    <?php /* Still Hyvä dependent, will change in the future to spread compatibility. */ ?>
     window.livewire_token = window.hyva.getFormKey()
 
     <?php /* Make sure Magewire loads first. */ ?>
@@ -50,13 +50,13 @@ $magewireScripts = $viewModels->require(Magewire::class);
     (() => {
         <?php /* At this time Alpine is not yet loaded, so it is impossible to check how to defer Alpine initialization. */ ?>
         const startMagewireOnce = () => {
-            document.removeEventListener('DOMContentLoaded', startMagewireOnce);
-            window.removeEventListener('alpine:init', startMagewireOnce);
-            window.magewire.start();
+            document.removeEventListener('DOMContentLoaded', startMagewireOnce)
+            window.removeEventListener('alpine:init', startMagewireOnce)
+            window.magewire.start()
         }
 
         <?php /* Initialize Alpine v2 after Magewire */ ?>
-        const initAlpine = window.deferLoadingAlpine || ((callback) => callback());
+        const initAlpine = window.deferLoadingAlpine || ((callback) => callback())
         window.deferLoadingAlpine = (callback) => {
             window.addEventListener('magewire:load', () => {
                 initAlpine(callback)
@@ -66,7 +66,7 @@ $magewireScripts = $viewModels->require(Magewire::class);
 
         <?php /* Init Alpine v3 after Magewire */ ?>
         <?php /* (Note: with v3 alpine:init is dispatched before DOMContentLoaded. In v2 it is not used) */ ?>
-        window.addEventListener('alpine:init', startMagewireOnce);
+        window.addEventListener('alpine:init', startMagewireOnce)
     })();
 
     <?php /* Dispatch "magewire:" prefixed window events. */ ?>
@@ -85,7 +85,7 @@ $magewireScripts = $viewModels->require(Magewire::class);
     })
 
     <?php /* Allow component.initialize hooks to be registered before the components are initialized */ ?>
-    Magewire.dispatchEvent('available');
+    Magewire.dispatchEvent('available')
 </script>
 
     <?= /* @noEscape */ $block->getChildHtml('magewire.plugins') ?>

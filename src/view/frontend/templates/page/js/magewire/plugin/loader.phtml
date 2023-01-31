@@ -44,13 +44,16 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                                 default:
                                     value = true
                             }
+                        } else if (typeof loader === 'string') {
+                            value = loader
                         }
 
                         data[component.id] = {
                             key: Date.now(),
                             id: component.id,
                             title: null,
-                            type: item.type
+                            type: item.type,
+                            use: value ? true : false
                         }
 
                         if (typeof value === 'object') {
@@ -66,9 +69,12 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                 }
 
                 return null
-            }
+            },
 
-            let tryToStop = function(message, component, failed = false) {
+            queue = [],
+            start = null,
+
+            tryToStop = function(message, component, failed = false) {
                 queue = queue.filter(item => component.id !== item.component.id)
                 let emits = message.response.effects.emits || null
 
@@ -81,8 +87,8 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                 }
 
                 if (failed) {
-                    Magewire.dispatchEvent('loader:failure', {
-                        detail: { component: component, stop: stop, duration:  stop - start }
+                    Magewire.dispatchEvent('loader:fail', {
+                        detail: { component: component }
                     })
                 }
 
@@ -95,18 +101,16 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                 }
             }
 
-            let queue = [],
-                start = null
-
             Magewire.hook('message.sent', (message, component) => {
                 let loader = filterLoaderData(message, component) ?? {}
 
-                if (component.id in loader) {
+                if (component.id in loader && loader[component.id].use) {
                     loader = loader[component.id]
                     let first = queue.filter(item => item.emit || false).length === 0
 
                     if (first) {
                         start = Date.now()
+
                         queue.push({ loader: loader, component: component })
                     }
 

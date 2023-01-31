@@ -8,6 +8,12 @@
             <block name="magewire.loader"
                    ifconfig="dev/magewire/loader/enable"
                    template="Magewirephp_Magewire::html/loader.phtml">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">
+                        Magewirephp\Magewire\ViewModel\Magewire
+                    </argument>
+                </arguments>
+
                 <block name="magewire.loader.notifications"
                        ifconfig="dev/magewire/loader/enable_notifications"
                        template="Magewirephp_Magewire::html/loader/notifications.phtml"/>
@@ -17,11 +23,24 @@
         <referenceContainer name="before.body.end">
             <block name="magewire.livewire"
                    before="script-alpine-js"
-                   template="Magewirephp_Magewire::page/js/magewire-livewire.phtml"/>
+                   template="Magewirephp_Magewire::page/js/magewire-livewire.phtml">
+                <arguments>
+                    <argument name="view_model" xsi:type="object">
+                        Magewirephp\Magewire\ViewModel\Magewire
+                    </argument>
+                </arguments>
+            </block>
+
             <block name="magewire.initialize"
                    after="magewire.livewire"
                    template="Magewirephp_Magewire::page/js/magewire-initialize.phtml"
             >
+                <arguments>
+                    <argument name="view_model" xsi:type="object">
+                        Magewirephp\Magewire\ViewModel\Magewire
+                    </argument>
+                </arguments>
+
                 <container name="magewire.plugin.scripts" as="magewire.plugins">
                     <block name="magewire.plugin.loader"
                            ifconfig="dev/magewire/loader/enable"

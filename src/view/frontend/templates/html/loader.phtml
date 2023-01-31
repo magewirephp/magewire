@@ -13,27 +13,36 @@ declare(strict_types=1);
 
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
+$magewireScripts = $block->getViewModel();
 ?>
+<?php if ($magewireScripts->pageRequiresMagewire()): ?>
 <div id="magewire-loader"
      x-data="{
          active: false,
          notifications: [],
-         current: null
+         current: 0
      }"
      x-on:magewire:loader:start.window="
          active = true
-         current = $event.detail.title ? notifications.length : 0
          notifications.push(Object.assign($event.detail, { active: true, show: true, failed: false }))
+         current = $event.detail.title ? notifications.length - 1 : current
      "
      x-on:magewire:loader:restart.window="
+         if (notifications[current] !== undefined) {
+             notifications[current].active = false
+         }
+
          notifications.push(Object.assign($event.detail, { active: true, show: true, failed: false }))
-         current = $event.detail.title ? notifications.length : current
+         current = $event.detail.title ? notifications.length - 1 : current
      "
-     x-on:magewire:loader:failure.window="
+     x-on:magewire:loader:fail.window="
          notifications[current].failed = true
      "
      x-on:magewire:loader:stop.window="
-         notifications[current].active = false
+         if (notifications[current] !== undefined) {
+             notifications[current].active = false
+         }
+
          active = false
          current = null
 
@@ -81,3 +90,4 @@ use Magento\Framework\View\Element\Template;
 
     <?= $block->getChildHtml('magewire.loader.notifications') ?>
 </div>
+<?php endif ?>
