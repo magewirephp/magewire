@@ -688,10 +688,26 @@ Display a loading state only when performing a (targeted) subsequent method call
 ```php
 class Explanation extends \Magewirephp\Magewire\Component
 {
-    // Show a loading state for all methods.
-    protected $loader = true;
+    public $bar = null
+
     // Show a loading state for specific methods.
     protected $loader = ['foo'];
+    // Shows 'Updating foo' as a notification when 'foo' gets re-synced.
+    protected $loader = ['foo' => 'Updating foo'];
+    // Shows 'Loading...' as a notification when there is a interaction with the component.
+    protected $loader = 'Loading...';
+    // Prevent any loading activity displayment.
+    protected $loader = false;
+    // Prevent notification displayment and only show the main loader.
+    protected $loader = true;
+    // Show both messages for method execution and property syncing.
+    protected $loader = [
+        '{public_property}' => 'Updating something', // e.g. 'bar'
+        '{public_method}'   => 'Executing something', // e.g. 'foo'
+        '{listener_event}'  => 'Some event was executed, I\'m executing method foo' // e.g. 'some_event'
+    ];
+    
+    protected $listeners = ['some_event' => 'foo'];
     
     public function foo() {
     
@@ -732,6 +748,19 @@ class Explanation extends \Magewirephp\Magewire\Component
 ```
 **File**: html/magewire/loader.phtml
 
+### Available Loader Window Events
+```magewire:loader:start```
+> Dispatched as soon as the first ```$loader``` driven component is active.
+
+```magewire:loader:restart```
+> Dispatched when another component has ```$loader``` settings.
+
+```magewire:loader:fail```
+> Dispatched when a ```$loader``` driven component failed for whatever reason.
+
+```magewire:loader:stop```
+> Dispatched as soon as all network requests were completed (this includes emitted requests).
+
 ### Indicator Removal
 In some cases you want to implement your own loader because you have a global one in place or your just don't need to
 notify your customer. Whatever the case, I centered all frontend logic into two phtml files to let you do whatever's
@@ -747,7 +776,7 @@ needed for the project.
 **File**: view/frontend/layout/default_hyva.xml
 
 ### Custom Example (dls)
-Ofcourse you're able to build it more custom for your wired component only.
+You're able to build it more custom for your wired component only.
 ```html
 <div x-data="{d: false}">
     <button wire:click="start(5)" x-on:click="d = true" :disabled="d" x-on:switch-state.window="d = !d">
