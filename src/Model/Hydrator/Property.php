@@ -9,7 +9,6 @@
 namespace Magewirephp\Magewire\Model\Hydrator;
 
 use Exception;
-use Hyva\CheckoutDefault\Magewire\ShippingDetails\AddressList;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Component as MagewireComponent;
@@ -27,12 +26,6 @@ class Property implements HydratorInterface
     protected SerializerInterface $serializer;
     protected LoggerInterface $logger;
 
-    /**
-     * @param PropertyHelper $propertyHelper
-     * @param ComponentHelper $componentHelper
-     * @param SerializerInterface $serializer
-     * @param LoggerInterface $logger
-     */
     public function __construct(
         PropertyHelper $propertyHelper,
         ComponentHelper $componentHelper,

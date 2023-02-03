@@ -1,44 +1,134 @@
+<?php declare(strict_types=1);
+/**
+ * Copyright © Willem Poortman 2021-present. All rights reserved.
+ *
+ * Please read the README and LICENSE files for more
+ * details on copyrights and license information.
+ */
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Model\Action\SyncInput;
+use Magewirephp\Magewire\Model\Action\CallMethod;
+use Magewirephp\Magewire\Model\Action\FireEvent;
+?>
 <script defer>
     'use strict';
 
     (() => {
         document.addEventListener('DOMContentLoaded', () => {
-            let hasEmits = false
+            let filterLoaderData = function(message, component) {
+                let loader = component.effects.loader || null
 
-            const canShowLoader = (message, component) => {
-                if (Array.isArray(component.effects.loader)) {
-                    for (const item of message.updateQueue) {
-                        if (item.type !== 'callMethod') {
-                            continue
+                if (loader) {
+                    let data = {}
+
+                    for (let item of message.updateQueue) {
+                        let value = true
+
+                        if (typeof loader === 'object') {
+                            switch (item.type) {
+                                case '<?= SyncInput::ACTION ?>':
+                                    value = loader[item.payload.name + '.' + item.payload.value] || loader[item.payload.name]
+                                    break
+                                case '<?= CallMethod::ACTION ?>':
+                                    value = loader[item.method]
+                                    break
+                                case '<?= FireEvent::ACTION ?>':
+                                    value = loader[item.payload.event]
+                                    break
+
+                                default:
+                                    value = true
+                            }
+                        } else if (typeof loader === 'string') {
+                            value = loader
                         }
 
-                        return component.effects.loader.includes(item.method)
+                        data[component.id] = {
+                            key: Date.now(),
+                            id: component.id,
+                            title: null,
+                            type: item.type,
+                            use: value ? true : false
+                        }
+
+                        if (typeof value === 'object') {
+                            Object.assign(data[component.id], { title: value[item.payload.name] })
+                        } else if (typeof value === 'string') {
+                            Object.assign(data[component.id], { title: value })
+                        }
+
+                        data[component.id].hash = btoa(data[component.id].title + data[component.id].type)
                     }
+
+                    return data
                 }
 
-                return 'loader' in component.effects || hasEmits
+                return null
+            },
+
+            queue = [],
+            start = null,
+
+            tryToStop = function(message, component, failed = false) {
+                queue = queue.filter(item => component.id !== item.component.id)
+                let emits = null
+
+                if (message.response.effects.emits) {
+                    emits = message.response.effects.emits || null
+                }
+
+                if (emits) {
+                    emits.forEach((emit) => {
+                        Magewire.components.componentsListeningForEvent(emit.event).forEach((component) => {
+                            queue.push({ component: component, emit: true })
+                        })
+                    })
+                }
+
+                if (failed) {
+                    Magewire.dispatchEvent('loader:fail', {
+                        detail: { component: component }
+                    })
+                }
+
+                if (queue.length === 0) {
+                    let stop = Date.now()
+
+                    Magewire.dispatchEvent('loader:stop', {
+                        detail: { component: component, stop: stop, duration:  stop - start }
+                    })
+                }
             }
 
             Magewire.hook('message.sent', (message, component) => {
-                if (canShowLoader(message, component)) {
-                    hasEmits = false
+                let loader = filterLoaderData(message, component) ?? {}
 
-                    Magewire.dispatchEvent('loader:start', {
-                        message: message, component: component
+                if (component.id in loader && loader[component.id].use) {
+                    loader = loader[component.id]
+                    let first = queue.filter(item => item.emit || false).length === 0
+
+                    if (first) {
+                        start = Date.now()
+
+                        queue.push({ loader: loader, component: component })
+                    }
+
+                    Magewire.dispatchEvent(`loader:${ first ? 'start' : 'tick' }`, {
+                        detail: Object.assign(loader, { component: component, start: start })
                     })
                 }
             })
-            Magewire.hook('message.processed', (message, component) => {
-                hasEmits = 'loader' in component.effects && 'emits' in message.response.effects
 
-                Magewire.dispatchEvent('loader:stop', {
-                    message: message, component: component
-                })
+            Magewire.hook('message.processed', (message, component) => {
+                tryToStop(message, component)
             })
             Magewire.hook('message.failed', (message, component) => {
-                Magewire.dispatchEvent('loader:stop', {
-                    message: message, component: component
-                })
+                tryToStop(message, component, true)
             })
         })
     })();

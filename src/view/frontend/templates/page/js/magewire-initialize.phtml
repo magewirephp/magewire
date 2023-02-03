@@ -11,12 +11,11 @@
 /** @var Escaper $escaper */
 /** @var Template $block */
 
-use Hyva\Theme\Model\ViewModelRegistry;
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\ViewModel\Magewire;
 
-$magewireScripts = $viewModels->require(Magewire::class);
+$magewireScripts = $block->getViewModel();
 ?>
 <?php if ($magewireScripts->pageRequiresMagewire()): ?>
 <script>
@@ -34,11 +33,12 @@ $magewireScripts = $viewModels->require(Magewire::class);
     window.Livewire = window.magewire
     window.Magewire = window.magewire
     window.livewire_app_url = '<?= $escaper->escapeUrl($magewireScripts->getApplicationUrl()) ?>'
+    <?php /* Still Hyvä dependent, will change in the future to spread compatibility. */ ?>
     window.livewire_token = window.hyva.getFormKey()
 
-    /* Make sure Magewire loads first. */
+    <?php /* Make sure Magewire loads first. */ ?>
     if (window.Alpine) {
-        /* Defer showing the warning so it doesn't get buried under downstream errors. */
+        <?php /* Defer showing the warning so it doesn't get buried under downstream errors. */ ?>
         document.addEventListener("DOMContentLoaded", () => {
             setTimeout(function() {
                 console.warn("Magewire: It looks like AlpineJS has already been loaded. Make sure Magewire\'s scripts are loaded before AlpineJS.")
@@ -46,17 +46,17 @@ $magewireScripts = $viewModels->require(Magewire::class);
         })
     }
 
-    /* Initialize Alpine after Magewire */
+    <?php /* Initialize Alpine after Magewire */ ?>
     (() => {
-        /* At this time Alpine is not yet loaded, so it is impossible to check how to defer Alpine initialization. */
+        <?php /* At this time Alpine is not yet loaded, so it is impossible to check how to defer Alpine initialization. */ ?>
         const startMagewireOnce = () => {
-            document.removeEventListener('DOMContentLoaded', startMagewireOnce);
-            window.removeEventListener('alpine:init', startMagewireOnce);
-            window.magewire.start();
+            document.removeEventListener('DOMContentLoaded', startMagewireOnce)
+            window.removeEventListener('alpine:init', startMagewireOnce)
+            window.magewire.start()
         }
 
-        /* Initialize Alpine v2 after Magewire */
-        const initAlpine = window.deferLoadingAlpine || ((callback) => callback());
+        <?php /* Initialize Alpine v2 after Magewire */ ?>
+        const initAlpine = window.deferLoadingAlpine || ((callback) => callback())
         window.deferLoadingAlpine = (callback) => {
             window.addEventListener('magewire:load', () => {
                 initAlpine(callback)
@@ -64,24 +64,28 @@ $magewireScripts = $viewModels->require(Magewire::class);
         }
         document.addEventListener('DOMContentLoaded', startMagewireOnce)
 
-        /* Initialize Alpine v3 after Magewire */
-        window.addEventListener('alpine:init', startMagewireOnce);
+        <?php /* Init Alpine v3 after Magewire */ ?>
+        <?php /* (Note: with v3 alpine:init is dispatched before DOMContentLoaded. In v2 it is not used) */ ?>
+        window.addEventListener('alpine:init', startMagewireOnce)
     })();
 
-    /* Dispatch "magewire:" prefixed window events. */
+    <?php /* Dispatch "magewire:" prefixed window events. */ ?>
     Magewire.dispatchEvent = (name, event = {}) => {
-        document.dispatchEvent(new Event(`magewire:${ name }`, Object.assign({
+        document.dispatchEvent(new CustomEvent(`magewire:${ name }`, Object.assign({
             'bubbles': true,
             'cancelable': false
         }, event)))
     }
 
-    /* Mirror Livewire events. */
+    <?php /* Mirror Livewire events. */ ?>
     ['load', 'update'].forEach(function (target, index) {
         document.addEventListener('livewire:' + target, (event) => {
             Magewire.dispatchEvent(target, event)
         })
     })
+
+    <?php /* Allow component.initialize hooks to be registered before the components are initialized */ ?>
+    Magewire.dispatchEvent('available')
 </script>
 
     <?= /* @noEscape */ $block->getChildHtml('magewire.plugins') ?>

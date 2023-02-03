@@ -27,13 +27,6 @@ class Magewire implements ArgumentInterface
     protected StoreManagerInterface $storeManager;
     protected LayoutRenderLifecycle $layoutRenderLifecycle;
 
-    /**
-     * @param FormKey $formKey
-     * @param ApplicationState $applicationState
-     * @param ProductMetadataInterface $productMetadata
-     * @param StoreManagerInterface $storeManager
-     * @param LayoutRenderLifecycle $layoutRenderLifecycle
-     */
     public function __construct(
         FormKey $formKey,
         ApplicationState $applicationState,

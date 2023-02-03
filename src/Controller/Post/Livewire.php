@@ -45,17 +45,6 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
     protected RequestInterface $request;
     protected LoggerInterface $logger;
 
-    /**
-     * @param JsonFactory $resultJsonFactory
-     * @param ComponentHelper $componentHelper
-     * @param PageFactory $resultPageFactory
-     * @param SerializerInterface $serializer
-     * @param HttpFactory $httpFactory
-     * @param EventManagerInterface $eventManager
-     * @param SecurityHelper $securityHelper
-     * @param RequestInterface $request
-     * @param LoggerInterface $logger
-     */
     public function __construct(
         JsonFactory $resultJsonFactory,
         ComponentHelper $componentHelper,
@@ -78,9 +67,6 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         $this->logger = $logger;
     }
 
-    /**
-     * @return Json
-     */
     public function execute(): Json
     {
         $result = $this->resultJsonFactory->create();
@@ -132,8 +118,6 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
     }
 
     /**
-     * @param array $post
-     * @return BlockInterface
      * @throws NotFoundException
      */
     public function locateWireComponent(array $post): BlockInterface
@@ -176,9 +160,6 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         }
     }
 
-    /**
-     * @return array
-     */
     public function getHttpResponseStatuses(): array
     {
         $statuses = Response::$statusTexts;
