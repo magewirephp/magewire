@@ -12,12 +12,12 @@ use Magento\Framework\Filesystem\DriverInterface;
 
 interface UploadAdapterInterface
 {
+    public const QUERY_PARAM_EXPIRES = 'expires';
+    public const QUERY_PARAM_SIGNATURE = 'signature';
+    public const QUERY_PARAM_ADAPTER = 'adapter';
+
     /**
      * Create a temporary signed route URL.
-     *
-     * @param array $file
-     * @param bool $isMultiple
-     * @return string
      */
     public function generateSignedUploadUrl(array $file, bool $isMultiple): string;
 
@@ -27,12 +27,32 @@ interface UploadAdapterInterface
     public function getGenerateSignedUploadUrlEvent(): string;
 
     /**
-     * @return DriverInterface
+     * WIP
      */
     public function getDriver(): DriverInterface;
 
     /**
-     * @return string
+     * Get upload controller action route.
      */
     public function getRoute(): string;
+
+    /**
+     * Returns a snake cased adapter name.
+     */
+    public function getName(): string;
+
+    /**
+     * Stash files temporarily (e.g. var/tmp/ directory).
+     *
+     * @param array $files<int, mixed>
+     * @return array<int, string>
+     */
+    public function stash(array $files): array;
+
+    /**
+     * Store files permanently.
+     *
+     * @return array<int, string|null>
+     */
+    public function store(array $paths, string $directory = null): array;
 }

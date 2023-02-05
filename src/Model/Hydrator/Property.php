@@ -39,7 +39,6 @@ class Property implements HydratorInterface
     }
 
     /**
-     * @inheritdoc
      * @throws ReflectionException
      */
     public function hydrate(Component $component, RequestInterface $request): void
@@ -87,9 +86,6 @@ class Property implements HydratorInterface
         $component->getPublicProperties(true);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function dehydrate(Component $component, ResponseInterface $response): void
     {
         if ($response->getRequest()->isSubsequent()) {
@@ -120,10 +116,6 @@ class Property implements HydratorInterface
         $this->executePropertyLifecycleHook($component, 'dehydrate', $response);
     }
 
-    /**
-     * @param ResponseInterface $response
-     * @param string $property
-     */
     public function processArrayProperty(ResponseInterface $response, string $property): void
     {
         $request = $response->getRequest();
@@ -149,20 +141,11 @@ class Property implements HydratorInterface
         $response->effects['dirty'][] = $property;
     }
 
-    /**
-     * @param ResponseInterface $response
-     * @param string $property
-     */
     public function processProperty(ResponseInterface $response, string $property): void
     {
         $response->effects['dirty'][] = $property;
     }
 
-    /**
-     * @param MagewireComponent $component
-     * @param string $type
-     * @param object $object
-     */
     public function executePropertyLifecycleHook(MagewireComponent $component, string $type, object $object): void
     {
         foreach ($component->getPublicProperties() as $property => $value) {

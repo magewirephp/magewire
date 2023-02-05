@@ -8,4 +8,12 @@
                 type="Magewirephp\Magewire\Model\Response"/>
     <preference for="Magewirephp\Magewire\Model\Upload\UploadAdapterInterface"
                 type="Magewirephp\Magewire\Model\Upload\Adapter\Local"/>
+
+    <type name="Magewirephp\Magewire\Model\Upload\AdapterProvider">
+        <arguments>
+            <argument name="adapters" xsi:type="array">
+                <item name="local" xsi:type="object">Magewirephp\Magewire\Model\Upload\Adapter\Local</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

@@ -8,76 +8,79 @@
 
 namespace Magewirephp\Magewire\Model\Upload\Adapter;
 
+use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Exception\RuntimeException;
 use Magento\Framework\Filesystem;
 use Magento\Framework\Filesystem\Driver\File as FileDriver;
+use Magento\Framework\Math\Random;
 use Magento\Framework\Stdlib\DateTime\DateTime;
+use Magento\MediaStorage\Model\File\UploaderFactory as FileUploaderFactory;
 use Magewirephp\Magewire\Helper\Security as SecurityHelper;
+use Magewirephp\Magewire\Model\Upload\AbstractAdapter;
 use Magewirephp\Magewire\Model\Upload\UploadAdapterInterface;
 
-class Local implements UploadAdapterInterface
+class Local extends AbstractAdapter
 {
-    protected DateTime $dateTime;
-    protected SecurityHelper $securityHelper;
-    protected FileDriver $fileDriver;
-    protected RequestInterface $request;
+    public const NAME = 'local';
+
+    protected FileUploaderFactory $fileUploaderFactory;
+    protected Filesystem $fileSystem;
+    protected Random $randomizer;
 
     public function __construct(
         DateTime $dateTime,
         SecurityHelper $securityHelper,
         FileDriver $fileDriver,
-        RequestInterface $request
+        RequestInterface $request,
+        Filesystem $fileSystem,
+        Random $randomizer
     ) {
-        $this->dateTime = $dateTime;
-        $this->securityHelper = $securityHelper;
-        $this->fileDriver = $fileDriver;
-        $this->request = $request;
+        parent::__construct($dateTime, $securityHelper, $fileDriver, $request);
+
+        $this->fileSystem = $fileSystem;
+        $this->randomizer = $randomizer;
     }
 
-    /**
-     * @throws FileSystemException
-     * @throws RuntimeException
-     */
-    public function generateSignedUploadUrl(array $file, bool $isMultiple): string
+//    public function __construct(
+//        FileUploaderFactory $fileUploaderFactory,
+//        Filesystem $fileSystem
+//    ) {
+//        $this->fileUploaderFactory = $fileUploaderFactory;
+//        $this->fileSystem = $fileSystem;
+//    }
+
+    public function stash(array $files): array
     {
-        return $this->securityHelper->generateRouteSignatureUrl($this->getRoute(), [
-            'expires' => $this->dateTime->gmtTimestamp() + 1900
-        ]);
+        $paths = [];
+
+        foreach ($files as $file) {
+            $fileDirectory = $this->fileSystem->getDirectoryWrite(DirectoryList::TMP);
+            $name = $this->randomizer->getUniqueHash() . '.' . $file->getFileExtension();
+
+            $file->save($fileDirectory->getAbsolutePath('magewire'), $name);
+            $paths[] = $file->getUploadedFileName();
+        }
+
+        return $paths;
     }
 
-    public function getGenerateSignedUploadUrlEvent(): string
+    public function store(array $paths, string $directory = null): array
     {
-        return 'upload:generatedSignedUrl';
-    }
+        $fileDirectoryTmp = $this->fileSystem->getDirectoryWrite(DirectoryList::TMP);
+        $fileDirectoryUpload = $this->fileSystem->getDirectoryWrite(DirectoryList::UPLOAD);
 
-    public function getDriver(): Filesystem\DriverInterface
-    {
-        return $this->fileDriver;
-    }
+        return array_map(function ($tmp) use ($fileDirectoryTmp, $fileDirectoryUpload) {
+            $path = 'magewire' . DIRECTORY_SEPARATOR . $tmp;
 
-    public function getRoute(): string
-    {
-        return 'magewire/post/upload_local';
-    }
+            if ($fileDirectoryTmp->isFile($path)) {
+                if ($fileDirectoryTmp->copyFile($path, $path, $fileDirectoryUpload)) {
+                    return $fileDirectoryUpload->getRelativePath($path);
+                }
+            }
 
-    /**
-     * @throws FileSystemException
-     * @throws RuntimeException
-     */
-    public function hasCorrectSignature(): bool
-    {
-        $signature = $this->securityHelper->generateRouteSignature($this->getRoute(), [
-            'expires' => $this->request->getUserParam('expires', 0)
-        ]);
-
-        return $this->request->getUserParam('signature') === $signature;
-    }
-
-    public function signatureHasNotExpired(): bool
-    {
-        $timestamp = $this->dateTime->gmtTimestamp();
-        return $timestamp > (int) $this->request->getUserParam('expires', $timestamp);
+            return null;
+        }, $paths);
     }
 }

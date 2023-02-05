@@ -17,10 +17,6 @@ abstract class Upload extends Form
 
     protected UploadAdapterInterface $uploadAdapter;
 
-    /**
-     * @param Validator $validator
-     * @param UploadAdapterInterface $uploadAdapter
-     */
     public function __construct(
         Validator $validator,
         UploadAdapterInterface $uploadAdapter
@@ -30,6 +26,11 @@ abstract class Upload extends Form
         $this->uploadAdapter = $uploadAdapter;
     }
 
+    public function getAdapter()
+    {
+        return $this->uploadAdapter;
+    }
+    
     public function uploadErrored($name, $errorsInJson, $isMultiple) {
         $this->emit('upload:errored', $name)->self();
 

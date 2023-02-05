@@ -6,7 +6,7 @@
  * details on copyrights and license information.
  */
 
-namespace Magewirephp\Magewire\Controller\Post\Upload;
+namespace Magewirephp\Magewire\Controller\Post;
 
 use Exception;
 use Magento\Framework\App\Action\HttpPostActionInterface;
@@ -19,42 +19,32 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\RuntimeException;
-use Magento\Framework\Filesystem;
 use Magento\Framework\Math\Random;
 use Magento\Framework\Stdlib\DateTime\DateTime;
-use Magento\MediaStorage\Model\File\UploaderFactory;
+use Magento\MediaStorage\Model\File\UploaderFactory as FileUploaderFactory;
 use Magewirephp\Magewire\Helper\Security as SecurityHelper;
 use Magewirephp\Magewire\Model\Upload\Adapter\Local as UploadAdapter;
 use Magento\Framework\App\Response\Http\FileFactory;
+use Magewirephp\Magewire\Model\Upload\AdapterProvider;
+use Magewirephp\Magewire\Model\Upload\UploadAdapterInterface;
 
-class Local implements HttpPostActionInterface, CsrfAwareActionInterface
+class Upload implements HttpPostActionInterface, CsrfAwareActionInterface
 {
     protected JsonFactory $resultJsonFactory;
+    protected AdapterProvider $adapterProvider;
     protected RequestInterface $request;
-    protected SecurityHelper $securityHelper;
-    protected Filesystem $fileSystem;
-    protected FileFactory $fileFactory;
-    protected UploaderFactory $fileUploaderFactory;
-    protected Random $randomizer;
-    protected UploadAdapter $uploadAdapter;
-    protected DateTime $dateTime;
+    protected FileUploaderFactory $fileUploaderFactory;
 
     public function __construct(
         JsonFactory $resultJsonFactory,
-        SecurityHelper $securityHelper,
-        Filesystem $fileSystem,
-        UploaderFactory $fileUploaderFactory,
-        Random $randomizer,
-        UploadAdapter $uploadAdapter,
-        DateTime $dateTime
+        AdapterProvider $adapterProvider,
+        RequestInterface $request,
+        FileUploaderFactory $fileUploaderFactory
     ) {
         $this->resultJsonFactory = $resultJsonFactory;
-        $this->securityHelper = $securityHelper;
-        $this->fileSystem = $fileSystem;
+        $this->adapterProvider = $adapterProvider;
+        $this->request = $request;
         $this->fileUploaderFactory = $fileUploaderFactory;
-        $this->randomizer = $randomizer;
-        $this->uploadAdapter = $uploadAdapter;
-        $this->dateTime = $dateTime;
     }
 
     /**
@@ -65,33 +55,38 @@ class Local implements HttpPostActionInterface, CsrfAwareActionInterface
     {
         // CLEAN UP THE TMP DIR FIRST...
         $result = $this->resultJsonFactory->create();
+        $adapter = $this->adapterProvider->getByName($this->request->getParam(UploadAdapterInterface::QUERY_PARAM_ADAPTER));
 
-        if (! $this->uploadAdapter->hasCorrectSignature() || $this->uploadAdapter->signatureHasNotExpired()) {
+        if (! $adapter->hasCorrectSignature() || $adapter->signatureHasNotExpired()) {
             return $result->setStatusHeader(401);
         }
 
         try {
+            /* todo: needs to go into a loop */
             $target = $this->fileUploaderFactory->create(['fileId' => 'files[0]']);
 
-            $target->setAllowedExtensions(['jpeg']);
+            //$target->setAllowedExtensions(['jpeg']);
             $target->setAllowCreateFolders(false);
             $target->setAllowRenameFiles(true);
             $target->setFilenamesCaseSensitivity(false);
 
             $target->validateFile();
 
-            $fileDirectory = $this->fileSystem->getDirectoryWrite(DirectoryList::TMP);
-            $file = $this->randomizer->getUniqueHash() . '.' . $target->getFileExtension();
+            $paths = $adapter->stash([0 => $target]);
 
-            $target->save($fileDirectory->getAbsolutePath('magewire'), $file);
+            if ($paths === false) {
+                throw new LocalizedException(__('Something went wrong.'));
+            }
+
+            return $result->setData([
+                'paths' => $paths
+            ]);
         } catch (LocalizedException | FileSystemException | Exception $exception) {
             return $result->setData([
                 'message' => $exception->getMessage(),
                 'code' => 422
             ]);
         }
-
-        return $result->setData(['paths' => [$target->getUploadedFileName()]]);
     }
 
     public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException

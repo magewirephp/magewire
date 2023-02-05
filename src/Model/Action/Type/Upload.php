@@ -18,24 +18,18 @@ class Upload
     protected UploadAdapterInterface $uploadAdapter;
     protected SyncInput $syncInput;
 
-    /**
-     * @param UploadAdapterInterface $uploadAdapter
-     * @param SyncInput $syncInput
-     */
     public function __construct(
-        UploadAdapterInterface $uploadAdapter,
         SyncInput $syncInput
     ) {
-        $this->uploadAdapter = $uploadAdapter;
         $this->syncInput = $syncInput;
     }
 
-    public function startUpload(string $property, $file, $isMultiple, Component $component)
+    public function startUpload(string $property, $file, $isMultiple, Component\Upload $component)
     {
         $component->emit(
-            $this->uploadAdapter->getGenerateSignedUploadUrlEvent(),
+            $component->getAdapter()->getGenerateSignedUploadUrlEvent(),
             $property,
-            $this->uploadAdapter->generateSignedUploadUrl($file, $isMultiple)
+            $component->getAdapter()->generateSignedUploadUrl($file, $isMultiple)
         )->self();
     }
 
