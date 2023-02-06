@@ -40,34 +40,22 @@ class Magewire implements ArgumentInterface
         $this->storeManager = $storeManager;
         $this->layoutRenderLifecycle = $layoutRenderLifecycle;
     }
-
-    /**
-     * @return bool
-     */
+    
     public function isDeveloperMode(): bool
     {
         return $this->applicationState->getMode() === ApplicationState::MODE_DEVELOPER;
     }
-
-    /**
-     * @return bool
-     */
+    
     public function isBeforeTwoFourZero(): bool
     {
         return version_compare($this->productMetaData->getVersion(), '2.4.0', '<');
     }
-
-    /**
-     * @return string
-     */
+    
     public function getPostRoute(): string
     {
         return $this->isBeforeTwoFourZero() ? '/magewire/vintage' : '/magewire/post';
     }
-
-    /**
-     * @return string
-     */
+    
     public function getApplicationUrl(): string
     {
         try {

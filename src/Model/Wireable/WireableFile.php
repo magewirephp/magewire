@@ -10,6 +10,9 @@ namespace Magewirephp\Magewire\Model\Wireable;
 
 use Magewirephp\Magewire\Model\WireableInterface;
 
+/**
+ * @deprecated don't use this, it's work in progress and maybe will- or will not make it.
+ */
 class WireableFile implements WireableInterface
 {
     public $src;

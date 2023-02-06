@@ -43,14 +43,6 @@ class Local extends AbstractAdapter
         $this->randomizer = $randomizer;
     }
 
-//    public function __construct(
-//        FileUploaderFactory $fileUploaderFactory,
-//        Filesystem $fileSystem
-//    ) {
-//        $this->fileUploaderFactory = $fileUploaderFactory;
-//        $this->fileSystem = $fileSystem;
-//    }
-
     public function stash(array $files): array
     {
         $paths = [];
