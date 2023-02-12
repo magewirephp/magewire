@@ -77,11 +77,13 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
             tryToStop = function(message, component, failed = false) {
                 queue = queue.filter(item => component.id !== item.component.id);
 
-                (message.response.effects.emits || []).forEach((emit) => {
-                    Magewire.components.componentsListeningForEvent(emit.event).forEach((component) => {
-                        queue.push({ component: component, emit: true })
+                if (message.response && message.response.effects) {
+                    (message.response.effects.emits || []).forEach((emit) => {
+                        Magewire.components.componentsListeningForEvent(emit.event).forEach((component) => {
+                            queue.push({ component: component, emit: true })
+                        })
                     })
-                })
+                }
 
                 if (failed) {
                     Magewire.dispatchEvent('loader:fail', {
