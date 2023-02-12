@@ -75,15 +75,10 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
             start = null,
 
             tryToStop = function(message, component, failed = false) {
-                queue = queue.filter(item => component.id !== item.component.id)
-                let emits = null
+                queue = queue.filter(item => component.id !== item.component.id);
 
-                if (message.response.effects.emits) {
-                    emits = message.response.effects.emits || null
-                }
-
-                if (emits) {
-                    emits.forEach((emit) => {
+                if (message.response && message.response.effects) {
+                    (message.response.effects.emits || []).forEach((emit) => {
                         Magewire.components.componentsListeningForEvent(emit.event).forEach((component) => {
                             queue.push({ component: component, emit: true })
                         })
