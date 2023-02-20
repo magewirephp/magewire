@@ -37,6 +37,7 @@
   - [Indicator Customization](#indicator-customization)
   - [Indicator Removal](#indicator-removal)
   - [Custom Example](#custom-example-dls)
+  - [Notification Type Styling](#notification-type-styling)
 - [Plugins](#plugins)
 - [Reset](#reset)
 - [Forms](#forms)
@@ -749,16 +750,20 @@ class Explanation extends \Magewirephp\Magewire\Component
 **File**: html/magewire/loader.phtml
 
 ### Available Loader Window Events
-```magewire:loader:start```
+**magewire:loader:start**
 > Dispatched as soon as the first ```$loader``` driven component is active.
 
-```magewire:loader:tick```
+**Test**: ```Magewire.dispatchEvent('loader:start', { detail: { title: 'Hello world', type: 'syncInput', use: true, start: Date.now(), failed: false }})```
+
+**magewire:loader:tick**
 > Dispatched when another component has ```$loader``` settings.
 
-```magewire:loader:fail```
+**Test**: ```Magewire.dispatchEvent('loader:tick', { detail: { title: 'Hello world', type: 'syncInput', use: true, start: Date.now(), failed: false }})```
+
+**magewire:loader:fail**
 > Dispatched when a ```$loader``` driven component failed for whatever reason.
 
-```magewire:loader:stop```
+**magewire:loader:stop**
 > Dispatched as soon as all network requests were completed (this includes emitted requests).
 
 ### Indicator Removal
@@ -796,16 +801,14 @@ public function start(int $seconds)
 ```
 > **Note**: This is just an example. For a disabled state you should or could use the ```wire:loading``` directive.
 
-## Plugins
-> **Important**: This is still a proof of concept. It's possible this won't make it into the first official release.
+### Notification Type Styling
+Each notification item can be one of three types (syncInput, fireEvent, callAction). By default, a notification item
+has the ```magewire-notification``` class. A related (kebab-cased) subclass will be bind dynamically based on the
+notification type.
 
-It's a best practice to add your custom additions to Magewire inside the designated ```magewire.plugin``` container.
-This can come in handy when you need to check if a plugin gives any trouble after installation to just temporary remove
-it.
-
-```xml
-<referenceContainer name="magewire.plugin" remove="true"/>
-```
+- ```magewire-notification fire-event```
+- ```magewire-notification sync-input```
+- ```magewire-notification call-method```
 
 ## Reset
 Reset public property values to their initial state.

@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -6,12 +6,12 @@
  * details on copyrights and license information.
  */
 
+declare(strict_types=1);
+
 namespace Magewirephp\Magewire\Model\Hydrator;
 
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Helper\Functions as FunctionsHelper;
-use Magewirephp\Magewire\Model\Action\CallMethod;
-use Magewirephp\Magewire\Model\Action\SyncInput;
 use Magewirephp\Magewire\Model\HydratorInterface;
 use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;

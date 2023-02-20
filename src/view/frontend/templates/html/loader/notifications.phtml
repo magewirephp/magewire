@@ -1,9 +1,9 @@
 <?php
 /**
- * @author Hyvä Themes <info@hyva.io>
+ * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
- * For the full copyright and license information, please view the LICENSE.txt
- * file that was distributed with this source code.
+ * Please read the README and LICENSE files for more
+ * details on copyrights and license information.
  */
 
 declare(strict_types=1);
@@ -12,10 +12,16 @@ use Magewirephp\Magewire\Model\Action\SyncInput;
 use Magewirephp\Magewire\Model\Action\CallMethod;
 use Magewirephp\Magewire\Model\Action\FireEvent;
 ?>
-<div class="fixed top-0 right-0 z-50 w-full max-w-xs flex-col space-y-2 pr-4 hidden sm:justify-start sm:flex">
+<div class="sm:fixed sm:top-0 sm:right-0 z-50 w-full max-w-xs flex-col space-y-2 pr-4 sm:justify-start">
     <div class="space-y-4 flex flex-col-reverse">
         <template x-for="(notification, index) in notifications.filter((item) => item.title)">
-            <div class="relative w-full max-w-sm rounded-md border border-gray-200 bg-white bg-opacity-80 backdrop-blur-sm bg-blur py-4 pl-6 pr-4 shadow-lg cursor-pointer"
+            <div class="relative w-full max-w-sm
+                        rounded-md border border-gray-200
+                        bg-white bg-opacity-80 backdrop-blur-sm bg-blur
+                        py-4 pl-6 pr-4
+                        shadow-lg
+                        cursor-pointer
+                        magewire-notification"
                  x-show="notification.show"
                  x-bind:class="{
                      'sync-input': notification.type === '<?= SyncInput::ACTION ?>',
@@ -46,7 +52,9 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                              x-show="! notification.active && ! notification.failed || false"
                              x-transition.duration.500ms
                         >
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+                            <path stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z"/>
                         </svg>
 
                         <svg class="h-7 w-7 text-red-700"
@@ -58,7 +66,9 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                              x-show="! notification.active && notification.failed || false"
                              x-transition.duration.500ms
                         >
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                            <path stroke-linecap="round"
+                                  stroke-linejoin="round"
+                                  d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
                         </svg>
                     </div>
 

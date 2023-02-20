@@ -1,10 +1,12 @@
-<?php declare(strict_types=1);
+<?php
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
  * Please read the README and LICENSE files for more
  * details on copyrights and license information.
  */
+
+declare(strict_types=1);
 
 /** @var Escaper $escaper */
 /** @var Template $block */
@@ -31,13 +33,24 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
 
                         if (typeof loader === 'object') {
                             switch (item.type) {
-                                case '<?= SyncInput::ACTION ?>':
-                                    value = loader[item.payload.name + '.' + item.payload.value] || loader[item.payload.name]
+                                case '<?= /** @noEscape */ SyncInput::ACTION ?>':
+                                    let expressions = [
+                                        `${ item.payload.name }:${ item.payload.value }`,
+                                        `${ item.payload.name.substr(0, item.payload.name.lastIndexOf('.')) }:${ item.payload.value }`,
+                                        `${ item.payload.name }`,
+                                        `${ item.payload.name.substr(0, item.payload.name.lastIndexOf('.')) }`
+                                    ].filter((expression) => {
+                                        return expression in loader
+                                    })
+
+                                    if (expressions.length) {
+                                        value = loader[expressions[0]]
+                                    }
                                     break
-                                case '<?= CallMethod::ACTION ?>':
+                                case '<?= /** @noEscape */ CallMethod::ACTION ?>':
                                     value = loader[item.method]
                                     break
-                                case '<?= FireEvent::ACTION ?>':
+                                case '<?= /** @noEscape */ FireEvent::ACTION ?>':
                                     value = loader[item.payload.event]
                                     break
 
@@ -53,7 +66,7 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                             id: component.id,
                             title: null,
                             type: item.type,
-                            use: value ? true : false
+                            use: value
                         }
 
                         if (typeof value === 'object') {
@@ -78,7 +91,7 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                 queue = queue.filter(item => component.id !== item.component.id);
 
                 if (message.response && message.response.effects) {
-                    (message.response.effects.emits || []).forEach((emit) => {
+                    (message.response.effects['emits'] || []).forEach((emit) => {
                         Magewire.components.componentsListeningForEvent(emit.event).forEach((component) => {
                             queue.push({ component: component, emit: true })
                         })
