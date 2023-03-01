@@ -184,7 +184,7 @@ class ComponentManager
             'dynamic_layout' => [
                 'block' => [
                     'type' => $this->getClass($block),
-                    'data' => array_filter($block->getData(), fn($data) => !is_object($data))
+                    'data' => array_filter($block->getData(), fn ($data) => !is_object($data))
                 ],
                 'magewire' => $this->getClass($component)
             ]
