@@ -15,11 +15,15 @@ use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Exception\AcceptableException;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Model\Context\Hydrator as HydratorContext;
+use Magewirephp\Magewire\Helper\LayoutXml as LayoutXmlHelper;
+
+use function Safe\cubrid_get_client_info;
 
 class ComponentManager
 {
     protected Resolver $localeResolver;
     protected HttpFactory $httpFactory;
+    protected LayoutXmlHelper $layoutXmlHelper;
     protected array $updateActionsPool;
     protected array $hydrationPool;
 
@@ -28,6 +32,7 @@ class ComponentManager
      * @param HydratorContext $hydratorContext
      * @param Resolver $localeResolver
      * @param HttpFactory $httpFactory
+     * @param LayoutXmlHelper $layoutXmlHelper
      * @param array $updateActionsPool
      * @param array $hydrationPool
      */
@@ -35,12 +40,14 @@ class ComponentManager
         HydratorContext $hydratorContext,
         Resolver $localeResolver,
         HttpFactory $httpFactory,
+        LayoutXmlHelper $layoutXmlHelper,
         array $updateActionsPool = [],
         array $hydrationPool = []
     ) {
         $this->localeResolver = $localeResolver;
         $this->updateActionsPool = $updateActionsPool;
         $this->httpFactory = $httpFactory;
+        $this->layoutXmlHelper = $layoutXmlHelper;
 
         // Core Hydrate & Dehydrate lifecycle sort order.
         $this->hydrationPool = $this->sortHydrators($hydrationPool, [
@@ -150,12 +157,54 @@ class ComponentManager
 
                 // Custom relative to Livewire's core.
                 'handle' => $handle,
-                'type' => $component::COMPONENT_TYPE
+                'type' => $component::COMPONENT_TYPE,
+
+                ...$this->getDynamicLayout($block, $component)
             ],
             'serverMemo' => [
                 'data' => $data
             ]
         ]);
+    }
+
+    /**
+     * Return dynamic layout configuration if the component is not registered in layout xml files
+     *
+     * @param Template $block
+     * @param Component $component
+     * @return array
+     */
+    private function getDynamicLayout(Template $block, Component $component): array
+    {
+        if ($this->layoutXmlHelper->blockNameExists($block->getNameInLayout())) {
+            return [];
+        }
+
+        return [
+            'dynamic_layout' => [
+                'block' => [
+                    'type' => $this->getClass($block),
+                    'data' => array_filter($block->getData(), fn($data) => !is_object($data))
+                ],
+                'magewire' => $this->getClass($component)
+            ]
+        ];
+    }
+
+    /**
+     * Get class name without Interceptor
+     * @todo there should be a function for this in magento core but I didn't find it ;)
+     *
+     * @param object $class
+     * @return string
+     */
+    private function getClass(object $class): string
+    {
+        return preg_replace(
+            '/\\\Interceptor$/i',
+            '',
+            get_class($class)
+        );
     }
 
     /**

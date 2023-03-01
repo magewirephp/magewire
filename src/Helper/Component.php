@@ -13,18 +13,23 @@ use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Exception\MissingComponentException;
 use Magewirephp\Magewire\Component as MagewireComponent;
 use Magewirephp\Magewire\Model\ComponentFactory;
+use Magewirephp\Magewire\Helper\LayoutXml as LayoutXmlHelper;
 
 class Component
 {
     protected ComponentFactory $componentFactory;
+    protected LayoutXml $layoutXmlHelper;
 
     /**
      * @param ComponentFactory $componentFactory
+     * @param LayoutXml $layoutXmlHelper
      */
     public function __construct(
-        ComponentFactory $componentFactory
+        ComponentFactory $componentFactory,
+        LayoutXmlHelper $layoutXmlHelper
     ) {
         $this->componentFactory = $componentFactory;
+        $this->layoutXmlHelper = $layoutXmlHelper;
     }
 
     /**
@@ -43,7 +48,7 @@ class Component
                     ? $magewire : $this->componentFactory->create());
 
             if ($component instanceof MagewireComponent) {
-                if ($init) {
+                if ($init && $this->layoutXmlHelper->blockNameExists($block->getNameInLayout())) {
                     $component = $this->componentFactory->create($component);
                 }
 

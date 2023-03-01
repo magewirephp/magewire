@@ -10,6 +10,7 @@ namespace Magewirephp\Magewire\Controller\Post;
 
 use Exception;
 use Laminas\Http\AbstractMessage;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\View\Element\Template;
@@ -128,6 +129,15 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         $this->eventManager->dispatch('locate_wire_component_before', [
             'post' => $post, 'page' => $page
         ]);
+
+        $dynamicLayout = $post['fingerprint']['dynamic_layout'] ?? null;
+        if ($dynamicLayout !== null) {
+            return $page->getLayout()
+                ->createBlock($dynamicLayout['block']['type'])
+                ->setNameInLayout($post['fingerprint']['name'])
+                ->setData('magewire', ObjectManager::getInstance()->create($dynamicLayout['magewire']))
+                ->addData($dynamicLayout['block']['data']);
+        }
 
         $block = $page->getLayout()->getBlock($post['fingerprint']['name']);
 
