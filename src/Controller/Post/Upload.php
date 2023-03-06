@@ -21,7 +21,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\RuntimeException;
 use Magento\Framework\Math\Random;
 use Magento\Framework\Stdlib\DateTime\DateTime;
-use Magento\MediaStorage\Model\File\UploaderFactory as FileUploaderFactory;
+use Magewirephp\Magewire\Model\Upload\File\TemporaryUploaderFactory as TemporaryFileUploaderFactory;
 use Magewirephp\Magewire\Helper\Security as SecurityHelper;
 use Magewirephp\Magewire\Model\Upload\Adapter\Local as UploadAdapter;
 use Magento\Framework\App\Response\Http\FileFactory;
@@ -33,18 +33,18 @@ class Upload implements HttpPostActionInterface, CsrfAwareActionInterface
     protected JsonFactory $resultJsonFactory;
     protected AdapterProvider $adapterProvider;
     protected RequestInterface $request;
-    protected FileUploaderFactory $fileUploaderFactory;
+    protected TemporaryFileUploaderFactory $temporaryFileUploaderFactory;
 
     public function __construct(
         JsonFactory $resultJsonFactory,
         AdapterProvider $adapterProvider,
         RequestInterface $request,
-        FileUploaderFactory $fileUploaderFactory
+        TemporaryFileUploaderFactory $temporaryFileUploaderFactory
     ) {
         $this->resultJsonFactory = $resultJsonFactory;
         $this->adapterProvider = $adapterProvider;
         $this->request = $request;
-        $this->fileUploaderFactory = $fileUploaderFactory;
+        $this->temporaryFileUploaderFactory = $temporaryFileUploaderFactory;
     }
 
     /**
@@ -62,17 +62,22 @@ class Upload implements HttpPostActionInterface, CsrfAwareActionInterface
         }
 
         try {
-            /* todo: needs to go into a loop */
-            $target = $this->fileUploaderFactory->create(['fileId' => 'files[0]']);
+            $files = $this->request->getFiles('files', []);
 
-            //$target->setAllowedExtensions(['jpeg']);
-            $target->setAllowCreateFolders(false);
-            $target->setAllowRenameFiles(true);
-            $target->setFilenamesCaseSensitivity(false);
+            $targets = [];
+            foreach (array_keys($files) as $fileKey) {
+                $target = $this->temporaryFileUploaderFactory->create(['fileId' => 'files[' . $fileKey . ']']);
 
-            $target->validateFile();
+                $target->setAllowCreateFolders(false);
+                $target->setAllowRenameFiles(true);
+                $target->setFilenamesCaseSensitivity(false);
 
-            $paths = $adapter->stash([0 => $target]);
+                $target->validateFile();
+
+                $targets[] = $target;
+            }
+
+            $paths = $adapter->stash($targets);
 
             if ($paths === false) {
                 throw new LocalizedException(__('Something went wrong.'));
