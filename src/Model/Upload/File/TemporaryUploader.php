@@ -2,17 +2,22 @@
 
 namespace Magewirephp\Magewire\Model\Upload\File;
 
-use Magento\MediaStorage\Model\File\Uploader;
-
-class TemporaryUploader extends Uploader
+class TemporaryUploader extends \Magento\MediaStorage\Model\File\Uploader
 {
+    public const IDENTIFIER = 'tmpfile_';
+
     public function generateHashNameWithOriginalNameEmbedded()
     {
+        $identifier = self::IDENTIFIER;
         $hash = uniqid();
         $meta = str_replace('/', '_', '-meta' . base64_encode($this->_file['name']) . '-');
         $extension = '.' . $this->getFileExtension();
 
-        return $hash . $meta . $extension;
+        return $identifier . $hash . $meta . $extension;
+    }
+
+    public static function isTemporaryFilename(string $filename): bool {
+        return preg_match('/^' . self::IDENTIFIER . '/', $filename);
     }
 
     public static function extractOriginalNameFromFilePath($path)
