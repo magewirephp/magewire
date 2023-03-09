@@ -70,6 +70,11 @@ abstract class Form extends Component
             $validation = $this->validator->make($data, $rules, $messages);
             $validation->setAliases($aliases);
 
+            $validation->setTranslations([
+                'or' => __('or'),
+                'and' => __('and')
+            ]);
+
             foreach (array_keys($rules) as $attributeName) {
                 foreach ($validation->getAttribute($attributeName)->getRules() as $rule) {
                     $rule->setMessage((string)__($rule->getMessage()));
