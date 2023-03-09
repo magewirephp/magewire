@@ -7,6 +7,7 @@
     - [Document Events](#document-events)
     - [Lifecycle Hooks](#lifecycle-hooks)
 - [Block Structure](#block-structure)
+- [Block Structure without Layout XML](#block-structure-without-layout-xml)
 - [Templates](#templates)
   - [Switch Template](#switch-template)
 - [Wire Ignore](#wire-ignore)
@@ -104,6 +105,52 @@ inside the [Livewire docs](https://laravel-livewire.com/docs/2.x/reference#globa
 ```
 > **Note**: Template will automatically be set if a Magewire component has been set. When your component is named Foo,
 > just  create a foo.phtml inside the /view/templates/magewire folder.
+
+## Block Structure without Layout XML
+
+There are cases where you want to use the full power of magewire but the block is not configured in a layout xml file.
+
+#### 1. Blocks created on the fly
+```php
+$this->layout->createBlock(Template::class)->toHtml()
+```
+
+To achieve this you have to add the same configuration as you do in a layout xml file.
+
+```php
+$this->layout->createBlock(Template::class)
+             ->setData('magewire', ObjectManager::getInstance()->create(\My\Module\Magewire\Explanation::class))
+             ->toHtml()
+```
+
+> **Note**: It's important to use create, otherwise when you try to use this magewire component multiple they will share the data
+
+#### 2. Widgets
+
+For widgets the principle is the same. But here magento does the rendering. So you cannot use setData to assign the magewire component.
+But we can set the component via constructur.
+
+```php
+class MyWidget extends Template implements BlockInterface
+{
+    public function __construct(
+        Context $context,
+        array $data = []
+    ) {
+        $data['magewire'] = ObjectManager::getInstance()->create(\My\Module\Magewire\Explanation::class);
+
+        parent::__construct($context, $data);
+    }
+}
+```
+### How does it work under the hood?
+
+On the initial page request all information needed are here and we have no problem. 
+But on subsequent request Magento doesn't find the layout information.
+
+To solve this issue all information that are needed to create the block are transported in the fingerprint "dynamic_layout". The information contains the magewire component and all block data (widget configuration).
+With this information it is possible to dynamically create the missing block on a subsequent request. 
+
 
 ## Templates
 Options within your block template. The ```$magewire``` variable is by default available in your Component template.
