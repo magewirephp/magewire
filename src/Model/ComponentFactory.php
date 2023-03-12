@@ -14,22 +14,15 @@ use Magewirephp\Magewire\Component;
 class ComponentFactory
 {
     protected ObjectManagerInterface $objectManager;
-    protected array $instances = [];
 
-    /**
-     * @param ObjectManagerInterface $objectManager
-     */
+    private array $instances = [];
+
     public function __construct(
         ObjectManagerInterface $objectManager
     ) {
         $this->objectManager = $objectManager;
     }
 
-    /**
-     * @param Component|null $component
-     * @param array $data
-     * @return Component
-     */
     public function create(Component $component = null, array $data = []): Component
     {
         $class = $component ? get_class($component) : Component::class;

@@ -7,7 +7,9 @@
     - [Document Events](#document-events)
     - [Lifecycle Hooks](#lifecycle-hooks)
 - [Block Structure](#block-structure)
-- [Block Structure without Layout XML](#block-structure-without-layout-xml)
+- [Dynamic Components](#dynamic-components)
+  - [Blocks](#blocks--dc-)
+  - [Widgets](#widgets--dc-)
 - [Templates](#templates)
   - [Switch Template](#switch-template)
 - [Wire Ignore](#wire-ignore)
@@ -21,7 +23,7 @@
 - [Flash Messages](#flash-messages)
 - [Redirects](#redirects)
 - [Listeners & Emits](#listeners--emits)
-  - [Javascript](#javascript-el)
+  - [Javascript](#javascript--el-)
   - [Magic Actions Compatibility](#magic-actions-compatibility)
   - [Global Refresh Listener](#global-refresh-listener)
 - [Lifecycle Hooks](#lifecycle-hooks)
@@ -41,12 +43,12 @@
 - [Plugins](#plugins)
 - [Reset](#reset)
 - [Forms](#forms)
-  - [Message Translations](#message-translations-f)
-  - [Message Displayment](#message-displayment-f)
-    - [Example 1](#example-1-md)
-    - [Example 2](#example-2-md)
-    - [Example 3](#example-3-md)
-    - [Example 4](#example-4-md)
+  - [Message Translations](#message-translations--f-)
+  - [Message Displayment](#message-displayment--f-)
+    - [Example 1](#example-1--md-)
+    - [Example 2](#example-2--md-)
+    - [Example 3](#example-3--md-)
+    - [Example 4](#example-4--md-)
 
 ## Best Practices
 1. Use the Magewire naming conventions and structures.
@@ -106,29 +108,36 @@ inside the [Livewire docs](https://laravel-livewire.com/docs/2.x/reference#globa
 > **Note**: Template will automatically be set if a Magewire component has been set. When your component is named Foo,
 > just  create a foo.phtml inside the /view/templates/magewire folder.
 
-## Block Structure without Layout XML
+## Dynamic Components
+There are cases where you want to use the full power of Magewire, but the block is not configured in a layout XML.
 
-There are cases where you want to use the full power of magewire but the block is not configured in a layout xml file.
-
-#### 1. Blocks created on the fly
+### Blocks (dc)
 ```php
 $this->layout->createBlock(Template::class)->toHtml()
 ```
 
-To achieve this you have to add the same configuration as you do in a layout xml file.
+To achieve this you have to add the same configuration as you do in a layout XML.
 
 ```php
+use Magento\Framework\View\Element\Template;
+use \Magento\Framework\App\ObjectManager;
+
 $this->layout->createBlock(Template::class)
-             ->setData('magewire', ObjectManager::getInstance()->create(\My\Module\Magewire\Explanation::class))
-             ->toHtml()
+    // Setting a template is optional since Magewire can auto-bind the belonging template.
+    ->setTemplate('My_Module::path/to/component/phtml.phtml')
+    // Bind a valid Magewire component onto the block so it can be recognized by the layout.
+    ->setData('magewire', ObjectManager::getInstance()->create(\My\Module\Magewire\Explanation::class))
+    
+    ->toHtml()
 ```
 
-> **Note**: It's important to use create, otherwise when you try to use this magewire component multiple they will share the data
+> **Note**: It's important to use create, otherwise when you try to use this Magewire component multiple they will
+> share the data.
 
-#### 2. Widgets
+### Widgets (dc)
 
-For widgets the principle is the same. But here magento does the rendering. So you cannot use setData to assign the magewire component.
-But we can set the component via constructur.
+For widgets, the principle is the same. But here Magento does the rendering. So you cannot use ```setData()``` to assign the
+Magewire component. But we can set the component via the ```constructor``` method.
 
 ```php
 class MyWidget extends Template implements BlockInterface
@@ -144,7 +153,6 @@ class MyWidget extends Template implements BlockInterface
 }
 ```
 ### How does it work under the hood?
-
 On the initial page request all information needed are here and we have no problem. 
 But on subsequent request Magento doesn't find the layout information.
 
@@ -948,7 +956,7 @@ Show corresponding error messages below the field.
 </form>
 ```
 
-#### Exmaple 2 (md)
+#### Example 2 (md)
 Display a stack of error messages on above the form.
 ```html
 <?php if ($magewire->hasErrors(): ?>

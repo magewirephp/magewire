@@ -2,30 +2,30 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd"
 >
-    <!-- As close as possible before rendering -->
     <event name="view_block_abstract_to_html_before">
+        <!-- As close as possible before rendering -->
         <observer name="MagewirephpMagewireViewBlockAbstractToHtmlBefore"
                   instance="Magewirephp\Magewire\Observer\Frontend\ViewBlockAbstractToHtmlBefore"
         />
     </event>
 
-    <!-- As close as possible after rendering -->
     <event name="view_block_abstract_to_html_after">
+        <!-- As close as possible after rendering -->
         <observer name="MagewirephpMagewireViewBlockAbstractToHtmlAfter"
                   instance="Magewirephp\Magewire\Observer\Frontend\ViewBlockAbstractToHtmlAfter"
         />
     </event>
 
-    <!-- Set block names defined in layout xml files -->
     <event name="layout_generate_blocks_after">
-        <observer name="MagewirephpLayoutGenerateBlocksAfter"
+        <!-- Set block names defined in layout xml files -->
+        <observer name="MagewirephpMagewireLayoutGenerateBlocksAfter"
                   instance="Magewirephp\Magewire\Observer\Frontend\LayoutGenerateBlocksAfter"
         />
     </event>
 
-    <!-- Hyvä Themes compatibility: Registering a module for inclusion in hyva-themes.json -->
-    <!-- @see https://docs.hyva.io/hyva-themes/compatibility-modules/tailwind-config-merging.html -->
     <event name="hyva_config_generate_before">
+        <!-- Hyvä Themes compatibility: Registering a module for inclusion in hyva-themes.json -->
+        <!-- @see https://docs.hyva.io/hyva-themes/compatibility-modules/tailwind-config-merging.html -->
         <observer name="Magewirephp_Magewire_Hyva_Config_Generate_Before"
                   instance="Magewirephp\Magewire\Observer\Frontend\HyvaConfigGenerateBefore"/>
     </event>

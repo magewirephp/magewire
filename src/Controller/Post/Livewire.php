@@ -131,6 +131,7 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         ]);
 
         $dynamicLayout = $post['fingerprint']['dynamic_layout'] ?? null;
+
         if ($dynamicLayout !== null) {
             return $page->getLayout()
                 ->createBlock($dynamicLayout['block']['type'])

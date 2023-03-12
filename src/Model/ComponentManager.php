@@ -27,15 +27,6 @@ class ComponentManager
     protected array $updateActionsPool;
     protected array $hydrationPool;
 
-    /**
-     * ComponentManager constructor.
-     * @param HydratorContext $hydratorContext
-     * @param Resolver $localeResolver
-     * @param HttpFactory $httpFactory
-     * @param LayoutXmlHelper $layoutXmlHelper
-     * @param array $updateActionsPool
-     * @param array $hydrationPool
-     */
     public function __construct(
         HydratorContext $hydratorContext,
         Resolver $localeResolver,
@@ -69,9 +60,6 @@ class ComponentManager
     }
 
     /**
-     * @param Component $component
-     * @param array $updates
-     * @return Component
      * @throws LocalizedException
      */
     public function processUpdates(Component $component, array $updates): Component
@@ -97,9 +85,6 @@ class ComponentManager
      * Runs on every request, after the component is hydrated,
      * but before an action is performed, or the layout block
      * has been rendered.
-     *
-     * @param Component $component
-     * @return Component
      */
     public function hydrate(Component $component): Component
     {
@@ -113,9 +98,6 @@ class ComponentManager
     /**
      * Runs on every request, before the component is dehydrated,
      * right before the layout block gets rendered.
-     *
-     * @param Component $component
-     * @return Component
      */
     public function dehydrate(Component $component): Component
     {
@@ -127,11 +109,6 @@ class ComponentManager
     }
 
     /**
-     * @param Template $block
-     * @param Component $component
-     * @param array $arguments
-     * @param string|null $handle
-     * @return Request
      * @throws LocalizedException
      */
     public function createInitialRequest(
@@ -148,7 +125,7 @@ class ComponentManager
         $locale = $this->localeResolver->getLocale();
 
         return $this->httpFactory->createRequest([
-            'fingerprint' => [
+            'fingerprint' => array_merge([
                 'id' => $component->id,
                 'name' => $component->name,
                 'locale' => $locale,
@@ -158,9 +135,7 @@ class ComponentManager
                 // Custom relative to Livewire's core.
                 'handle' => $handle,
                 'type' => $component::COMPONENT_TYPE,
-
-                ...$this->getDynamicLayout($block, $component)
-            ],
+            ], $this->getDynamicLayout($block, $component)),
             'serverMemo' => [
                 'data' => $data
             ]
@@ -168,13 +143,10 @@ class ComponentManager
     }
 
     /**
-     * Return dynamic layout configuration if the component is not registered in layout xml files
-     *
-     * @param Template $block
-     * @param Component $component
-     * @return array
+     * Return dynamic layout configuration if the component
+     * is not registered in layout XML files.
      */
-    private function getDynamicLayout(Template $block, Component $component): array
+    protected function getDynamicLayout(Template $block, Component $component): array
     {
         if ($this->layoutXmlHelper->blockNameExists($block->getNameInLayout())) {
             return [];
@@ -184,7 +156,9 @@ class ComponentManager
             'dynamic_layout' => [
                 'block' => [
                     'type' => $this->getClass($block),
-                    'data' => array_filter($block->getData(), fn ($data) => !is_object($data))
+                    'data' => array_filter($block->getData(), static function ($data) {
+                        return ! is_object($data);
+                    })
                 ],
                 'magewire' => $this->getClass($component)
             ]
@@ -192,19 +166,15 @@ class ComponentManager
     }
 
     /**
-     * Get class name without Interceptor
+     * Get class name without Interceptor.
      * @todo there should be a function for this in magento core but I didn't find it ;)
      *
      * @param object $class
      * @return string
      */
-    private function getClass(object $class): string
+    protected function getClass(object $class): string
     {
-        return preg_replace(
-            '/\\\Interceptor$/i',
-            '',
-            get_class($class)
-        );
+        return preg_replace('/\\\Interceptor$/i', '', get_class($class));
     }
 
     /**

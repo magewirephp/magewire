@@ -23,7 +23,9 @@ class LayoutGenerateBlocksAfter implements ObserverInterface
         $layout = $observer->getData('layout');
 
         $this->layoutXmlHelper->setBlockNames(
-            array_map(fn($block) => $block->getNameInLayout(), $layout->getAllBlocks())
+            array_map(static function ($block) {
+                return $block->getNameInLayout();
+            }, $layout->getAllBlocks())
         );
     }
 }
