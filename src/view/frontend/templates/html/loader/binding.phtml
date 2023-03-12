@@ -1,0 +1,70 @@
+<script>
+    function magewireLoader() {
+        return {
+            active: false,
+            notifications: [],
+            current: 0,
+
+            wrapper() {
+                return {
+                    ['x-on:magewire:loader:start.window']() {
+                        this.active = true
+
+                        if (this.$event.detail) {
+                            this.notifications.push(Object.assign(this.$event.detail, { active: true, show: true, failed: false }))
+                            this.current = this.$event.detail.title ? this.notifications.length - 1 : this.current
+                        }
+                    },
+                    ['x-on:magewire:loader:tick.window']() {
+                        if (this.notifications[this.current] !== undefined) {
+                            this.notifications[this.current].active = false
+                        }
+
+                        if (this.$event.detail) {
+                            this.notifications.push(Object.assign(this.$event.detail, { active: true, show: true, failed: false }))
+                            this.current = this.$event.detail.title ? this.notifications.length - 1 : this.current
+                        }
+                    },
+                    ['x-on:magewire:loader:fail.window']() {
+                        if (this.notifications[this.current] !== undefined) {
+                            this.notifications[this.current].failed = true
+                        }
+                    },
+                    ['x-on:magewire:loader:stop.window']() {
+                        if (this.notifications[this.current] !== undefined) {
+                            this.notifications[this.current].active = false
+                        }
+
+                        this.active  = false
+                        this.current = null
+
+                        let i = 0
+
+                        this.notifications.forEach((loader, index) => {
+                            if (this.notifications[index].title === null || this.notifications[index].show === false) {
+                                return
+                            }
+
+                            setTimeout(() => {
+                                this.notifications[index].show = false
+                            }, i = i + this.notifications[index].failed ? 2500 : 1500)
+                        })
+                    },
+                    ['x-bind:class']() {
+                        return {
+                            'z-50 relative': this.active
+                        }
+                    }
+                }
+            },
+
+            loader() {
+                return {
+                    ['x-show']() {
+                        return this.active
+                    }
+                }
+            }
+        }
+    }
+</script>

@@ -4,10 +4,10 @@
 >
     <body>
         <referenceContainer name="page.bottom.container">
-            <!-- Floating Magewire element(s) which can be everywhere -->
             <block name="magewire.loader"
                    ifconfig="dev/magewire/loader/enable"
-                   template="Magewirephp_Magewire::html/loader.phtml">
+                   template="Magewirephp_Magewire::html/loader.phtml"
+            >
                 <arguments>
                     <argument name="view_model" xsi:type="object">
                         Magewirephp\Magewire\ViewModel\Magewire
@@ -15,8 +15,15 @@
                 </arguments>
 
                 <block name="magewire.loader.notifications"
+                       as="notifications"
                        ifconfig="dev/magewire/loader/enable_notifications"
                        template="Magewirephp_Magewire::html/loader/notifications.phtml"/>
+                <block name="magewire.loader.spinner"
+                       as="spinner"
+                       template="Magewirephp_Magewire::html/loader/spinner.phtml"/>
+                <block name="magewire.loader.bindings"
+                       as="bindings"
+                       template="Magewirephp_Magewire::html/loader/binding.phtml"/>
             </block>
         </referenceContainer>
 

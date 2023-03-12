@@ -20,7 +20,9 @@ $magewireScripts = $block->getViewModel();
     <div id="magewire-loader"
          x-data="magewireLoader()"
          x-cloak
+         <?php /* AlpineJS v2.x */ ?>
          x-spread="wrapper"
+         <?php /* AlpineJS v3.x */ ?>
          x-bind="wrapper"
          role="status"
          aria-live="polite"
@@ -30,7 +32,9 @@ $magewireScripts = $block->getViewModel();
                      w-full h-screen
                      overflow-hidden
                      bg-white bg-opacity-90"
+              <?php /* AlpineJS v2.x */ ?>
               x-spread="loader"
+              <?php /* AlpineJS v3.x */ ?>
               x-bind="loader"
               x-transition:enter="transition duration-300"
               x-transition:enter-start="opacity-0"
@@ -40,88 +44,14 @@ $magewireScripts = $block->getViewModel();
               x-transition:leave-end="opacity-0"
         >
             <div class="flex flex-col justify-center items-center h-screen w-full space-y-6">
-                <svg class="animate-spin h-8 w-8"
-                     xmlns="http://www.w3.org/2000/svg"
-                     fill="none"
-                     viewBox="0 0 24 24"
-                >
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="shadow-md" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
+                <?= $block->getChildHtml('spinner') ?>
             </div>
         </div>
 
-        <?= $block->getChildHtml('magewire.loader.notifications') ?>
+        <?php /* Include notifications based on labels set within components. */ ?>
+        <?= $block->getChildHtml('notifications') ?>
     </div>
 
-    <script>
-        function magewireLoader() {
-            return {
-                active: false,
-                notifications: [],
-                current: 0,
-
-                wrapper() {
-                    return {
-                        ['x-on:magewire:loader:start.window']() {
-                            this.active = true
-
-                            if (this.$event.detail) {
-                                this.notifications.push(Object.assign(this.$event.detail, { active: true, show: true, failed: false }))
-                                this.current = this.$event.detail.title ? this.notifications.length - 1 : this.current
-                            }
-                        },
-                        ['x-on:magewire:loader:tick.window']() {
-                            if (this.notifications[this.current] !== undefined) {
-                                this.notifications[this.current].active = false
-                            }
-
-                            if (this.$event.detail) {
-                                this.notifications.push(Object.assign(this.$event.detail, { active: true, show: true, failed: false }))
-                                this.current = this.$event.detail.title ? this.notifications.length - 1 : this.current
-                            }
-                        },
-                        ['x-on:magewire:loader:fail.window']() {
-                            if (this.notifications[this.current] !== undefined) {
-                                this.notifications[this.current].failed = true
-                            }
-                        },
-                        ['x-on:magewire:loader:stop.window']() {
-                            if (this.notifications[this.current] !== undefined) {
-                                this.notifications[this.current].active = false
-                            }
-
-                            this.active  = false
-                            this.current = null
-
-                            let i = 0
-
-                            this.notifications.forEach((loader, index) => {
-                                if (this.notifications[index].title === null || this.notifications[index].show === false) {
-                                    return
-                                }
-
-                                setTimeout(() => {
-                                    this.notifications[index].show = false
-                                }, i = i + this.notifications[index].failed ? 2500 : 1500)
-                            })
-                        },
-                        ['x-bind:class']() {
-                            return {
-                                'z-50 relative': this.active
-                            }
-                        }
-                    }
-                },
-
-                loader() {
-                    return {
-                        ['x-show']() {
-                            return this.active
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <?php /* Write your own loader without having to rewrite all the AlpineJS. */ ?>
+    <?= $block->getChildHtml('bindings') ?>
 <?php endif ?>
