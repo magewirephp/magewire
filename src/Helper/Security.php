@@ -23,11 +23,6 @@ class Security
     protected SerializerInterface $serializer;
     protected ApplicationFormKey $formkey;
 
-    /**
-     * @param DeploymentConfig $deployConfig
-     * @param SerializerInterface $serializer
-     * @param ApplicationFormKey $formkey
-     */
     public function __construct(
         DeploymentConfig $deployConfig,
         SerializerInterface $serializer,
@@ -39,9 +34,6 @@ class Security
     }
 
     /**
-     * @param array $data1
-     * @param array $data2
-     * @return string
      * @throws FileSystemException
      * @throws RuntimeException
      */
@@ -54,10 +46,6 @@ class Security
     }
 
     /**
-     * @param string $checksum
-     * @param array $data1
-     * @param array $data2
-     * @return bool
      * @throws FileSystemException
      * @throws RuntimeException
      */
@@ -67,8 +55,6 @@ class Security
     }
 
     /**
-     * @param RequestInterface $request
-     * @return bool
      * @throws LocalizedException
      */
     public function validateFormKey(RequestInterface $request): bool

@@ -10,11 +10,12 @@ namespace Magewirephp\Magewire\Controller\Post;
 
 use Exception;
 use Laminas\Http\AbstractMessage;
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Component\Dynamic;
 use Magewirephp\Magewire\Helper\Security as SecurityHelper;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Magento\Framework\App\Action\HttpPostActionInterface;
@@ -45,6 +46,7 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
     protected SecurityHelper $securityHelper;
     protected RequestInterface $request;
     protected LoggerInterface $logger;
+    protected MagewireViewModel $magewireViewModel;
 
     public function __construct(
         JsonFactory $resultJsonFactory,
@@ -55,7 +57,8 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         EventManagerInterface $eventManager,
         SecurityHelper $securityHelper,
         RequestInterface $request,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        MagewireViewModel $magewireViewModel
     ) {
         $this->componentHelper = $componentHelper;
         $this->resultPageFactory = $resultPageFactory;
@@ -66,6 +69,7 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         $this->securityHelper = $securityHelper;
         $this->request = $request;
         $this->logger = $logger;
+        $this->magewireViewModel = $magewireViewModel;
     }
 
     public function execute(): Json
@@ -130,17 +134,28 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
             'post' => $post, 'page' => $page
         ]);
 
-        $dynamicLayout = $post['fingerprint']['dynamic_layout'] ?? null;
+        /** @var false|string $dynamic */
+        $dynamic = $post['fingerprint']['dynamic'];
 
-        if ($dynamicLayout !== null) {
-            return $page->getLayout()
-                ->createBlock($dynamicLayout['block']['type'])
-                ->setNameInLayout($post['fingerprint']['name'])
-                ->setData('magewire', ObjectManager::getInstance()->create($dynamicLayout['magewire']))
-                ->addData($dynamicLayout['block']['data']);
+        if ($dynamic) {
+            $block = $this->magewireViewModel->createDynamicComponent($post['fingerprint']['name'], $dynamic);
+
+            /**
+             * Currently this could be done in two ways. Currently, I force developers
+             * to implement a getTemplate() function. What also would be an option is
+             * to force developers to put the templates in the same module. With that,
+             * we don't have to store My_Example::... in the fingerprint, and it can
+             * just be the path. We get the Namespace_Module from the component itself.
+             *
+             * Example:
+             *
+             * $prefix = $something->getComponentTemplateNamespace()
+             * $block->setTemplate($prefix . '::' . $post['fingerprint']['dynamic_template']);
+             */
+            $block->setTemplate($block->getMagewire()->getTemplate());
+        } else {
+            $block = $page->getLayout()->getBlock($post['fingerprint']['name']);
         }
-
-        $block = $page->getLayout()->getBlock($post['fingerprint']['name']);
 
         if ($block === false) {
             throw new NotFoundException(

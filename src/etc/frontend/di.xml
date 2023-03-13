@@ -54,9 +54,18 @@
         </arguments>
     </type>
 
-    <!-- Automatically assign $magewire as template Block variable -->
     <type name="Magento\Framework\View\TemplateEngine\Php">
+        <!-- Automatically assign $magewire as template Block variable -->
         <plugin name="Magewirephp_Magewire_Plugin_Magento_Framework_View_TemplateEngine_Php"
                 type="Magewirephp\Magewire\Plugin\Magento\Framework\View\TemplateEngine\Php"/>
+    </type>
+
+    <type name="Magewirephp\Magewire\Model\DynamicComponentProvider">
+        <arguments>
+            <!-- Dynamic component {name-object} binding registration -->
+            <argument name="componentsPool" xsi:type="array">
+                <item name="test" xsi:type="object">Hyva\Checkout\Magewire\Test</item>
+            </argument>
+        </arguments>
     </type>
 </config>

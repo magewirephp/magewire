@@ -17,8 +17,6 @@ use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Model\Context\Hydrator as HydratorContext;
 use Magewirephp\Magewire\Helper\LayoutXml as LayoutXmlHelper;
 
-use function Safe\cubrid_get_client_info;
-
 class ComponentManager
 {
     protected Resolver $localeResolver;
@@ -125,7 +123,7 @@ class ComponentManager
         $locale = $this->localeResolver->getLocale();
 
         return $this->httpFactory->createRequest([
-            'fingerprint' => array_merge([
+            'fingerprint' => [
                 'id' => $component->id,
                 'name' => $component->name,
                 'locale' => $locale,
@@ -135,7 +133,9 @@ class ComponentManager
                 // Custom relative to Livewire's core.
                 'handle' => $handle,
                 'type' => $component::COMPONENT_TYPE,
-            ], $this->getDynamicLayout($block, $component)),
+
+                'dynamic' => $block->getData('dynamic_name') ?? false
+            ],
             'serverMemo' => [
                 'data' => $data
             ]
@@ -145,6 +145,8 @@ class ComponentManager
     /**
      * Return dynamic layout configuration if the component
      * is not registered in layout XML files.
+     *
+     * @todo Can possibly be removed if new way gets accepted.
      */
     protected function getDynamicLayout(Template $block, Component $component): array
     {
@@ -167,10 +169,9 @@ class ComponentManager
 
     /**
      * Get class name without Interceptor.
-     * @todo there should be a function for this in magento core but I didn't find it ;)
      *
-     * @param object $class
-     * @return string
+     * @todo there should be a function for this in magento core but I didn't find it ;)
+     * @todo Can possibly be removed if new way gets accepted.
      */
     protected function getClass(object $class): string
     {
@@ -182,10 +183,6 @@ class ComponentManager
      *   "class" => object,
      *   "order" => int
      * ]
-     *
-     * @param array $hydrators
-     * @param $systemHydrators
-     * @return array
      *
      * @see ComponentManager::dehydrate()
      * @see ComponentManager::hydrate()
