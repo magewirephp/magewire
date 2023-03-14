@@ -25,18 +25,20 @@ $messages = $block->getData('status_messages');
             if (status === 419) {
                 alert('<?= $escaper->escapeJs(__($messages[419] ?? 'The session has expired.')) ?>')
                 window.location.reload()
-            } else {
-                response.text().then((result) => {
-                    result = JSON.parse(result)
-                    let messages = <?= /** @noEscape */ json_encode(array_map('__', $messages)) ?>
 
-                    console.error(
-                        `Magewire: ${ messages[result.code] || result.message || 'Something went wrong' } (${ result.code || 500 })`
-                    )
-                }).catch((exception) => {
-                    console.error(exception)
-                })
+                return false
             }
+
+            response.text().then((result) => {
+                let messages = <?= /** @noEscape */ json_encode(array_map('__', $messages)) ?>
+                result = JSON.parse(result)
+
+                console.error(
+                    `Magewire: ${ messages[status] || result.message || 'Something went wrong' } (${ status })`
+                )
+            }).catch((exception) => {
+                console.error(exception)
+            })
 
             return false
         })
