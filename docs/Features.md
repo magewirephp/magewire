@@ -38,6 +38,8 @@
   - [Indicator Removal](#indicator-removal)
   - [Custom Example](#custom-example-dls)
 - [Plugins](#plugins)
+  - [Plugin: Loader](#plugin--loader)
+  - [Plugin: Exception](#plugin--exception)
 - [Reset](#reset)
 - [Forms](#forms)
   - [Message Translations](#message-translations-f)
@@ -806,6 +808,27 @@ it.
 ```xml
 <referenceContainer name="magewire.plugin" remove="true"/>
 ```
+
+### Plugin: Loader
+```xml
+<block name="magewire.plugin.loader"...
+```
+
+The Loader plugin is closely related to the ```$loader``` property within a component. To disable the loader, you can
+either access the system configuration at **Store > Settings > Advanced > Developer > Magewire** or remove the block
+through layout XML.
+
+The loader is divided into several child blocks, giving you greater flexibility in customizing the appearance of both
+the spinner and notifications without having to overwrite all functionality.
+
+### Plugin: Exception
+```xml
+<block name="magewire.plugin.exception"...
+```
+
+The Exception plugin disables the native exception modal in Magento Production mode and displays exceptions in the
+dev-console instead. You can customize the message for each HTTP status code using the layout XML by searching for the
+```status_messages``` argument. This allows you to easily modify HTTP status code messages for specific pages as needed.
 
 ## Reset
 Reset public property values to their initial state.
