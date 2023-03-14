@@ -45,6 +45,23 @@
                     <block name="magewire.plugin.loader"
                            ifconfig="dev/magewire/loader/enable"
                            template="Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml"/>
+
+                    <block name="magewire.plugin.exception"
+                           template="Magewirephp_Magewire::page/js/magewire/plugin/exception.phtml"
+                    >
+                        <arguments>
+                            <argument name="view_model" xsi:type="object">
+                                Magewirephp\Magewire\ViewModel\Magewire
+                            </argument>
+
+                            <!-- Specify specific messages for each HTTP status code. -->
+                            <argument name="status_messages" xsi:type="array">
+                                <item name="419" xsi:type="string">
+                                    The session has expired. Therefore, the page will be refreshed when you confirm.
+                                </item>
+                            </argument>
+                        </arguments>
+                    </block>
                 </container>
             </block>
         </referenceContainer>
