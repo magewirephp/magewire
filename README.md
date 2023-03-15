@@ -5,6 +5,10 @@
 ![hyva](https://img.shields.io/badge/Hyva_Themes-Compatible-1abc9c)
 [![License](http://poser.pugx.org/magewirephp/magewire/license)](https://packagist.org/packages/magewirephp/magewire)
 
+<a align="center" href="https://store.wpoortman.nl" target="_blank">
+    <img src="https://user-images.githubusercontent.com/5383956/225342789-ecdbf00d-e2f1-4154-b2fc-700b6a577d91.jpeg" alt="Magewire Kickstart Course"/>
+</a>
+
 Magewire is a [Laravel Livewire](https://laravel-livewire.com/) port for Magento 2. The goal is to make it fun and easy
 to build modern, reactive and dynamic interfaces, without leaving the comfort of Magento's core layout and template
 systems. Magewire can be the missing piece when you intend to build dynamic and reactive features, but don't require
