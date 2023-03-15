@@ -34,6 +34,12 @@ section to enable all the Magewire richness in your Blank or Luma projects.
 - [Developer Tools](./docs/Tools.md)
 
 ## Developers say
+> This is a game-changing tool! You can build practically anything with almost no javascript. It saves a significant
+> amount of time and is incredibly easy to work with. It's not a matter of whether you should use it, you simply must
+> use it.
+
+**Marcus Venghaus** - Marcus Venghaus - Freelance Developer & [Magewire](https://store.wpoortman.nl) contributor
+
 > Magewire is like magic sauce that can save a ton of time implementing features!
 > It’s great to see more tools from the Laravel ecosystem being made available within Magento - thanks [Willem](https://github.com/wpoortman/)!
 
