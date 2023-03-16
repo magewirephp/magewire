@@ -16,7 +16,7 @@ class DynamicComponentProvider
     protected array $dynamicComponents;
 
     public function __construct(
-        array $componentsPool
+        array $componentsPool = []
     ) {
         $this->dynamicComponents = $componentsPool;
     }

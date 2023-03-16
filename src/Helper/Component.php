@@ -12,6 +12,7 @@ use Magento\Framework\View\Element\BlockInterface;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Exception\MissingComponentException;
 use Magewirephp\Magewire\Component as MagewireComponent;
+use Magewirephp\Magewire\Magewire\Test;
 use Magewirephp\Magewire\Model\ComponentFactory;
 use Magewirephp\Magewire\Helper\LayoutXml as LayoutXmlHelper;
 
@@ -36,6 +37,14 @@ class Component
         $magewire = $block->getData('magewire');
 
         if ($magewire) {
+            if (is_string($magewire)) {
+                $resolve = explode('::', $magewire);
+
+                if (count($resolve) === 2 && $resolve[0] === 'magento_widget') {
+                    $magewire = $this->componentFactory->create(new Test);
+                }
+            }
+
             $component = is_array($magewire)
                 ? $magewire['type'] : (is_object($magewire)
                     ? $magewire : $this->componentFactory->create());
