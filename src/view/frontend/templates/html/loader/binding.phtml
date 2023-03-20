@@ -31,23 +31,23 @@
                         }
                     },
                     ['x-on:magewire:loader:stop.window']() {
-                        if (this.notifications[this.current] !== undefined) {
+                        if (this.notifications[this.current]) {
                             this.notifications[this.current].active = false
                         }
 
-                        this.active  = false
+                        this.active = false
                         this.current = null
 
-                        let i = 0
+                        let delay = 0
 
-                        this.notifications.forEach((loader, index) => {
-                            if (this.notifications[index].title === null || this.notifications[index].show === false) {
+                        this.notifications.forEach((notification) => {
+                            if (! notification.title || ! notification.show) {
                                 return
                             }
 
                             setTimeout(() => {
-                                this.notifications[index].show = false
-                            }, i = i + this.notifications[index].failed ? 2500 : 1500)
+                                notification.show = false
+                            }, delay += notification.failed ? 2500 : 1500)
                         })
                     },
                     ['x-bind:class']() {
