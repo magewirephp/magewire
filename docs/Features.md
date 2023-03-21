@@ -821,14 +821,42 @@ through layout XML.
 The loader is divided into several child blocks, giving you greater flexibility in customizing the appearance of both
 the spinner and notifications without having to overwrite all functionality.
 
-### Plugin: Exception
+### Plugin: Error
 ```xml
-<block name="magewire.plugin.exception"...
+<block name="magewire.plugin.error"...
 ```
 
-The Exception plugin disables the native exception modal in Magento Production mode and displays exceptions in the
-dev-console instead. You can customize the message for each HTTP status code using the layout XML by searching for the
-```status_messages``` argument. This allows you to easily modify HTTP status code messages for specific pages as needed.
+The Error plugin disables the native exception modal in Magento's **Production** mode and instead displays exceptions
+in the dev-console. Customization of the message for each HTTP status code can be achieved using the layout XML by
+searching for the ```status_messages``` argument. This feature enables you to easily modify the HTTP status code
+messages for specific pages according to your needs.
+
+For handling page expiration, the ```Magewire.onPageExpired(callback)``` method is used. By default, this method
+throws an ```alert()``` with a default message. Just like exceptions in production, this message can be overwritten.
+Page expirations are represented by a [419](https://http.dev/419) status code.
+
+Magewire's default 419 behavior can be overridden, allowing you to modify it according to your requirements.
+```xml
+<referenceContainer name="magewire.plugin.scripts">
+    <!-- Make sure it's loaded after Magewire's default page expired handling. -->
+    <block name="magewire.plugin.on-page-expired"
+           after="magewire.plugin.error"
+           template="Example_Module::page/js/magewire/plugin/on-page-expired.phtml"
+    />
+</referenceContainer>
+```
+
+```html
+<script>
+    'use strict';
+    
+    Magewire.onPageExpired(() => {
+        // A new onPageExpired callback function is registered for Magewire. Therefore, this will
+        // be used when a page session expires. There is no return value required. You just need
+        // to make the use aware and in a way the page should be reloaded.
+    })
+</script>
+```
 
 ## Reset
 Reset public property values to their initial state.

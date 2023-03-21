@@ -38,7 +38,7 @@ section to enable all the Magewire richness in your Blank or Luma projects.
 > amount of time and is incredibly easy to work with. It's not a matter of whether you should use it, you simply must
 > use it.
 
-**Marcus Venghaus** - Marcus Venghaus - Freelance Developer & [Magewire](https://store.wpoortman.nl) contributor
+**Marcus Venghaus** - Marcus Venghaus - Freelance Developer & Big Magewire contributor
 
 > Magewire is like magic sauce that can save a ton of time implementing features!
 > It’s great to see more tools from the Laravel ecosystem being made available within Magento - thanks [Willem](https://github.com/wpoortman/)!
