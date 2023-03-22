@@ -41,6 +41,11 @@
                     </argument>
                 </arguments>
 
+                <container name="magewire.directive.scripts" as="magewire.directives">
+                    <block name="magewire.directive.select"
+                           template="Magewirephp_Magewire::page/js/magewire/directive/select.phtml"/>
+                </container>
+
                 <container name="magewire.plugin.scripts" as="magewire.plugins">
                     <block name="magewire.plugin.loader"
                            ifconfig="dev/magewire/loader/enable"
