@@ -22,7 +22,6 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
     protected ?string $updateHandle = null;
 
     /**
-     * @param Observer $observer
      * @throws Exception
      */
     public function execute(Observer $observer): void
@@ -32,7 +31,7 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
 
         if ($block->hasData('magewire')) {
             try {
-                $block->setData('magewire', $this->processMagewireBlock($block));
+                $block->setData('magewire', $this->processMagewireBlock($this->componentResolver->resolve($block)));
             } catch (Exception $exception) {
                 $observer->setBlock($this->transformToExceptionBlock($block, $exception));
             }

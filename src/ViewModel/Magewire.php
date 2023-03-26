@@ -86,8 +86,8 @@ class Magewire implements ArgumentInterface
      * Render Magewire components "on the fly" without it
      * being registered through layout XML.
      */
-    public function createDynamicComponent(string $id, string $component): AbstractBlock
+    public function createDynamicComponent(string $id, string $component, array $data = []): AbstractBlock
     {
-        return $this->componentFactory->createDynamic($id, $component);
+        return $this->componentFactory->createDynamic($id, $component, $data);
     }
 }

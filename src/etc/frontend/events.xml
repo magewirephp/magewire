@@ -16,13 +16,6 @@
         />
     </event>
 
-    <event name="layout_generate_blocks_after">
-        <!-- Set block names defined in layout xml files -->
-        <observer name="MagewirephpMagewireLayoutGenerateBlocksAfter"
-                  instance="Magewirephp\Magewire\Observer\Frontend\LayoutGenerateBlocksAfter"
-        />
-    </event>
-
     <event name="hyva_config_generate_before">
         <!-- Hyvä Themes compatibility: Registering a module for inclusion in hyva-themes.json -->
         <!-- @see https://docs.hyva.io/hyva-themes/compatibility-modules/tailwind-config-merging.html -->

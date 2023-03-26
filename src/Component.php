@@ -36,10 +36,7 @@ use ReflectionClass;
  */
 abstract class Component implements ArgumentInterface
 {
-    /*
-     * Still a proof of concept to separate all logic
-     * and make it a bit more clear and clean.
-     */
+    // Concerns each component needs to have.
     use BrowserEventConcern,
         ChildrenConcern,
         ConversationConcern,

@@ -44,7 +44,7 @@ class ComponentFactory
         return $component;
     }
 
-    public function createDynamic(string $id, string $component)
+    public function createDynamic(string $id, string $component, array $data)
     {
         $block = $this->layout->createBlock(Template::class);
 

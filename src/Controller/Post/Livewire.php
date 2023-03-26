@@ -11,10 +11,11 @@ namespace Magewirephp\Magewire\Controller\Post;
 use Exception;
 use Laminas\Http\AbstractMessage;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\View\Element\Template;
-use Magewirephp\Magewire\Component\Dynamic;
 use Magewirephp\Magewire\Helper\Security as SecurityHelper;
+use Magewirephp\Magewire\Model\ComponentResolver;
 use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,12 +25,10 @@ use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\Result\Json;
-use Magento\Framework\Event\ManagerInterface as EventManagerInterface;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Framework\View\Element\BlockInterface;
 use Magewirephp\Magewire\Exception\LifecycleException;
 use Magewirephp\Magewire\Helper\Component as ComponentHelper;
-use Magento\Framework\View\Result\PageFactory;
 use Magewirephp\Magewire\Model\HttpFactory;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -38,38 +37,35 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
     public const HANDLE = 'magewire_post_livewire';
 
     protected ComponentHelper $componentHelper;
-    protected PageFactory $resultPageFactory;
     protected SerializerInterface $serializer;
     protected HttpFactory $httpFactory;
     protected JsonFactory $resultJsonFactory;
-    protected EventManagerInterface $eventManager;
     protected SecurityHelper $securityHelper;
     protected RequestInterface $request;
     protected LoggerInterface $logger;
     protected MagewireViewModel $magewireViewModel;
+    protected ComponentResolver $componentResolver;
 
     public function __construct(
         JsonFactory $resultJsonFactory,
         ComponentHelper $componentHelper,
-        PageFactory $resultPageFactory,
         SerializerInterface $serializer,
         HttpFactory $httpFactory,
-        EventManagerInterface $eventManager,
         SecurityHelper $securityHelper,
         RequestInterface $request,
         LoggerInterface $logger,
-        MagewireViewModel $magewireViewModel
+        MagewireViewModel $magewireViewModel,
+        ComponentResolver $componentResolver
     ) {
         $this->componentHelper = $componentHelper;
-        $this->resultPageFactory = $resultPageFactory;
         $this->serializer = $serializer;
         $this->httpFactory = $httpFactory;
         $this->resultJsonFactory = $resultJsonFactory;
-        $this->eventManager = $eventManager;
         $this->securityHelper = $securityHelper;
         $this->request = $request;
         $this->logger = $logger;
         $this->magewireViewModel = $magewireViewModel;
+        $this->componentResolver = $componentResolver;
     }
 
     public function execute(): Json
@@ -123,47 +119,20 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
     }
 
     /**
+     * @throws NoSuchEntityException
      * @throws NotFoundException
      */
     public function locateWireComponent(array $post): BlockInterface
     {
-        $page = $this->resultPageFactory->create();
-        $page->addHandle(strtolower($post['fingerprint']['handle']))->initLayout();
+        $resolver = $post['fingerprint']['resolver'] ?? null;
 
-        $this->eventManager->dispatch('locate_wire_component_before', [
-            'post' => $post, 'page' => $page
-        ]);
-
-        /** @var false|string $dynamic */
-        $dynamic = $post['fingerprint']['dynamic'];
-
-        if ($dynamic) {
-            $block = $this->magewireViewModel->createDynamicComponent($post['fingerprint']['name'], $dynamic);
-
-            /**
-             * Currently this could be done in two ways. Currently, I force developers
-             * to implement a getTemplate() function. What also would be an option is
-             * to force developers to put the templates in the same module. With that,
-             * we don't have to store My_Example::... in the fingerprint, and it can
-             * just be the path. We get the Namespace_Module from the component itself.
-             *
-             * Example:
-             *
-             * $prefix = $something->getComponentTemplateNamespace()
-             * $block->setTemplate($prefix . '::' . $post['fingerprint']['dynamic_template']);
-             */
-            $block->setTemplate($block->getMagewire()->getTemplate());
-        } else {
-            $block = $page->getLayout()->getBlock($post['fingerprint']['name']);
+        if ($resolver) {
+            return $this->componentResolver->get($post['fingerprint']['resolver'])->rebuild($post);
         }
 
-        if ($block === false) {
-            throw new NotFoundException(
-                __('Magewire component "%1" could not be found', [$post['fingerprint']['name']])
-            );
-        }
-
-        return $block;
+        throw new NotFoundException(
+            __('Component resolver could not be found.')
+        );
     }
 
     public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException

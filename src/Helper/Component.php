@@ -14,19 +14,15 @@ use Magewirephp\Magewire\Exception\MissingComponentException;
 use Magewirephp\Magewire\Component as MagewireComponent;
 use Magewirephp\Magewire\Magewire\Test;
 use Magewirephp\Magewire\Model\ComponentFactory;
-use Magewirephp\Magewire\Helper\LayoutXml as LayoutXmlHelper;
 
 class Component
 {
     protected ComponentFactory $componentFactory;
-    protected LayoutXml $layoutXmlHelper;
 
     public function __construct(
-        ComponentFactory $componentFactory,
-        LayoutXmlHelper $layoutXmlHelper
+        ComponentFactory $componentFactory
     ) {
         $this->componentFactory = $componentFactory;
-        $this->layoutXmlHelper = $layoutXmlHelper;
     }
 
     /**
