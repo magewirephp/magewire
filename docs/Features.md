@@ -12,6 +12,7 @@
 - [Directives](#directives)
   - [Wire Ignore](#wire-ignore)
     - [Children Block Rendering](#child-block-rendering)
+  - [Wire Select](#wire-select)
 - [Component Types](#component-types)
 - [Magic Actions & Properties](#magic-actions--properties)
   - [Overwrites](#overwrites)
