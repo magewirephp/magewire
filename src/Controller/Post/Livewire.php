@@ -14,6 +14,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Helper\Security as SecurityHelper;
 use Magewirephp\Magewire\Model\ComponentResolver;
 use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
@@ -76,13 +77,11 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
             $this->validateForUpdateRequest();
 
             $post = $this->serializer->unserialize(file_get_contents('php://input'));
-            /** @var Template $block */
-            $block = $this->locateWireComponent($post);
 
-            $component = $this->componentHelper->extractComponentFromBlock($block);
+            $component = $this->locateWireComponent($post);
             $component->setRequest($this->httpFactory->createRequest($post)->isSubsequent(true));
 
-            $html = $block->toHtml();
+            $html = $component->getParent()->toHtml();
             $response = $component->getResponse();
 
             if ($response === null) {
@@ -122,12 +121,12 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
      * @throws NoSuchEntityException
      * @throws NotFoundException
      */
-    public function locateWireComponent(array $post): BlockInterface
+    public function locateWireComponent(array $post): Component
     {
         $resolver = $post['fingerprint']['resolver'] ?? null;
 
         if ($resolver) {
-            return $this->componentResolver->get($post['fingerprint']['resolver'])->rebuild($post);
+            return $this->componentResolver->get($post['fingerprint']['resolver'])->reconstruct($post);
         }
 
         throw new NotFoundException(

@@ -17,7 +17,6 @@ use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Framework\View\Layout;
 use Magento\Store\Model\StoreManagerInterface;
 use Magewirephp\Magewire\Model\ComponentFactory;
-use Magewirephp\Magewire\Model\DynamicComponentProvider;
 use Magewirephp\Magewire\Model\LayoutRenderLifecycle;
 
 /**
@@ -31,7 +30,6 @@ class Magewire implements ArgumentInterface
     protected StoreManagerInterface $storeManager;
     protected LayoutRenderLifecycle $layoutRenderLifecycle;
     protected Layout $layout;
-    protected DynamicComponentProvider $dynamicComponentProvider;
     protected ComponentFactory $componentFactory;
 
     public function __construct(

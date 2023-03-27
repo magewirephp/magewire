@@ -17,10 +17,6 @@ trait Conversation
     protected $request;
     protected $response;
 
-    /**
-     * @param string|null $section
-     * @return bool
-     */
     public function hasRequest(string $section = null): bool
     {
         if (is_string($section)) {
@@ -31,7 +27,6 @@ trait Conversation
     }
 
     /**
-     * @param string|null $section
      * @return RequestInterface|array|null
      */
     public function getRequest(string $section = null)
@@ -43,20 +38,12 @@ trait Conversation
         return $this->request;
     }
 
-    /**
-     * @param RequestInterface $request
-     * @return $this
-     */
     public function setRequest(RequestInterface $request): self
     {
         $this->request = $request;
         return $this;
     }
 
-    /**
-     * @param string|null $section
-     * @return bool
-     */
     public function hasResponse(string $section = null): bool
     {
         if (is_string($section)) {
@@ -71,7 +58,6 @@ trait Conversation
     }
 
     /**
-     * @param string|null $section
      * @return ResponseInterface|array
      */
     public function getResponse(string $section = null)
@@ -83,10 +69,6 @@ trait Conversation
         return $this->response;
     }
 
-    /**
-     * @param ResponseInterface $response
-     * @return $this
-     */
     public function setResponse(ResponseInterface $response): self
     {
         $this->response = $response;

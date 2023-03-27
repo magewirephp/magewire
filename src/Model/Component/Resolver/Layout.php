@@ -11,25 +11,28 @@ namespace Magewirephp\Magewire\Model\Component\Resolver;
 use Magento\Framework\Event\ManagerInterface as EventManagerInterfac;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\View\Element\BlockInterface;
+use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Result\PageFactory as ResultPageFactory;
+use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Component as MagewireComponent;
+use Magewirephp\Magewire\Exception\MissingComponentException;
 use Magewirephp\Magewire\Model\Component\ResolverInterface;
+use Magewirephp\Magewire\Model\ComponentFactory;
 
 class Layout implements ResolverInterface
 {
     protected ResultPageFactory $resultPageFactory;
     protected EventManagerInterfac $eventManager;
+    protected ComponentFactory $componentFactory;
 
     public function __construct(
         ResultPageFactory $resultPageFactory,
-        EventManagerInterfac $eventManager
+        EventManagerInterfac $eventManager,
+        ComponentFactory $componentFactory
     ) {
         $this->resultPageFactory = $resultPageFactory;
         $this->eventManager = $eventManager;
-    }
-
-    public function getNamespace(): string
-    {
-        return 'layout';
+        $this->componentFactory = $componentFactory;
     }
 
     public function complies(BlockInterface $block): bool
@@ -37,15 +40,35 @@ class Layout implements ResolverInterface
         return true;
     }
 
-    public function build(BlockInterface $block): BlockInterface
+    public function construct(BlockInterface $block): Component
     {
-        return $block;
+        $magewire = $block->getData('magewire');
+
+        if ($magewire) {
+            $component = is_array($magewire)
+                ? $magewire['type'] : (is_object($magewire)
+                    ? $magewire : $this->componentFactory->create());
+
+            if ($component instanceof Component) {
+//                if ($init) {
+//                    $component = $this->componentFactory->create($component);
+//                }
+
+                $component->name = $block->getNameInLayout();
+                $component->id = $component->id ?? $component->name;
+
+                return $component->setParent($this->determineTemplate($block, $component));
+            }
+        }
+
+        throw new MissingComponentException(__('Magewire component not found'));
     }
 
     /**
      * @throws NotFoundException
+     * @throws MissingComponentException
      */
-    public function rebuild(array $data): BlockInterface
+    public function reconstruct(array $data): Component
     {
         $page = $this->resultPageFactory->create();
         $page->addHandle(strtolower($data['fingerprint']['handle']))->initLayout();
@@ -62,6 +85,36 @@ class Layout implements ResolverInterface
             throw new NotFoundException(
                 __('Magewire component "%1" could not be found', [$data['fingerprint']['name']])
             );
+        }
+
+        return $this->construct($block);
+    }
+
+    public function getPublicName(): string
+    {
+        return 'layout';
+    }
+
+    public function getMetaData(): ?array
+    {
+        return null;
+    }
+
+    /**
+     * Determines the template by a default template path
+     * when the path is not defined within the layout.
+     *
+     * Results in: {Module_Name::magewire/dashed-class-name.phtml}
+     */
+    protected function determineTemplate(Template $block, MagewireComponent $component): Template
+    {
+        if ($block->getTemplate() === null) {
+            $module = explode('\\', get_class($component));
+
+            $prefix = $module[0] . '_' . $module[1];
+            $affix  = strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', end($module)));
+
+            $block->setTemplate($prefix . '::magewire/' . $affix . '.phtml');
         }
 
         return $block;

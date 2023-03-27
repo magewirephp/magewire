@@ -31,7 +31,7 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
 
         if ($block->hasData('magewire')) {
             try {
-                $block->setData('magewire', $this->processMagewireBlock($this->componentResolver->resolve($block)));
+                $block->setData('magewire', $this->processMagewireBlock($block));
             } catch (Exception $exception) {
                 $observer->setBlock($this->transformToExceptionBlock($block, $exception));
             }
@@ -45,7 +45,7 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
      */
     public function processMagewireBlock($block): Component
     {
-        $component = $this->getComponentHelper()->extractComponentFromBlock($block, true);
+        $component = $this->componentResolver->resolve($block);
         $this->getLayoutRenderLifecycle()->start($block->getNameInLayout());
 
         $request = $component->getRequest();

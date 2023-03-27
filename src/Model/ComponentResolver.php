@@ -8,9 +8,9 @@
 
 namespace Magewirephp\Magewire\Model;
 
-use Exception;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\BlockInterface;
+use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Model\Component\ResolverInterface;
 
 class ComponentResolver
@@ -26,30 +26,22 @@ class ComponentResolver
         $this->default = $default;
 
         foreach ($resolvers as $resolver) {
-            $this->resolvers[$resolver->getNamespace()] = $resolver;
+            $this->resolvers[$resolver->getPublicName()] = $resolver;
         }
 
-        if (array_key_exists($this->default->getNamespace(), $this->resolvers)) {
-            unset($this->resolvers[$this->default->getNamespace()]);
+        if (array_key_exists($this->default->getPublicName(), $this->resolvers)) {
+            unset($this->resolvers[$this->default->getPublicName()]);
         }
     }
 
-    public function resolve(BlockInterface $block): BlockInterface
+    public function resolve(BlockInterface $block): Component
     {
         $resolvers = array_filter($this->resolvers, function (ResolverInterface $resolver) use ($block) {
             return $resolver->complies($block);
         });
 
         $resolver = array_values($resolvers)[0] ?? $this->default;
-        $block = $resolver->build($block);
-
-        $block->setMagewire(
-            array_merge($block->getMagewire(), [
-                'resolver' => $resolver->getNamespace()
-            ])
-        );
-
-        return $block;
+        return $resolver->construct($block)->setResolver($resolver);
     }
 
     /**
@@ -57,8 +49,10 @@ class ComponentResolver
      */
     public function get(string $resolver): ResolverInterface
     {
-        if (! $this->resolvers[$resolver]) {
+        if ($this->resolvers[$resolver] ?? false) {
             return $this->resolvers[$resolver];
+        } elseif ($this->default->getPublicName() === $resolver) {
+            return $this->default;
         }
 
         // Typically this only applies when someone changed the resolver on the frontend.

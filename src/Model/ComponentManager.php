@@ -113,6 +113,8 @@ class ComponentManager
     ): Request {
         $properties = $component->getPublicProperties();
         $request = $block->getRequest();
+        $resolver = $component->getResolver();
+        $metadata = $resolver->getMetaData();
 
         $data = [
             'fingerprint' => [
@@ -121,6 +123,7 @@ class ComponentManager
                 'locale' => $this->localeResolver->getLocale(),
                 'path' => '/',
                 'method' => 'GET',
+                'resolver' => $resolver->getPublicName(),
 
                 // Custom relative to Livewire's core.
                 'handle' => $handle ?? $request->getFullActionName(),
@@ -131,6 +134,10 @@ class ComponentManager
                 'data' => array_intersect_key(array_replace($properties, $arguments), $properties)
             ]
         ];
+
+        if ($metadata) {
+            $data['dataMeta'] = $metadata;
+        }
 
         return $this->httpFactory->createRequest($data);
     }

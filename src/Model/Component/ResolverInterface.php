@@ -9,14 +9,10 @@
 namespace Magewirephp\Magewire\Model\Component;
 
 use Magento\Framework\View\Element\BlockInterface;
+use Magewirephp\Magewire\Component;
 
 interface ResolverInterface
 {
-    /**
-     * Returns the unique namespace of the resolver.
-     */
-    public function getNamespace(): string;
-
     /**
      * Checks for very specific data elements to see if
      * this component complies the requirements.
@@ -26,10 +22,20 @@ interface ResolverInterface
     /**
      * Build component based on type.
      */
-    public function build(BlockInterface $block): BlockInterface;
+    public function construct(BlockInterface $block): Component;
 
     /**
      * Re-build component based on subsequent request data.
      */
-    public function rebuild(array $data): BlockInterface;
+    public function reconstruct(array $data): Component;
+
+    /**
+     * Returns the unique (publicly visible) name of the resolver.
+     */
+    public function getPublicName(): string;
+
+    /**
+     * Returns options data meta for component (re-) construction.
+     */
+    public function getMetaData(): ?array;
 }

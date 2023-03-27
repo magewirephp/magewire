@@ -9,13 +9,18 @@
 namespace Magewirephp\Magewire\Model\Component\Resolver;
 
 use Magento\Framework\View\Element\BlockInterface;
+use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Model\Component\ResolverInterface;
+use Magewirephp\Magewire\Model\ComponentFactory;
 
 class Widget implements ResolverInterface
 {
-    public function getNamespace(): string
-    {
-        return 'widget';
+    protected ComponentFactory $componentFactory;
+
+    public function __construct(
+        ComponentFactory $componentFactory
+    ) {
+        $this->componentFactory = $componentFactory;
     }
 
     public function complies(BlockInterface $block): bool
@@ -23,12 +28,22 @@ class Widget implements ResolverInterface
         return $block instanceof \Magento\Widget\Block\BlockInterface;
     }
 
-    public function build(BlockInterface $block): BlockInterface
+    public function construct(BlockInterface $block): Component
     {
-        return $block;
+        return $this->componentFactory->create();
     }
 
-    public function rebuild(array $data): BlockInterface
+    public function reconstruct(array $data): Component
+    {
+        return null;
+    }
+
+    public function getPublicName(): string
+    {
+        return 'widget';
+    }
+
+    public function getMetaData(): ?array
     {
         return null;
     }
