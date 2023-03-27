@@ -9,8 +9,9 @@
 - [Block Structure](#block-structure)
 - [Templates](#templates)
   - [Switch Template](#switch-template)
-- [Wire Ignore](#wire-ignore)
-  - [Children Block Rendering](#child-block-rendering)
+- [Directives](#directives)
+  - [Wire Ignore](#wire-ignore)
+    - [Children Block Rendering](#child-block-rendering)
 - [Component Types](#component-types)
 - [Magic Actions & Properties](#magic-actions--properties)
   - [Overwrites](#overwrites)
@@ -143,7 +144,9 @@ public function login()
 > **Tip**: Use the power of the layout xml to assign a "switch" template path as a data param assigned to the component.
 > This way your component becomes more dynamic and extensible for other developers.
 
-## Wire Ignore
+## Directives
+
+### Wire Ignore
 Ignore smart DOM diffing on specified elements within a Magewire component.
 
 ```html
@@ -155,7 +158,7 @@ Ignore smart DOM diffing on specified elements within a Magewire component.
 <?= 'Foo: ' . $magewire->getFoo() ?>
 ```
 
-### Child Block Rendering
+#### Child Block Rendering
 This can be very powerful when you are in the situation where you want to keep the child blocks intact.
 ```html
 <div>
@@ -171,6 +174,40 @@ This can be very powerful when you are in the situation where you want to keep t
     </div>
 </div>
 ```
+
+### Wire Select
+There are some specific cases where you have a select element including a ```wire:model``` attribute without any
+modifiers. In these cases, you want to save a selected option on change. This works fine for typical mobile or mouse
+interactions. But it has a couple of issues when using a keyboard where you have multiple options starting with the same
+couple of letters.
+
+The ```wire:select``` directive has two modifiers: ```debounce``` and ```blur```. By default, debounce uses a
+```1500ms``` delay, but you can change this by specifying a different delay in milliseconds, such as
+```debounce.2000ms```. blur syncs the model on element blur.
+
+**Modifiers**
+- Blur: Syncs model on element blur
+- Debounce: Debounce on each keydown or select change
+
+> **Important**: To use wire:select, you must always defer the model to let wire:select take over, and you cannot use a
+> value with the directive.
+
+Here's an example of how to use ```wire:select```:
+```html
+<!-- Only syncs on blur -->
+<select wire:model.defer="country" wire:select.blur>
+<!-- Syncs both on blur and on debounce -->
+<select wire:model.defer="country" wire:select.debounce.blur>
+<!-- Syncs both on blur and on debounce (waiting 3 seconds) -->
+<select wire:model.defer="country" wire:select.debounce.3000ms.blur>    
+    <option value="UA">Ukraine</option>
+    <option value="AE">United Arab Emirates</option>
+    <option value="GB">United Kingdom</option>
+    <option value="US">United States</option>
+</select>
+```
+Using the wire:select directive improves the user experience by allowing them to select options with ease and continue
+typing without the options changing.
 
 ## Component Types
 The base idea behind de default component is to keep things as simple and clean as possible without any constructor
@@ -604,14 +641,14 @@ public function keyDown()
 ```html
 <input type="text" wire:model="random" wire:keydown.arrow-up="keyUp" wire:keydown.arrow-down="keyDown"/>
 ```
-> You can also use vanilla JS instead of a PHP class method.
-> 
-> **Quick List**
-> - backspace
-> - escape
-> - shift
-> - tab
-> - arrow- right / left / up / down
+You can also use vanilla JS instead of a PHP class method.
+
+**Quick List**
+- backspace
+- escape
+- shift
+- tab
+- arrow- right / left / up / down
 
 ## Restricted Public Methods
 Public methods can be restricted from subsequent request executions. Prevent method executions who are meant for
