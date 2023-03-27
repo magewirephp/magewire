@@ -5,14 +5,14 @@
 ![hyva](https://img.shields.io/badge/Hyva_Themes-Compatible-1abc9c)
 [![License](http://poser.pugx.org/magewirephp/magewire/license)](https://packagist.org/packages/magewirephp/magewire)
 
-<a align="center" href="https://store.wpoortman.nl" target="_blank">
+<a align="center" href="https://wpoortman.lemonsqueezy.com/" target="_blank">
     <img src="https://user-images.githubusercontent.com/5383956/225342789-ecdbf00d-e2f1-4154-b2fc-700b6a577d91.jpeg" alt="Magewire Kickstart Course"/>
 </a>
 
-Magewire is a [Laravel Livewire](https://laravel-livewire.com/) port for Magento 2. The goal is to make it fun and easy
-to build modern, reactive and dynamic interfaces, without leaving the comfort of Magento's core layout and template
-systems. Magewire can be the missing piece when you intend to build dynamic and reactive features, but don't require
-working with a full JavaScript framework like Vue or React.
+Looking for an easy way to build modern, reactive, and dynamic interfaces in Magento 2? Meet Magewire - the
+[Laravel Livewire](https://laravel-livewire.com/) port for Magento 2. With Magewire, you can create engaging user
+experiences without leaving the comfort of Magento's core layout and template systems. Add dynamic and reactive
+features to your store without a full Javascript framework. Try Magewire today and take your store to the next level!
 
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/magewirephp.svg?style=social&label=Follow:%20%40magewirephp)](https://twitter.com/magewirephp)
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/wpoortman.svg?style=social&label=Author:%20%40wpoortman)](https://twitter.com/wpoortman)
@@ -21,9 +21,11 @@ working with a full JavaScript framework like Vue or React.
 ```
 composer require magewirephp/magewire
 ```
-Magewire is a [Hyva Themes](https://hyva.io/) first Magento 2 extension and won't work on a RequireJS dependent
-Magento theme out of the box. Go and check out the [compatibility](./docs/Compatibility.md#magewire---compatibility)
-section to enable all the Magewire richness in your Blank or Luma projects.
+
+Be aware that this extension is primarily build for Hyvä themes and won't work with RequireJS-dependent Magento theme
+out of the box. But don't worry – with a few simple tweaks, you can unleash most of the richness in your Blank or Luma
+projects. Head over to the [compatibility](./docs/Compatibility.md) section to learn more and start making your
+Magento 2 store more dynamic and engaging today!
 
 ## Documentation
 - [Work with Alpine.js](./docs/Alpine.md)
@@ -32,6 +34,9 @@ section to enable all the Magewire richness in your Blank or Luma projects.
 - [More about Components](./docs/Component.md)
 - [More about Hydrators](./docs/Hydrators.md)
 - [Developer Tools](./docs/Tools.md)
+
+## Premier Sponsors
+- [Hyvä Themes](https://hyva.io/)
 
 ## Developers say
 > This is a game-changing tool! You can build practically anything with almost no javascript. It saves a significant
