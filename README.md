@@ -36,7 +36,10 @@ Magento 2 store more dynamic and engaging today!
 - [Developer Tools](./docs/Tools.md)
 
 ## Premier Sponsors
-- [Hyvä Themes](https://hyva.io/)
+
+|   |
+|---|
+|<a align="center" href="https://hyva.io/" target="_blank"><img width="64" alt="Hyvä Themes" src="https://user-images.githubusercontent.com/5383956/227921963-3200c66e-be02-488d-84bc-84c7b77cd042.png"></a>|
 
 ## Developers say
 > This is a game-changing tool! You can build practically anything with almost no javascript. It saves a significant
