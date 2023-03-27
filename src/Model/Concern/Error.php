@@ -28,7 +28,7 @@ trait Error
     }
 
     /**
-     * @return Error[]
+     * @return Phrase[]
      */
     public function getErrors(array $targets = []): array
     {
