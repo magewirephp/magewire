@@ -105,7 +105,6 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
                 $children = array_slice($views, $position + 1, count($views), true);
 
                 foreach ($children as $name => $tag) {
-
                     // When the parent for whatever reason hasn't rendered, the child won't
                     // be renderer also. In that case we don't want to let the component
                     // know if any children because they simply won't be not in the DOM.
