@@ -13,7 +13,6 @@ use Laminas\Http\AbstractMessage;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\NotFoundException;
-use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Helper\Security as SecurityHelper;
 use Magewirephp\Magewire\Model\ComponentResolver;
@@ -27,7 +26,6 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Serialize\SerializerInterface;
-use Magento\Framework\View\Element\BlockInterface;
 use Magewirephp\Magewire\Exception\LifecycleException;
 use Magewirephp\Magewire\Helper\Component as ComponentHelper;
 use Magewirephp\Magewire\Model\HttpFactory;
@@ -75,7 +73,6 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
 
         try {
             $this->validateForUpdateRequest();
-
             $post = $this->serializer->unserialize(file_get_contents('php://input'));
 
             $component = $this->locateWireComponent($post);
@@ -96,24 +93,7 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
                 'serverMemo' => $response->getServerMemo()
             ]);
         } catch (Exception $exception) {
-            $code = $exception instanceof HttpException ? $exception->getStatusCode() : $exception->getCode();
-            $statuses = $this->getHttpResponseStatuses();
-
-            // Make an exception for optional outsiders.
-            $code = in_array($code, [0, -1], true) ? Response::HTTP_INTERNAL_SERVER_ERROR : $code;
-            // Try and grep the status from the available stack or get 500 when it's unavailable.
-            $code = $statuses[$code] ? $code : Response::HTTP_INTERNAL_SERVER_ERROR;
-            // Set the status header with the returned code and belonging response phrase.
-            $result->setStatusHeader($code, AbstractMessage::VERSION_11, $statuses[$code]);
-
-            if ($code === 500) {
-                $this->logger->critical($exception->getMessage());
-            }
-
-            return $result->setData([
-                'message' => $exception->getMessage(),
-                'code' => $code
-            ]);
+            return $this->throwException($exception);
         }
     }
 
@@ -132,6 +112,30 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         throw new NotFoundException(
             __('Component resolver could not be found.')
         );
+    }
+
+    public function throwException(Exception $exception): Json
+    {
+        $result = $this->resultJsonFactory->create();
+
+        $code = $exception instanceof HttpException ? $exception->getStatusCode() : $exception->getCode();
+        $statuses = $this->getHttpResponseStatuses();
+
+        // Make an exception for optional outsiders.
+        $code = in_array($code, [0, -1], true) ? Response::HTTP_INTERNAL_SERVER_ERROR : $code;
+        // Try and grep the status from the available stack or get 500 when it's unavailable.
+        $code = $statuses[$code] ? $code : Response::HTTP_INTERNAL_SERVER_ERROR;
+        // Set the status header with the returned code and belonging response phrase.
+        $result->setStatusHeader($code, AbstractMessage::VERSION_11, $statuses[$code]);
+
+        if ($code === 500) {
+            $this->logger->critical($exception->getMessage());
+        }
+
+        return $result->setData([
+            'message' => $exception->getMessage(),
+            'code' => $code
+        ]);
     }
 
     public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException

@@ -33,7 +33,7 @@ class Widget implements ResolverInterface
         return $this->componentFactory->create();
     }
 
-    public function reconstruct(array $data): Component
+    public function reconstruct(array $request): Component
     {
         return null;
     }

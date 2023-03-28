@@ -25,6 +25,8 @@ class Layout implements ResolverInterface
     protected EventManagerInterfac $eventManager;
     protected ComponentFactory $componentFactory;
 
+    private bool $init = true;
+
     public function __construct(
         ResultPageFactory $resultPageFactory,
         EventManagerInterfac $eventManager,
@@ -40,6 +42,9 @@ class Layout implements ResolverInterface
         return true;
     }
 
+    /**
+     * @throws MissingComponentException
+     */
     public function construct(BlockInterface $block): Component
     {
         $magewire = $block->getData('magewire');
@@ -50,9 +55,9 @@ class Layout implements ResolverInterface
                     ? $magewire : $this->componentFactory->create());
 
             if ($component instanceof Component) {
-//                if ($init) {
-//                    $component = $this->componentFactory->create($component);
-//                }
+                if ($this->init) {
+                    $component = $this->componentFactory->create($component);
+                }
 
                 $component->name = $block->getNameInLayout();
                 $component->id = $component->id ?? $component->name;
@@ -68,22 +73,27 @@ class Layout implements ResolverInterface
      * @throws NotFoundException
      * @throws MissingComponentException
      */
-    public function reconstruct(array $data): Component
+    public function reconstruct(array $request): Component
     {
-        $page = $this->resultPageFactory->create();
-        $page->addHandle(strtolower($data['fingerprint']['handle']))->initLayout();
+        $this->init = false;
 
-        /** @deprecated this code is no longer supported and may cause issues if used. Please do not use it in the future. */
+        $page = $this->resultPageFactory->create();
+        $page->addHandle(strtolower($request['fingerprint']['handle']))->initLayout();
+
+        /**
+         * @deprecated this code is no longer supported and may cause issues if used.
+         *             Please do not use it in the future.
+         */
         $this->eventManager->dispatch('locate_wire_component_before', [
-            'post' => $data,
+            'post' => $request,
             'page' => $page
         ]);
 
-        $block = $page->getLayout()->getBlock($data['fingerprint']['name']);
+        $block = $page->getLayout()->getBlock($request['fingerprint']['name']);
 
         if ($block === false) {
             throw new NotFoundException(
-                __('Magewire component "%1" could not be found', [$data['fingerprint']['name']])
+                __('Magewire component "%1" could not be found', [$request['fingerprint']['name']])
             );
         }
 
@@ -106,17 +116,19 @@ class Layout implements ResolverInterface
      *
      * Results in: {Module_Name::magewire/dashed-class-name.phtml}
      */
-    protected function determineTemplate(Template $block, MagewireComponent $component): Template
+    protected function determineTemplate(BlockInterface $block, MagewireComponent $component): Template
     {
-        if ($block->getTemplate() === null) {
-            $module = explode('\\', get_class($component));
+        /** @var Template $block */
 
-            $prefix = $module[0] . '_' . $module[1];
-            $affix  = strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', end($module)));
-
-            $block->setTemplate($prefix . '::magewire/' . $affix . '.phtml');
+        if ($block->getTemplate() !== null) {
+            return $block;
         }
 
-        return $block;
+        $module = explode('\\', get_class($component));
+
+        $prefix = $module[0] . '_' . $module[1];
+        $affix  = strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', end($module)));
+
+        return $block->setTemplate($prefix . '::magewire/' . $affix . '.phtml');
     }
 }

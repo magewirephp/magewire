@@ -9,10 +9,8 @@
 namespace Magewirephp\Magewire\Model;
 
 use Magento\Framework\ObjectManagerInterface;
-use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Layout;
 use Magewirephp\Magewire\Component;
-use Magewirephp\Magewire\Exception\MissingComponentException;
 
 class ComponentFactory
 {

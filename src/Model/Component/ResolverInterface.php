@@ -16,6 +16,9 @@ interface ResolverInterface
     /**
      * Checks for very specific data elements to see if
      * this component complies the requirements.
+     *
+     * It's recommended to keep these checks a light as
+     * possible e.g. without any database interactions.
      */
     public function complies(BlockInterface $block): bool;
 
@@ -27,7 +30,7 @@ interface ResolverInterface
     /**
      * Re-build component based on subsequent request data.
      */
-    public function reconstruct(array $data): Component;
+    public function reconstruct(array $request): Component;
 
     /**
      * Returns the unique (publicly visible) name of the resolver.
