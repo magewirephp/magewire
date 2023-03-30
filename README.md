@@ -35,11 +35,11 @@ Magento 2 store more dynamic and engaging today!
 - [More about Hydrators](./docs/Hydrators.md)
 - [Developer Tools](./docs/Tools.md)
 
-## Premier Sponsors
+## Sponsors
 
-|   |
-|---|
-|<a align="center" href="https://hyva.io/" target="_blank"><img width="64" alt="Hyvä Themes" src="https://user-images.githubusercontent.com/5383956/227921963-3200c66e-be02-488d-84bc-84c7b77cd042.png"></a>|
+|   |   |
+|---|---|
+|<a align="center" href="https://hyva.io/" target="_blank"><img width="64" alt="Hyvä Themes" src="https://user-images.githubusercontent.com/5383956/227921963-3200c66e-be02-488d-84bc-84c7b77cd042.png"></a>|<a align="center" href="https://vendic.nl/" target="_blank"><img width="64" alt="Vendic" src="https://user-images.githubusercontent.com/5383956/228823594-d3344d87-dadc-4c36-a212-89cba8c7340b.jpg"></a>|
 
 ## Developers say
 > This is a game-changing tool! You can build practically anything with almost no javascript. It saves a significant
