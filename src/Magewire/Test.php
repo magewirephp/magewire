@@ -15,4 +15,6 @@ use Magewirephp\Magewire\Component;
 class Test extends Component
 {
     public string $test = 'a';
+
+    protected $loader = true;
 }

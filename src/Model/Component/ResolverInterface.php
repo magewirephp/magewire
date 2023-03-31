@@ -9,6 +9,7 @@
 namespace Magewirephp\Magewire\Model\Component;
 
 use Magento\Framework\View\Element\BlockInterface;
+use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Model\RequestInterface;
 
@@ -26,7 +27,7 @@ interface ResolverInterface
     /**
      * Build component based on type.
      */
-    public function construct(BlockInterface $block): Component;
+    public function construct(Template $block): Component;
 
     /**
      * Re-build component based on subsequent request data.

@@ -9,6 +9,7 @@
 namespace Magewirephp\Magewire\Model\Component\Resolver;
 
 use Magento\Framework\View\Element\BlockInterface;
+use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\LayoutInterface;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Model\Component\ResolverInterface;
@@ -37,7 +38,7 @@ class Widget implements ResolverInterface
         return $block instanceof \Magento\Widget\Block\BlockInterface;
     }
 
-    public function construct(BlockInterface $block): Component
+    public function construct(Template $block): Component
     {
         $this->metadata = $block->getData();
         $component = $this->widgetCollection->get($block->getMagewire());
@@ -46,17 +47,16 @@ class Widget implements ResolverInterface
         $component->id = $component->id ?? $component->name;
 
         $component->setParent($block);
-
-        return $this->componentFactory->create($component);
+        return $component;
     }
 
     public function reconstruct(RequestInterface $request): Component
     {
         $metadata = $request->getServerMemo('dataMeta');
+        /** @var Template $block */
+        $block = $this->layout->createBlock($metadata['type'], null, ['data' => $metadata]);
 
-        return $this->construct(
-            $this->layout->createBlock($metadata['type'], null, ['data' => $request['serverMemo']['dataMeta']])
-        );
+        return $this->construct($block);
     }
 
     public function getPublicName(): string

@@ -26,8 +26,6 @@ class Layout implements ResolverInterface
     protected EventManagerInterfac $eventManager;
     protected ComponentFactory $componentFactory;
 
-    private bool $init = true;
-
     public function __construct(
         ResultPageFactory $resultPageFactory,
         EventManagerInterfac $eventManager,
@@ -46,7 +44,7 @@ class Layout implements ResolverInterface
     /**
      * @throws MissingComponentException
      */
-    public function construct(BlockInterface $block): Component
+    public function construct(Template $block): Component
     {
         $magewire = $block->getData('magewire');
 
@@ -56,9 +54,9 @@ class Layout implements ResolverInterface
                     ? $magewire : $this->componentFactory->create());
 
             if ($component instanceof Component) {
-                if ($this->init) {
-                    $component = $this->componentFactory->create($component);
-                }
+//                if ($this->init) {
+//                    $component = $this->componentFactory->create($component);
+//                }
 
                 $component->name = $block->getNameInLayout();
                 $component->id = $component->id ?? $component->name;
@@ -76,8 +74,6 @@ class Layout implements ResolverInterface
      */
     public function reconstruct(RequestInterface $request): Component
     {
-        $this->init = false;
-
         $page = $this->resultPageFactory->create();
         $page->addHandle(strtolower($request->getFingerprint('handle')))->initLayout();
 
@@ -90,6 +86,7 @@ class Layout implements ResolverInterface
             'page' => $page
         ]);
 
+        /** @var Template|false $block */
         $block = $page->getLayout()->getBlock($request->getFingerprint('name'));
 
         if ($block === false) {
