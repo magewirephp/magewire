@@ -17,4 +17,9 @@ class Test extends Component
     public string $link = 'a';
 
     protected $loader = true;
+
+    public function mount(): void
+    {
+        $this->link = $this->getParent()->getData('title');
+    }
 }
