@@ -136,7 +136,7 @@ class ComponentManager
         ];
 
         if ($metadata) {
-            $data['dataMeta'] = $metadata;
+            $data['serverMemo']['dataMeta'] = $metadata;
         }
 
         return $this->httpFactory->createRequest($data);

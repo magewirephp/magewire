@@ -18,6 +18,7 @@ use Magewirephp\Magewire\Component as MagewireComponent;
 use Magewirephp\Magewire\Exception\MissingComponentException;
 use Magewirephp\Magewire\Model\Component\ResolverInterface;
 use Magewirephp\Magewire\Model\ComponentFactory;
+use Magewirephp\Magewire\Model\RequestInterface;
 
 class Layout implements ResolverInterface
 {
@@ -73,23 +74,23 @@ class Layout implements ResolverInterface
      * @throws NotFoundException
      * @throws MissingComponentException
      */
-    public function reconstruct(array $request): Component
+    public function reconstruct(RequestInterface $request): Component
     {
         $this->init = false;
 
         $page = $this->resultPageFactory->create();
-        $page->addHandle(strtolower($request['fingerprint']['handle']))->initLayout();
+        $page->addHandle(strtolower($request->getFingerprint('handle')))->initLayout();
 
         /**
          * @deprecated this code is no longer supported and may cause issues if used.
          *             Please do not use it in the future.
          */
         $this->eventManager->dispatch('locate_wire_component_before', [
-            'post' => $request,
+            'post' => $request->toArray(),
             'page' => $page
         ]);
 
-        $block = $page->getLayout()->getBlock($request['fingerprint']['name']);
+        $block = $page->getLayout()->getBlock($request->getFingerprint('name'));
 
         if ($block === false) {
             throw new NotFoundException(

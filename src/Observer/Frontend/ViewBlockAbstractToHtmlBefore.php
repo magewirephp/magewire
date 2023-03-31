@@ -12,6 +12,7 @@ use Exception;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\View\Element\BlockInterface;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exception\ComponentActionException;
@@ -49,7 +50,7 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
         $this->getLayoutRenderLifecycle()->start($block->getNameInLayout());
 
         $request = $component->getRequest();
-        $data = $this->getComponentHelper()->extractDataFromBlock($block);
+        $data = $this->extractDataFromBlock($block);
 
         if ($request && $this->getLayoutRenderLifecycle()->isParent($block->getNameInLayout())) {
             $this->setLayoutUpdateHandle($request->getFingerprint('handle'));
@@ -89,5 +90,17 @@ class ViewBlockAbstractToHtmlBefore extends ViewBlockAbstract implements Observe
     public function getLayoutUpdateHandle(): ?string
     {
         return $this->updateHandle;
+    }
+
+    public function extractDataFromBlock(BlockInterface $block, array $addition = []): array
+    {
+        $magewire = $block->getData('magewire');
+
+        if ($magewire && is_array($magewire)) {
+            unset($magewire['type']);
+            return array_merge_recursive($magewire, $addition);
+        }
+
+        return $addition;
     }
 }

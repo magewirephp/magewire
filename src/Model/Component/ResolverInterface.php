@@ -10,6 +10,7 @@ namespace Magewirephp\Magewire\Model\Component;
 
 use Magento\Framework\View\Element\BlockInterface;
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Model\RequestInterface;
 
 interface ResolverInterface
 {
@@ -30,7 +31,7 @@ interface ResolverInterface
     /**
      * Re-build component based on subsequent request data.
      */
-    public function reconstruct(array $request): Component;
+    public function reconstruct(RequestInterface $request): Component;
 
     /**
      * Returns the unique (publicly visible) name of the resolver.

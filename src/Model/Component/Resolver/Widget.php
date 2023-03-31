@@ -9,18 +9,27 @@
 namespace Magewirephp\Magewire\Model\Component\Resolver;
 
 use Magento\Framework\View\Element\BlockInterface;
+use Magento\Framework\View\LayoutInterface;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Model\Component\ResolverInterface;
+use Magewirephp\Magewire\Model\Component\WidgetCollection;
 use Magewirephp\Magewire\Model\ComponentFactory;
+use Magewirephp\Magewire\Model\RequestInterface;
 
 class Widget implements ResolverInterface
 {
     protected ComponentFactory $componentFactory;
 
+    private array $metadata = [];
+
     public function __construct(
-        ComponentFactory $componentFactory
+        ComponentFactory $componentFactory,
+        WidgetCollection $widgetCollection,
+        LayoutInterface $layout
     ) {
         $this->componentFactory = $componentFactory;
+        $this->widgetCollection = $widgetCollection;
+        $this->layout = $layout;
     }
 
     public function complies(BlockInterface $block): bool
@@ -30,12 +39,24 @@ class Widget implements ResolverInterface
 
     public function construct(BlockInterface $block): Component
     {
-        return $this->componentFactory->create();
+        $this->metadata = $block->getData();
+        $component = $this->widgetCollection->get($block->getMagewire());
+
+        $component->name = $block->getNameInLayout();
+        $component->id = $component->id ?? $component->name;
+
+        $component->setParent($block);
+
+        return $this->componentFactory->create($component);
     }
 
-    public function reconstruct(array $request): Component
+    public function reconstruct(RequestInterface $request): Component
     {
-        return null;
+        $metadata = $request->getServerMemo('dataMeta');
+
+        return $this->construct(
+            $this->layout->createBlock($metadata['type'], null, ['data' => $request['serverMemo']['dataMeta']])
+        );
     }
 
     public function getPublicName(): string
@@ -45,6 +66,6 @@ class Widget implements ResolverInterface
 
     public function getMetaData(): ?array
     {
-        return null;
+        return $this->metadata;
     }
 }

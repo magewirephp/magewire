@@ -11,7 +11,7 @@ namespace Magewirephp\Magewire\Observer\Frontend;
 use Exception;
 use Magento\Framework\App\State as ApplicationState;
 use Magento\Framework\View\Element\Template;
-use Magewirephp\Magewire\Helper\Component as ComponentHelper;
+use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Model\ComponentManager;
 use Magewirephp\Magewire\Model\ComponentResolver;
 use Magewirephp\Magewire\Model\HttpFactory;
@@ -22,7 +22,6 @@ class ViewBlockAbstract
 {
     protected ApplicationState $applicationState;
     protected ComponentManager $componentManager;
-    protected ComponentHelper $componentHelper;
     protected ComponentResolver $componentResolver;
     protected HttpFactory $httpFactory;
     protected LayoutRenderLifecycle $layoutRenderLifecycle;
@@ -31,7 +30,6 @@ class ViewBlockAbstract
     public function __construct(
         ApplicationState $applicationState,
         ComponentManager $componentManager,
-        ComponentHelper $componentHelper,
         ComponentResolver $componentResolver,
         HttpFactory $httpFactory,
         LayoutRenderLifecycle $layoutRenderLifecycle,
@@ -39,16 +37,10 @@ class ViewBlockAbstract
     ) {
         $this->applicationState = $applicationState;
         $this->componentManager = $componentManager;
-        $this->componentHelper = $componentHelper;
         $this->componentResolver = $componentResolver;
         $this->httpFactory = $httpFactory;
         $this->layoutRenderLifecycle = $layoutRenderLifecycle;
         $this->logger = $logger;
-    }
-
-    public function getComponentHelper(): ComponentHelper
-    {
-        return $this->componentHelper;
     }
 
     public function getComponentManager(): ComponentManager
@@ -83,7 +75,7 @@ class ViewBlockAbstract
          * will get caught within the controller action who will respond and show the
          * user a modal with the current given exception.
          */
-        if ($magewire->getRequest() && $magewire->getRequest()->isSubsequent()) {
+        if ($magewire instanceof Component && $magewire->getRequest() && $magewire->getRequest()->isSubsequent()) {
             throw $exception;
         }
 

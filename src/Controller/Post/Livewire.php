@@ -27,7 +27,6 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magewirephp\Magewire\Exception\LifecycleException;
-use Magewirephp\Magewire\Helper\Component as ComponentHelper;
 use Magewirephp\Magewire\Model\HttpFactory;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -35,7 +34,6 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
 {
     public const HANDLE = 'magewire_post_livewire';
 
-    protected ComponentHelper $componentHelper;
     protected SerializerInterface $serializer;
     protected HttpFactory $httpFactory;
     protected JsonFactory $resultJsonFactory;
@@ -47,7 +45,6 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
 
     public function __construct(
         JsonFactory $resultJsonFactory,
-        ComponentHelper $componentHelper,
         SerializerInterface $serializer,
         HttpFactory $httpFactory,
         SecurityHelper $securityHelper,
@@ -56,7 +53,6 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         MagewireViewModel $magewireViewModel,
         ComponentResolver $componentResolver
     ) {
-        $this->componentHelper = $componentHelper;
         $this->serializer = $serializer;
         $this->httpFactory = $httpFactory;
         $this->resultJsonFactory = $resultJsonFactory;
@@ -100,13 +96,14 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
     /**
      * @throws NoSuchEntityException
      * @throws NotFoundException
+     * @throws LocalizedException
      */
     public function locateWireComponent(array $post): Component
     {
-        $resolver = $post['fingerprint']['resolver'] ?? null;
+        $request = $this->httpFactory->createRequest($post);
 
-        if ($resolver) {
-            return $this->componentResolver->get($post['fingerprint']['resolver'])->reconstruct($post);
+        if ($request->getFingerprint('resolver')) {
+            return $this->componentResolver->get($post['fingerprint']['resolver'])->reconstruct($request);
         }
 
         throw new NotFoundException(

@@ -86,6 +86,6 @@ class Magewire implements ArgumentInterface
      */
     public function createDynamicComponent(string $id, string $component, array $data = []): AbstractBlock
     {
-        return $this->componentFactory->createDynamic($id, $component, $data);
+        //return $this->componentFactory->createDynamic($id, $component, $data);
     }
 }
