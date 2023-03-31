@@ -20,6 +20,8 @@ use Magewirephp\Magewire\Model\RequestInterface;
 class Widget implements ResolverInterface
 {
     protected ComponentFactory $componentFactory;
+    protected WidgetCollection $widgetCollection;
+    private LayoutInterface $layout;
 
     private array $metadata = [];
 

@@ -30,9 +30,6 @@ class Component
 {
     protected ComponentFactory $componentFactory;
 
-    /**
-     * @param ComponentFactory $componentFactory
-     */
     public function __construct(
         ComponentFactory $componentFactory
     ) {
@@ -40,9 +37,6 @@ class Component
     }
 
     /**
-     * @param Template $block
-     * @param bool $init
-     * @return MagewireComponent
      * @throws MissingComponentException
      */
     public function extractComponentFromBlock(Template $block, bool $init = false): MagewireComponent
@@ -69,11 +63,6 @@ class Component
         throw new MissingComponentException(__('Magewire component not found'));
     }
 
-    /**
-     * @param BlockInterface $block
-     * @param array $addition
-     * @return array
-     */
     public function extractDataFromBlock(BlockInterface $block, array $addition = []): array
     {
         $magewire = $block->getData('magewire');
@@ -91,10 +80,6 @@ class Component
      * when the path is not defined within the layout.
      *
      * Results in: {Module_Name::magewire/dashed-class-name.phtml}
-     *
-     * @param Template $block
-     * @param MagewireComponent $component
-     * @return Template
      */
     public function determineTemplate(Template $block, MagewireComponent $component): Template
     {
