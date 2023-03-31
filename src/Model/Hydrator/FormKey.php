@@ -43,6 +43,5 @@ class FormKey implements HydratorInterface
     // phpcs:ignore
     public function dehydrate(Component $component, ResponseInterface $response): void
     {
-        //
     }
 }

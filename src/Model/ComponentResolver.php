@@ -9,8 +9,9 @@
 namespace Magewirephp\Magewire\Model;
 
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Framework\View\Element\BlockInterface;
+use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Controller\Post\Livewire;
 use Magewirephp\Magewire\Model\Component\ResolverInterface;
 use Psr\Log\LoggerInterface;
 
@@ -39,8 +40,16 @@ class ComponentResolver
         }
     }
 
-    public function resolve(BlockInterface $block): Component
+    public function resolve(Template $block): Component
     {
+        /**
+         * @todo this could be cached so it doesnt have to check for the right resolver each
+         *       time a block comes in during a preceding request. Why only during a preceding
+         *       request you might ask? Simply because the message controller gets the right
+         *       resolver based on the required name in the fingerprint.
+         *
+         * @see Livewire::locateWireComponent()
+         */
         $resolvers = array_filter($this->resolvers, function (ResolverInterface $resolver) use ($block) {
             return $resolver->complies($block);
         });
@@ -67,6 +76,6 @@ class ComponentResolver
         }
 
         // Typically this only applies when someone changed the resolver on the frontend.
-        throw new NoSuchEntityException(__('Component resolver "%1s" does not exist.', $resolver));
+        throw new NoSuchEntityException(__('Block resolver "%1s" does not exist.', $resolver));
     }
 }
