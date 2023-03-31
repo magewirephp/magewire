@@ -59,12 +59,4 @@
         <plugin name="Magewirephp_Magewire_Plugin_Magento_Framework_View_TemplateEngine_Php"
                 type="Magewirephp\Magewire\Plugin\Magento\Framework\View\TemplateEngine\Php"/>
     </type>
-
-    <type name="Magewirephp\Magewire\Model\Component\WidgetCollection">
-        <arguments>
-            <argument name="mapping" xsi:type="array">
-                <item name="magento_widget::visual_item" xsi:type="object">Magewirephp\Magewire\Magewire\Test</item>
-            </argument>
-        </arguments>
-    </type>
 </config>
