@@ -114,7 +114,7 @@ class ComponentManager
         $properties = $component->getPublicProperties();
         $request = $block->getRequest();
         $resolver = $component->getResolver();
-        $metadata = $resolver->getMetaData();
+        $metadata = $component->getMetaData();
 
         $data = [
             'fingerprint' => [
@@ -135,7 +135,7 @@ class ComponentManager
             ]
         ];
 
-        if ($metadata) {
+        if (! empty($metadata)) {
             $data['serverMemo']['dataMeta'] = $metadata;
         }
 

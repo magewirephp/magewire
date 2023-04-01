@@ -42,13 +42,14 @@ class Widget implements ResolverInterface
 
     public function construct(Template $block): Component
     {
-        $this->metadata = $block->getData();
         $component = $this->widgetCollection->get($block->getMagewire());
 
         $component->name = $block->getNameInLayout();
         $component->id = $component->id ?? $component->name;
 
         $component->setParent($block);
+        $component->setMetaData($block->getData());
+
         return $component;
     }
 

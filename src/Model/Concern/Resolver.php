@@ -13,6 +13,7 @@ use Magewirephp\Magewire\Model\Component\ResolverInterface;
 trait Resolver
 {
     protected ?ResolverInterface $resolver = null;
+    protected array $metadata = [];
 
     public function setResolver(ResolverInterface $resolver): self
     {
@@ -23,5 +24,16 @@ trait Resolver
     public function getResolver(): ?ResolverInterface
     {
         return $this->resolver;
+    }
+
+    public function setMetaData(array $data): self
+    {
+        $this->metadata = $data;
+        return $this;
+    }
+
+    public function getMetaData(): array
+    {
+        return $this->metadata;
     }
 }
