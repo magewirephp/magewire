@@ -11,7 +11,9 @@ namespace Magewirephp\Magewire\Model\Component\Resolver;
 use Magento\Framework\View\Element\BlockInterface;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\LayoutInterface;
+use Magento\Widget\Model\Widget as WidgetModel;
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Exception\MissingComponentException;
 use Magewirephp\Magewire\Model\Component\ResolverInterface;
 use Magewirephp\Magewire\Model\Component\WidgetCollection;
 use Magewirephp\Magewire\Model\ComponentFactory;
@@ -21,17 +23,18 @@ class Widget implements ResolverInterface
 {
     protected ComponentFactory $componentFactory;
     protected WidgetCollection $widgetCollection;
+    protected WidgetModel $widget;
     private LayoutInterface $layout;
-
-    private array $metadata = [];
 
     public function __construct(
         ComponentFactory $componentFactory,
         WidgetCollection $widgetCollection,
+        WidgetModel $widget,
         LayoutInterface $layout
     ) {
         $this->componentFactory = $componentFactory;
         $this->widgetCollection = $widgetCollection;
+        $this->widget = $widget;
         $this->layout = $layout;
     }
 
@@ -56,19 +59,34 @@ class Widget implements ResolverInterface
     public function reconstruct(RequestInterface $request): Component
     {
         $metadata = $request->getServerMemo('dataMeta');
+        $name = $metadata['magewire'];
+
+        $widget = $this->resolveWidget($name);
+
+        if (! $widget) {
+            throw new MissingComponentException(__('Magewire widget not found'));
+        }
+        if (! $this->widgetCollection->has($name)) {
+            throw new MissingComponentException(__('Magewire component not found'));
+        }
+
         /** @var Template $block */
-        $block = $this->layout->createBlock($metadata['type'], null, ['data' => $metadata]);
+        $block = $this->layout->createBlock($widget['@']['type'], null, ['data' => $metadata]);
 
         return $this->construct($block);
+    }
+
+    public function resolveWidget(string $name): ?array
+    {
+        $widget = array_values(array_filter($this->widget->getWidgets(), static function ($widget) use ($name) {
+            return isset($widget['parameters']['magewire']) && $widget['parameters']['magewire']['value'] === $name;
+        }));
+
+        return $widget[0] ?? null;
     }
 
     public function getPublicName(): string
     {
         return 'widget';
-    }
-
-    public function getMetaData(): ?array
-    {
-        return $this->metadata;
     }
 }

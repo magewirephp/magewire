@@ -9,7 +9,7 @@
 $break = true;
 ?>
 <div>
-    <input type="text" wire:model="link"/>
+    <input type="text" wire:model.debounce.2000="link"/>
 
     <?php if ($magewire->link === 'magewire'): ?>
     <p>You've typed "magewire"</p>

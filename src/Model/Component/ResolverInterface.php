@@ -11,6 +11,7 @@ namespace Magewirephp\Magewire\Model\Component;
 use Magento\Framework\View\Element\BlockInterface;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Exception\MissingComponentException;
 use Magewirephp\Magewire\Model\RequestInterface;
 
 interface ResolverInterface
@@ -31,6 +32,8 @@ interface ResolverInterface
 
     /**
      * Re-build component based on subsequent request data.
+     *
+     * @throws MissingComponentException
      */
     public function reconstruct(RequestInterface $request): Component;
 
@@ -38,9 +41,4 @@ interface ResolverInterface
      * Returns the unique (publicly visible) name of the resolver.
      */
     public function getPublicName(): string;
-
-    /**
-     * Returns options data meta for component (re-) construction.
-     */
-    public function getMetaData(): ?array;
 }

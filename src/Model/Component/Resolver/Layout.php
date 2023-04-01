@@ -103,11 +103,6 @@ class Layout implements ResolverInterface
         return 'layout';
     }
 
-    public function getMetaData(): ?array
-    {
-        return null;
-    }
-
     /**
      * Determines the template by a default template path
      * when the path is not defined within the layout.
