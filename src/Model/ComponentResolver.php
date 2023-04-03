@@ -12,6 +12,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Controller\Post\Livewire;
+use Magewirephp\Magewire\Model\Component\Resolver\Layout as LayoutResolver;
 use Magewirephp\Magewire\Model\Component\ResolverInterface;
 use Psr\Log\LoggerInterface;
 
@@ -24,7 +25,7 @@ class ComponentResolver
     protected array $resolvers = [];
 
     public function __construct(
-        ResolverInterface $default,
+        LayoutResolver $default,
         LoggerInterface $logger,
         array $resolvers = []
     ) {
