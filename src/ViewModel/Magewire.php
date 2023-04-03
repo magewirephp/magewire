@@ -53,6 +53,11 @@ class Magewire implements ArgumentInterface
         return $this->applicationState->getMode() === ApplicationState::MODE_DEVELOPER;
     }
 
+    public function isProductionMode(): bool
+    {
+        return $this->applicationState->getMode() === ApplicationState::MODE_PRODUCTION;
+    }
+    
     public function isBeforeTwoFourZero(): bool
     {
         return version_compare($this->productMetaData->getVersion(), '2.4.0', '<');
@@ -78,14 +83,5 @@ class Magewire implements ArgumentInterface
     public function pageRequiresMagewire(): bool
     {
         return $this->layoutRenderLifecycle->hasHistory();
-    }
-
-    /**
-     * Render Magewire components "on the fly" without it
-     * being registered through layout XML.
-     */
-    public function createDynamicComponent(string $id, string $component, array $data = []): AbstractBlock
-    {
-        //return $this->componentFactory->createDynamic($id, $component, $data);
     }
 }
