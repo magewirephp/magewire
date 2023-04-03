@@ -7,7 +7,6 @@
  */
 
 /** @var Magewire $magewireScripts */
-/** @var ViewModelRegistry $viewModels */
 /** @var Escaper $escaper */
 /** @var Template $block */
 
@@ -28,7 +27,7 @@ $magewireScripts = $block->getViewModel();
     window.magewire = new Livewire()
     <?php if ($magewireScripts->isDeveloperMode()): ?>
     window.magewire.devTools(true)
-    <?php endif; ?>
+    <?php endif ?>
 
     window.Livewire = window.magewire
     window.Magewire = window.magewire
@@ -88,5 +87,6 @@ $magewireScripts = $block->getViewModel();
     Magewire.dispatchEvent('available')
 </script>
 
+    <?= /* @noEscape */ $block->getChildHtml('magewire.directives') ?>
     <?= /* @noEscape */ $block->getChildHtml('magewire.plugins') ?>
 <?php endif ?>
