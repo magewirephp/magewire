@@ -86,12 +86,13 @@ class Layout implements ResolverInterface
             'page' => $page
         ]);
 
+        //$page->addUpdate('hyva_checkout_components');
         /** @var Template|false $block */
         $block = $page->getLayout()->getBlock($request->getFingerprint('name'));
 
         if ($block === false) {
             throw new NotFoundException(
-                __('Magewire component "%1" could not be found', [$request['fingerprint']['name']])
+                __('Magewire component "%1" could not be found', [$request->getFingerprint('name')])
             );
         }
 
