@@ -12,6 +12,7 @@ use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\App\State as ApplicationState;
 use Magento\Framework\Data\Form\FormKey;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\View\Element\AbstractBlock;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Framework\View\Layout;
 use Magento\Store\Model\StoreManagerInterface;
@@ -56,7 +57,7 @@ class Magewire implements ArgumentInterface
     {
         return $this->applicationState->getMode() === ApplicationState::MODE_PRODUCTION;
     }
-
+    
     public function isBeforeTwoFourZero(): bool
     {
         return version_compare($this->productMetaData->getVersion(), '2.4.0', '<');

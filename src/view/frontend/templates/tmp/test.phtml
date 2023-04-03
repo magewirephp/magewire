@@ -1,0 +1,17 @@
+<?php declare(strict_types=1);
+/**
+ * Copyright © Willem Poortman 2021-present. All rights reserved.
+ *
+ * Please read the README and LICENSE files for more
+ * details on copyrights and license information.
+ */
+
+$break = true;
+?>
+<div>
+    <input type="text" wire:model.debounce.2000="link"/>
+
+    <?php if ($magewire->link === 'magewire'): ?>
+    <p>You've typed "magewire"</p>
+    <?php endif ?>
+</div>
