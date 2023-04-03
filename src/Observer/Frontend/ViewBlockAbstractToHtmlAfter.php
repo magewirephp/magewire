@@ -20,7 +20,6 @@ use Magewirephp\Magewire\Model\ResponseInterface;
 class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements ObserverInterface
 {
     /**
-     * @param Observer $observer
      * @throws Exception
      */
     public function execute(Observer $observer): void
@@ -30,7 +29,7 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
 
         if ($block->hasData('magewire')) {
             try {
-                $component = $this->getComponentHelper()->extractComponentFromBlock($block);
+                $component = $block->getData('magewire');
                 $response  = $component->getResponse();
                 $html      = $observer->getTransport()->getHtml();
 
@@ -51,12 +50,6 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
         }
     }
 
-    /**
-     * @param ResponseInterface $response
-     * @param Component $component
-     * @param string $html
-     * @return string|null
-     */
     public function renderToView(ResponseInterface $response, Component $component, string $html): ?string
     {
         // Bind intended HTML onto the Response.
@@ -87,9 +80,6 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
     /**
      * Assign children to the component.
      *
-     * @param string $nameInLayout
-     * @param Component $component
-     * @param string $html
      * @throws RootTagMissingFromViewException
      */
     public function registerChildren(string $nameInLayout, Component $component, string $html): void
@@ -130,10 +120,6 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
 
     /**
      * Append an ending marker.
-     *
-     * @param string $html
-     * @param string $id
-     * @return string
      */
     protected function wrapWithEndingMarker(string $html, string $id): string
     {

@@ -6,14 +6,12 @@
  * details on copyrights and license information.
  */
 
-namespace Magewirephp\Magewire\Model\Concern;
+$break = true;
+?>
+<div>
+    <input type="text" wire:model.debounce.2000="link"/>
 
-trait Event
-{
-    protected $listeners = [];
-
-    public function getListeners(): array
-    {
-        return $this->listeners;
-    }
-}
+    <?php if ($magewire->link === 'magewire'): ?>
+    <p>You've typed "magewire"</p>
+    <?php endif ?>
+</div>

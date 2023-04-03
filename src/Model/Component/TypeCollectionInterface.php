@@ -6,14 +6,13 @@
  * details on copyrights and license information.
  */
 
-namespace Magewirephp\Magewire\Model\Concern;
+namespace Magewirephp\Magewire\Model\Component;
 
-trait Event
+use Magewirephp\Magewire\Component;
+
+interface TypeCollectionInterface
 {
-    protected $listeners = [];
+    public function has(string $id): bool;
 
-    public function getListeners(): array
-    {
-        return $this->listeners;
-    }
+    public function get(string $id): Component;
 }

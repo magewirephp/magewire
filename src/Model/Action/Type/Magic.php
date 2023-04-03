@@ -27,9 +27,6 @@ class Magic
      *
      * Example: <button wire:click($toggle('public-bool-property'))>Toggle</button>
      *
-     * @param string $property
-     * @param $component
-     * @return void
      * @throws ComponentException
      */
     public function toggle(string $property, $component): void
@@ -42,10 +39,6 @@ class Magic
      *
      * Example: <button wire:click="$set('public-property', 'the-value')">Set</button>
      *
-     * @param string $property
-     * @param $value
-     * @param Component $component
-     * @return void
      * @throws ComponentException
      */
     public function set(string $property, $value, Component $component): void

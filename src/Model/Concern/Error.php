@@ -17,10 +17,6 @@ trait Error
 
     /**
      * Throw an error.
-     *
-     * @param string $property
-     * @param string $message
-     * @return Phrase
      */
     public function error(string $property, string $message): Phrase
     {
@@ -47,36 +43,21 @@ trait Error
         return $targets;
     }
 
-    /**
-     * @param array $targets
-     * @return bool
-     */
     public function hasErrors(array $targets = []): bool
     {
         return !empty($this->getErrors($targets));
     }
 
-    /**
-     * @param string $property
-     * @return bool
-     */
     public function hasError(string $property): bool
     {
         return isset($this->errors[$property]);
     }
 
-    /**
-     * @param string $property
-     * @return Phrase
-     */
     public function getError(string $property): Phrase
     {
         return $this->hasError($property) ? $this->errors[$property] : __('No %1 error found', [$property]);
     }
 
-    /**
-     * @return $this
-     */
     public function clearErrors(): self
     {
         $this->errors = [];

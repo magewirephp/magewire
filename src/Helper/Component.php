@@ -12,15 +12,24 @@ use Magento\Framework\View\Element\BlockInterface;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Exception\MissingComponentException;
 use Magewirephp\Magewire\Component as MagewireComponent;
+use Magewirephp\Magewire\Model\Component\ResolverInterface;
 use Magewirephp\Magewire\Model\ComponentFactory;
+use Magewirephp\Magewire\Observer\Frontend\ViewBlockAbstractToHtmlAfter;
+use Magewirephp\Magewire\Observer\Frontend\ViewBlockAbstractToHtmlBefore;
 
+/**
+ * @deprecated Most functionality is replaced into the lifecycle or into a ResolverInterface
+ *             to recognize a component based on a given block. Don't use this helper in the
+ *             future. It will be removed over time.
+ *
+ * @see ResolverInterface
+ * @see ViewBlockAbstractToHtmlBefore
+ * @see ViewBlockAbstractToHtmlAfter
+ */
 class Component
 {
     protected ComponentFactory $componentFactory;
 
-    /**
-     * @param ComponentFactory $componentFactory
-     */
     public function __construct(
         ComponentFactory $componentFactory
     ) {
@@ -28,9 +37,6 @@ class Component
     }
 
     /**
-     * @param Template $block
-     * @param bool $init
-     * @return MagewireComponent
      * @throws MissingComponentException
      */
     public function extractComponentFromBlock(Template $block, bool $init = false): MagewireComponent
@@ -57,11 +63,6 @@ class Component
         throw new MissingComponentException(__('Magewire component not found'));
     }
 
-    /**
-     * @param BlockInterface $block
-     * @param array $addition
-     * @return array
-     */
     public function extractDataFromBlock(BlockInterface $block, array $addition = []): array
     {
         $magewire = $block->getData('magewire');
@@ -79,10 +80,6 @@ class Component
      * when the path is not defined within the layout.
      *
      * Results in: {Module_Name::magewire/dashed-class-name.phtml}
-     *
-     * @param Template $block
-     * @param MagewireComponent $component
-     * @return Template
      */
     public function determineTemplate(Template $block, MagewireComponent $component): Template
     {

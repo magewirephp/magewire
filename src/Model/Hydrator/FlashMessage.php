@@ -18,27 +18,17 @@ class FlashMessage implements HydratorInterface
 {
     protected ManagerInterface $messageManager;
 
-    /**
-     * FlashMessage constructor.
-     * @param ManagerInterface $messageManager
-     */
     public function __construct(
         ManagerInterface $messageManager
     ) {
         $this->messageManager = $messageManager;
     }
 
-    /**
-     * @inheritdoc
-     */
+    //phpcs:ignore
     public function hydrate(Component $component, RequestInterface $request): void
     {
-        //
     }
 
-    /**
-     * @inheritdoc
-     */
     public function dehydrate(Component $component, ResponseInterface $response): void
     {
         if ($component->hasFlashMessages()) {
