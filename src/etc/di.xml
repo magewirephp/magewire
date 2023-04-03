@@ -17,17 +17,4 @@
             </argument>
         </arguments>
     </type>
-
-    <type name="Magento\Widget\Model\Config\Converter">
-        <plugin name="Magewirephp_Magewire_Plugin_Magento_Widget_Model_Config_Converter"
-                type="Magewirephp\Magewire\Plugin\Magento\Widget\Model\Config\Converter"/>
-    </type>
-
-    <type name="Magewirephp\Magewire\Model\Component\WidgetCollection">
-        <arguments>
-            <argument name="mapping" xsi:type="array">
-                <item name="visual_item" xsi:type="object">Magewirephp\Magewire\Magewire\Test</item>
-            </argument>
-        </arguments>
-    </type>
 </config>
