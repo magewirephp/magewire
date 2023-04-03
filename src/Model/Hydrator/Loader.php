@@ -26,7 +26,8 @@ class Loader implements HydratorInterface
         $this->functionsHelper = $functionsHelper;
     }
 
-    public function hydrate(Component $component, RequestInterface $request): void //phpcs:ignore
+    //phpcs:ignore
+    public function hydrate(Component $component, RequestInterface $request): void
     {
     }
 

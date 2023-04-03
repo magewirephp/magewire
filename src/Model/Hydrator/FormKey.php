@@ -22,10 +22,6 @@ class FormKey implements HydratorInterface
     protected ApplicationRequestInterface $request;
     protected SecurityHelper $securityHelper;
 
-    /**
-     * @param ApplicationRequestInterface $request
-     * @param SecurityHelper $securityHelper
-     */
     public function __construct(
         ApplicationRequestInterface $request,
         SecurityHelper $securityHelper
@@ -35,8 +31,6 @@ class FormKey implements HydratorInterface
     }
 
     /**
-     * @param Component $component
-     * @param RequestInterface $request
      * @throws LocalizedException
      */
     public function hydrate(Component $component, RequestInterface $request): void
@@ -46,11 +40,8 @@ class FormKey implements HydratorInterface
         }
     }
 
-    /**
-     * @inheritdoc
-     */
+    // phpcs:ignore
     public function dehydrate(Component $component, ResponseInterface $response): void
     {
-        //
     }
 }

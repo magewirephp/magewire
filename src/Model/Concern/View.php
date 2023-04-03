@@ -16,9 +16,6 @@ trait View
 
     /**
      * Avoid block rendering on a subsequent request.
-     *
-     * @param bool $skip
-     * @return $this
      */
     public function skipRender(bool $skip = true): self
     {
@@ -28,8 +25,6 @@ trait View
 
     /**
      * Check if the component can be rendered.
-     *
-     * @return bool
      */
     public function canRender(): bool
     {
@@ -38,8 +33,6 @@ trait View
 
     /**
      * Switch template of the parent block.
-     *
-     * @param string $template
      */
     public function switchTemplate(string $template): void
     {

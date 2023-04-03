@@ -40,21 +40,6 @@ class Hydrator
     protected FormKey $formKeyHydrator;
     protected Children $childrenHydrator;
 
-    /**
-     * @param Hash $hashHydrator
-     * @param Listener $listenerHydrator
-     * @param Emit $emit
-     * @param BrowserEvent $browserEventHydrator
-     * @param FlashMessage $flashMessageHydrator
-     * @param Property $propertyHydrator
-     * @param QueryString $queryStringHydrator
-     * @param Error $errorHydrator
-     * @param Redirect $redirectHydrator
-     * @param Security $securityHydrator
-     * @param Loader $loaderHydrator
-     * @param PostDeployment $postDeploymentHydrator
-     * @param FormKey $formKeyHydrator
-     */
     public function __construct(
         Hash $hashHydrator,
         Listener $listenerHydrator,
@@ -87,113 +72,71 @@ class Hydrator
         $this->childrenHydrator = $childrenHydrator;
     }
 
-    /**
-     * @return Hash
-     */
     public function getHashHydrator(): Hash
     {
         return $this->hashHydrator;
     }
 
-    /**
-     * @return Listener
-     */
     public function getListenerHydrator(): Listener
     {
         return $this->listenerHydrator;
     }
 
-    /**
-     * @return Emit
-     */
     public function getEmitHydrator(): Emit
     {
         return $this->emit;
     }
 
-    /**
-     * @return BrowserEvent
-     */
     public function getBrowserEventHydrator(): BrowserEvent
     {
         return $this->browserEventHydrator;
     }
 
-    /**
-     * @return QueryString
-     */
     public function getQueryStringHydrator(): QueryString
     {
         return $this->queryStringHydrator;
     }
 
-    /**
-     * @return Property
-     */
     public function getPropertyHydrator(): Property
     {
         return $this->propertyHydrator;
     }
 
-    /**
-     * @return Error
-     */
     public function getErrorHydrator(): Error
     {
         return $this->errorHydrator;
     }
 
-    /**
-     * @return Redirect
-     */
     public function getRedirectHydrator(): Redirect
     {
         return $this->redirectHydrator;
     }
 
-    /**
-     * @return FlashMessage
-     */
     public function getFlashMessageHydrator(): FlashMessage
     {
         return $this->flashMessageHydrator;
     }
 
-    /**
-     * @return Security
-     */
     public function getSecurityHydrator(): Security
     {
         return $this->securityHydrator;
     }
 
-    /**
-     * @return Loader
-     */
     public function getLoaderHydrator(): Loader
     {
         return $this->loaderHydrator;
     }
 
-    /**
-     * @return PostDeployment
-     */
     public function getPostDeploymentHydrator(): PostDeployment
     {
         return $this->postDeploymentHydrator;
     }
 
-    /**
-     * @return FormKey
-     */
     public function getFormKeyHydrator(): FormKey
     {
         return $this->formKeyHydrator;
     }
 
-    /**
-     * @return Children
-     */
     public function getChildrenHydrator(): Children
     {
         return $this->childrenHydrator;

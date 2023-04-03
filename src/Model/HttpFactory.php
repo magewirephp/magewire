@@ -15,10 +15,6 @@ class HttpFactory
 {
     protected ServiceInputProcessor $serviceInputProcessor;
 
-    /**
-     * HttpFactory constructor.
-     * @param ServiceInputProcessor $serviceInputProcessor
-     */
     public function __construct(
         ServiceInputProcessor $serviceInputProcessor
     ) {
@@ -26,8 +22,6 @@ class HttpFactory
     }
 
     /**
-     * @param array $data
-     * @return RequestInterface
      * @throws LocalizedException
      */
     public function createRequest(array $data): RequestInterface
@@ -36,9 +30,6 @@ class HttpFactory
     }
 
     /**
-     * @param RequestInterface $request
-     * @param array $data
-     * @return ResponseInterface
      * @throws LocalizedException
      */
     public function createResponse(RequestInterface $request, array $data = []): ResponseInterface

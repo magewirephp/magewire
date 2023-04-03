@@ -12,18 +12,11 @@ trait BrowserEvent
 {
     protected $dispatchQueue = [];
 
-    /**
-     * @return array
-     */
     public function getBrowserEvents(): array
     {
         return $this->dispatchQueue;
     }
 
-    /**
-     * @param $event
-     * @param mixed|null $data
-     */
     public function dispatchBrowserEvent($event, $data = null): void
     {
         $this->dispatchQueue[] = compact('event', 'data');

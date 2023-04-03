@@ -22,11 +22,6 @@ class FlashMessage
     protected $flashMessage;
     protected string $type;
 
-    /**
-     * Message constructor.
-     * @param Phrase|string $message
-     * @param string $type
-     */
     public function __construct($message, string $type)
     {
         // Lets for now just assume the developer gives a Phrase or string message.
@@ -34,17 +29,11 @@ class FlashMessage
         $this->type = $type;
     }
 
-    /**
-     * @return Phrase
-     */
     public function getMessage(): Phrase
     {
         return $this->flashMessage;
     }
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;

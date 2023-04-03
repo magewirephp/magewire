@@ -11,8 +11,9 @@ namespace Magewirephp\Magewire\Observer\Frontend;
 use Exception;
 use Magento\Framework\App\State as ApplicationState;
 use Magento\Framework\View\Element\Template;
-use Magewirephp\Magewire\Helper\Component as ComponentHelper;
+use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Model\ComponentManager;
+use Magewirephp\Magewire\Model\ComponentResolver;
 use Magewirephp\Magewire\Model\HttpFactory;
 use Magewirephp\Magewire\Model\LayoutRenderLifecycle;
 use Psr\Log\LoggerInterface;
@@ -20,72 +21,49 @@ use Psr\Log\LoggerInterface;
 class ViewBlockAbstract
 {
     protected ApplicationState $applicationState;
-    protected ComponentHelper $componentHelper;
     protected ComponentManager $componentManager;
+    protected ComponentResolver $componentResolver;
     protected HttpFactory $httpFactory;
     protected LayoutRenderLifecycle $layoutRenderLifecycle;
     protected LoggerInterface $logger;
 
-    /**
-     * @param ApplicationState $applicationState
-     * @param ComponentManager $componentManager
-     * @param ComponentHelper $componentHelper
-     * @param HttpFactory $httpFactory
-     * @param LayoutRenderLifecycle $layoutRenderLifecycle
-     * @param LoggerInterface $logger
-     */
     public function __construct(
         ApplicationState $applicationState,
         ComponentManager $componentManager,
-        ComponentHelper $componentHelper,
+        ComponentResolver $componentResolver,
         HttpFactory $httpFactory,
         LayoutRenderLifecycle $layoutRenderLifecycle,
         LoggerInterface $logger
     ) {
         $this->applicationState = $applicationState;
-        $this->componentHelper = $componentHelper;
         $this->componentManager = $componentManager;
+        $this->componentResolver = $componentResolver;
         $this->httpFactory = $httpFactory;
         $this->layoutRenderLifecycle = $layoutRenderLifecycle;
         $this->logger = $logger;
     }
 
-    /**
-     * @return ComponentHelper
-     */
-    public function getComponentHelper(): ComponentHelper
-    {
-        return $this->componentHelper;
-    }
-
-    /**
-     * @return ComponentManager
-     */
     public function getComponentManager(): ComponentManager
     {
         return $this->componentManager;
     }
 
-    /**
-     * @return HttpFactory
-     */
     public function getHttpFactory(): HttpFactory
     {
         return $this->httpFactory;
     }
 
-    /**
-     * @return LayoutRenderLifecycle
-     */
     public function getLayoutRenderLifecycle(): LayoutRenderLifecycle
     {
         return $this->layoutRenderLifecycle;
     }
 
+    public function getComponentResolver(): ComponentResolver
+    {
+        return $this->componentResolver;
+    }
+
     /**
-     * @param Template $block
-     * @param Exception $exception
-     * @return Template
      * @throws Exception // when on a subsequent update request.
      */
     public function transformToExceptionBlock(Template $block, Exception $exception): Template
@@ -97,7 +75,7 @@ class ViewBlockAbstract
          * will get caught within the controller action who will respond and show the
          * user a modal with the current given exception.
          */
-        if ($magewire->getRequest() && $magewire->getRequest()->isSubsequent()) {
+        if ($magewire instanceof Component && $magewire->getRequest() && $magewire->getRequest()->isSubsequent()) {
             throw $exception;
         }
 

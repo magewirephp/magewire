@@ -24,11 +24,6 @@ class Redirect implements HydratorInterface
     protected HostChecker $hostChecker;
     protected ScopeConfigInterface $scopeConfig;
 
-    /**
-     * @param UrlInterface $builder
-     * @param HostChecker $hostChecker
-     * @param ScopeConfigInterface $scopeConfig
-     */
     public function __construct(
         UrlInterface $builder,
         HostChecker $hostChecker,
@@ -39,9 +34,6 @@ class Redirect implements HydratorInterface
         $this->scopeConfig = $scopeConfig;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function hydrate(Component $component, RequestInterface $request): void
     {
         //
@@ -49,8 +41,6 @@ class Redirect implements HydratorInterface
 
     /**
      * A redirect can both be set on the initial and/or subsequent request.
-     *
-     * @inheritdoc
      */
     public function dehydrate(Component $component, ResponseInterface $response): void
     {
@@ -85,9 +75,6 @@ class Redirect implements HydratorInterface
         $response->effects['redirect'] = $parse->toString();
     }
 
-    /**
-     * @return string
-     */
     public function getDefaultWebUrl(): string
     {
         return $this->scopeConfig->getValue('web/default/front', ScopeInterface::SCOPE_STORE);

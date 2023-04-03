@@ -22,36 +22,23 @@ class Response implements ResponseInterface
     public $memo;
     public $effects;
 
-    /**
-     * Response constructor.
-     * @param FunctionsHelper $functionsHelper
-     */
     public function __construct(
         FunctionsHelper $functionsHelper
     ) {
         $this->functionsHelper = $functionsHelper;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getRequest()
     {
         return $this->request;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function setRequest($request): ResponseInterface
     {
         $this->request = $request;
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getFingerprint(string $index = null)
     {
         if ($index !== null && is_array($this->memo)) {
@@ -61,18 +48,12 @@ class Response implements ResponseInterface
         return $this->fingerprint;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function setFingerprint($fingerprint): ResponseInterface
     {
         $this->fingerprint = $fingerprint;
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getServerMemo(string $index = null)
     {
         if ($index !== null && is_array($this->memo)) {
@@ -82,18 +63,12 @@ class Response implements ResponseInterface
         return $this->memo;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function setServerMemo($memo): ResponseInterface
     {
         $this->memo = $memo;
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getEffects(string $index = null)
     {
         if ($index !== null && is_array($this->memo)) {
@@ -103,18 +78,12 @@ class Response implements ResponseInterface
         return $this->effects;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function setEffects($effects): ResponseInterface
     {
         $this->effects = $effects;
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function toArrayWithoutHtml(): array
     {
         return [
@@ -125,8 +94,6 @@ class Response implements ResponseInterface
     }
 
     /**
-     * @inheritdoc
-     *
      * @throws LocalizedException
      * @throws RootTagMissingFromViewException
      */
@@ -159,8 +126,6 @@ class Response implements ResponseInterface
     }
 
     /**
-     * @inheritdoc
-     *
      * @throws LocalizedException
      */
     public function getSectionByName(string $section): ?array

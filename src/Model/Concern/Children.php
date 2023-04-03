@@ -13,62 +13,36 @@ trait Children
     protected array $renderedChildren = [];
     protected array $previouslyRenderedChildren = [];
 
-    /**
-     * @param string $id
-     * @return mixed
-     */
     public function getRenderedChildComponentId(string $id)
     {
         return $this->previouslyRenderedChildren[$id]['id'];
     }
 
-    /**
-     * @param string $id
-     * @return mixed
-     */
     public function getRenderedChildComponentTagName(string $id)
     {
         return $this->previouslyRenderedChildren[$id]['tag'];
     }
 
-    /**
-     * @param string $id
-     * @param string $tag
-     * @param string|null $cacheEntity
-     */
     public function logRenderedChild(string $id, string $tag, string $cacheEntity = null): void
     {
         $this->renderedChildren[$cacheEntity ?? $id] = ['id' => $id, 'tag' => $tag];
     }
 
-    /**
-     * @param string $id
-     */
     public function preserveRenderedChild(string $id): void
     {
         $this->renderedChildren[$id] = $this->previouslyRenderedChildren[$id];
     }
 
-    /**
-     * @param string $id
-     * @return bool
-     */
     public function childHasBeenRendered(string $id): bool
     {
         return array_key_exists($id, $this->previouslyRenderedChildren);
     }
 
-    /**
-     * @param array $children
-     */
     public function setPreviouslyRenderedChildren(array $children): void
     {
         $this->previouslyRenderedChildren = $children;
     }
 
-    /**
-     * @return array
-     */
     public function getRenderedChildren(): array
     {
         return $this->renderedChildren;

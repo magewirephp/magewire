@@ -14,14 +14,12 @@ class Request implements RequestInterface
 {
     public $fingerprint;
     public $memo;
+    public $meta;
     public $updates;
 
     protected bool $isSubsequent = false;
     protected bool $isRefreshing = false;
 
-    /**
-     * @inheritdoc
-     */
     public function getFingerprint(string $index = null)
     {
         if ($index !== null && is_array($this->fingerprint)) {
@@ -31,18 +29,12 @@ class Request implements RequestInterface
         return $this->fingerprint;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function setFingerprint($fingerprint): RequestInterface
     {
         $this->fingerprint = $fingerprint;
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getServerMemo(string $index = null)
     {
         if ($index !== null && is_array($this->memo)) {
@@ -52,18 +44,12 @@ class Request implements RequestInterface
         return $this->memo;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function setServerMemo($memo): RequestInterface
     {
         $this->memo = $memo;
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function getUpdates(string $index = null)
     {
         if ($index !== null && is_array($this->updates)) {
@@ -73,9 +59,6 @@ class Request implements RequestInterface
         return $this->updates;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function setUpdates($updates): RequestInterface
     {
         $this->updates = $updates;
@@ -83,22 +66,17 @@ class Request implements RequestInterface
     }
 
     /**
-     * @inheritdoc
-     *
      * @throws LocalizedException
      */
     public function getSectionByName(string $section): ?array
     {
-        if (in_array($section, ['fingerprint', 'serverMemo', 'updates'])) {
+        if (in_array($section, ['fingerprint', 'serverMemo', 'updates', 'dataMeta'])) {
             return $this->{$section};
         }
 
         throw new LocalizedException(__('Request section %s does not exist', $section));
     }
 
-    /**
-     * @inheritdoc
-     */
     public function isSubsequent(bool $flag = null, bool $force = false)
     {
         if ($flag === null) {
@@ -113,17 +91,11 @@ class Request implements RequestInterface
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function isPreceding(): bool
     {
         return ! $this->isSubsequent();
     }
 
-    /**
-     * @inheritdoc
-     */
     public function isRefreshing(bool $flag = null)
     {
         if ($flag === null) {
@@ -132,5 +104,14 @@ class Request implements RequestInterface
 
         $this->isRefreshing = $flag;
         return $this;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'fingerprint' => $this->getFingerprint(),
+            'serverMemo'  => $this->getServerMemo(),
+            'updates'     => $this->getUpdates(),
+        ];
     }
 }

@@ -15,17 +15,11 @@ use Magewirephp\Magewire\Model\ResponseInterface;
 
 class BrowserEvent implements HydratorInterface
 {
-    /**
-     * @inheritdoc
-     */
+    //phpcs:ignore
     public function hydrate(Component $component, RequestInterface $request): void
     {
-        //
     }
 
-    /**
-     * @inheritdoc
-     */
     public function dehydrate(Component $component, ResponseInterface $response): void
     {
         $browserEvents = $component->getBrowserEvents();

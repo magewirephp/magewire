@@ -22,11 +22,6 @@ class CallMethod implements ActionInterface
     protected TypeFactory $typeFactory;
     private array $uncallableMethods;
 
-    /**
-     * CallMethod constructor.
-     * @param TypeFactory $typeFactory
-     * @param array $uncallableMethods
-     */
     public function __construct(
         TypeFactory $typeFactory,
         array $uncallableMethods = []
@@ -62,11 +57,6 @@ class CallMethod implements ActionInterface
         throw new ComponentActionException(__('Method %1 does not exist or can not be called', [$method]));
     }
 
-    /**
-     * @param $method
-     * @param object $class
-     * @return bool
-     */
     public function isCallable($method, object $class): bool
     {
         $uncallables = $this->uncallableMethods;
@@ -79,8 +69,6 @@ class CallMethod implements ActionInterface
     }
 
     /**
-     * @param string $method
-     * @return mixed|string
      * @throws LocalizedException
      */
     public function determineType(string $method)

@@ -17,17 +17,19 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\RuntimeException;
 use Magento\Framework\Serialize\SerializerInterface;
 
+/**
+ * @deprecated Security is primarily handled by the Security Hydrator. It's something that should
+ *             not be messed around with, with things like Plugins. Therefor most methods are
+ *             moved into the Hydrator and made protected.
+ *
+ * @see \Magewirephp\Magewire\Model\Hydrator\Security
+ */
 class Security
 {
     protected DeploymentConfig $deployConfig;
     protected SerializerInterface $serializer;
     protected ApplicationFormKey $formkey;
 
-    /**
-     * @param DeploymentConfig $deployConfig
-     * @param SerializerInterface $serializer
-     * @param ApplicationFormKey $formkey
-     */
     public function __construct(
         DeploymentConfig $deployConfig,
         SerializerInterface $serializer,
@@ -39,9 +41,6 @@ class Security
     }
 
     /**
-     * @param array $data1
-     * @param array $data2
-     * @return string
      * @throws FileSystemException
      * @throws RuntimeException
      */
@@ -54,10 +53,6 @@ class Security
     }
 
     /**
-     * @param string $checksum
-     * @param array $data1
-     * @param array $data2
-     * @return bool
      * @throws FileSystemException
      * @throws RuntimeException
      */
@@ -67,8 +62,6 @@ class Security
     }
 
     /**
-     * @param RequestInterface $request
-     * @return bool
      * @throws LocalizedException
      */
     public function validateFormKey(RequestInterface $request): bool

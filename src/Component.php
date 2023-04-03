@@ -23,6 +23,7 @@ use Magewirephp\Magewire\Model\Concern\Method as MethodConcern;
 use Magewirephp\Magewire\Model\Concern\QueryString as QueryStringConcern;
 use Magewirephp\Magewire\Model\Concern\Redirect as RedirectConcern;
 use Magewirephp\Magewire\Model\Concern\View as ViewConcern;
+use Magewirephp\Magewire\Model\Concern\Resolver as ResolverConcern;
 use ReflectionClass;
 
 /**
@@ -36,10 +37,7 @@ use ReflectionClass;
  */
 abstract class Component implements ArgumentInterface
 {
-    /*
-     * Still a proof of concept to separate all logic
-     * and make it a bit more clear and clean.
-     */
+    // Concerns each component needs to have.
     use BrowserEventConcern,
         ChildrenConcern,
         ConversationConcern,
@@ -50,7 +48,8 @@ abstract class Component implements ArgumentInterface
         MethodConcern,
         QueryStringConcern,
         RedirectConcern,
-        ViewConcern;
+        ViewConcern,
+        ResolverConcern;
 
     public const LAYOUT_ITEM_TYPE = 'type';
     public const RESERVED_PROPERTIES = ['id', 'name'];

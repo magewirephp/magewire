@@ -14,20 +14,12 @@ class Factory
 {
     protected ?ObjectManagerInterface $objectManager;
 
-    /**
-     * Factory constructor.
-     * @param ObjectManagerInterface $objectManager
-     */
     public function __construct(
         ObjectManagerInterface $objectManager
     ) {
         $this->objectManager = $objectManager;
     }
 
-    /**
-     * @param string $type
-     * @return mixed|string
-     */
     public function create(string $type)
     {
         return $this->objectManager->create($type);

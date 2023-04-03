@@ -12,7 +12,6 @@ use Exception;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Component as MagewireComponent;
-use Magewirephp\Magewire\Helper\Component as ComponentHelper;
 use Magewirephp\Magewire\Helper\Property as PropertyHelper;
 use Magewirephp\Magewire\Model\HydratorInterface;
 use Magewirephp\Magewire\Model\RequestInterface;
@@ -22,25 +21,19 @@ use Psr\Log\LoggerInterface;
 class Property implements HydratorInterface
 {
     protected PropertyHelper $propertyHelper;
-    protected ComponentHelper $componentHelper;
     protected SerializerInterface $serializer;
     protected LoggerInterface $logger;
 
     public function __construct(
         PropertyHelper $propertyHelper,
-        ComponentHelper $componentHelper,
         SerializerInterface $serializer,
         LoggerInterface $logger
     ) {
         $this->propertyHelper = $propertyHelper;
-        $this->componentHelper = $componentHelper;
         $this->serializer = $serializer;
         $this->logger = $logger;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function hydrate(Component $component, RequestInterface $request): void
     {
         if ($request->isSubsequent()) {
@@ -81,9 +74,6 @@ class Property implements HydratorInterface
         $component->getPublicProperties(true);
     }
 
-    /**
-     * @inheritdoc
-     */
     public function dehydrate(Component $component, ResponseInterface $response): void
     {
         if ($response->getRequest()->isSubsequent()) {
@@ -105,10 +95,6 @@ class Property implements HydratorInterface
         $this->executePropertyLifecycleHook($component, 'dehydrate', $response);
     }
 
-    /**
-     * @param ResponseInterface $response
-     * @param string $property
-     */
     public function processArrayProperty(ResponseInterface $response, string $property): void
     {
         $request = $response->getRequest();
@@ -129,20 +115,11 @@ class Property implements HydratorInterface
         }
     }
 
-    /**
-     * @param ResponseInterface $response
-     * @param string $property
-     */
     public function processProperty(ResponseInterface $response, string $property): void
     {
         $response->effects['dirty'][] = $property;
     }
 
-    /**
-     * @param MagewireComponent $component
-     * @param string $type
-     * @param object $object
-     */
     public function executePropertyLifecycleHook(MagewireComponent $component, string $type, object $object): void
     {
         foreach ($component->getPublicProperties() as $property => $value) {

@@ -19,10 +19,6 @@ class Listener implements HydratorInterface
     protected FunctionsHelper $functionsHelper;
     protected array $listeners;
 
-    /**
-     * @param FunctionsHelper $functionsHelper
-     * @param array $listeners
-     */
     public function __construct(
         FunctionsHelper $functionsHelper,
         array $listeners = []
@@ -31,17 +27,12 @@ class Listener implements HydratorInterface
         $this->listeners = $listeners;
     }
 
-    /**
-     * @inheritdoc
-     */
+    //phpcs:ignore
     public function hydrate(Component $component, RequestInterface $request): void
     {
         //
     }
 
-    /**
-     * @inheritdoc
-     */
     public function dehydrate(Component $component, ResponseInterface $response): void
     {
         if ($response->getRequest()->isPreceding()) {
@@ -51,9 +42,6 @@ class Listener implements HydratorInterface
 
     /**
      * Merges optional injected event listeners for the given Component.
-     *
-     * @param Component $component
-     * @return array
      */
     public function assimilateListeners(Component $component): array
     {

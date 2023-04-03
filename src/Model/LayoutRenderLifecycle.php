@@ -26,10 +26,7 @@ class LayoutRenderLifecycle
     private ?string $start = null;
 
     /**
-     * Marks view as 'start rendering'
-     *
-     * @param string $name
-     * @return $this
+     * Marks view as 'start rendering'.
      */
     public function start(string $name): LayoutRenderLifecycle
     {
@@ -42,10 +39,7 @@ class LayoutRenderLifecycle
     }
 
     /**
-     * Marks view as 'stop rendering'
-     *
-     * @param string $parent
-     * @return $this
+     * Marks view as 'stop rendering'.
      */
     public function stop(string $parent): LayoutRenderLifecycle
     {
@@ -76,72 +70,42 @@ class LayoutRenderLifecycle
         return $this;
     }
 
-    /**
-     * @param string $name
-     * @return bool
-     */
     public function exists(string $name): bool
     {
         return array_key_exists($name, $this->views);
     }
 
-    /**
-     * @param string $name
-     * @return bool
-     */
     public function canStop(string $name): bool
     {
         return $name !== array_search($name, array_reverse($this->views), true) || $name === $this->start;
     }
 
-    /**
-     * @return array
-     */
     public function getViews(): array
     {
         return $this->views;
     }
 
-    /**
-     * @return bool
-     */
     public function hasHistory(): bool
     {
         return count($this->getHistory()) !== 0;
     }
 
-    /**
-     * @return array
-     */
     public function getHistory(): array
     {
         return $this->history;
     }
 
-    /**
-     * @param string $tag
-     * @param string $for
-     * @return $this
-     */
     public function setStartTag(string $tag, string $for): LayoutRenderLifecycle
     {
         $this->views[$for] = $tag;
         return $this;
     }
 
-    /**
-     * @param string $name
-     * @return bool
-     */
     public function isParent(string $name): bool
     {
         return array_search($name, array_keys($this->getViews()), true) === 0;
     }
 
-    /**
-     * @param string $name
-     * @return bool
-     */
     public function isChild(string $name): bool
     {
         return ! $this->isParent($name);

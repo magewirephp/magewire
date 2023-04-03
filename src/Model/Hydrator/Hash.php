@@ -19,23 +19,19 @@ class Hash implements HydratorInterface
     protected array $domHashes = [];
 
     /**
-     * @inheritdoc
      * @throws ComponentHydrationException
      */
     public function hydrate(Component $component, RequestInterface $request): void
     {
-        if (!isset($request->fingerprint['id'], $request->fingerprint['name'])) {
+        if (! $request->getFingerprint('id') || ! $request->getFingerprint('name')) {
             throw new ComponentHydrationException(__('Request fingerprint doesn\'t have all data available'));
         }
 
-        if (isset($request->memo['htmlHash'])) {
-            $this->domHashes[$component->id] = $request->memo['htmlHash'];
+        if ($request->getServerMemo('htmlHash')) {
+            $this->domHashes[$component->id] = $request->getServerMemo('htmlHash');
         }
     }
 
-    /**
-     * @inheritdoc
-     */
     public function dehydrate(Component $component, ResponseInterface $response): void
     {
         $hash = $this->domHashes[$component->id] ?? null;

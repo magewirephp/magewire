@@ -18,7 +18,6 @@ trait FlashMessage
 
     /**
      * @param Phrase|string $message
-     * @return FlashMessageElement
      */
     public function dispatchErrorMessage($message): FlashMessageElement
     {
@@ -27,7 +26,6 @@ trait FlashMessage
 
     /**
      * @param Phrase|string $message
-     * @return FlashMessageElement
      */
     public function dispatchWarningMessage($message): FlashMessageElement
     {
@@ -36,7 +34,6 @@ trait FlashMessage
 
     /**
      * @param Phrase|string $message
-     * @return FlashMessageElement
      */
     public function dispatchNoticeMessage($message): FlashMessageElement
     {
@@ -45,7 +42,6 @@ trait FlashMessage
 
     /**
      * @param Phrase|string $message
-     * @return FlashMessageElement
      */
     public function dispatchSuccessMessage($message): FlashMessageElement
     {
@@ -53,9 +49,7 @@ trait FlashMessage
     }
 
     /**
-     * @param string $type
      * @param Phrase|string $message
-     * @return FlashMessageElement
      */
     public function dispatchMessage(string $type, $message): FlashMessageElement
     {
@@ -64,8 +58,6 @@ trait FlashMessage
 
     /**
      * Check if any flash messages have been dispatched.
-     *
-     * @return bool
      */
     public function hasFlashMessages(): bool
     {
@@ -84,8 +76,6 @@ trait FlashMessage
 
     /**
      * Reset all flash messages.
-     *
-     * @return void
      */
     public function clearFlashMessages(): void
     {

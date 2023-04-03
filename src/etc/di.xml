@@ -6,4 +6,15 @@
                 type="Magewirephp\Magewire\Model\Request"/>
     <preference for="Magewirephp\Magewire\Model\ResponseInterface"
                 type="Magewirephp\Magewire\Model\Response"/>
+
+    <type name="Magewirephp\Magewire\Model\ComponentResolver">
+        <arguments>
+            <!-- Inject Magewire default Layout XML block resolver. -->
+            <argument name="default" xsi:type="object">Magewirephp\Magewire\Model\Component\Resolver\Layout</argument>
+
+            <argument name="resolvers" xsi:type="array">
+                <item name="widget" xsi:type="object">Magewirephp\Magewire\Model\Component\Resolver\Widget</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

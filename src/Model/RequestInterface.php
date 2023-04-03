@@ -78,4 +78,9 @@ interface RequestInterface
      * @return \Magewirephp\Magewire\Model\RequestInterface|bool
      */
     public function isRefreshing(bool $flag = null);
+
+    /**
+     * @return array
+     */
+    public function toArray(): array;
 }

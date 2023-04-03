@@ -20,11 +20,6 @@ class QueryString implements HydratorInterface
     protected AppRequestInterface $request;
     protected FunctionsHelper $functionsHelper;
 
-    /**
-     * Property constructor.
-     * @param AppRequestInterface $request
-     * @param FunctionsHelper $functionsHelper
-     */
     public function __construct(
         AppRequestInterface $request,
         FunctionsHelper $functionsHelper
@@ -33,9 +28,6 @@ class QueryString implements HydratorInterface
         $this->functionsHelper = $functionsHelper;
     }
 
-    /**
-     * @inheritdoc
-     */
     public function hydrate(Component $component, RequestInterface $request): void
     {
         if ($request->isPreceding() && $component->hasQueryString()) {
@@ -50,9 +42,7 @@ class QueryString implements HydratorInterface
         }
     }
 
-    /**
-     * @inheritDoc
-     */
+    // phpcs:ignore
     public function dehydrate(Component $component, ResponseInterface $response): void
     {
         //
@@ -60,10 +50,6 @@ class QueryString implements HydratorInterface
 
     /**
      * Try to filter out any excepts "property:except-value" pairs.
-     *
-     * @param Component $component
-     * @param string $setting
-     * @return array|false
      */
     public function filterQueryStringSetting(Component $component, string $setting = 'except')
     {
@@ -76,10 +62,6 @@ class QueryString implements HydratorInterface
         return empty($excepts) ? false : $excepts;
     }
 
-    /**
-     * @param Component $component
-     * @return array
-     */
     public function getQueryParamsFromComponentProperties(Component $component): array
     {
         return $this->functionsHelper->mapWithKeys(function ($value, $key) use ($component) {

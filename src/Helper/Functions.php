@@ -16,10 +16,6 @@ class Functions
     protected SerializerInterface $serializer;
     protected Escaper $escape;
 
-    /**
-     * @param SerializerInterface $serializer
-     * @param Escaper $escape
-     */
     public function __construct(
         SerializerInterface $serializer,
         Escaper $escape
@@ -28,11 +24,6 @@ class Functions
         $this->escape = $escape;
     }
 
-    /**
-     * @param callable $callback
-     * @param array $data
-     * @return array
-     */
     public function map(callable $callback, array $data): array
     {
         $keys  = array_keys($data);
@@ -41,11 +32,6 @@ class Functions
         return array_combine($keys, $items);
     }
 
-    /**
-     * @param callable $callback
-     * @param array $data
-     * @return array
-     */
     public function mapWithKeys(callable $callback, array $data): array
     {
         $result = [];
@@ -61,10 +47,6 @@ class Functions
         return $result;
     }
 
-    /**
-     * @param $subject
-     * @return string
-     */
     public function escapeStringForHtml($subject): string
     {
         if (is_string($subject) || is_numeric($subject)) {
