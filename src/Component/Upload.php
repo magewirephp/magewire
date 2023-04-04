@@ -8,6 +8,9 @@
 
 namespace Magewirephp\Magewire\Component;
 
+use Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\Framework\Filesystem;
+use Magewirephp\Magewire\Model\Upload\File\TemporaryUploader;
 use Magewirephp\Magewire\Model\Upload\UploadAdapterInterface;
 use Rakit\Validation\Validator;
 
@@ -16,21 +19,78 @@ abstract class Upload extends Form
     public const COMPONENT_TYPE = 'file-upload';
 
     protected UploadAdapterInterface $uploadAdapter;
+    protected Filesystem $filesystem;
 
     public function __construct(
         Validator $validator,
-        UploadAdapterInterface $uploadAdapter
+        UploadAdapterInterface $uploadAdapter,
+        Filesystem $filesystem
     ) {
+        $validator->setValidator('required', new \Magewirephp\Magewire\Model\Upload\Validation\Rules\Required);
+        $validator->setValidator('mimes', new \Magewirephp\Magewire\Model\Upload\Validation\Rules\Mimes);
+        $validator->setValidator('uploaded_file', new \Magewirephp\Magewire\Model\Upload\Validation\Rules\UploadedFile);
+
         parent::__construct($validator);
 
         $this->uploadAdapter = $uploadAdapter;
+        $this->filesystem = $filesystem;
+    }
+
+    public function validate(
+        array $rules = [],
+        array $messages = [],
+        array $data = null,
+        bool $mergeWithClassProperties = true
+    ): bool {
+        $data = $this->convertFilesData($data ?? $this->getPublicProperties(true));
+
+        return parent::validate(
+            $rules,
+            $messages,
+            $data,
+            $mergeWithClassProperties
+        );
+    }
+
+    private function convertFilesData(array $data): array
+    {
+        foreach ($data as $key => &$value) {
+            if (is_string($value)) {
+                if (TemporaryUploader::isTemporaryFilename($value)) {
+                    $value = $this->convertFilesData($value);
+                }
+            }
+            if (is_array($value)) {
+                foreach ($value as $k => &$v) {
+                    if (TemporaryUploader::isTemporaryFilename($v)) {
+                        $v = $this->convertFileStringToArray($v);
+                    }
+                }
+            }
+        }
+
+        return $data;
+    }
+
+    private function convertFileStringToArray(string $value): array
+    {
+        $fileDirectory = $this->filesystem->getDirectoryWrite(DirectoryList::TMP);
+        $filePath = $fileDirectory->getAbsolutePath('magewire') . '/' . $value;
+
+        return [
+            'name' => TemporaryUploader::extractOriginalNameFromFilePath($value),
+            'type' => mime_content_type($filePath),
+            'tmp_name' => $filePath,
+            'size' => filesize($filePath),
+            'error' => ''
+        ];
     }
 
     public function getAdapter()
     {
         return $this->uploadAdapter;
     }
-    
+
     public function uploadErrored($name, $errorsInJson, $isMultiple) {
         $this->emit('upload:errored', $name)->self();
 
@@ -74,7 +134,7 @@ abstract class Upload extends Form
 //        } elseif ($uploads instanceof TemporaryUploadedFile) {
 //            $uploads->delete();
 //
-            $this->emit('upload:removed', $name, $tmpFilename)->self();
+        $this->emit('upload:removed', $name, $tmpFilename)->self();
 //
 //            if ($uploads->getFilename() === $tmpFilename) $this->syncInput($name, null);
 //        }

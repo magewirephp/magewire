@@ -16,16 +16,15 @@ use Magento\Framework\Filesystem;
 use Magento\Framework\Filesystem\Driver\File as FileDriver;
 use Magento\Framework\Math\Random;
 use Magento\Framework\Stdlib\DateTime\DateTime;
-use Magento\MediaStorage\Model\File\UploaderFactory as FileUploaderFactory;
 use Magewirephp\Magewire\Helper\Security as SecurityHelper;
 use Magewirephp\Magewire\Model\Upload\AbstractAdapter;
+use Magewirephp\Magewire\Model\Upload\File\TemporaryUploader;
 use Magewirephp\Magewire\Model\Upload\UploadAdapterInterface;
 
 class Local extends AbstractAdapter
 {
     public const NAME = 'local';
 
-    protected FileUploaderFactory $fileUploaderFactory;
     protected Filesystem $fileSystem;
     protected Random $randomizer;
 
@@ -43,13 +42,16 @@ class Local extends AbstractAdapter
         $this->randomizer = $randomizer;
     }
 
+    /**
+     * @param array<TemporaryUploader> $files
+     */
     public function stash(array $files): array
     {
         $paths = [];
 
         foreach ($files as $file) {
             $fileDirectory = $this->fileSystem->getDirectoryWrite(DirectoryList::TMP);
-            $name = $this->randomizer->getUniqueHash() . '.' . $file->getFileExtension();
+            $name = $file->generateHashNameWithOriginalNameEmbedded();
 
             $file->save($fileDirectory->getAbsolutePath('magewire'), $name);
             $paths[] = $file->getUploadedFileName();
