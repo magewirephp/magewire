@@ -9,7 +9,9 @@
 namespace Magewirephp\Magewire\Component;
 
 use Magento\Framework\App\Filesystem\DirectoryList;
+use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Filesystem;
+use Magewirephp\Magewire\Exception\AcceptableException;
 use Magewirephp\Magewire\Model\Upload\File\TemporaryUploader;
 use Magewirephp\Magewire\Model\Upload\UploadAdapterInterface;
 use Rakit\Validation\Validator;
@@ -36,6 +38,10 @@ abstract class Upload extends Form
         $this->filesystem = $filesystem;
     }
 
+    /**
+     * @throws FileSystemException
+     * @throws AcceptableException
+     */
     public function validate(
         array $rules = [],
         array $messages = [],
@@ -52,6 +58,9 @@ abstract class Upload extends Form
         );
     }
 
+    /**
+     * @throws FileSystemException
+     */
     private function convertFilesData(array $data): array
     {
         foreach ($data as $key => &$value) {
@@ -72,6 +81,9 @@ abstract class Upload extends Form
         return $data;
     }
 
+    /**
+     * @throws FileSystemException
+     */
     private function convertFileStringToArray(string $value): array
     {
         $fileDirectory = $this->filesystem->getDirectoryWrite(DirectoryList::TMP);
@@ -86,12 +98,13 @@ abstract class Upload extends Form
         ];
     }
 
-    public function getAdapter()
+    public function getAdapter(): UploadAdapterInterface
     {
         return $this->uploadAdapter;
     }
 
-    public function uploadErrored($name, $errorsInJson, $isMultiple) {
+    public function uploadErrored($name, $errorsInJson, $isMultiple)
+    {
         $this->emit('upload:errored', $name)->self();
 
 //        if (is_null($errorsInJson)) {

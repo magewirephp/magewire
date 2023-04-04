@@ -8,17 +8,13 @@
 
 namespace Magewirephp\Magewire\Model\Upload;
 
-use Hyva\CheckoutCore\Model\Magewire\UpdateAdapterInterface;
 use Magewirephp\Magewire\Exception\NoSuchUploadAdapterInterface;
 
 class AdapterProvider
 {
-    /** @var array<string, UpdateAdapterInterface> */
+    /** @var array<string, UploadAdapterInterface> */
     protected array $adapters;
 
-    /**
-     * @param array<string, UploadAdapterInterface> $adapters
-     */
     public function __construct(
         array $adapters = []
     ) {

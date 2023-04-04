@@ -8,10 +8,10 @@
 
 namespace Magewirephp\Magewire\Model\Upload\Adapter;
 
+use Exception;
 use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Exception\FileSystemException;
-use Magento\Framework\Exception\RuntimeException;
 use Magento\Framework\Filesystem;
 use Magento\Framework\Filesystem\Driver\File as FileDriver;
 use Magento\Framework\Math\Random;
@@ -19,7 +19,6 @@ use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magewirephp\Magewire\Helper\Security as SecurityHelper;
 use Magewirephp\Magewire\Model\Upload\AbstractAdapter;
 use Magewirephp\Magewire\Model\Upload\File\TemporaryUploader;
-use Magewirephp\Magewire\Model\Upload\UploadAdapterInterface;
 
 class Local extends AbstractAdapter
 {
@@ -44,6 +43,8 @@ class Local extends AbstractAdapter
 
     /**
      * @param array<TemporaryUploader> $files
+     * @throws FileSystemException
+     * @throws Exception
      */
     public function stash(array $files): array
     {
@@ -60,6 +61,9 @@ class Local extends AbstractAdapter
         return $paths;
     }
 
+    /**
+     * @throws FileSystemException
+     */
     public function store(array $paths, string $directory = null): array
     {
         $fileDirectoryTmp = $this->fileSystem->getDirectoryWrite(DirectoryList::TMP);

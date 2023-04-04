@@ -86,7 +86,6 @@ class Layout implements ResolverInterface
             'page' => $page
         ]);
 
-        //$page->addUpdate('hyva_checkout_components');
         /** @var Template|false $block */
         $block = $page->getLayout()->getBlock($request->getFingerprint('name'));
 
