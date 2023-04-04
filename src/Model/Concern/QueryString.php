@@ -12,19 +12,13 @@ trait QueryString
 {
     protected array $queryString = [];
 
-    /**
-     * @return array
-     */
     public function getQueryString(): array
     {
         return $this->queryString;
     }
 
-    /**
-     * @return bool
-     */
     public function hasQueryString(): bool
     {
-        return !empty($this->getQueryString());
+        return ! empty($this->getQueryString());
     }
 }

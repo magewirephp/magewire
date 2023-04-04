@@ -7,10 +7,15 @@
     - [Document Events](#document-events)
     - [Lifecycle Hooks](#lifecycle-hooks)
 - [Block Structure](#block-structure)
+- [Dynamic Components](#dynamic-components)
+  - [Blocks](#blocks--dc-)
+  - [Widgets](#widgets--dc-)
 - [Templates](#templates)
   - [Switch Template](#switch-template)
-- [Wire Ignore](#wire-ignore)
-  - [Children Block Rendering](#child-block-rendering)
+- [Directives](#directives)
+  - [Wire Ignore](#wire-ignore)
+    - [Children Block Rendering](#child-block-rendering)
+  - [Wire Select](#wire-select)
 - [Component Types](#component-types)
 - [Magic Actions & Properties](#magic-actions--properties)
   - [Overwrites](#overwrites)
@@ -20,7 +25,7 @@
 - [Flash Messages](#flash-messages)
 - [Redirects](#redirects)
 - [Listeners & Emits](#listeners--emits)
-  - [Javascript](#javascript-el)
+  - [Javascript](#javascript--el-)
   - [Magic Actions Compatibility](#magic-actions-compatibility)
   - [Global Refresh Listener](#global-refresh-listener)
 - [Lifecycle Hooks](#lifecycle-hooks)
@@ -38,14 +43,16 @@
   - [Indicator Removal](#indicator-removal)
   - [Custom Example](#custom-example-dls)
 - [Plugins](#plugins)
+  - [Plugin: Loader](#plugin--loader)
+  - [Plugin: Exception](#plugin--exception)
 - [Reset](#reset)
 - [Forms](#forms)
-  - [Message Translations](#message-translations-f)
-  - [Message Displayment](#message-displayment-f)
-    - [Example 1](#example-1-md)
-    - [Example 2](#example-2-md)
-    - [Example 3](#example-3-md)
-    - [Example 4](#example-4-md)
+  - [Message Translations](#message-translations--f-)
+  - [Message Displayment](#message-displayment--f-)
+    - [Example 1](#example-1--md-)
+    - [Example 2](#example-2--md-)
+    - [Example 3](#example-3--md-)
+    - [Example 4](#example-4--md-)
 
 ## Best Practices
 1. Use the Magewire naming conventions and structures.
@@ -105,6 +112,58 @@ inside the [Livewire docs](https://laravel-livewire.com/docs/2.x/reference#globa
 > **Note**: Template will automatically be set if a Magewire component has been set. When your component is named Foo,
 > just  create a foo.phtml inside the /view/templates/magewire folder.
 
+## Dynamic Components
+There are cases where you want to use the full power of Magewire, but the block is not configured in a layout XML.
+
+### Blocks (dc)
+```php
+$this->layout->createBlock(Template::class)->toHtml()
+```
+
+To achieve this you have to add the same configuration as you do in a layout XML.
+
+```php
+use Magento\Framework\View\Element\Template;
+use \Magento\Framework\App\ObjectManager;
+
+$this->layout->createBlock(Template::class)
+    // Setting a template is optional since Magewire can auto-bind the belonging template.
+    ->setTemplate('My_Module::path/to/component/phtml.phtml')
+    // Bind a valid Magewire component onto the block so it can be recognized by the layout.
+    ->setData('magewire', ObjectManager::getInstance()->create(\My\Module\Magewire\Explanation::class))
+    
+    ->toHtml()
+```
+
+> **Note**: It's important to use create, otherwise when you try to use this Magewire component multiple they will
+> share the data.
+
+### Widgets (dc)
+
+For widgets, the principle is the same. But here Magento does the rendering. So you cannot use ```setData()``` to assign the
+Magewire component. But we can set the component via the ```constructor``` method.
+
+```php
+class MyWidget extends Template implements BlockInterface
+{
+    public function __construct(
+        Context $context,
+        array $data = []
+    ) {
+        $data['magewire'] = ObjectManager::getInstance()->create(\My\Module\Magewire\Explanation::class);
+
+        parent::__construct($context, $data);
+    }
+}
+```
+### How does it work under the hood?
+On the initial page request all information needed are here and we have no problem. 
+But on subsequent request Magento doesn't find the layout information.
+
+To solve this issue all information that are needed to create the block are transported in the fingerprint "dynamic_layout". The information contains the magewire component and all block data (widget configuration).
+With this information it is possible to dynamically create the missing block on a subsequent request. 
+
+
 ## Templates
 Options within your block template. The ```$magewire``` variable is by default available in your Component template.
 ```php
@@ -141,7 +200,9 @@ public function login()
 > **Tip**: Use the power of the layout xml to assign a "switch" template path as a data param assigned to the component.
 > This way your component becomes more dynamic and extensible for other developers.
 
-## Wire Ignore
+## Directives
+
+### Wire Ignore
 Ignore smart DOM diffing on specified elements within a Magewire component.
 
 ```html
@@ -153,7 +214,7 @@ Ignore smart DOM diffing on specified elements within a Magewire component.
 <?= 'Foo: ' . $magewire->getFoo() ?>
 ```
 
-### Child Block Rendering
+#### Child Block Rendering
 This can be very powerful when you are in the situation where you want to keep the child blocks intact.
 ```html
 <div>
@@ -169,6 +230,40 @@ This can be very powerful when you are in the situation where you want to keep t
     </div>
 </div>
 ```
+
+### Wire Select
+There are some specific cases where you have a select element including a ```wire:model``` attribute without any
+modifiers. In these cases, you want to save a selected option on change. This works fine for typical mobile or mouse
+interactions. But it has a couple of issues when using a keyboard where you have multiple options starting with the same
+couple of letters.
+
+The ```wire:select``` directive has two modifiers: ```debounce``` and ```blur```. By default, debounce uses a
+```1500ms``` delay, but you can change this by specifying a different delay in milliseconds, such as
+```debounce.2000ms```. blur syncs the model on element blur.
+
+**Modifiers**
+- Blur: Syncs model on element blur
+- Debounce: Debounce on each keydown or select change
+
+> **Important**: To use wire:select, you must always defer the model to let wire:select take over, and you cannot use a
+> value with the directive.
+
+Here's an example of how to use ```wire:select```:
+```html
+<!-- Only syncs on blur -->
+<select wire:model.defer="country" wire:select.blur>
+<!-- Syncs both on blur and on debounce -->
+<select wire:model.defer="country" wire:select.debounce.blur>
+<!-- Syncs both on blur and on debounce (waiting 3 seconds) -->
+<select wire:model.defer="country" wire:select.debounce.3000ms.blur>    
+    <option value="UA">Ukraine</option>
+    <option value="AE">United Arab Emirates</option>
+    <option value="GB">United Kingdom</option>
+    <option value="US">United States</option>
+</select>
+```
+Using the wire:select directive improves the user experience by allowing them to select options with ease and continue
+typing without the options changing.
 
 ## Component Types
 The base idea behind de default component is to keep things as simple and clean as possible without any constructor
@@ -602,14 +697,14 @@ public function keyDown()
 ```html
 <input type="text" wire:model="random" wire:keydown.arrow-up="keyUp" wire:keydown.arrow-down="keyDown"/>
 ```
-> You can also use vanilla JS instead of a PHP class method.
-> 
-> **Quick List**
-> - backspace
-> - escape
-> - shift
-> - tab
-> - arrow- right / left / up / down
+You can also use vanilla JS instead of a PHP class method.
+
+**Quick List**
+- backspace
+- escape
+- shift
+- tab
+- arrow- right / left / up / down
 
 ## Restricted Public Methods
 Public methods can be restricted from subsequent request executions. Prevent method executions who are meant for
@@ -807,6 +902,55 @@ it.
 <referenceContainer name="magewire.plugin" remove="true"/>
 ```
 
+### Plugin: Loader
+```xml
+<block name="magewire.plugin.loader"...
+```
+
+The Loader plugin is closely related to the ```$loader``` property within a component. To disable the loader, you can
+either access the system configuration at **Store > Settings > Advanced > Developer > Magewire** or remove the block
+through layout XML.
+
+The loader is divided into several child blocks, giving you greater flexibility in customizing the appearance of both
+the spinner and notifications without having to overwrite all functionality.
+
+### Plugin: Error
+```xml
+<block name="magewire.plugin.error"...
+```
+
+The Error plugin disables the native exception modal in Magento's **Production** mode and instead displays exceptions
+in the dev-console. Customization of the message for each HTTP status code can be achieved using the layout XML by
+searching for the ```status_messages``` argument. This feature enables you to easily modify the HTTP status code
+messages for specific pages according to your needs.
+
+For handling page expiration, the ```Magewire.onPageExpired(callback)``` method is used. By default, this method
+throws an ```alert()``` with a default message. Just like exceptions in production, this message can be overwritten.
+Page expirations are represented by a [419](https://http.dev/419) status code.
+
+Magewire's default 419 behavior can be overridden, allowing you to modify it according to your requirements.
+```xml
+<referenceContainer name="magewire.plugin.scripts">
+    <!-- Make sure it's loaded after Magewire's default page expired handling. -->
+    <block name="magewire.plugin.on-page-expired"
+           after="magewire.plugin.error"
+           template="Example_Module::page/js/magewire/plugin/on-page-expired.phtml"
+    />
+</referenceContainer>
+```
+
+```html
+<script>
+    'use strict';
+    
+    Magewire.onPageExpired(() => {
+        // A new onPageExpired callback function is registered for Magewire. Therefore, this will
+        // be used when a page session expires. There is no return value required. You just need
+        // to make the use aware and in a way the page should be reloaded.
+    })
+</script>
+```
+
 ## Reset
 Reset public property values to their initial state.
 ```php
@@ -901,7 +1045,7 @@ Show corresponding error messages below the field.
 </form>
 ```
 
-#### Exmaple 2 (md)
+#### Example 2 (md)
 Display a stack of error messages on above the form.
 ```html
 <?php if ($magewire->hasErrors(): ?>

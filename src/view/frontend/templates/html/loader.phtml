@@ -63,11 +63,11 @@ $magewireScripts = $block->getViewModel();
      x-cloak
      role="status"
      aria-live="polite"
+     x-bind:class="{'z-50 relative': active}"
 >
      <div class="fixed
                  top-0 left-0 right-0 bottom-0
                  w-full h-screen
-                 z-40
                  overflow-hidden
                  bg-white bg-opacity-90"
           x-show="active"

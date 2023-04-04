@@ -9,27 +9,24 @@
 namespace Magewirephp\Magewire\Model;
 
 use Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\View\Layout;
 use Magewirephp\Magewire\Component;
 
 class ComponentFactory
 {
     protected ObjectManagerInterface $objectManager;
-    protected array $instances = [];
+    protected Layout $layout;
 
-    /**
-     * @param ObjectManagerInterface $objectManager
-     */
+    private array $instances = [];
+
     public function __construct(
-        ObjectManagerInterface $objectManager
+        ObjectManagerInterface $objectManager,
+        Layout $layout
     ) {
         $this->objectManager = $objectManager;
+        $this->layout = $layout;
     }
 
-    /**
-     * @param Component|null $component
-     * @param array $data
-     * @return Component
-     */
     public function create(Component $component = null, array $data = []): Component
     {
         $class = $component ? get_class($component) : Component::class;

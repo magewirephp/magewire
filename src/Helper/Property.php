@@ -16,30 +16,18 @@ class Property
 {
     protected ArrayManager $arrayManager;
 
-    /**
-     * Magic constructor.
-     * @param ArrayManager $arrayManager
-     */
     public function __construct(
         ArrayManager $arrayManager
     ) {
         $this->arrayManager = $arrayManager;
     }
 
-    /**
-     * @param string $property
-     * @return bool
-     */
     public function containsDots(string $property): bool
     {
         return strpos($property, '.') !== false;
     }
 
     /**
-     * @param string $path
-     * @param $value
-     * @param Component $component
-     * @return array
      * @throws ComponentException
      */
     public function transformDots(string $path, $value, Component $component): array
@@ -57,13 +45,7 @@ class Property
         return compact('property', 'data', 'realpath', 'path');
     }
 
-    /**
-     * @param string $path
-     * @param array $value
-     * @param null $default
-     * @return mixed|null
-     */
-    public function searchViaDots(string $path, array $value, $default = null)
+    public function searchViaDots(string $path, array $value)
     {
         return $this->arrayManager->get($path, $value, null, '.') ?? $default;
     }
@@ -71,11 +53,6 @@ class Property
     /**
      * Use a callback function to assign component property
      * values except default reserved properties.
-     *
-     * @param callable $callback
-     * @param Component $component
-     * @param array|null $data
-     * @return void
      */
     public function assign(callable $callback, Component $component, array $data = null): void
     {

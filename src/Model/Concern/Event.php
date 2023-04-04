@@ -12,9 +12,6 @@ trait Event
 {
     protected $listeners = [];
 
-    /**
-     * @return array
-     */
     public function getListeners(): array
     {
         return $this->listeners;

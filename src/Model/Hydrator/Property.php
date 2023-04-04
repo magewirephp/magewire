@@ -12,7 +12,6 @@ use Exception;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Component as MagewireComponent;
-use Magewirephp\Magewire\Helper\Component as ComponentHelper;
 use Magewirephp\Magewire\Helper\Property as PropertyHelper;
 use Magewirephp\Magewire\Model\HydratorInterface;
 use Magewirephp\Magewire\Model\RequestInterface;
@@ -22,18 +21,15 @@ use Psr\Log\LoggerInterface;
 class Property implements HydratorInterface
 {
     protected PropertyHelper $propertyHelper;
-    protected ComponentHelper $componentHelper;
     protected SerializerInterface $serializer;
     protected LoggerInterface $logger;
 
     public function __construct(
         PropertyHelper $propertyHelper,
-        ComponentHelper $componentHelper,
         SerializerInterface $serializer,
         LoggerInterface $logger
     ) {
         $this->propertyHelper = $propertyHelper;
-        $this->componentHelper = $componentHelper;
         $this->serializer = $serializer;
         $this->logger = $logger;
     }

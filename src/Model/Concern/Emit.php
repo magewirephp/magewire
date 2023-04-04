@@ -24,9 +24,7 @@ trait Emit
     }
 
     /**
-     * @param string $event
      * @param array<string, mixed> $params
-     * @return Event
      */
     public function emit(string $event, $params = []): Event
     {
@@ -37,9 +35,7 @@ trait Emit
     }
 
     /**
-     * @param string $event
      * @param array<string, mixed> $params
-     * @return Event
      */
     public function emitUp(string $event, $params = []): Event
     {
@@ -52,9 +48,7 @@ trait Emit
     /**
      * Only emit an event on the component that fired the event.
      *
-     * @param string $event
      * @param array<string, mixed> $params
-     * @return Event
      */
     public function emitSelf(string $event, $params = []): Event
     {
@@ -67,10 +61,7 @@ trait Emit
     /**
      * Only emit an event to other components of the same type.
      *
-     * @param string $name
-     * @param string $event
      * @param array<string, mixed> $params
-     * @return Event
      */
     public function emitTo(string $name, string $event, $params = []): Event
     {
@@ -83,9 +74,7 @@ trait Emit
     /**
      * Only emit a "refresh" event to other components of the same type.
      *
-     * @param string $name
      * @param array<string, mixed> $params
-     * @return Event
      */
     public function emitToRefresh(string $name, $params = []): Event
     {
@@ -100,7 +89,6 @@ trait Emit
      * Refresh all parents.
      *
      * @param array<string, mixed> $params
-     * @return Event
      */
     public function emitToRefreshUp($params = []): Event
     {
@@ -112,10 +100,6 @@ trait Emit
 
     /**
      * Support legacy emits until major update.
-     *
-     * @param $firstArgs
-     * @param $restArgs
-     * @return array
      */
     protected function supportLegacySyntax($firstArgs, $restArgs): array
     {

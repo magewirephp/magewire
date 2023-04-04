@@ -18,6 +18,13 @@ use Magento\Framework\Exception\RuntimeException;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Framework\UrlInterface;
 
+/**
+ * @deprecated Security is primarily handled by the Security Hydrator. It's something that should
+ *             not be messed around with, with things like Plugins. Therefor most methods are
+ *             moved into the Hydrator and made protected.
+ *
+ * @see \Magewirephp\Magewire\Model\Hydrator\Security
+ */
 class Security
 {
     protected DeploymentConfig $deployConfig;
