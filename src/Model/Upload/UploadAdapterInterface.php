@@ -21,9 +21,6 @@ interface UploadAdapterInterface
      */
     public function generateSignedUploadUrl(array $file, bool $isMultiple): string;
 
-    /**
-     * @return string
-     */
     public function getGenerateSignedUploadUrlEvent(): string;
 
     /**

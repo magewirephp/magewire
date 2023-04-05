@@ -6,7 +6,7 @@ class TemporaryUploader extends \Magento\MediaStorage\Model\File\Uploader
 {
     public const IDENTIFIER = 'tmpfile_';
 
-    public function generateHashNameWithOriginalNameEmbedded()
+    public function generateHashNameWithOriginalNameEmbedded(): string
     {
         $identifier = self::IDENTIFIER;
         $hash = uniqid();
@@ -16,12 +16,17 @@ class TemporaryUploader extends \Magento\MediaStorage\Model\File\Uploader
         return $identifier . $hash . $meta . $extension;
     }
 
-    public static function isTemporaryFilename(string $filename): bool {
+    public function isTemporaryFilename(string $filename): bool
+    {
         return preg_match('/^' . self::IDENTIFIER . '/', $filename);
     }
 
-    public static function extractOriginalNameFromFilePath($path)
+    public function extractOriginalNameFromFilePath($path)
     {
-        return base64_decode(array_first(explode('-', array_last(explode('-meta', str_replace('_', '/', $path))))));
+        return base64_decode(
+            array_first(
+                explode('-', array_last(explode('-meta', str_replace('_', '/', $path))))
+            )
+        );
     }
 }

@@ -11,7 +11,6 @@ namespace Magewirephp\Magewire\Controller\Post;
 use Exception;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\CsrfAwareActionInterface;
-use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\App\Request\InvalidRequestException;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\Json;
@@ -19,12 +18,8 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\RuntimeException;
-use Magento\Framework\Math\Random;
-use Magento\Framework\Stdlib\DateTime\DateTime;
+use Magewirephp\Magewire\Exception\NoSuchUploadAdapterInterface;
 use Magewirephp\Magewire\Model\Upload\File\TemporaryUploaderFactory as TemporaryFileUploaderFactory;
-use Magewirephp\Magewire\Helper\Security as SecurityHelper;
-use Magewirephp\Magewire\Model\Upload\Adapter\Local as UploadAdapter;
-use Magento\Framework\App\Response\Http\FileFactory;
 use Magewirephp\Magewire\Model\Upload\AdapterProvider;
 use Magewirephp\Magewire\Model\Upload\UploadAdapterInterface;
 
@@ -49,7 +44,7 @@ class Upload implements HttpPostActionInterface, CsrfAwareActionInterface
 
     /**
      * @throws FileSystemException
-     * @throws RuntimeException
+     * @throws RuntimeException|NoSuchUploadAdapterInterface
      */
     public function execute(): Json
     {
@@ -63,10 +58,10 @@ class Upload implements HttpPostActionInterface, CsrfAwareActionInterface
 
         try {
             $files = $this->request->getFiles('files', []);
-
             $targets = [];
-            foreach (array_keys($files) as $fileKey) {
-                $target = $this->temporaryFileUploaderFactory->create(['fileId' => 'files[' . $fileKey . ']']);
+
+            foreach (array_keys($files) as $file) {
+                $target = $this->temporaryFileUploaderFactory->create(['fileId' => 'files[' . $file . ']']);
 
                 $target->setAllowCreateFolders(false);
                 $target->setAllowRenameFiles(true);
@@ -78,10 +73,6 @@ class Upload implements HttpPostActionInterface, CsrfAwareActionInterface
             }
 
             $paths = $adapter->stash($targets);
-
-            if ($paths === false) {
-                throw new LocalizedException(__('Something went wrong.'));
-            }
 
             return $result->setData([
                 'paths' => $paths

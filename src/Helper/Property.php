@@ -47,7 +47,7 @@ class Property
 
     public function searchViaDots(string $path, array $value)
     {
-        return $this->arrayManager->get($path, $value, null, '.') ?? $default;
+        return $this->arrayManager->get($path, $value, null, '.');
     }
 
     /**

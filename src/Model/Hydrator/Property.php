@@ -17,6 +17,7 @@ use Magewirephp\Magewire\Model\HydratorInterface;
 use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
 use Psr\Log\LoggerInterface;
+use ReflectionException;
 
 class Property implements HydratorInterface
 {
@@ -48,7 +49,7 @@ class Property implements HydratorInterface
         }
 
         /** @var array $wireables */
-        $meta['wireables'] = $this->propertyHelper->searchViaDots('dataMeta.wireables', $request->memo, []);
+        $meta['wireables'] = $this->propertyHelper->searchViaDots('dataMeta.wireables', $request->memo) ?? [];
 
         $this->propertyHelper->assign(function (Component $component, string $property, $value) use ($meta) {
             if (in_array($property, $meta['wireables'])) {
