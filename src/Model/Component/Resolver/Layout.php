@@ -10,6 +10,7 @@ namespace Magewirephp\Magewire\Model\Component\Resolver;
 
 use Magento\Framework\Event\ManagerInterface as EventManagerInterfac;
 use Magento\Framework\Exception\NotFoundException;
+use Magento\Framework\View\Element\AbstractBlock;
 use Magento\Framework\View\Element\BlockInterface;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Result\PageFactory as ResultPageFactory;
@@ -20,6 +21,11 @@ use Magewirephp\Magewire\Model\Component\ResolverInterface;
 use Magewirephp\Magewire\Model\ComponentFactory;
 use Magewirephp\Magewire\Model\RequestInterface;
 
+/**
+ * Default Component Resolver.
+ *
+ * @api
+ */
 class Layout implements ResolverInterface
 {
     protected ResultPageFactory $resultPageFactory;
@@ -36,7 +42,7 @@ class Layout implements ResolverInterface
         $this->componentFactory = $componentFactory;
     }
 
-    public function complies(BlockInterface $block): bool
+    public function complies(AbstractBlock $block): bool
     {
         return true;
     }
@@ -86,7 +92,6 @@ class Layout implements ResolverInterface
             'page' => $page
         ]);
 
-        //$page->addUpdate('hyva_checkout_components');
         /** @var Template|false $block */
         $block = $page->getLayout()->getBlock($request->getFingerprint('name'));
 
@@ -97,11 +102,6 @@ class Layout implements ResolverInterface
         }
 
         return $this->construct($block);
-    }
-
-    public function getPublicName(): string
-    {
-        return 'layout';
     }
 
     /**
