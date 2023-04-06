@@ -11,15 +11,16 @@ namespace Magewirephp\Magewire\Model;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Component;
-use Magewirephp\Magewire\Controller\Post\Livewire;
+use Magewirephp\Magewire\Model\Cache\Type\Magewire as MagewireCache;
 use Magewirephp\Magewire\Model\Component\Resolver\Layout as LayoutResolver;
 use Magewirephp\Magewire\Model\Component\ResolverInterface;
 use Psr\Log\LoggerInterface;
 
 class ComponentResolver
 {
-    protected ResolverInterface $default;
+    protected LayoutResolver $default;
     protected LoggerInterface $logger;
+    protected MagewireCache $cache;
 
     /** @var ResolverInterface[] $resolvers */
     protected array $resolvers = [];
@@ -27,30 +28,41 @@ class ComponentResolver
     public function __construct(
         LayoutResolver $default,
         LoggerInterface $logger,
+        MagewireCache $cacheMagewire,
         array $resolvers = []
     ) {
         $this->default = $default;
         $this->logger = $logger;
-
-        foreach ($resolvers as $resolver) {
-            $this->resolvers[$resolver->getPublicName()] = $resolver;
-        }
-
-        if (array_key_exists($this->default->getPublicName(), $this->resolvers)) {
-            unset($this->resolvers[$this->default->getPublicName()]);
-        }
+        $this->cache = $cacheMagewire;
+        $this->resolvers = $resolvers;
     }
 
+    /**
+     * Resolve Magewire block and stick the resolver to it.
+     *
+     * @throws NoSuchEntityException
+     */
     public function resolve(Template $block): Component
     {
-        /**
-         * @todo this could be cached so it doesnt have to check for the right resolver each
-         *       time a block comes in during a preceding request. Why only during a preceding
-         *       request you might ask? Simply because the message controller gets the right
-         *       resolver based on the required name in the fingerprint.
-         *
-         * @see Livewire::locateWireComponent()
-         */
+        $resolver = $this->find($block);
+
+        return $resolver->construct($block)->setResolver($resolver);
+    }
+
+    /**
+     * Find a matching resolver who complies to the given block.
+     *
+     * @throws NoSuchEntityException
+     */
+    public function find(Template $block): ResolverInterface
+    {
+        $blockResolvers = $this->cache->load(MagewireCache::SECTION_RESOLVERS);
+        $resolver = $blockResolvers[$block->getCacheKey()] ?? false;
+
+        if ($resolver) {
+            return $this->get($resolver);
+        }
+
         $resolvers = array_filter($this->resolvers, function (ResolverInterface $resolver) use ($block) {
             return $resolver->complies($block);
         });
@@ -60,19 +72,25 @@ class ComponentResolver
         }
 
         // At this point we can safely assume that the first one can be used.
+        $name = array_keys($resolvers)[0] ?? 'layout';
         $resolver = array_values($resolvers)[0] ?? $this->default;
 
-        return $resolver->construct($block)->setResolver($resolver);
+        $blockResolvers[$block->getCacheKey()] = $name;
+        $this->cache->saveResolvers($blockResolvers);
+
+        return $resolver;
     }
 
     /**
+     * Get resolver by name.
+     *
      * @throws NoSuchEntityException
      */
     public function get(string $resolver): ResolverInterface
     {
         if ($this->resolvers[$resolver] ?? false) {
             return $this->resolvers[$resolver];
-        } elseif ($this->default->getPublicName() === $resolver) {
+        } elseif ($resolver === 'layout') {
             return $this->default;
         }
 

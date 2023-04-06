@@ -8,7 +8,7 @@
 
 namespace Magewirephp\Magewire\Model\Component;
 
-use Magento\Framework\View\Element\BlockInterface;
+use Magento\Framework\View\Element\AbstractBlock;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exception\MissingComponentException;
@@ -23,22 +23,17 @@ interface ResolverInterface
      * It's recommended to keep these checks a light as
      * possible e.g. without any database interactions.
      */
-    public function complies(BlockInterface $block): bool;
+    public function complies(AbstractBlock $block): bool;
 
     /**
-     * Build component based on type.
+     * Construct a Magewire component based on type.
      */
     public function construct(Template $block): Component;
 
     /**
-     * Re-build component based on subsequent request data.
+     * Re-construct a Magewire component based on a subsequent request.
      *
      * @throws MissingComponentException
      */
     public function reconstruct(RequestInterface $request): Component;
-
-    /**
-     * Returns the unique (publicly visible) name of the resolver.
-     */
-    public function getPublicName(): string;
 }

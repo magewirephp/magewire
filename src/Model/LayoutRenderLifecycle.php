@@ -101,13 +101,28 @@ class LayoutRenderLifecycle
         return $this;
     }
 
-    public function isParent(string $name): bool
+    public function isParent(string $name, string $from = null): bool
     {
-        return array_search($name, array_keys($this->getViews()), true) === 0;
+        $views = $this->getViews();
+        $parent = array_search($name, array_keys($views), true);
+
+        if (is_string($from)) {
+            if (array_key_exists($name, $views) && ! array_key_exists($from, $views)) {
+                return true;
+            }
+
+            return $parent > (int) array_search($from, array_keys($this->getViews()), true);
+        }
+
+        return $parent === 0;
     }
 
-    public function isChild(string $name): bool
+    public function isChild(string $name, string $from = null): bool
     {
+        if (is_string($from)) {
+            return ! $this->isParent($name, $from);
+        }
+
         return ! $this->isParent($name);
     }
 }

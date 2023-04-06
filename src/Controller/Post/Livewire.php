@@ -14,6 +14,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\NotFoundException;
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Exception\CorruptPayloadException;
 use Magewirephp\Magewire\Helper\Security as SecurityHelper;
 use Magewirephp\Magewire\Model\ComponentResolver;
 use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
@@ -101,14 +102,13 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
     public function locateWireComponent(array $post): Component
     {
         $request = $this->httpFactory->createRequest($post);
+        $resolver = $request->getFingerprint('resolver');
 
-        if ($request->getFingerprint('resolver')) {
-            return $this->componentResolver->get($post['fingerprint']['resolver'])->reconstruct($request);
+        if ($resolver) {
+            return $this->componentResolver->get($resolver)->reconstruct($request);
         }
 
-        throw new NotFoundException(
-            __('Component resolver could not be found.')
-        );
+        throw new CorruptPayloadException('resolver', 'Component could not be reconstructed. Fingerprint resolver not present.');
     }
 
     public function throwException(Exception $exception): Json
