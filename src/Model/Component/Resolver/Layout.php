@@ -20,6 +20,7 @@ use Magewirephp\Magewire\Exception\MissingComponentException;
 use Magewirephp\Magewire\Model\Component\ResolverInterface;
 use Magewirephp\Magewire\Model\ComponentFactory;
 use Magewirephp\Magewire\Model\RequestInterface;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Default Component Resolver.
@@ -42,6 +43,11 @@ class Layout implements ResolverInterface
         $this->componentFactory = $componentFactory;
     }
 
+    public function getName(): string
+    {
+        return 'layout';
+    }
+
     public function complies(AbstractBlock $block): bool
     {
         return true;
@@ -50,7 +56,7 @@ class Layout implements ResolverInterface
     /**
      * @throws MissingComponentException
      */
-    public function construct(Template $block): Component
+    public function construct(AbstractBlock $block): Component
     {
         $magewire = $block->getData('magewire');
 
@@ -75,7 +81,6 @@ class Layout implements ResolverInterface
     }
 
     /**
-     * @throws NotFoundException
      * @throws MissingComponentException
      */
     public function reconstruct(RequestInterface $request): Component
@@ -96,9 +101,7 @@ class Layout implements ResolverInterface
         $block = $page->getLayout()->getBlock($request->getFingerprint('name'));
 
         if ($block === false) {
-            throw new NotFoundException(
-                __('Magewire component "%1" could not be found', [$request->getFingerprint('name')])
-            );
+            throw new HttpException(404, 'Magewire component "%1" could not be found');
         }
 
         return $this->construct($block);

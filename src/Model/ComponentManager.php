@@ -123,7 +123,7 @@ class ComponentManager
                 'locale' => $this->localeResolver->getLocale(),
                 'path' => '/',
                 'method' => 'GET',
-                'resolver' => $resolver->getPublicName(),
+                'resolver' => $resolver->getName(),
 
                 // Custom relative to Livewire's core.
                 'handle' => $handle ?? $request->getFullActionName(),

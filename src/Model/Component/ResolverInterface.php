@@ -9,16 +9,27 @@
 namespace Magewirephp\Magewire\Model\Component;
 
 use Magento\Framework\View\Element\AbstractBlock;
-use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exception\MissingComponentException;
 use Magewirephp\Magewire\Model\RequestInterface;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 interface ResolverInterface
 {
     /**
+     * Returns a unique resolver name to be identified
+     * with for reconstruction. This name is publicly
+     * used in among other things, the fingerprint and
+     * therefor can be visible to end users.
+     *
+     * Important: function always need to be implemented even
+     * when inherited from another ResolverInterface.
+     */
+    public function getName(): string;
+
+    /**
      * Checks for very specific data elements to see if
-     * this component complies the requirements.
+     * this block complies the resolver requirements.
      *
      * It's recommended to keep these checks a light as
      * possible e.g. without any database interactions.
@@ -28,12 +39,12 @@ interface ResolverInterface
     /**
      * Construct a Magewire component based on type.
      */
-    public function construct(Template $block): Component;
+    public function construct(AbstractBlock $block): Component;
 
     /**
      * Re-construct a Magewire component based on a subsequent request.
      *
-     * @throws MissingComponentException
+     * @throws HttpException
      */
     public function reconstruct(RequestInterface $request): Component;
 }
