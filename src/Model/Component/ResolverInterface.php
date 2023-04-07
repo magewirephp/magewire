@@ -8,10 +8,10 @@
 
 namespace Magewirephp\Magewire\Model\Component;
 
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Component;
-use Magewirephp\Magewire\Exception\MissingComponentException;
-use Magewirephp\Magewire\Model\RequestInterface;
+use Magewirephp\Magewire\Model\RequestInterface as MagewireRequestInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 interface ResolverInterface
@@ -46,5 +46,5 @@ interface ResolverInterface
      *
      * @throws HttpException
      */
-    public function reconstruct(RequestInterface $request): Component;
+    public function reconstruct(MagewireRequestInterface $request): Component;
 }
