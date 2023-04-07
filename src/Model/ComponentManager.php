@@ -38,6 +38,7 @@ class ComponentManager
         $this->hydrationPool = $this->sortHydrators($hydrationPool, [
             $hydratorContext->getFormKeyHydrator(),
             $hydratorContext->getSecurityHydrator(),
+            $hydratorContext->getResolverHydrator(),
             $hydratorContext->getPostDeploymentHydrator(),
             $hydratorContext->getChildrenHydrator(),
             $hydratorContext->getBrowserEventHydrator(),

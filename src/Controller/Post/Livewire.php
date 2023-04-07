@@ -95,20 +95,15 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
     }
 
     /**
-     * @throws CorruptPayloadException
-     * @throws HttpException
      * @throws LocalizedException
+     * @throws NoSuchEntityException
      */
     public function locateWireComponent(array $post): Component
     {
         $request = $this->httpFactory->createRequest($post);
-        $resolver = $request->getFingerprint('resolver');
+        $resolver = $this->componentResolver->get($request->getFingerprint('resolver'));
 
-        if ($resolver) {
-            return $this->componentResolver->get($resolver)->reconstruct($request);
-        }
-
-        throw new CorruptPayloadException('resolver', 'Component could not be reconstructed. Fingerprint resolver not present.');
+        return $resolver->reconstruct($request)->setResolver($resolver);
     }
 
     public function throwException(Exception $exception): Json
