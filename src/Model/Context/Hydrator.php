@@ -20,6 +20,7 @@ use Magewirephp\Magewire\Model\Hydrator\PostDeployment;
 use Magewirephp\Magewire\Model\Hydrator\Property;
 use Magewirephp\Magewire\Model\Hydrator\QueryString;
 use Magewirephp\Magewire\Model\Hydrator\Redirect;
+use Magewirephp\Magewire\Model\Hydrator\Resolver;
 use Magewirephp\Magewire\Model\Hydrator\Security;
 use Magewirephp\Magewire\Model\Hydrator\Loader;
 
@@ -39,6 +40,7 @@ class Hydrator
     protected PostDeployment $postDeploymentHydrator;
     protected FormKey $formKeyHydrator;
     protected Children $childrenHydrator;
+    protected Resolver $resolverHydrator;
 
     public function __construct(
         Hash $hashHydrator,
@@ -54,7 +56,8 @@ class Hydrator
         Loader $loaderHydrator,
         PostDeployment $postDeploymentHydrator,
         FormKey $formKeyHydrator,
-        Children $childrenHydrator
+        Children $childrenHydrator,
+        Resolver $resolverHydrator
     ) {
         $this->hashHydrator = $hashHydrator;
         $this->listenerHydrator = $listenerHydrator;
@@ -70,6 +73,7 @@ class Hydrator
         $this->postDeploymentHydrator = $postDeploymentHydrator;
         $this->formKeyHydrator = $formKeyHydrator;
         $this->childrenHydrator = $childrenHydrator;
+        $this->resolverHydrator = $resolverHydrator;
     }
 
     public function getHashHydrator(): Hash
@@ -140,5 +144,10 @@ class Hydrator
     public function getChildrenHydrator(): Children
     {
         return $this->childrenHydrator;
+    }
+
+    public function getResolverHydrator(): Resolver
+    {
+        return $this->resolverHydrator;
     }
 }
