@@ -942,12 +942,48 @@ Magewire's default 419 behavior can be overridden, allowing you to modify it acc
 ```html
 <script>
     'use strict';
-    
+
+    // Please be aware of the fact that this will overwrite the original callback.
     Magewire.onPageExpired(() => {
         // A new onPageExpired callback function is registered for Magewire. Therefore, this will
         // be used when a page session expires. There is no return value required. You just need
         // to make the use aware and in a way the page should be reloaded.
     })
+</script>
+```
+
+#### Write your own onError callback.
+You can also overwrite or extend Magewire's onError callback.
+
+```xml
+<referenceContainer name="magewire.plugin.scripts">
+    <block name="my-custom.magewire.plugin.error"
+           after="magewire.plugin.error"
+           template="Example_Module::page/js/magewire/plugin/error.phtml"
+    />
+</referenceContainer>
+```
+
+```html
+<script>
+    'use strict';
+
+    (() => {
+        const magewireOriginOnErrorCallback = Magewire.components.onErrorCallback;
+
+        // Variable status is the HTTP response code (500, 404, 301 etc.)
+        Magewire.onError((status, response) => {
+            magewireOriginOnErrorCallback(status, response)
+            
+            // Make sure to clone the response to avoid locking.
+            response.clone().text().then((result) => {
+                result = JSON.parse(result)
+                console.error(result.message || 'Something went wrong')
+            }).catch((exception) => {
+                console.error(exception)
+            })
+        })
+    })()
 </script>
 ```
 

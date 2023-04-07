@@ -32,7 +32,7 @@ $messages = $block->getData('status_messages');
         }
 
         <?php if ($magewireScripts->isProductionMode()): ?>
-        response.text().then((result) => {
+        response.clone().text().then((result) => {
             let messages = <?= /** @noEscape */ json_encode(array_map('__', $messages)) ?>;
             result = JSON.parse(result)
 
