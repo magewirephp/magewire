@@ -44,7 +44,10 @@
   - [Custom Example](#custom-example-dls)
 - [Plugins](#plugins)
   - [Plugin: Loader](#plugin--loader)
-  - [Plugin: Exception](#plugin--exception)
+  - [Plugin: Error](#plugin--error)
+    - [Custom onError callback](#custom-onerror-callback)
+- [Component Resolvers](#component-resolvers)
+  - [Custom Resolvers](#custom-resolver)
 - [Reset](#reset)
 - [Forms](#forms)
   - [Message Translations](#message-translations--f-)
@@ -952,7 +955,7 @@ Magewire's default 419 behavior can be overridden, allowing you to modify it acc
 </script>
 ```
 
-#### Write your own onError callback.
+#### Custom onError callback
 You can also overwrite or extend Magewire's onError callback.
 
 ```xml
@@ -986,6 +989,74 @@ You can also overwrite or extend Magewire's onError callback.
     })()
 </script>
 ```
+
+## Component Resolvers
+Since version: `1.9.0`
+
+The ResolverInterface enables you to implement your own method for constructing and reconstructing a component. This
+pattern is useful for examples like Dynamic Blocks and Widgets, which are not typically implemented using Layout XML.
+
+With this pattern, you can inject custom ResolverInterfaces that implement a function called complies(). In this
+function, you can verify if a given Block belongs to your custom Resolver. If it does, the Resolver will grab a unique
+name from that Resolver and automatically bind it onto the request fingerprint.
+
+This way, the right Resolver can be re-used when a component is reconstructed on a subsequent request. "Reconstruct"
+means that it uses all the ingredients to try and rebuild the component in the exact same way as it was constructed on
+page load.
+
+The gateway into Magewire remains the same, requiring a Block "magewire" data key. As soon as Magewire finds the
+required data key, it passes the block. However, it does require some custom logic to ensure your block complies with
+this requirement.
+
+If a block does have a magewire key, but none of the Resolvers comply, it will automatically fall back to the original
+Layout Resolver. This pattern is fully backwards compatible with older Magewire versions.
+
+### Custom Resolver
+```php
+use \Magento\Widget\Block\BlockInterface as WidgetBlockInterface
+
+class Widget implements ResolverInterface
+{
+    public function getName() {
+        return 'widget';
+    }
+
+    /**
+     * Check if the given block is of instance type WidgetBlockInterface
+     */
+    public function complies(BlockInterface $block): bool {
+        return $block instanceof WidgetBlockInterface;
+    }
+    
+    public function construct(Template $block): Component {
+        // Load a widget, construct and return the Component.
+    }
+    
+    public function reconstruct(RequestInterface $request): Component {
+        // Use what's available in the RequestInterface to reconstruct and return the component.
+    }
+}
+```
+
+> **Important**: When it complies, the resolver name will be cached inside the Magewire Resolver cache based on the Block cache key.
+> This way, the Component Resolver doesnt have to verify each block over and over to check which Resolver complies to
+> the given block. Therefor it's important to be aware of this caching layer.
+
+```xml
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd"
+>
+    <!-- Register custom Component Resolver -->
+    <type name="Magewirephp\Magewire\Model\ComponentResolver">
+        <arguments>
+            <argument name="resolvers" xsi:type="array">
+                <item name="widget" xsi:type="object">Example\Module\Model\Magewire\Component\Resolver\Widget</item>
+            </argument>
+        </arguments>
+    </type>
+</config>
+```
+**File**: etc/frontend/di.xml
 
 ## Reset
 Reset public property values to their initial state.
