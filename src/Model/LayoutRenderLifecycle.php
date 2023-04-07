@@ -111,7 +111,13 @@ class LayoutRenderLifecycle
                 return true;
             }
 
-            return $parent > (int) array_search($from, array_keys($this->getViews()), true);
+            $search = array_search($from, array_keys($this->getViews()), true);
+
+            if ($search === false) {
+                return true;
+            }
+
+            return $parent > (int) $search;
         }
 
         return $parent === 0;

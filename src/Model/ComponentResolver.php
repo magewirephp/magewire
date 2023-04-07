@@ -9,7 +9,7 @@
 namespace Magewirephp\Magewire\Model;
 
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Model\Cache\Type\Magewire as MagewireCache;
 use Magewirephp\Magewire\Model\Component\Resolver\Layout as LayoutResolver;
@@ -25,24 +25,32 @@ class ComponentResolver
     /** @var ResolverInterface[] $resolvers */
     protected array $resolvers = [];
 
+    /**
+     * @param array<string, ResolverInterface> $resolvers
+     */
     public function __construct(
         LayoutResolver $default,
         LoggerInterface $logger,
-        MagewireCache $cacheMagewire,
+        MagewireCache $cache,
         array $resolvers = []
     ) {
         $this->default = $default;
         $this->logger = $logger;
-        $this->cache = $cacheMagewire;
-        $this->resolvers = $resolvers;
+        $this->cache = $cache;
+
+        foreach ($resolvers as $resolver) {
+            $this->resolvers[$resolver->getName()] = $resolver;
+        }
+
+        if (! array_key_exists($this->default->getName(), $this->resolvers)) {
+            $this->resolvers[$this->default->getName()] = $default;
+        }
     }
 
     /**
      * Resolve Magewire block and stick the resolver to it.
-     *
-     * @throws NoSuchEntityException
      */
-    public function resolve(Template $block): Component
+    public function resolve(AbstractBlock $block): Component
     {
         $resolver = $this->find($block);
 
@@ -51,16 +59,20 @@ class ComponentResolver
 
     /**
      * Find a matching resolver who complies to the given block.
-     *
-     * @throws NoSuchEntityException
      */
-    public function find(Template $block): ResolverInterface
+    protected function find(AbstractBlock $block): ResolverInterface
     {
-        $blockResolvers = $this->cache->load(MagewireCache::SECTION_RESOLVERS);
-        $resolver = $blockResolvers[$block->getCacheKey()] ?? false;
+        $cache = $this->cache->load(MagewireCache::SECTION_RESOLVERS);
+        $resolver = $cache[$block->getCacheKey()] ?? false;
 
         if ($resolver) {
-            return $this->get($resolver);
+            try {
+                return $this->get($resolver);
+            } catch (NoSuchEntityException $exception) {
+                $this->logger->info(
+                    sprintf('Magewire: Resolver "%1s" is no longer present. Retrying available resolvers.', $resolver)
+                );
+            }
         }
 
         $resolvers = array_filter($this->resolvers, function (ResolverInterface $resolver) use ($block) {
@@ -71,12 +83,12 @@ class ComponentResolver
             $this->logger->info('Magewire: Multiple block resolvers found, one expected.');
         }
 
-        // At this point we can safely assume that the first one can be used.
-        $name = array_keys($resolvers)[0] ?? 'layout';
-        $resolver = array_values($resolvers)[0] ?? $this->default;
+        // It's safe to say the first one can be used, or we use the layout fallback.
+        $name = array_keys($resolvers)[0];
+        $resolver = array_values($resolvers)[0];
 
-        $blockResolvers[$block->getCacheKey()] = $name;
-        $this->cache->saveResolvers($blockResolvers);
+        $cache[$block->getCacheKey()] = $name;
+        $this->cache->saveResolvers($cache);
 
         return $resolver;
     }
@@ -90,11 +102,9 @@ class ComponentResolver
     {
         if ($this->resolvers[$resolver] ?? false) {
             return $this->resolvers[$resolver];
-        } elseif ($resolver === 'layout') {
-            return $this->default;
         }
 
         // Typically this only applies when someone changed the resolver on the frontend.
-        throw new NoSuchEntityException(__('Block resolver "%1s" does not exist.', $resolver));
+        throw new NoSuchEntityException(__('Block resolver "%1" does not exist.', $resolver));
     }
 }

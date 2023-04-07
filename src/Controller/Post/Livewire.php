@@ -95,8 +95,8 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
     }
 
     /**
-     * @throws NoSuchEntityException
-     * @throws NotFoundException
+     * @throws CorruptPayloadException
+     * @throws HttpException
      * @throws LocalizedException
      */
     public function locateWireComponent(array $post): Component
@@ -151,14 +151,14 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
     public function validateForUpdateRequest(): void
     {
         if ($this->securityHelper->validateFormKey($this->request) === false) {
-            throw new HttpException(419, 'Form key expired. Please refresh and try again.');
+            throw new HttpException(419, 'Session expired. Please refresh and try again.');
         }
     }
 
     public function getHttpResponseStatuses(): array
     {
         $statuses = Response::$statusTexts;
-        $statuses[419] = 'Form key expired';
+        $statuses[419] = 'Session expired';
 
         return $statuses;
     }
