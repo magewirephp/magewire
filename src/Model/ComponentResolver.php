@@ -62,7 +62,7 @@ class ComponentResolver
      */
     protected function find(AbstractBlock $block): ResolverInterface
     {
-        $cache = $this->cache->load(MagewireCache::SECTION_RESOLVERS);
+        $cache = $this->cache->load(MagewireCache::SECTION_RESOLVERS) ?: [];
         $resolver = $cache[$block->getCacheKey()] ?? false;
 
         if ($resolver) {
