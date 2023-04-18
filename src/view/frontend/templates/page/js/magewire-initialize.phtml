@@ -70,11 +70,17 @@ $magewireScripts = $block->getViewModel();
     })();
 
     <?php /* Dispatch "magewire:" prefixed window events. */ ?>
-    Magewire.dispatchEvent = (name, event = {}) => {
-        document.dispatchEvent(new CustomEvent(`magewire:${ name }`, Object.assign({
+    Magewire.dispatchEvent = (name, event = {}, element = null) => {
+        let e = new CustomEvent(`magewire:${ name }`, Object.assign({
             'bubbles': true,
             'cancelable': false
-        }, event)))
+        }, event))
+
+        if (element) {
+            element.dispatchEvent(e);
+        } else {
+            document.dispatchEvent(e)
+        }
     }
 
     <?php /* Mirror Livewire events. */ ?>
