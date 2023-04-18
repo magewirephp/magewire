@@ -14,7 +14,7 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
 ?>
 <div class="sm:fixed sm:top-0 sm:right-0 z-50 w-full max-w-xs flex-col space-y-2 pr-4 sm:justify-start">
     <div class="space-y-4 flex flex-col-reverse">
-        <template x-for="(notification, index) in notifications.filter((item) => item.title)">
+        <template x-for="(notification, index) in notifications.filter(item => item.title)">
             <div class="magewire-notification"
                  x-show="notification.show"
                  x-bind:class="{
