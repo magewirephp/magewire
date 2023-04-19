@@ -23,40 +23,40 @@ $magewireScripts = $block->getViewModel();
          current: 0
      }"
      x-on:magewire:loader:start.window="
-         active = true
-         notifications.push(Object.assign($event.detail, { active: true, show: true, failed: false }))
-         current = $event.detail.title ? notifications.length - 1 : current
+         active = true;
+         notifications.push(Object.assign($event.detail, { active: true, show: true, failed: false }));
+         current = $event.detail.title ? notifications.length - 1 : current;
      "
      x-on:magewire:loader:tick.window="
          if (notifications[current] !== undefined) {
-             notifications[current].active = false
+             notifications[current].active = false;
          }
 
-         notifications.push(Object.assign($event.detail, { active: true, show: true, failed: false }))
-         current = $event.detail.title ? notifications.length - 1 : current
+         notifications.push(Object.assign($event.detail, { active: true, show: true, failed: false }));
+         current = $event.detail.title ? notifications.length - 1 : current;
      "
      x-on:magewire:loader:fail.window="
          if (notifications[current] !== undefined) {
-             notifications[current].failed = true
+             notifications[current].failed = true;
          }
      "
      x-on:magewire:loader:stop.window="
          if (notifications[current] !== undefined) {
-             notifications[current].active = false
+             notifications[current].active = false;
          }
 
-         active = false
-         current = null
+         active = false;
+         current = null;
 
-         let i = 0
+         let i = 0;
 
          notifications.forEach(function (loader, index) {
              if (notifications[index].title === null || notifications[index].show === false) {
-                 return
+                 return;
              }
 
              setTimeout(() => {
-                 notifications[index].show = false
+                 notifications[index].show = false;
              }, i = i + notifications[index].failed ? 2500 : 1500)
          })
      "
