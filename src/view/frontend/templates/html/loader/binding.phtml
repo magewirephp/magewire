@@ -41,8 +41,19 @@
                         let delay = 0
 
                         this.notifications.forEach((notification) => {
+                            console.log(notification)
                             if (! notification.title || ! notification.show) {
                                 return
+                            }
+
+                            // todo: the issue here is if you have two or more labels in the loader.title, it will use
+                            //       the same object when you click the action again. So when the active label is still
+                            //       on e.g. the second label, the second loader will also start the second loader label
+                            if (notification.title.length === 2) {
+
+                                notification.title.reverse()
+                                delay += 1000
+
                             }
 
                             setTimeout(() => {
