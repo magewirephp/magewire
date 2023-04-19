@@ -46,7 +46,7 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                                     })[0] || false
 
                                     if (expression) {
-                                        value = loader[expression].split('...', 2).map(item => item === '' ? null : item)
+                                        value = loader[expression]
                                     }
 
                                     break
