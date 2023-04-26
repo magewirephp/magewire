@@ -79,10 +79,6 @@ class ComponentResolver
             return $resolver->complies($block);
         });
 
-        if (count($resolvers) > 1) {
-            $this->logger->info('Magewire: Multiple block resolvers found, one expected.');
-        }
-
         // It's safe to say the first one can be used, or we use the layout fallback.
         $name = array_keys($resolvers)[0];
         $resolver = array_values($resolvers)[0];
