@@ -35,9 +35,6 @@ abstract class Form extends Component
      */
     protected $messages = [];
 
-    /**
-     * @param Validator $validator
-     */
     public function __construct(
         Validator $validator
     ) {
@@ -45,17 +42,13 @@ abstract class Form extends Component
     }
 
     /**
-     * @param array $rules
-     * @param array $messages
-     * @param array|null $data
-     * @param bool $mergeWithClassProperties
-     * @return bool
      * @throws AcceptableException
      */
     public function validate(
         array $rules = [],
         array $messages = [],
         array $data = null,
+        array $aliases = [],
         bool $mergeWithClassProperties = true
     ): bool {
         $rules = $mergeWithClassProperties ? array_merge($this->rules, $rules) : $rules;
@@ -66,7 +59,21 @@ abstract class Form extends Component
         }, $mergeWithClassProperties ? array_merge($this->messages, $messages) : $messages);
 
         try {
-            $validation = $this->validator->validate($data, $rules, $messages);
+            $validation = $this->validator->make($data, $rules, $messages);
+            $validation->setAliases($aliases);
+
+            $validation->setTranslations([
+                'or' => __('or'),
+                'and' => __('and')
+            ]);
+
+            foreach (array_keys($rules) as $attributeName) {
+                foreach ($validation->getAttribute($attributeName)->getRules() as $rule) {
+                    $rule->setMessage((string) __($rule->getMessage()));
+                }
+            }
+
+            $validation->validate();
 
             if ($validation->fails()) {
                 foreach ($validation->errors()->toArray() as $key => $error) {
@@ -87,6 +94,6 @@ abstract class Form extends Component
      */
     public function validateOnly(array $rules = [], array $messages = [], array $data = null): bool
     {
-        return $this->validate($rules, $messages, $data, false);
+        return $this->validate($rules, $messages, $data, [], false);
     }
 }
