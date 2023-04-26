@@ -35,9 +35,6 @@ abstract class Form extends Component
      */
     protected $messages = [];
 
-    /**
-     * @param Validator $validator
-     */
     public function __construct(
         Validator $validator
     ) {
@@ -45,11 +42,6 @@ abstract class Form extends Component
     }
 
     /**
-     * @param array $rules
-     * @param array $messages
-     * @param array|null $data
-     * @param bool $mergeWithClassProperties
-     * @return bool
      * @throws AcceptableException
      */
     public function validate(
@@ -77,7 +69,7 @@ abstract class Form extends Component
 
             foreach (array_keys($rules) as $attributeName) {
                 foreach ($validation->getAttribute($attributeName)->getRules() as $rule) {
-                    $rule->setMessage((string)__($rule->getMessage()));
+                    $rule->setMessage((string) __($rule->getMessage()));
                 }
             }
 
