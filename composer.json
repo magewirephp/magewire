@@ -6,7 +6,8 @@
   "require": {
     "magento/framework": "*",
     "rakit/validation": "^1.0",
-    "php": ">=7.4"
+    "php": ">=7.4",
+    "symfony/http-foundation": "^5.4"
   },
   "authors": [
     {
