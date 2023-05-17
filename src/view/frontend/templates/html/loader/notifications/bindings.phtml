@@ -1,0 +1,78 @@
+<script>
+    function magewireLoaderNotifications(config = {}) {
+        let items = [];
+        config = Object.assign({}, config);
+
+        document.addEventListener('magewire:loader:start', (event) => {
+            if (event.detail.loader === false) {
+                return;
+            }
+
+            items[event.detail.key] = event.detail
+        })
+
+        return {
+            config: config,
+
+            notifications() {
+                return {}
+            },
+
+            getMessengerItems() {
+                return items.filter(item => item.title)
+            },
+
+            messenger() {
+                return {
+                    ['x-init']() {
+                        console.log('init messenger', items)
+                    },
+                    itemss: items
+                }
+
+                // return {
+                //     ['x-on:magewire:loader:start.window']() {
+                //         if (this.$event.detail) {
+                //             //this.items.push(Object.assign(this.$event.detail, { active: true, show: true }))
+                //             this.current = this.$event.detail.title ? this.items.length - 1 : this.current
+                //         }
+                //     },
+                //     ['x-on:magewire:loader:tick.window']() {
+                //         if (this.items[this.current] !== undefined) {
+                //             this.items[this.current].active = false
+                //         }
+                //
+                //         if (this.$event.detail) {
+                //             //this.items.push(Object.assign(this.$event.detail, { active: true, show: true }))
+                //             this.current = this.$event.detail.title ? this.items.length - 1 : this.current
+                //         }
+                //     },
+                //     ['x-on:magewire:loader:fail.window']() {
+                //         if (this.items[this.current] !== undefined) {
+                //             this.items[this.current].failed = true
+                //         }
+                //     },
+                //     ['x-on:magewire:loader:stop.window']() {
+                //         if (this.items[this.current]) {
+                //             this.items[this.current].active = false
+                //         }
+                //
+                //         this.current = null
+                //
+                //         let delay = 0
+                //
+                //         this.items.forEach((notification) => {
+                //             if (! notification.title || ! notification.show) {
+                //                 return
+                //             }
+                //
+                //             setTimeout(() => {
+                //                 notification.show = false
+                //             }, delay += notification.failed ? 2500 : 1500)
+                //         })
+                //     },
+                // }
+            }
+        }
+    }
+</script>

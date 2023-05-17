@@ -5,7 +5,6 @@
     <body>
         <referenceContainer name="page.bottom.container">
             <block name="magewire.loader"
-                   ifconfig="dev/magewire/loader/enable"
                    template="Magewirephp_Magewire::html/loader.phtml"
             >
                 <arguments>
@@ -14,16 +13,39 @@
                     </argument>
                 </arguments>
 
+                <!-- Loader notifications plugin -->
                 <block name="magewire.loader.notifications"
                        as="notifications"
                        ifconfig="dev/magewire/loader/enable_notifications"
-                       template="Magewirephp_Magewire::html/loader/notifications.phtml"/>
-                <block name="magewire.loader.spinner"
-                       as="spinner"
-                       template="Magewirephp_Magewire::html/loader/spinner.phtml"/>
+                       template="Magewirephp_Magewire::html/loader/notifications.phtml"
+                >
+                    <!-- Loader plugins AlpineJS bindings -->
+                    <block name="magewire.loader.notifications.messenger"
+                           as="messenger"
+                           template="Magewirephp_Magewire::html/loader/notifications/messenger.phtml"/>
+
+                    <!-- Loader notification AlpineJS bindings -->
+                    <block name="magewire.loader.notifications.bindings"
+                           as="bindings"
+                           template="Magewirephp_Magewire::html/loader/notifications/bindings.phtml"/>
+                </block>
+
+                <!-- Loader overlay -->
+                <block name="magewire.loader.overlay"
+                       as="overlay"
+                       ifconfig="dev/magewire/loader/enable"
+                       template="Magewirephp_Magewire::html/loader/overlay.phtml"
+                >
+                    <!-- Loader spinner SVG -->
+                    <block name="magewire.loader.overlay-spinner"
+                           as="spinner"
+                           template="Magewirephp_Magewire::html/loader/overlay-spinner.phtml"/>
+                </block>
+
+                <!-- Loader plugins AlpineJS bindings -->
                 <block name="magewire.loader.bindings"
                        as="bindings"
-                       template="Magewirephp_Magewire::html/loader/binding.phtml"/>
+                       template="Magewirephp_Magewire::html/loader/bindings.phtml"/>
             </block>
         </referenceContainer>
 
