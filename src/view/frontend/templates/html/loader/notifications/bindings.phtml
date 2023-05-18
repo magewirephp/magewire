@@ -1,77 +1,73 @@
 <script>
     function magewireLoaderNotifications(config = {}) {
-        let items = [];
         config = Object.assign({}, config);
 
-        document.addEventListener('magewire:loader:start', (event) => {
-            if (event.detail.loader === false) {
-                return;
-            }
-
-            items[event.detail.key] = event.detail
-        })
-
         return {
-            config: config,
+            messages: [],
+            awaiting: [],
+
+            config: Object.assign({
+                messageHideTimeout: 2500
+            }, config),
+
+            <?php /* Create a new message an detirmine if it needs to be shown or should wait. */ ?>
+            messageCreate(item) {
+                item.loader.map(i => i.split('::')).forEach((value, index) => {
+                    let message = Object.assign({}, item);
+                    message.loader = value;
+
+                    if (index === 0) {
+                        this.messages.push(message);
+                    } else {
+                        this.awaiting.push(message);
+                    }
+                });
+            },
+
+            <?php /* Deactivate message, but not remove it fully from the array to let animations run. */ ?>
+            messageDeactivate(index, failure) {
+                message = this.messages[index] || false;
+
+                if (message === false) {
+                    return console.log('Magewire: Could not deactivate notification message.');
+                }
+
+                message.loading = false;
+
+                setTimeout(() => {
+                    message.active = false;
+                }, failure ? this.config.messageHideTimeout + 1000 : this.config.messageHideTimeout);
+            },
+
+            init() {
+                document.addEventListener('magewire:loader:start', (event) => {
+                    if (event.detail.loader === false) {
+                        return;
+                    }
+
+                    this.messageCreate(Object.assign({
+                        active: true,
+                        loading: true,
+                    }, event.detail));
+                })
+
+                document.addEventListener('magewire:loader:stop', (event) => {
+                    if (! event.detail.component && ! event.detail.component.id && event.detail.loader) return;
+
+                    for (let message in this.messages) {
+                        if(this.messages[message].key == event.detail.loader.key) {
+                            return this.messageDeactivate(message);
+                        }
+                    }
+                })
+            },
 
             notifications() {
                 return {}
             },
 
-            getMessengerItems() {
-                return items.filter(item => item.title)
-            },
-
             messenger() {
-                return {
-                    ['x-init']() {
-                        console.log('init messenger', items)
-                    },
-                    itemss: items
-                }
-
-                // return {
-                //     ['x-on:magewire:loader:start.window']() {
-                //         if (this.$event.detail) {
-                //             //this.items.push(Object.assign(this.$event.detail, { active: true, show: true }))
-                //             this.current = this.$event.detail.title ? this.items.length - 1 : this.current
-                //         }
-                //     },
-                //     ['x-on:magewire:loader:tick.window']() {
-                //         if (this.items[this.current] !== undefined) {
-                //             this.items[this.current].active = false
-                //         }
-                //
-                //         if (this.$event.detail) {
-                //             //this.items.push(Object.assign(this.$event.detail, { active: true, show: true }))
-                //             this.current = this.$event.detail.title ? this.items.length - 1 : this.current
-                //         }
-                //     },
-                //     ['x-on:magewire:loader:fail.window']() {
-                //         if (this.items[this.current] !== undefined) {
-                //             this.items[this.current].failed = true
-                //         }
-                //     },
-                //     ['x-on:magewire:loader:stop.window']() {
-                //         if (this.items[this.current]) {
-                //             this.items[this.current].active = false
-                //         }
-                //
-                //         this.current = null
-                //
-                //         let delay = 0
-                //
-                //         this.items.forEach((notification) => {
-                //             if (! notification.title || ! notification.show) {
-                //                 return
-                //             }
-                //
-                //             setTimeout(() => {
-                //                 notification.show = false
-                //             }, delay += notification.failed ? 2500 : 1500)
-                //         })
-                //     },
-                // }
+                return {}
             }
         }
     }

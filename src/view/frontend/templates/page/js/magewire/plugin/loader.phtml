@@ -72,9 +72,6 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                     loader: value,
                     update: item
                 };
-
-                <?php /* Create a unique hash for this loader data. */ ?>
-                data[component.id].hash = btoa(data[component.id].key + data[component.id].type);
             }
 
             return data;
@@ -96,7 +93,16 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
         }
 
         const stop = function(message, component, failure = false) {
-            queue = queue.filter(item => component.id !== item.component.id);
+            let target = null;
+
+            queue = queue.filter(item => {
+                if (component.id !== item.component.id) {
+                    return true;
+                }
+
+                target = item.loader;
+                return false;
+            });
 
             if (message.response && message.response.effects) {
                 <?php /* Fill the queue for as long as the main component is fulfilling emits. */ ?>
@@ -110,7 +116,7 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
             <?php /* Only dispatch the stop event when all loading is done or one failed. */ ?>
             if (failure || ! queue.length) {
                 Magewire.dispatchEvent(`loader:${ failure ? 'fail' : 'stop' }`, {
-                    detail: { component: component }
+                    detail: { loader: target, component: component }
                 });
             }
         }

@@ -22,7 +22,13 @@
                     <!-- Loader plugins AlpineJS bindings -->
                     <block name="magewire.loader.notifications.messenger"
                            as="messenger"
-                           template="Magewirephp_Magewire::html/loader/notifications/messenger.phtml"/>
+                           template="Magewirephp_Magewire::html/loader/notifications/messenger.phtml"
+                    >
+                        <!-- Message item loader spinner SVG -->
+                        <block name="magewire.loader.notifications.messenger.spinner"
+                               as="spinner"
+                               template="Magewirephp_Magewire::html/loader/spinner.phtml"/>
+                    </block>
 
                     <!-- Loader notification AlpineJS bindings -->
                     <block name="magewire.loader.notifications.bindings"
@@ -39,7 +45,7 @@
                     <!-- Loader spinner SVG -->
                     <block name="magewire.loader.overlay-spinner"
                            as="spinner"
-                           template="Magewirephp_Magewire::html/loader/overlay-spinner.phtml"/>
+                           template="Magewirephp_Magewire::html/loader/spinner.phtml"/>
                 </block>
 
                 <!-- Loader plugins AlpineJS bindings -->

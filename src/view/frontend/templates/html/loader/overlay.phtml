@@ -32,6 +32,8 @@ use Magento\Framework\View\Element\Template;
      x-transition:leave-end="opacity-0"
 >
     <div class="flex flex-col justify-center items-center h-screen w-full space-y-6">
-        <?= $block->getChildHtml('spinner') ?>
+        <div class="w-9 h-9">
+            <?= $block->getChildHtml('spinner') ?>
+        </div>
     </div>
 </div>
