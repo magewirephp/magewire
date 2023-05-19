@@ -15,6 +15,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magewirephp\Magewire\Model\LayoutRenderLifecycle;
+use Magewirephp\Magewire\Model\System\Config as MagewireSystemConfig;
 
 /**
  * @api
@@ -32,13 +33,15 @@ class Magewire implements ArgumentInterface
         ApplicationState $applicationState,
         ProductMetadataInterface $productMetadata,
         StoreManagerInterface $storeManager,
-        LayoutRenderLifecycle $layoutRenderLifecycle
+        LayoutRenderLifecycle $layoutRenderLifecycle,
+        MagewireSystemConfig $magewireSystemConfig
     ) {
         $this->formKey = $formKey;
         $this->applicationState = $applicationState;
         $this->productMetaData = $productMetadata;
         $this->storeManager = $storeManager;
         $this->layoutRenderLifecycle = $layoutRenderLifecycle;
+        $this->magewireSystemConfig = $magewireSystemConfig;
     }
 
     /**
@@ -80,5 +83,10 @@ class Magewire implements ArgumentInterface
     public function pageRequiresMagewire(): bool
     {
         return $this->layoutRenderLifecycle->hasHistory();
+    }
+
+    public function getSystemConfig(): MagewireSystemConfig
+    {
+        return $this->magewireSystemConfig;
     }
 }

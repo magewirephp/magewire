@@ -10,13 +10,43 @@
                 messageHideTimeout: 2500
             }, config),
 
+            init() {
+                <?php /* @see Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml */ ?>
+                document.addEventListener('magewire:loader:start', (event) => {
+                    if (event.detail.loader === false) {
+                        return;
+                    }
+
+                    this.messageCreate(event.detail);
+                })
+
+                <?php /* @see Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml */ ?>
+                document.addEventListener('magewire:loader:stop', (event) => {
+                    if (! event.detail.component && ! event.detail.component.id && event.detail.loader) return;
+
+                    <?php /* Find the component by its unique key to try and deactivate it. */ ?>
+                    for (let message in this.messages) {
+                        if (this.messages[message].key == event.detail.loader.key) {
+                            return this.messageDeactivate(message);
+                        }
+                    }
+                })
+            },
+
             <?php /* Create a new message an detirmine if it needs to be shown or should wait. */ ?>
             messageCreate(item) {
                 item.loader.map(i => i.split('::')).forEach((value, index) => {
-                    let message = Object.assign({}, item);
-                    message.loader = value;
+                    let message = Object.assign({}, item, {
+                        active : false,
+                        loader : value,
+                        loading: false,
+                        success: null
+                    });
 
                     if (index === 0) {
+                        message.active  = true;
+                        message.loading = true;
+
                         this.messages.push(message);
                     } else {
                         this.awaiting.push(message);
@@ -25,41 +55,23 @@
             },
 
             <?php /* Deactivate message, but not remove it fully from the array to let animations run. */ ?>
-            messageDeactivate(index, failure) {
+            messageDeactivate(index, failure = false) {
                 message = this.messages[index] || false;
 
                 if (message === false) {
                     return console.log('Magewire: Could not deactivate notification message.');
                 }
 
+                let timeout = this.config.messageHideTimeout;
+
                 message.loading = false;
+                message.success = ! failure;
 
-                setTimeout(() => {
-                    message.active = false;
-                }, failure ? this.config.messageHideTimeout + 1000 : this.config.messageHideTimeout);
-            },
+                if (failure) {
+                    timeout + 1000;
+                }
 
-            init() {
-                document.addEventListener('magewire:loader:start', (event) => {
-                    if (event.detail.loader === false) {
-                        return;
-                    }
-
-                    this.messageCreate(Object.assign({
-                        active: true,
-                        loading: true,
-                    }, event.detail));
-                })
-
-                document.addEventListener('magewire:loader:stop', (event) => {
-                    if (! event.detail.component && ! event.detail.component.id && event.detail.loader) return;
-
-                    for (let message in this.messages) {
-                        if(this.messages[message].key == event.detail.loader.key) {
-                            return this.messageDeactivate(message);
-                        }
-                    }
-                })
+                setTimeout(() => message.active = false, timeout);
             },
 
             notifications() {

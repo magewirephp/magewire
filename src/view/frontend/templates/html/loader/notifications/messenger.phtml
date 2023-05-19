@@ -17,51 +17,55 @@ use Magewirephp\Magewire\Model\Action\SyncInput;
 use Magewirephp\Magewire\Model\Action\CallMethod;
 use Magewirephp\Magewire\Model\Action\FireEvent;
 ?>
-<div class="sm:fixed sm:top-0 sm:right-0 z-50 w-full max-w-xs flex-col space-y-2 pr-4 sm:justify-start"
+<div class="magewire.messenger z-50 w-full max-w-xs flex-col space-y-2 pr-4 sm:justify-start sm:fixed sm:top-0 sm:right-0"
      x-cloak
      <?php /* AlpineJS v2.x */ ?>
      x-spread="messenger"
      <?php /* AlpineJS v3.x */ ?>
      x-bind="messenger"
 >
-    <div class="space-y-4 flex flex-col-reverse">
-        <template x-for="(message, index) in messages.filter(message => message.loader.length)" :key="index">
-            <div class="magewire-notification.message"
-                 x-bind:class="{
-                     'sync-input': message.update.type === '<?= /** @noEscape */ SyncInput::ACTION ?>',
-                     'call-method': message.update.type === '<?= /** @noEscape */ CallMethod::ACTION ?>',
-                     'fire-event': message.update.type === '<?= /** @noEscape */ FireEvent::ACTION ?>'
-                 }"
-                 x-transition.duration.350ms
-                 x-show="message.active"
+    <div class="space-y-6 flex flex-col-reverse">
+        <template x-for="(message, index) in messages.filter(message => message.loader.length)" :key="message.key">
+            <button class="magewire.notification.message"
+                    x-bind:class="{
+                        'sync-input' : message.update.type === '<?= /** @noEscape */ SyncInput::ACTION ?>',
+                        'call-method': message.update.type === '<?= /** @noEscape */ CallMethod::ACTION ?>',
+                        'fire-event' : message.update.type === '<?= /** @noEscape */ FireEvent::ACTION ?>'
+                    }"
+                    x-transition:leave="transition ease-in duration-600"
+                    x-transition:leave-start="opacity-100 scale-100"
+                    x-transition:leave-end="opacity-0 scale-80"
+                    x-show="message.active"
+                    x-on:click="message.active = false"
+                    x-bind:diabled="message.loading"
+                    title="<?= $escaper->escapeHtmlAttr(__('Close Notification')) ?>"
             >
                 <div class="relative w-full max-w-sm
                             rounded-md border border-gray-300
                             bg-white bg-opacity-[75%] backdrop-blur-sm bg-blur
-                            py-4 px-9
+                            py-4 px-7
                             shadow-lg"
+                     x-bind:class="{ 'border-red-600 text-red-800 bg-red-100': message.success === false }"
                 >
-                    <div class="flex">
+                    <div class="flex text-left text-sm">
                         <div class="flex-1 w-0">
                             <template x-for="(title, index, loaders) in message.loader" :key="index">
-                                <p class="text-sm" x-text="title" x-bind:class="{ 'font-bold': index === 0 && loaders.length > 1 }"></p>
+                                <p x-text="title" x-bind:class="{ 'font-bold': index === 0 && loaders.length > 1 }"></p>
                             </template>
                         </div>
 
-                        <div class="absolute w-5 h-5 m-auto -left-3 top-0 bottom-0 ring-offset-[3px] ring-[2px] rounded-full bg-white ring-gray-300 shadow-lg">
-                            <div x-show="message.loading">
+                        <div class="absolute w-4 h-4 right-2 top-2">
+                            <div x-show="message.loading"
+                                 x-transition:leave="transition ease-in duration-600"
+                                 x-transition:leave-start="scale-100"
+                                 x-transition:leave-end="scale-0"
+                            >
                                 <?= $block->getChildHtml('spinner') ?>
-                            </div>
-
-                            <div x-show="! message.loading" x-transition.duration.250ms>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 stroke-[3px]">
-                                    <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
-                                </svg>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </button>
         </template>
     </div>
 </div>
