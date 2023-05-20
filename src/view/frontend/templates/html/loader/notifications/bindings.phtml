@@ -26,7 +26,7 @@
 
                     <?php /* Find the component by its unique key to try and deactivate it. */ ?>
                     for (let message in this.messages) {
-                        if (this.messages[message].key == event.detail.loader.key) {
+                        if (event.detail.loader && this.messages[message].key == event.detail.loader.key) {
                             return this.messageDeactivate(message);
                         }
                     }
@@ -35,6 +35,12 @@
 
             <?php /* Create a new message an detirmine if it needs to be shown or should wait. */ ?>
             messageCreate(item) {
+                if (item.loader && typeof item.loader !== 'object') {
+                    return console.log(
+                        'Magewire: Something went wrong while creating a notification message.'
+                    );
+                }
+
                 item.loader.map(i => i.split('::')).forEach((value, index) => {
                     let message = Object.assign({}, item, {
                         active : false,
@@ -59,7 +65,9 @@
                 message = this.messages[index] || false;
 
                 if (message === false) {
-                    return console.log('Magewire: Could not deactivate notification message.');
+                    return console.log(
+                        'Magewire: Could not deactivate the notification message.'
+                    );
                 }
 
                 let timeout = this.config.messageHideTimeout;

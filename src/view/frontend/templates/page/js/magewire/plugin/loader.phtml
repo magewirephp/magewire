@@ -79,6 +79,8 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
 
         <?php /* Active loaders queue. */ ?>
         let queue = [];
+        <?php /* Main loader target to stop. */ ?>
+        let stopLoaderTarget = null;
 
         const start = function(loader, component) {
             let first = ! queue.some(({ emit }) => emit);
@@ -93,16 +95,18 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
         }
 
         const stop = function(message, component, failure = false) {
-            let target = null;
+            if (queue.length) {
+                queue = queue.reverse().filter(item => {
+                    if (component.id !== item.component.id) {
+                        return true;
+                    }
+                    if (stopLoaderTarget === null) {
+                        stopLoaderTarget = item.loader;
+                    }
 
-            queue = queue.filter(item => {
-                if (component.id !== item.component.id) {
-                    return true;
-                }
-
-                target = item.loader;
-                return false;
-            });
+                    return false;
+                }).reverse();
+            }
 
             if (message.response && message.response.effects) {
                 <?php /* Fill the queue for as long as the main component is fulfilling emits. */ ?>
@@ -116,8 +120,11 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
             <?php /* Only dispatch the stop event when all loading is done or one failed. */ ?>
             if (failure || ! queue.length) {
                 Magewire.dispatchEvent(`loader:${ failure ? 'fail' : 'stop' }`, {
-                    detail: { loader: target, component: component }
+                    detail: { loader: stopLoaderTarget, component: component }
                 });
+
+                <?php /* Reset initial target when optional emits are also finished loading. */ ?>
+                stopLoaderTarget = null;
             }
         }
 
