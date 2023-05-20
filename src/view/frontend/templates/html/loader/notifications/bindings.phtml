@@ -82,6 +82,10 @@
                 setTimeout(() => message.active = false, timeout);
             },
 
+            messageList() {
+                return this.messages.filter(message => message.loader.length)
+            },
+
             notifications() {
                 return {}
             },

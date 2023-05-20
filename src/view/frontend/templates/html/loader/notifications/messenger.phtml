@@ -25,7 +25,7 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
      x-bind="messenger"
 >
     <div class="space-y-6 flex flex-col-reverse">
-        <template x-for="(message, index) in messages.filter(message => message.loader.length)" :key="message.key">
+        <template x-for="(message, index) in messageList()" :key="message.key">
             <button class="magewire.notification.message"
                     x-bind:class="{
                         'sync-input' : message.update.type === '<?= /** @noEscape */ SyncInput::ACTION ?>',
@@ -50,17 +50,38 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                     <div class="flex text-left text-sm">
                         <div class="flex-1 w-0">
                             <template x-for="(title, index, loaders) in message.loader" :key="index">
-                                <p x-text="title" x-bind:class="{ 'font-bold': index === 0 && loaders.length > 1 }"></p>
+                                <p x-text="title" x-bind:class="{ 'font-bold': index === 0 && loaders.length >= 1 }"></p>
                             </template>
                         </div>
 
-                        <div class="absolute w-4 h-4 right-2 top-2">
-                            <div x-show="message.loading"
-                                 x-transition:leave="transition ease-in duration-600"
-                                 x-transition:leave-start="scale-100"
-                                 x-transition:leave-end="scale-0"
-                            >
-                                <?= $block->getChildHtml('spinner') ?>
+                        <div class="absolute w-5 h-5 right-4 top-0 bottom-0 m-auto">
+                            <div class="relative">
+                                <div class="absolute"
+                                     x-show="message.loading"
+                                     x-transition:leave="transition ease-in duration-600"
+                                     x-transition:leave-start="scale-100"
+                                     x-transition:leave-end="scale-0"
+                                >
+                                    <?= $block->getChildHtml('spinner') ?>
+                                </div>
+
+                                <div class="text-green-800"
+                                     x-show="message.success"
+                                     x-transition:enter="transition ease-in duration-200"
+                                     x-transition:enter-start="scale-0"
+                                     x-transition:enter-end="scale-100"
+                                >
+                                    <svg class="w-full h-full"
+                                         fill="none"
+                                         stroke="currentColor"
+                                         stroke-width="1.5"
+                                         viewBox="0 0 24 24"
+                                         xmlns="http://www.w3.org/2000/svg"
+                                         aria-hidden="true"
+                                    >
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path>
+                                    </svg>
+                                </div>
                             </div>
                         </div>
                     </div>
