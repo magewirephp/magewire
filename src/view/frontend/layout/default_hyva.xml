@@ -19,6 +19,12 @@
                        ifconfig="dev/magewire/loader/enable_notifications"
                        template="Magewirephp_Magewire::html/loader/notifications.phtml"
                 >
+                    <arguments>
+                        <argument name="view_model" xsi:type="object">
+                            Magewirephp\Magewire\ViewModel\Magewire
+                        </argument>
+                    </arguments>
+
                     <!-- Loader plugins AlpineJS bindings -->
                     <block name="magewire.loader.notifications.messenger"
                            as="messenger"
@@ -39,9 +45,14 @@
                 <!-- Loader overlay -->
                 <block name="magewire.loader.overlay"
                        as="overlay"
-                       ifconfig="dev/magewire/loader/enable"
                        template="Magewirephp_Magewire::html/loader/overlay.phtml"
                 >
+                    <arguments>
+                        <argument name="view_model" xsi:type="object">
+                            Magewirephp\Magewire\ViewModel\Magewire
+                        </argument>
+                    </arguments>
+
                     <!-- Loader spinner SVG -->
                     <block name="magewire.loader.overlay-spinner"
                            as="spinner"
@@ -77,9 +88,16 @@
                 </arguments>
 
                 <container name="magewire.plugin.scripts" as="magewire.plugins">
+                    <!-- Inject the Magewire core Loader plugin -->
                     <block name="magewire.plugin.loader"
-                           ifconfig="dev/magewire/loader/enable"
-                           template="Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml"/>
+                           template="Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml"
+                    >
+                        <arguments>
+                            <argument name="view_model" xsi:type="object">
+                                Magewirephp\Magewire\ViewModel\Magewire
+                            </argument>
+                        </arguments>
+                    </block>
                 </container>
             </block>
         </referenceContainer>

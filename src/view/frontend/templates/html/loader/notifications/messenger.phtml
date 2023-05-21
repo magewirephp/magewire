@@ -38,7 +38,7 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                     x-show="message.active"
                     x-on:click="message.active = false"
                     x-bind:diabled="message.loading"
-                    title="<?= $escaper->escapeHtmlAttr(__('Close Notification')) ?>"
+                    title="<?= $escaper->escapeHtmlAttr(__('Click to hide this notification')) ?>"
             >
                 <div class="relative w-full max-w-sm
                             rounded-md border border-gray-300
@@ -65,23 +65,20 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                                     <?= $block->getChildHtml('spinner') ?>
                                 </div>
 
-                                <div class="text-green-800"
+                                <svg class="w-full h-full text-green-700 stroke-[3]"
+                                     fill="none"
+                                     stroke="currentColor"
+                                     stroke-width="1.5"
+                                     viewBox="0 0 24 24"
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     aria-hidden="true"
                                      x-show="message.success"
                                      x-transition:enter="transition ease-in duration-200"
                                      x-transition:enter-start="scale-0"
                                      x-transition:enter-end="scale-100"
                                 >
-                                    <svg class="w-full h-full"
-                                         fill="none"
-                                         stroke="currentColor"
-                                         stroke-width="1.5"
-                                         viewBox="0 0 24 24"
-                                         xmlns="http://www.w3.org/2000/svg"
-                                         aria-hidden="true"
-                                    >
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path>
-                                    </svg>
-                                </div>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path>
+                                </svg>
                             </div>
                         </div>
                     </div>

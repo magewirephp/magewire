@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -6,16 +6,21 @@
  * details on copyrights and license information.
  */
 
-declare(strict_types=1);
-
+/** @var Magewire $magewireScripts */
 /** @var Escaper $escaper */
 /** @var Template $block */
 
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire;
+
+$magewireScripts = $block->getViewModel();
+$magewireConfig = $magewireScripts->getSystemConfig();
 ?>
 <div id="magewire-loader-notifications"
-     x-data="magewireLoaderNotifications()"
+     x-data="magewireLoaderNotifications({
+         messageHideTimeout: <?= $magewireConfig->getNotificationMessageFadeoutTimeout() ?>
+     })"
      <?php /* AlpineJS v2.x */ ?>
      x-spread="notifications"
      <?php /* AlpineJS v3.x */ ?>

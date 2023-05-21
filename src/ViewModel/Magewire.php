@@ -15,7 +15,7 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magewirephp\Magewire\Model\LayoutRenderLifecycle;
-use Magewirephp\Magewire\Model\System\Config as MagewireSystemConfig;
+use Magewirephp\Magewire\Model\Magento\System\ConfigMagewire as MagewireSystemConfig;
 
 /**
  * @api

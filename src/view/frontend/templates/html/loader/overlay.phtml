@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -6,14 +6,15 @@
  * details on copyrights and license information.
  */
 
-declare(strict_types=1);
-
+/** @var Magewire $magewireScripts */
 /** @var Escaper $escaper */
 /** @var Template $block */
 
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire;
 
+$magewireScripts = $block->getViewModel();
 ?>
 <div class="fixed
             top-0 left-0 right-0 bottom-0

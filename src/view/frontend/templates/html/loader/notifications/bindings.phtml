@@ -1,10 +1,8 @@
 <script>
     function magewireLoaderNotifications(config = {}) {
-        config = Object.assign({}, config);
-
         return {
             messages: [],
-            awaiting: [],
+            awaiting: [], // wip
 
             config: Object.assign({
                 messageHideTimeout: 2500
@@ -43,9 +41,13 @@
 
                 item.loader.map(i => i.split('::')).forEach((value, index) => {
                     let message = Object.assign({}, item, {
+                        <?php /* Can only be of type Boolean. */ ?>
                         active : false,
+                        <?php /* Can be of value Array or Boolean. */ ?>
                         loader : value,
+                        <?php /* Can only be of type Boolean. */ ?>
                         loading: false,
+                        <?php /* Can be of value null, true or false. */ ?>
                         success: null
                     });
 
@@ -76,7 +78,7 @@
                 message.success = ! failure;
 
                 if (failure) {
-                    timeout + 1000;
+                    timeout + 5000;
                 }
 
                 setTimeout(() => message.active = false, timeout);
