@@ -57,7 +57,7 @@ class ConfigMagewire
         string $path,
         string $group = null,
         string $scopeType = ScopeInterface::SCOPE_STORE,
-               $scopeCode = null
+        $scopeCode = null
     ) {
         return $this->scopeConfig->getValue($this->createPath($path, $group), $scopeType, $scopeCode);
     }
@@ -69,7 +69,7 @@ class ConfigMagewire
         string $path,
         string $group = null,
         string $scopeType = ScopeInterface::SCOPE_STORE,
-               $scopeCode = null
+        $scopeCode = null
     ): bool {
         return $this->scopeConfig->isSetFlag($this->createPath($path, $group), $scopeType, $scopeCode);
     }
