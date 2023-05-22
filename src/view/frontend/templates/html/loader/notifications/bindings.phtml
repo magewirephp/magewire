@@ -25,7 +25,7 @@
                     <?php /* Find the component by its unique key to try and deactivate it. */ ?>
                     for (let message in this.messages) {
                         if (event.detail.loader && this.messages[message].key == event.detail.loader.key) {
-                            return this.messageDeactivate(message);
+                            return this.messageDeactivate(message, event.failure || false);
                         }
                     }
                 })

@@ -30,7 +30,10 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                     x-bind:class="{
                         'sync-input' : message.update.type === '<?= /** @noEscape */ SyncInput::ACTION ?>',
                         'call-method': message.update.type === '<?= /** @noEscape */ CallMethod::ACTION ?>',
-                        'fire-event' : message.update.type === '<?= /** @noEscape */ FireEvent::ACTION ?>'
+                        'fire-event' : message.update.type === '<?= /** @noEscape */ FireEvent::ACTION ?>',
+
+                        'message-failure': message.success === false,
+                        'message-success': message.success === true,
                     }"
                     x-transition:leave="transition ease-in duration-600"
                     x-transition:leave-start="opacity-100 scale-100"
@@ -68,16 +71,29 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                                 <svg class="w-full h-full text-green-700 stroke-[3]"
                                      fill="none"
                                      stroke="currentColor"
-                                     stroke-width="1.5"
                                      viewBox="0 0 24 24"
                                      xmlns="http://www.w3.org/2000/svg"
                                      aria-hidden="true"
-                                     x-show="message.success"
+                                     x-show="message.success === true"
                                      x-transition:enter="transition ease-in duration-200"
                                      x-transition:enter-start="scale-0"
                                      x-transition:enter-end="scale-100"
                                 >
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path>
+                                </svg>
+
+                                <svg class="w-full h-full text-red-700 stroke-[3]"
+                                     fill="none"
+                                     stroke="currentColor"
+                                     viewBox="0 0 24 24"
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     aria-hidden="true"
+                                     x-show="message.success === false"
+                                     x-transition:enter="transition ease-in duration-200"
+                                     x-transition:enter-start="scale-0"
+                                     x-transition:enter-end="scale-100"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
                                 </svg>
                             </div>
                         </div>
