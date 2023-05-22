@@ -42,7 +42,7 @@
                     >
                         <label>Enable Notifications</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <comment>Display additional component notification messages for available components.</comment>
+                        <comment>Display notification component messages when set.</comment>
 
                         <depends>
                             <field id="dev/magewire/loader/enable">1</field>
