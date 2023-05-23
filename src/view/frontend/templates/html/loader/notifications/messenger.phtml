@@ -17,14 +17,14 @@ use Magewirephp\Magewire\Model\Action\SyncInput;
 use Magewirephp\Magewire\Model\Action\CallMethod;
 use Magewirephp\Magewire\Model\Action\FireEvent;
 ?>
-<div class="magewire.messenger z-50 w-full max-w-xs flex-col space-y-2 pr-4 sm:justify-start sm:fixed sm:top-0 sm:right-0"
+<div class="magewire.messenger z-50 w-full fixed top-0 right-0 md:max-w-xs"
      x-cloak
      <?php /* AlpineJS v2.x */ ?>
      x-spread="messenger"
      <?php /* AlpineJS v3.x */ ?>
      x-bind="messenger"
 >
-    <div class="space-y-6 flex flex-col-reverse">
+    <div class="space-y-6 flex flex-col space-y-3 px-3 md:flex-col-reverse">
         <template x-for="(message, index) in messageList()" :key="message.key">
             <button class="magewire.notification.message"
                     x-bind:class="{
@@ -43,22 +43,36 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                     x-bind:diabled="message.loading"
                     title="<?= $escaper->escapeHtmlAttr(__('Click to hide this notification')) ?>"
             >
-                <div class="relative w-full max-w-sm
+                <div class="relative w-full
                             rounded-md border border-gray-300
                             bg-white bg-opacity-[75%] backdrop-blur-sm bg-blur
-                            py-4 px-7
-                            shadow-lg"
-                     x-bind:class="{ 'border-red-600 text-red-800 bg-red-100': message.success === false }"
+                            py-3 px-5 md:py-4 md:pl-6 md:pr-4
+                            shadow-lg
+                            md:max-w-sm"
+                     x-bind:class="{
+                         'border-red-600 text-red-800 bg-red-100': message.success === false,
+                     }"
                 >
-                    <div class="flex text-left text-sm">
-                        <div class="flex-1 w-0">
-                            <template x-for="(title, index, loaders) in message.loader" :key="index">
-                                <p x-text="title" x-bind:class="{ 'font-bold': index === 0 && loaders.length >= 1 }"></p>
+                    <div class="flex text-left text-sm space-x-0.5 text-gray-900">
+                        <div class="flex-grow w-0 space-y-1">
+                            <template x-for="(title, position, loaders) in message.loader" :key="position">
+                                <p class="hyphens-auto leading-tight"
+                                   x-text="title"
+                                   x-bind:class="{
+                                       'font-bold': position <= 1 && loaders.length >= 1,
+                                       'text-gray-400 uppercase': position === 0 && loaders.length >= 2
+                                   }"
+                                >
+                                    <!-- Title placeholder -->
+                                </p>
                             </template>
                         </div>
 
-                        <div class="absolute w-5 h-5 right-4 top-0 bottom-0 m-auto">
+                        <div class="flex-none w-5 h-5
+                                    right-3 top-0 bottom-0 m-auto md:right-5"
+                        >
                             <div class="relative">
+                                <?php /* Stack items vertically to prevent layout shifting when hiding or disappearing, ensuring consistent visual layout. */ ?>
                                 <div class="absolute"
                                      x-show="message.loading"
                                      x-transition:leave="transition ease-in duration-600"

@@ -135,6 +135,9 @@ $magewireScripts = $block->getViewModel();
                     <?php /* Reset initial target when optional emits are also finished loading. */ ?>
                     stopLoaderTarget = null;
                 }
+
+                <?php /* Since loader is custom Magewire, we need to re-assign optional new dynamic loader values. */ ?>
+                Object.assign(component.effects.loader, message.response.effects.loader)
             }
 
             <?php /* Magewire loader plugin registration. */ ?>

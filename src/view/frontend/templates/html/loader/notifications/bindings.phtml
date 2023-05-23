@@ -5,16 +5,13 @@
             awaiting: [], // wip
 
             config: Object.assign({
-                messageHideTimeout: 2500
+                messageHideTimeout: 2500,
+                messageHideTimeoutCalculation: false,
             }, config),
 
             init() {
                 <?php /* @see Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml */ ?>
                 document.addEventListener('magewire:loader:start', (event) => {
-                    if (event.detail.loader === false) {
-                        return;
-                    }
-
                     this.messageCreate(event.detail);
                 })
 
@@ -31,13 +28,9 @@
                 })
             },
 
-            <?php /* Create a new message an detirmine if it needs to be shown or should wait. */ ?>
+            <?php /* Create a new message an determine if it needs to be shown or should wait. */ ?>
             messageCreate(item) {
-                if (item.loader && typeof item.loader !== 'object') {
-                    return console.log(
-                        'Magewire: Something went wrong while creating a notification message.'
-                    );
-                }
+                if (! event.detail.loader) return;
 
                 item.loader.map(i => i.split('::')).forEach((value, index) => {
                     let message = Object.assign({}, item, {
@@ -67,15 +60,19 @@
                 message = this.messages[index] || false;
 
                 if (message === false) {
-                    return console.log(
-                        'Magewire: Could not deactivate the notification message.'
-                    );
+                    return console.error('Magewire: Could not deactivate the notification message.');
                 }
-
-                let timeout = this.config.messageHideTimeout;
 
                 message.loading = false;
                 message.success = ! failure;
+
+                let timeout = this.config.messageHideTimeout;
+
+                if (this.config.messageHideTimeoutCalculation) {
+                    timeout += (Math.floor(
+                        message.loader.reduce((total, str) => (total + str.length), 0) / 10) * (message.loader.length * 100)
+                    );
+                }
 
                 if (failure) {
                     timeout + 5000;

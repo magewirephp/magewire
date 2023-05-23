@@ -11,6 +11,7 @@
 
                     <notifications>
                         <message_fadeout_timeout>2500</message_fadeout_timeout>
+                        <message_fadeout_timeout_calculation>0</message_fadeout_timeout_calculation>
                     </notifications>
                 </loader>
             </magewire>
