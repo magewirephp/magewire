@@ -73,18 +73,6 @@
                             <comment>Determine the duration, in milliseconds, for the message to fade out after its target component has fully loaded.</comment>
                             <validate>required-entry validate-digits validate-not-negative-number</validate>
                         </field>
-
-                        <field id="message_fadeout_timeout_calculation"
-                               translate="label comment"
-                               type="select"
-                               sortOrder="20"
-                               showInDefault="1"
-                               canRestore="1"
-                        >
-                            <label>Enable Fadeout Timeout Auto-Calculation</label>
-                            <comment>Automatically extends the fadeout timeout by a calculated duration to ensure readable visibility before disappearance.</comment>
-                            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        </field>
                     </group>
                 </group>
             </group>

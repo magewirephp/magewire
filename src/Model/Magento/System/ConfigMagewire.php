@@ -43,11 +43,6 @@ class ConfigMagewire
         return (int) $this->getGroupValue('message_fadeout_timeout', self::GROUP_NOTIFICATIONS) ?? 2500;
     }
 
-    public function canCalculateMessageFadeoutTimeout(): bool
-    {
-        return $this->isGroupFlag('message_fadeout_timeout_calculation', self::GROUP_NOTIFICATIONS) ?? 2500;
-    }
-
     public function pageRequiresLoaderPluginScript(): bool
     {
         return $this->canShowLoaderOverlay() || $this->canShowLoaderNotificationMessages();

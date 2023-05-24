@@ -68,7 +68,7 @@ $magewireScripts = $block->getViewModel();
                     if (typeof loader === 'object' && item.type in loaderTypeResolvers) {
                         value = loaderTypeResolvers[item.type](item, loader);
                     } else if (typeof loader === 'string') {
-                        value = loader;
+                        value = [loader];
                     }
 
                     data[component.id] = {
@@ -137,7 +137,7 @@ $magewireScripts = $block->getViewModel();
                 }
 
                 <?php /* Since loader is custom Magewire, we need to re-assign optional new dynamic loader values. */ ?>
-                Object.assign(component.effects.loader, message.response.effects.loader)
+                component.effects.loader = message.response.effects.loader
             }
 
             <?php /* Magewire loader plugin registration. */ ?>

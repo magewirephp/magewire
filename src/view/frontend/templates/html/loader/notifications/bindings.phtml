@@ -2,19 +2,15 @@
     function magewireLoaderNotifications(config = {}) {
         return {
             messages: [],
-            awaiting: [], // wip
 
             config: Object.assign({
-                messageHideTimeout: 2500,
-                messageHideTimeoutCalculation: false,
+                messageHideTimeout: 2500
             }, config),
 
             init() {
                 <?php /* @see Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml */ ?>
                 document.addEventListener('magewire:loader:start', (event) => {
-                    if (typeof event.detail.loader === 'object') {
-                        this.messageCreate(event.detail);
-                    }
+                    this.messageCreate(event.detail);
                 })
 
                 <?php /* @see Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml */ ?>
@@ -36,18 +32,15 @@
             messageCreate(item) {
                 this.messages.push(
                     Object.assign({}, item, {
-                        <?php /* Can only be of type Boolean. */ ?>
                         active : true,
-                        <?php /* Can be of value Array or Boolean. */ ?>
                         loader : item.loader,
-                        <?php /* Can only be of type Boolean. */ ?>
                         loading: true,
-                        <?php /* Can be of value null, true or false. */ ?>
                         success: null,
-
                         timeout: this.config.messageHideTimeout
                     })
                 );
+
+                console.log(this.messages)
             },
 
             <?php /* Deactivate message, but not remove it fully from the array to let animations run. */ ?>
@@ -60,10 +53,6 @@
 
                 if (failure) {
                     message.timeout =+ 5000;
-                } else if (this.config.messageHideTimeoutCalculation) {
-                    message.timeout += (Math.floor(
-                        message.loader.reduce((total, str) => (total + str.length), 0) / 10) * (message.loader.length * 100)
-                    );
                 }
 
                 message.loading = false;

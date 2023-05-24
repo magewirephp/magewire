@@ -37,9 +37,9 @@ class Loader implements HydratorInterface
         if ($loader) {
             if (is_array($loader)) {
                 $loader = $this->functionsHelper->mapWithKeys(function ($value, $key) {
-                    if (is_string($key) === false && is_string($value)) {
-                        return [$value => true];
-                    }
+//                    if (! is_string($key) && is_string($value)) {
+//                        return $loader;
+//                    }
                     if (is_string($value)) {
                         $value = [$value];
                     }
@@ -49,6 +49,8 @@ class Loader implements HydratorInterface
 
                     return [$key => $value];
                 }, $loader);
+            } elseif (is_string($loader)) {
+                $loader = __($loader);
             }
 
             $response->effects['loader'] = $loader;
