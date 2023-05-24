@@ -25,23 +25,24 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
      x-bind="messenger"
 >
     <div class="space-y-6 flex flex-col space-y-3 px-3 md:flex-col-reverse">
-        <template x-for="(message, index) in messageList()" :key="message.key">
+        <template x-for="(message, index) in messageList()" x-bind:key="index">
             <button class="magewire.notification.message"
+                    x-data="{ show: true }"
+                    x-init="$watch('message.loading', (test) => setTimeout(() => show = false, message.timeout))"
                     x-bind:class="{
                         'sync-input' : message.update.type === '<?= /** @noEscape */ SyncInput::ACTION ?>',
                         'call-method': message.update.type === '<?= /** @noEscape */ CallMethod::ACTION ?>',
                         'fire-event' : message.update.type === '<?= /** @noEscape */ FireEvent::ACTION ?>',
 
                         'message-failure': message.success === false,
-                        'message-success': message.success === true,
+                        'message-success': message.success === true
                     }"
                     x-transition:leave="transition ease-in duration-600"
                     x-transition:leave-start="opacity-100 scale-100"
                     x-transition:leave-end="opacity-0 scale-80"
-                    x-show="message.active"
-                    x-on:click="message.active = false"
+                    x-show="show"
+                    x-on:click="show = false"
                     x-bind:diabled="message.loading"
-                    title="<?= $escaper->escapeHtmlAttr(__('Click to hide this notification')) ?>"
             >
                 <div class="relative w-full
                             rounded-md border border-gray-300
@@ -50,7 +51,7 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                             shadow-lg
                             md:max-w-sm"
                      x-bind:class="{
-                         'border-red-600 text-red-800 bg-red-100': message.success === false,
+                         'border-red-600 bg-red-100': message.success === false,
                      }"
                 >
                     <div class="flex text-left text-sm space-x-0.5 text-gray-900">
@@ -59,8 +60,9 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                                 <p class="hyphens-auto leading-tight"
                                    x-text="title"
                                    x-bind:class="{
-                                       'font-bold': position <= 1 && loaders.length >= 1,
-                                       'text-gray-400 uppercase': position === 0 && loaders.length >= 2
+                                       'font-bold': (position <= 1 && loaders.length >= 3) || (position == 0 && loaders.length >= 1),
+                                       'text-gray-400 uppercase': position === 0 && loaders.length > 2,
+                                       'text-red-800': message.success === false
                                    }"
                                 >
                                     <!-- Title placeholder -->

@@ -12,12 +12,16 @@
             init() {
                 <?php /* @see Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml */ ?>
                 document.addEventListener('magewire:loader:start', (event) => {
-                    this.messageCreate(event.detail);
+                    if (typeof event.detail.loader === 'object') {
+                        this.messageCreate(event.detail);
+                    }
                 })
 
                 <?php /* @see Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml */ ?>
                 document.addEventListener('magewire:loader:stop', (event) => {
-                    if (! event.detail.component && ! event.detail.component.id && event.detail.loader) return;
+                    if (! event.detail.component && ! event.detail.component.id && event.detail.loader) {
+                        return;
+                    }
 
                     <?php /* Find the component by its unique key to try and deactivate it. */ ?>
                     for (let message in this.messages) {
@@ -30,29 +34,20 @@
 
             <?php /* Create a new message an determine if it needs to be shown or should wait. */ ?>
             messageCreate(item) {
-                if (! event.detail.loader) return;
-
-                item.loader.map(i => i.split('::')).forEach((value, index) => {
-                    let message = Object.assign({}, item, {
+                this.messages.push(
+                    Object.assign({}, item, {
                         <?php /* Can only be of type Boolean. */ ?>
-                        active : false,
+                        active : true,
                         <?php /* Can be of value Array or Boolean. */ ?>
-                        loader : value,
+                        loader : item.loader,
                         <?php /* Can only be of type Boolean. */ ?>
-                        loading: false,
+                        loading: true,
                         <?php /* Can be of value null, true or false. */ ?>
-                        success: null
-                    });
+                        success: null,
 
-                    if (index === 0) {
-                        message.active  = true;
-                        message.loading = true;
-
-                        this.messages.push(message);
-                    } else {
-                        this.awaiting.push(message);
-                    }
-                });
+                        timeout: this.config.messageHideTimeout
+                    })
+                );
             },
 
             <?php /* Deactivate message, but not remove it fully from the array to let animations run. */ ?>
@@ -63,22 +58,16 @@
                     return console.error('Magewire: Could not deactivate the notification message.');
                 }
 
-                message.loading = false;
-                message.success = ! failure;
-
-                let timeout = this.config.messageHideTimeout;
-
-                if (this.config.messageHideTimeoutCalculation) {
-                    timeout += (Math.floor(
+                if (failure) {
+                    message.timeout =+ 5000;
+                } else if (this.config.messageHideTimeoutCalculation) {
+                    message.timeout += (Math.floor(
                         message.loader.reduce((total, str) => (total + str.length), 0) / 10) * (message.loader.length * 100)
                     );
                 }
 
-                if (failure) {
-                    timeout + 5000;
-                }
-
-                setTimeout(() => message.active = false, timeout);
+                message.loading = false;
+                message.success = ! failure;
             },
 
             messageList() {

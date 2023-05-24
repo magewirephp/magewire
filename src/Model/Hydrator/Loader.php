@@ -41,7 +41,10 @@ class Loader implements HydratorInterface
                         return [$value => true];
                     }
                     if (is_string($value)) {
-                        $value = array_map('__', explode('...', $value));
+                        $value = [$value];
+                    }
+                    if (is_array($value)) {
+                        $value = array_map('__', array_filter($value, 'is_string'));
                     }
 
                     return [$key => $value];
