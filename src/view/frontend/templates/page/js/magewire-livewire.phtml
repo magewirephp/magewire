@@ -26,6 +26,7 @@ $magewireScripts = $block->getViewModel();
 <script>
     document.addEventListener('livewire:available', (event) => {
         const orig = Element.prototype.setAttribute;
+
         Element.prototype.setAttribute = function patchLivewireSetAttribute(name, value) {
             // In Alpine v2, ignore Alpine v3 x-bind attributes that are used as x-spread
             if (Alpine && Alpine.version.substring(0, 1) === '2' && ! name) return;

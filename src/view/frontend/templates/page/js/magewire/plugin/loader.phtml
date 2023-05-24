@@ -71,6 +71,11 @@ $magewireScripts = $block->getViewModel();
                         value = [loader];
                     }
 
+                    <?php /* Wildcard support. */ ?>
+                    if (value === undefined && '*' in loader) {
+                        value = loader['*'];
+                    }
+
                     data[component.id] = {
                         key: Date.now(),
                         component: component,
