@@ -7,6 +7,7 @@
                 messageHideTimeout: 2500
             }, config),
 
+            <?php /* Only auto-runs in Alpine V3. */ ?>
             init() {
                 <?php /* @see Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml */ ?>
                 document.addEventListener('magewire:loader:start', (event) => {
@@ -39,8 +40,6 @@
                         timeout: this.config.messageHideTimeout
                     })
                 );
-
-                console.log(this.messages)
             },
 
             <?php /* Deactivate message, but not remove it fully from the array to let animations run. */ ?>
@@ -60,16 +59,16 @@
             },
 
             messageList() {
-                return this.messages.filter(message => message.loader.length)
+                return this.messages.filter(message => message.loader.length);
             },
 
             notifications() {
-                return {}
+                return {};
             },
 
             messenger() {
-                return {}
+                return {};
             }
-        }
+        };
     }
 </script>

@@ -17,18 +17,12 @@ use Magewirephp\Magewire\Model\Action\SyncInput;
 use Magewirephp\Magewire\Model\Action\CallMethod;
 use Magewirephp\Magewire\Model\Action\FireEvent;
 ?>
-<div class="magewire.messenger z-50 w-full fixed top-0 right-0 md:max-w-xs"
-     x-cloak
-     <?php /* AlpineJS v2.x */ ?>
-     x-spread="messenger"
-     <?php /* AlpineJS v3.x */ ?>
-     x-bind="messenger"
->
+<div class="magewire.messenger z-50 w-full fixed top-0 right-0 md:max-w-xs">
     <div class="space-y-6 flex flex-col space-y-3 px-3 md:flex-col-reverse">
-        <template x-for="(message, index) in messageList()" x-bind:key="index">
-            <button class="magewire.notification.message"
+        <template x-for="(message, index, messages) in messageList()" x-bind:key="index">
+            <button class="magewire.notification.message relative"
                     x-data="{ show: true }"
-                    x-init="$watch('message.loading', (test) => setTimeout(() => show = false, message.timeout))"
+                    x-init="$watch('message.loading', (value) => setTimeout(() => show = false, message.timeout))"
                     x-bind:class="{
                         'sync-input' : message.update.type === '<?= /** @noEscape */ SyncInput::ACTION ?>',
                         'call-method': message.update.type === '<?= /** @noEscape */ CallMethod::ACTION ?>',
@@ -41,7 +35,7 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                     x-transition:leave-start="opacity-100 scale-100"
                     x-transition:leave-end="opacity-0 scale-80"
                     x-show="show"
-                    x-on:click="show = false"
+                    x-on:click.once="show = false"
                     x-bind:diabled="message.loading"
             >
                 <div class="relative w-full

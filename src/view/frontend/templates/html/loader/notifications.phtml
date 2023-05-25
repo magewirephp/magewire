@@ -22,9 +22,9 @@ $magewireConfig = $magewireScripts->getSystemConfig();
          messageHideTimeout: <?= $magewireConfig->getNotificationMessageFadeoutTimeout() ?>
      })"
      <?php /* AlpineJS v2.x */ ?>
-     x-spread="notifications"
+     x-spread="notifications()"
      <?php /* AlpineJS v3.x */ ?>
-     x-bind="notifications"
+     x-bind="notifications()"
 >
     <?= $block->getChildHtml('messenger') ?>
 </div>
