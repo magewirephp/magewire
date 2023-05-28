@@ -23,9 +23,7 @@ composer require magewirephp/magewire
 ```
 
 Please be aware that this extension is primarily build for themes running without Require JS like Hyvä Themes. It will
-not work with RequireJS-dependent Magento theme out of the box.
-
-Don't worry – with a few simple tweaks, you can unleash
+not work with RequireJS-dependent Magento theme out of the box. Don't worry – with a few simple tweaks, you can unleash
 most of the richness in your Blank or Luma projects. Head over to the [compatibility](./docs/Compatibility.md) section
 to learn more and start making your Magento 2 store more dynamic and engaging today!
 
@@ -39,7 +37,7 @@ to learn more and start making your Magento 2 store more dynamic and engaging to
 
 ## Sponsors
 Based on proven results, using Magewire consistently reduces work hours, offering significant benefits to agencies,
-their developers and merchants. I extend my heartfelt appreciation to my current financiers for their support creating
+their developers and merchants. I extend my heartfelt appreciation to my current sponsors for their support creating
 a win-win situation for all involved.
 
 |   |   |
