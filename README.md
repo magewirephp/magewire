@@ -45,18 +45,18 @@ a win-win situation for all involved.
 |<a align="center" href="https://hyva.io/" target="_blank"><img width="64" alt="Hyvä Themes" src="https://user-images.githubusercontent.com/5383956/227921963-3200c66e-be02-488d-84bc-84c7b77cd042.png"></a>|<a align="center" href="https://vendic.nl/" target="_blank"><img width="64" alt="Vendic" src="https://user-images.githubusercontent.com/5383956/228823594-d3344d87-dadc-4c36-a212-89cba8c7340b.jpg"></a>|
 
 ## Developers say
-♦ This is a game-changing tool! You can build practically anything with almost no javascript. It saves a significant
+▏This is a game-changing tool! You can build practically anything with almost no javascript. It saves a significant
 amount of time and is incredibly easy to work with. It's not a matter of whether you should use it, you simply must
 use it. — **Marcus Venghaus / Freelance Developer**
 
-♦ Magewire is like magic sauce that can save a ton of time implementing features! It’s great to see more tools from the
+▏Magewire is like magic sauce that can save a ton of time implementing features! It’s great to see more tools from the
 Laravel ecosystem being made available within Magento — **Vinai Kopp / Technical Director**
 
-♦ Magewire gives you the ability to add reactivity without the use of a a bloated JS framework or package. Useing Magewire
+▏Magewire gives you the ability to add reactivity without the use of a a bloated JS framework or package. Useing Magewire
 is intuitive, quick and easy to learn. It feels like a breath of fresh air to work with and takes away a lot headaches
 compared to using Luma and RequireJS. — **Jesse de Boer / Frontend Developer**
 
-♦ Magewire is one of my favourite tools! It even makes frontend morons like me capable of dynamic UIs! More people should
+▏Magewire is one of my favourite tools! It even makes frontend morons like me capable of dynamic UIs! More people should
 check it out. — **Kiel Pykett / Technical Lead**
 
 ## Security Vulnerabilities
