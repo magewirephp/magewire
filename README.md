@@ -14,6 +14,8 @@ Looking for an easy way to build modern, reactive, and dynamic interfaces in Mag
 experiences without leaving the comfort of Magento's core layout and template systems. Add dynamic and reactive
 features to your store without a full Javascript framework. Try Magewire today and take your store to the next level!
 
+Magewire is fully independend and open source with no 
+
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/magewirephp.svg?style=social&label=Follow:%20%40magewirephp)](https://twitter.com/magewirephp)
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/wpoortman.svg?style=social&label=Author:%20%40wpoortman)](https://twitter.com/wpoortman)
 
@@ -22,8 +24,8 @@ features to your store without a full Javascript framework. Try Magewire today a
 composer require magewirephp/magewire
 ```
 
-Be aware that this extension is primarily build for Hyvä themes and won't work with RequireJS-dependent Magento theme
-out of the box. But don't worry – with a few simple tweaks, you can unleash most of the richness in your Blank or Luma
+Be aware that this extension is primarily build for Hyvä Themes. It will not work with RequireJS-dependent Magento theme
+out of the box. Don't worry – with a few simple tweaks, you can unleash most of the richness in your Blank or Luma
 projects. Head over to the [compatibility](./docs/Compatibility.md) section to learn more and start making your
 Magento 2 store more dynamic and engaging today!
 
@@ -79,7 +81,11 @@ Copyright © [Willem Poortman](https://github.com/wpoortman)
 
 Magewire is open-sourced software licensed under the [MIT license](LICENSE.md).
 
-> This Magewire port would not have been
+> It's important to emphasize that this package is completely independent of any business entities. There is absolutely
+> no involvement or interference from other companies expressing their preferences. This package is created by the
+> community, for the community, ensuring its integrity and unbiased nature.
+
+_This Magewire port would not have been
 possible without the the existence of the [Laravel Livewire](https://laravel-livewire.com/) project, it's creator [Caleb Porzio](https://github.com/calebporzio) and all contributors
 with their tireless efforts and dedication. A big shoutout and thank you to all of them for the inspiration and
-motivation to make this work in- and outside the Laravel ecosystem! :heart: :heart:
+motivation to make this work in- and outside the Laravel ecosystem! :heart: :heart:_
