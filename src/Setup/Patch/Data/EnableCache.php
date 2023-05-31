@@ -1,9 +1,3 @@
-This overrides the previous default page layout checkout, which is set in checkout_index_index.xml and hyva_checkout_index_index.xml.
-This means, this is a backwards incompatible change that will likely affect everybody.
-For this reason, I suggest not to make this change, but keep the previous page layout checkout.
-To fix the positioning of the logo in the header, best add the blocks to the checkout page layout.
-We have to take care this doesn't affect luma checkouts.
-
 <?php
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
