@@ -1,3 +1,9 @@
+This overrides the previous default page layout checkout, which is set in checkout_index_index.xml and hyva_checkout_index_index.xml.
+This means, this is a backwards incompatible change that will likely affect everybody.
+For this reason, I suggest not to make this change, but keep the previous page layout checkout.
+To fix the positioning of the logo in the header, best add the blocks to the checkout page layout.
+We have to take care this doesn't affect luma checkouts.
+
 <?php
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
@@ -10,29 +16,18 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Setup\Patch\Data;
 
-use Magento\Framework\App\Config\Storage\WriterInterface;
 use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Framework\App\Cache\Manager as CacheManager;
-use Magewirephp\Magewire\Model\Cache\Type\Magewire as CacheType;
+use Magewirephp\Magewire\Model\Cache\Type\Magewire as MagewireCacheType;
 
 class EnableCache implements DataPatchInterface
 {
-    /**
-     * @var WriterInterface
-     */
-    private $writer;
-
-    /**
-     * @var CacheManager
-     */
-    private $cacheManager;
+    protected CacheManager $cacheManager;
 
     public function __construct(
-        WriterInterface $writer,
-        CacheManager $CacheManager
+        CacheManager $cacheManager
     ) {
-        $this->writer = $writer;
-        $this->cacheManager = $CacheManager;
+        $this->cacheManager = $cacheManager;
     }
 
     public static function getDependencies(): array
@@ -47,11 +42,12 @@ class EnableCache implements DataPatchInterface
 
     public function apply(): self
     {
-        $types = [CacheType::TYPE_IDENTIFIER];
-        $availableTypes = $this->cacheManager->getAvailableTypes();
-        $types = array_intersect($availableTypes, $types);
-        $enabledTypes = $this->cacheManager->setEnabled($types, true);
-        $this->cacheManager->clean($enabledTypes);
+        // Make sure the Magewire cache is enabled.
+        $enableMagewireCache = $this->cacheManager->setEnabled(
+            array_intersect($this->cacheManager->getAvailableTypes(), [MagewireCacheType::TYPE_IDENTIFIER]), true
+        );
+
+        $this->cacheManager->clean($enableMagewireCache);
         return $this;
     }
 }
