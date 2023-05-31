@@ -38,7 +38,8 @@ class EnableCache implements DataPatchInterface
     {
         // Make sure the Magewire cache is enabled.
         $enableMagewireCache = $this->cacheManager->setEnabled(
-            array_intersect($this->cacheManager->getAvailableTypes(), [MagewireCacheType::TYPE_IDENTIFIER]), true
+            array_intersect($this->cacheManager->getAvailableTypes(), [MagewireCacheType::TYPE_IDENTIFIER]),
+            true
         );
 
         $this->cacheManager->clean($enableMagewireCache);
