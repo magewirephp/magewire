@@ -45,6 +45,7 @@
   - [Notification Type Styling](#notification-type-styling)
 - [Plugins](#plugins)
   - [Plugin: Loader](#plugin--loader)
+    - [Loader System Settings](#loader--system-settings)
   - [Plugin: Error](#plugin--error)
     - [Custom onError callback](#custom-onerror-callback)
 - [Component Resolvers](#component-resolvers)
@@ -917,8 +918,18 @@ The Loader plugin is closely related to the ```$loader``` property within a comp
 either access the system configuration at **Store > Settings > Advanced > Developer > Magewire** or remove the block
 through layout XML.
 
-The loader is divided into several child blocks, giving you greater flexibility in customizing the appearance of both
-the spinner and notifications without having to overwrite all functionality.
+#### Loader System Settings
+> **Note**: All Magewire specific settings by default can be found at Store > Settings > Advanced > Developer > Magewire.
+
+- **Loader / Show:** Show or hide the global loading spinner.
+- **Loader / Enable Notifications:** Show or hide optional notification messages.
+- **Loader / Notifications / Message Fadeout Timeout:** Determine the duration for the message to fade out after its
+    target component has fully loaded.
+
+The loader is divided into several elements, giving you greater flexibility in customizing the appearance of both
+the global spinner and notifications, without having to overwrite everything.
+
+All elements can be found in the Magewire core layout `default_hyva.xml` or be found in `Magewirephp_Magewire::html/loader`.
 
 ### Plugin: Error
 ```xml
