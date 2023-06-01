@@ -1,0 +1,115 @@
+<?php
+/**
+ * Copyright © Willem Poortman 2021-present. All rights reserved.
+ *
+ * Please read the README and LICENSE files for more
+ * details on copyrights and license information.
+ */
+
+declare(strict_types=1);
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Model\Action\SyncInput;
+use Magewirephp\Magewire\Model\Action\CallMethod;
+use Magewirephp\Magewire\Model\Action\FireEvent;
+?>
+<div class="magewire.messenger z-50 w-full fixed top-0 right-0 md:max-w-xs">
+    <div class="space-y-6 flex flex-col space-y-3 px-3 md:flex-col-reverse">
+        <template x-for="(message, index, messages) in messageList()" x-bind:key="index">
+            <button class="magewire.notification.message relative"
+                    x-bind:class="{
+                        'sync-input' : message.update.type === '<?= /** @noEscape */ SyncInput::ACTION ?>',
+                        'call-method': message.update.type === '<?= /** @noEscape */ CallMethod::ACTION ?>',
+                        'fire-event' : message.update.type === '<?= /** @noEscape */ FireEvent::ACTION ?>',
+
+                        'message-failure': message.success === false,
+                        'message-success': message.success === true
+                    }"
+                    x-transition:leave="transition ease-in duration-600"
+                    x-transition:leave-start="opacity-100 scale-100"
+                    x-transition:leave-end="opacity-0 scale-80"
+                    x-show="message.active"
+                    x-on:click.once="message.active = false"
+                    x-bind:diabled="message.loading"
+            >
+                <div class="relative w-full
+                            rounded-md border border-gray-300
+                            bg-white bg-opacity-[75%] backdrop-blur-sm bg-blur
+                            py-3 px-5 md:py-4 md:pl-6 md:pr-4
+                            shadow-lg
+                            md:max-w-sm"
+                     x-bind:class="{
+                         'border-red-600 bg-red-100': message.success === false
+                     }"
+                >
+                    <div class="flex text-left text-sm space-x-0.5 text-gray-900">
+                        <div class="flex-grow w-0 space-y-1">
+                            <template x-for="(title, position, loaders) in message.loader" :key="position">
+                                <p class="hyphens-auto leading-tight"
+                                   x-text="title"
+                                   x-bind:class="{
+                                       'font-bold': (position <= 1 && loaders.length >= 3) || (position == 0 && loaders.length >= 1),
+                                       'text-gray-400 uppercase': position === 0 && loaders.length > 2,
+                                       'text-red-800': message.success === false
+                                   }"
+                                >
+                                    <!-- Title placeholder -->
+                                </p>
+                            </template>
+                        </div>
+
+                        <div class="flex-none w-5 h-5
+                                    right-3 top-0 bottom-0 m-auto md:right-5 mt-0.5"
+                        >
+                            <div class="relative">
+                                <?php /* Stack items vertically to prevent layout shifting when hiding or disappearing, ensuring consistent visual layout. */ ?>
+                                <div class="absolute"
+                                     x-show="message.loading"
+                                     x-transition:leave="transition ease-in duration-600"
+                                     x-transition:leave-start="scale-100"
+                                     x-transition:leave-end="scale-0"
+                                >
+                                    <?= $block->getChildHtml('spinner') ?>
+                                </div>
+
+                                <?php /* Show a checkmark icon when loading fully completed successfully. */ ?>
+                                <svg class="w-full h-full text-green-700 stroke-2"
+                                     fill="none"
+                                     stroke="currentColor"
+                                     viewBox="0 0 24 24"
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     aria-hidden="true"
+                                     x-show="message.success === true"
+                                     x-transition:enter="transition ease-in duration-200"
+                                     x-transition:enter-start="scale-0"
+                                     x-transition:enter-end="scale-100"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path>
+                                </svg>
+
+                                <?php /* Show a exclamation triangle icon when loading failed. */ ?>
+                                <svg class="w-full h-full text-red-700 stroke-2"
+                                     fill="none"
+                                     stroke="currentColor"
+                                     viewBox="0 0 24 24"
+                                     xmlns="http://www.w3.org/2000/svg"
+                                     aria-hidden="true"
+                                     x-show="message.success === false"
+                                     x-transition:enter="transition ease-in duration-200"
+                                     x-transition:enter-start="scale-0"
+                                     x-transition:enter-end="scale-100"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </button>
+        </template>
+    </div>
+</div>

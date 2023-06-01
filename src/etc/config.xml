@@ -8,6 +8,10 @@
                 <loader>
                     <enable>1</enable>
                     <enable_notifications>1</enable_notifications>
+
+                    <notifications>
+                        <message_fadeout_timeout>2500</message_fadeout_timeout>
+                    </notifications>
                 </loader>
             </magewire>
         </dev>

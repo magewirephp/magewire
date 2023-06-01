@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -6,8 +6,12 @@
  * details on copyrights and license information.
  */
 
-/** @var PaginationInterface $pagination */
+declare(strict_types=1);
 
+/** @var PaginationInterface $pagination */
+/** @var Template $block */
+
+use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Component\PaginationInterface;
 
 $pagination = $block->getComponent();

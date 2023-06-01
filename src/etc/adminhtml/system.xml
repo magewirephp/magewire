@@ -28,7 +28,8 @@
                            showInDefault="1"
                            canRestore="1"
                     >
-                        <label>Enable</label>
+                        <label>Show</label>
+                        <comment>Show a loading screen overlay while a component is busy loading.</comment>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     </field>
 
@@ -41,12 +42,38 @@
                     >
                         <label>Enable Notifications</label>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <comment>Display additional component notifications if available.</comment>
+                        <comment>Display notification component messages when set.</comment>
 
                         <depends>
                             <field id="dev/magewire/loader/enable">1</field>
                         </depends>
                     </field>
+
+                    <group id="notifications"
+                           translate="label"
+                           sortOrder="10"
+                           showInDefault="1"
+                           showInWebsite="1"
+                           showInStore="1"
+                    >
+                        <label>Notifications</label>
+
+                        <depends>
+                            <field id="dev/magewire/loader/enable_notifications">1</field>
+                        </depends>
+
+                        <field id="message_fadeout_timeout"
+                               translate="label comment"
+                               type="text"
+                               sortOrder="10"
+                               showInDefault="1"
+                               canRestore="1"
+                        >
+                            <label>Message Fadeout Timeout</label>
+                            <comment>Determine the duration, in milliseconds, for the message to fade out after its target component has fully loaded.</comment>
+                            <validate>required-entry validate-digits validate-not-negative-number</validate>
+                        </field>
+                    </group>
                 </group>
             </group>
         </section>
