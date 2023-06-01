@@ -11,13 +11,13 @@
  * @link https://laravel-livewire.com/
  *
  * @var Escaper $escaper
- * @var AbstractBlock $block
+ * @var Template $block
  * @var Magewire $magewireScripts
  * @var ViewModelRegistry $viewModels
  */
 
 use Magento\Framework\Escaper;
-use Magento\Framework\View\Element\AbstractBlock;
+use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\ViewModel\Magewire;
 
 $magewireScripts = $block->getViewModel();
@@ -26,6 +26,7 @@ $magewireScripts = $block->getViewModel();
 <script>
     document.addEventListener('livewire:available', (event) => {
         const orig = Element.prototype.setAttribute;
+
         Element.prototype.setAttribute = function patchLivewireSetAttribute(name, value) {
             // In Alpine v2, ignore Alpine v3 x-bind attributes that are used as x-spread
             if (window.Alpine && Alpine.version.substring(0, 1) === '2' && ! name) return;

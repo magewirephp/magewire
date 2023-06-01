@@ -42,8 +42,10 @@
   - [Indicator Customization](#indicator-customization)
   - [Indicator Removal](#indicator-removal)
   - [Custom Example](#custom-example-dls)
+  - [Notification Type Styling](#notification-type-styling)
 - [Plugins](#plugins)
   - [Plugin: Loader](#plugin--loader)
+    - [Loader System Settings](#loader--system-settings)
   - [Plugin: Error](#plugin--error)
     - [Custom onError callback](#custom-onerror-callback)
 - [Component Resolvers](#component-resolvers)
@@ -847,16 +849,20 @@ class Explanation extends \Magewirephp\Magewire\Component
 **File**: html/magewire/loader.phtml
 
 ### Available Loader Window Events
-```magewire:loader:start```
+**magewire:loader:start**
 > Dispatched as soon as the first ```$loader``` driven component is active.
 
-```magewire:loader:tick```
+**Test**: ```Magewire.dispatchEvent('loader:start', { detail: { title: 'Hello world', type: 'syncInput', use: true, start: Date.now(), failed: false }})```
+
+**magewire:loader:tick**
 > Dispatched when another component has ```$loader``` settings.
 
-```magewire:loader:fail```
+**Test**: ```Magewire.dispatchEvent('loader:tick', { detail: { title: 'Hello world', type: 'syncInput', use: true, start: Date.now(), failed: false }})```
+
+**magewire:loader:fail**
 > Dispatched when a ```$loader``` driven component failed for whatever reason.
 
-```magewire:loader:stop```
+**magewire:loader:stop**
 > Dispatched as soon as all network requests were completed (this includes emitted requests).
 
 ### Indicator Removal
@@ -894,16 +900,14 @@ public function start(int $seconds)
 ```
 > **Note**: This is just an example. For a disabled state you should or could use the ```wire:loading``` directive.
 
-## Plugins
-> **Important**: This is still a proof of concept. It's possible this won't make it into the first official release.
+### Notification Type Styling
+Each notification item can be one of three types (syncInput, fireEvent, callAction). By default, a notification item
+has the ```magewire-notification``` class. A related (kebab-cased) subclass will be bind dynamically based on the
+notification type.
 
-It's a best practice to add your custom additions to Magewire inside the designated ```magewire.plugin``` container.
-This can come in handy when you need to check if a plugin gives any trouble after installation to just temporary remove
-it.
-
-```xml
-<referenceContainer name="magewire.plugin" remove="true"/>
-```
+- ```magewire-notification fire-event```
+- ```magewire-notification sync-input```
+- ```magewire-notification call-method```
 
 ### Plugin: Loader
 ```xml
@@ -914,8 +918,18 @@ The Loader plugin is closely related to the ```$loader``` property within a comp
 either access the system configuration at **Store > Settings > Advanced > Developer > Magewire** or remove the block
 through layout XML.
 
-The loader is divided into several child blocks, giving you greater flexibility in customizing the appearance of both
-the spinner and notifications without having to overwrite all functionality.
+#### Loader System Settings
+> **Note**: All Magewire specific settings by default can be found at Store > Settings > Advanced > Developer > Magewire.
+
+- **Loader / Show:** Show or hide the global loading spinner.
+- **Loader / Enable Notifications:** Show or hide optional notification messages.
+- **Loader / Notifications / Message Fadeout Timeout:** Determine the duration for the message to fade out after its
+    target component has fully loaded.
+
+The loader is divided into several elements, giving you greater flexibility in customizing the appearance of both
+the global spinner and notifications, without having to overwrite everything.
+
+All elements can be found in the Magewire core layout `default_hyva.xml` or be found in `Magewirephp_Magewire::html/loader`.
 
 ### Plugin: Error
 ```xml
