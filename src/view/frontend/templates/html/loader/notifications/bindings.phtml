@@ -7,8 +7,9 @@
                 messageHideTimeout: 2500
             }, config),
 
-            <?php /* Only auto-runs in Alpine V3. */ ?>
-            init() {
+            <?php /* Should be init() for AlpineJS- v3 to autoload, but won't work with v2. */ ?>
+            <?php /* Leaving the method name init would make it initialize twice when running v3. */ ?>
+            initialize() {
                 <?php /* @see Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml */ ?>
                 document.addEventListener('magewire:loader:start', (event) => {
                     this.messageCreate(event.detail);

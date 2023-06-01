@@ -12,8 +12,11 @@ use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\App\State as ApplicationState;
 use Magento\Framework\Data\Form\FormKey;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\View\Element\AbstractBlock;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
+use Magento\Framework\View\Layout;
 use Magento\Store\Model\StoreManagerInterface;
+use Magewirephp\Magewire\Model\ComponentFactory;
 use Magewirephp\Magewire\Model\LayoutRenderLifecycle;
 use Magewirephp\Magewire\Model\Magento\System\ConfigMagewire as MagewireSystemConfig;
 
@@ -27,6 +30,8 @@ class Magewire implements ArgumentInterface
     protected ProductMetadataInterface $productMetaData;
     protected StoreManagerInterface $storeManager;
     protected LayoutRenderLifecycle $layoutRenderLifecycle;
+    protected Layout $layout;
+    protected ComponentFactory $componentFactory;
 
     public function __construct(
         FormKey $formKey,
@@ -44,33 +49,26 @@ class Magewire implements ArgumentInterface
         $this->magewireSystemConfig = $magewireSystemConfig;
     }
 
-    /**
-     * @return bool
-     */
     public function isDeveloperMode(): bool
     {
         return $this->applicationState->getMode() === ApplicationState::MODE_DEVELOPER;
     }
 
-    /**
-     * @return bool
-     */
+    public function isProductionMode(): bool
+    {
+        return $this->applicationState->getMode() === ApplicationState::MODE_PRODUCTION;
+    }
+    
     public function isBeforeTwoFourZero(): bool
     {
         return version_compare($this->productMetaData->getVersion(), '2.4.0', '<');
     }
 
-    /**
-     * @return string
-     */
     public function getPostRoute(): string
     {
         return $this->isBeforeTwoFourZero() ? '/magewire/vintage' : '/magewire/post';
     }
 
-    /**
-     * @return string
-     */
     public function getApplicationUrl(): string
     {
         try {
@@ -80,6 +78,9 @@ class Magewire implements ArgumentInterface
         }
     }
 
+    /**
+     * Check whether the page contains any Magewire components.
+     */
     public function pageRequiresMagewire(): bool
     {
         return $this->layoutRenderLifecycle->hasHistory();

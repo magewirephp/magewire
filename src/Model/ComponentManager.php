@@ -23,14 +23,6 @@ class ComponentManager
     protected array $updateActionsPool;
     protected array $hydrationPool;
 
-    /**
-     * ComponentManager constructor.
-     * @param HydratorContext $hydratorContext
-     * @param Resolver $localeResolver
-     * @param HttpFactory $httpFactory
-     * @param array $updateActionsPool
-     * @param array $hydrationPool
-     */
     public function __construct(
         HydratorContext $hydratorContext,
         Resolver $localeResolver,
@@ -46,6 +38,7 @@ class ComponentManager
         $this->hydrationPool = $this->sortHydrators($hydrationPool, [
             $hydratorContext->getFormKeyHydrator(),
             $hydratorContext->getSecurityHydrator(),
+            $hydratorContext->getResolverHydrator(),
             $hydratorContext->getPostDeploymentHydrator(),
             $hydratorContext->getChildrenHydrator(),
             $hydratorContext->getBrowserEventHydrator(),
@@ -62,9 +55,6 @@ class ComponentManager
     }
 
     /**
-     * @param Component $component
-     * @param array $updates
-     * @return Component
      * @throws LocalizedException
      */
     public function processUpdates(Component $component, array $updates): Component
@@ -90,9 +80,6 @@ class ComponentManager
      * Runs on every request, after the component is hydrated,
      * but before an action is performed, or the layout block
      * has been rendered.
-     *
-     * @param Component $component
-     * @return Component
      */
     public function hydrate(Component $component): Component
     {
@@ -106,9 +93,6 @@ class ComponentManager
     /**
      * Runs on every request, before the component is dehydrated,
      * right before the layout block gets rendered.
-     *
-     * @param Component $component
-     * @return Component
      */
     public function dehydrate(Component $component): Component
     {
@@ -120,11 +104,6 @@ class ComponentManager
     }
 
     /**
-     * @param Template $block
-     * @param Component $component
-     * @param array $arguments
-     * @param string|null $handle
-     * @return Request
      * @throws LocalizedException
      */
     public function createInitialRequest(
@@ -135,27 +114,33 @@ class ComponentManager
     ): Request {
         $properties = $component->getPublicProperties();
         $request = $block->getRequest();
-        $data = array_intersect_key(array_replace($properties, $arguments), $properties);
+        $resolver = $component->getResolver();
+        $metadata = $component->getMetaData();
 
-        $handle = $handle ?? $request->getFullActionName();
-        $locale = $this->localeResolver->getLocale();
-
-        return $this->httpFactory->createRequest([
+        $data = [
             'fingerprint' => [
                 'id' => $component->id,
                 'name' => $component->name,
-                'locale' => $locale,
+                'locale' => $this->localeResolver->getLocale(),
                 'path' => '/',
                 'method' => 'GET',
+                'resolver' => $resolver->getName(),
 
                 // Custom relative to Livewire's core.
-                'handle' => $handle,
+                'handle' => $handle ?? $request->getFullActionName(),
                 'type' => $component::COMPONENT_TYPE
             ],
+
             'serverMemo' => [
-                'data' => $data
+                'data' => array_intersect_key(array_replace($properties, $arguments), $properties)
             ]
-        ]);
+        ];
+
+        if (! empty($metadata)) {
+            $data['serverMemo']['dataMeta'] = $metadata;
+        }
+
+        return $this->httpFactory->createRequest($data);
     }
 
     /**
@@ -163,10 +148,6 @@ class ComponentManager
      *   "class" => object,
      *   "order" => int
      * ]
-     *
-     * @param array $hydrators
-     * @param $systemHydrators
-     * @return array
      *
      * @see ComponentManager::dehydrate()
      * @see ComponentManager::hydrate()

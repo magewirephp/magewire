@@ -142,7 +142,9 @@ $magewireScripts = $block->getViewModel();
                 }
 
                 <?php /* Since loader is custom Magewire, we need to re-assign optional new dynamic loader values. */ ?>
-                component.effects.loader = message.response.effects.loader
+                if (component.effects && message.response.effects) {
+                    component.effects.loader = message.response.effects.loader
+                }
             }
 
             <?php /* Magewire loader plugin registration. */ ?>

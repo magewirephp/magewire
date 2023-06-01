@@ -22,11 +22,6 @@ class ComponentManager
     protected PropertyHelper $propertyHelper;
     protected ListenerHydrator $listenerHydrator;
 
-    /**
-     * @param LoggerInterface $logger
-     * @param PropertyHelper $propertyHelper
-     * @param ListenerHydrator $listenerHydrator
-     */
     public function __construct(
         LoggerInterface $logger,
         PropertyHelper $propertyHelper,
@@ -37,11 +32,6 @@ class ComponentManager
         $this->listenerHydrator = $listenerHydrator;
     }
 
-    /**
-     * @param Subject $subject
-     * @param Component $component
-     * @return Component[]
-     */
     public function beforeHydrate(Subject $subject, Component $component): array
     {
         /**
@@ -81,11 +71,6 @@ class ComponentManager
         return [$component];
     }
 
-    /**
-     * @param Subject $subject
-     * @param Component $component
-     * @return Component
-     */
     public function afterHydrate(Subject $subject, Component $component): Component
     {
         /**
@@ -113,10 +98,6 @@ class ComponentManager
         return $component;
     }
 
-    /**
-     * @param Component $component
-     * @return bool
-     */
     public function isComponentTryingToRefresh(Component $component): bool
     {
         try {

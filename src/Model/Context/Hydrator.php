@@ -20,6 +20,7 @@ use Magewirephp\Magewire\Model\Hydrator\PostDeployment;
 use Magewirephp\Magewire\Model\Hydrator\Property;
 use Magewirephp\Magewire\Model\Hydrator\QueryString;
 use Magewirephp\Magewire\Model\Hydrator\Redirect;
+use Magewirephp\Magewire\Model\Hydrator\Resolver;
 use Magewirephp\Magewire\Model\Hydrator\Security;
 use Magewirephp\Magewire\Model\Hydrator\Loader;
 
@@ -39,22 +40,8 @@ class Hydrator
     protected PostDeployment $postDeploymentHydrator;
     protected FormKey $formKeyHydrator;
     protected Children $childrenHydrator;
+    protected Resolver $resolverHydrator;
 
-    /**
-     * @param Hash $hashHydrator
-     * @param Listener $listenerHydrator
-     * @param Emit $emit
-     * @param BrowserEvent $browserEventHydrator
-     * @param FlashMessage $flashMessageHydrator
-     * @param Property $propertyHydrator
-     * @param QueryString $queryStringHydrator
-     * @param Error $errorHydrator
-     * @param Redirect $redirectHydrator
-     * @param Security $securityHydrator
-     * @param Loader $loaderHydrator
-     * @param PostDeployment $postDeploymentHydrator
-     * @param FormKey $formKeyHydrator
-     */
     public function __construct(
         Hash $hashHydrator,
         Listener $listenerHydrator,
@@ -69,7 +56,8 @@ class Hydrator
         Loader $loaderHydrator,
         PostDeployment $postDeploymentHydrator,
         FormKey $formKeyHydrator,
-        Children $childrenHydrator
+        Children $childrenHydrator,
+        Resolver $resolverHydrator
     ) {
         $this->hashHydrator = $hashHydrator;
         $this->listenerHydrator = $listenerHydrator;
@@ -85,117 +73,81 @@ class Hydrator
         $this->postDeploymentHydrator = $postDeploymentHydrator;
         $this->formKeyHydrator = $formKeyHydrator;
         $this->childrenHydrator = $childrenHydrator;
+        $this->resolverHydrator = $resolverHydrator;
     }
 
-    /**
-     * @return Hash
-     */
     public function getHashHydrator(): Hash
     {
         return $this->hashHydrator;
     }
 
-    /**
-     * @return Listener
-     */
     public function getListenerHydrator(): Listener
     {
         return $this->listenerHydrator;
     }
 
-    /**
-     * @return Emit
-     */
     public function getEmitHydrator(): Emit
     {
         return $this->emit;
     }
 
-    /**
-     * @return BrowserEvent
-     */
     public function getBrowserEventHydrator(): BrowserEvent
     {
         return $this->browserEventHydrator;
     }
 
-    /**
-     * @return QueryString
-     */
     public function getQueryStringHydrator(): QueryString
     {
         return $this->queryStringHydrator;
     }
 
-    /**
-     * @return Property
-     */
     public function getPropertyHydrator(): Property
     {
         return $this->propertyHydrator;
     }
 
-    /**
-     * @return Error
-     */
     public function getErrorHydrator(): Error
     {
         return $this->errorHydrator;
     }
 
-    /**
-     * @return Redirect
-     */
     public function getRedirectHydrator(): Redirect
     {
         return $this->redirectHydrator;
     }
 
-    /**
-     * @return FlashMessage
-     */
     public function getFlashMessageHydrator(): FlashMessage
     {
         return $this->flashMessageHydrator;
     }
 
-    /**
-     * @return Security
-     */
     public function getSecurityHydrator(): Security
     {
         return $this->securityHydrator;
     }
 
-    /**
-     * @return Loader
-     */
     public function getLoaderHydrator(): Loader
     {
         return $this->loaderHydrator;
     }
 
-    /**
-     * @return PostDeployment
-     */
     public function getPostDeploymentHydrator(): PostDeployment
     {
         return $this->postDeploymentHydrator;
     }
 
-    /**
-     * @return FormKey
-     */
     public function getFormKeyHydrator(): FormKey
     {
         return $this->formKeyHydrator;
     }
 
-    /**
-     * @return Children
-     */
     public function getChildrenHydrator(): Children
     {
         return $this->childrenHydrator;
+    }
+
+    public function getResolverHydrator(): Resolver
+    {
+        return $this->resolverHydrator;
     }
 }

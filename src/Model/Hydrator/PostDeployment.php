@@ -18,9 +18,6 @@ class PostDeployment implements HydratorInterface
 {
     public const DEPLOYMENT_INVALIDATION_HASH = 'acj';
 
-    /**
-     * @inheritdoc
-     */
     public function hydrate(Component $component, RequestInterface $request): void
     {
         if ($request->isSubsequent()) {
@@ -36,9 +33,6 @@ class PostDeployment implements HydratorInterface
         }
     }
 
-    /**
-     * @inheritdoc
-     */
     public function dehydrate(Component $component, ResponseInterface $response): void
     {
         if ($response->getRequest()->isPreceding()) {

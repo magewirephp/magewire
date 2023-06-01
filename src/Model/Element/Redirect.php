@@ -14,12 +14,6 @@ class Redirect
     private ?array $params;
     private bool $secure;
 
-    /**
-     * Redirect constructor.
-     * @param string $path
-     * @param array|null $params
-     * @param bool $secure
-     */
     public function __construct(
         string $path,
         ?array $params = null,
@@ -30,33 +24,21 @@ class Redirect
         $this->secure = $secure;
     }
 
-    /**
-     * @return string
-     */
     public function getUrl(): string
     {
         return $this->url;
     }
 
-    /**
-     * @return ?array
-     */
     public function getParams(): ?array
     {
         return $this->params;
     }
 
-    /**
-     * @return bool
-     */
     public function hasParams(): bool
     {
         return ! empty($this->params);
     }
 
-    /**
-     * @return bool
-     */
     public function isSecure(): bool
     {
         return $this->secure;

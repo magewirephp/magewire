@@ -97,5 +97,6 @@ $magewireScripts = $block->getViewModel();
         Magewire.dispatchEvent('available')
     </script>
 
+    <?= /* @noEscape */ $block->getChildHtml('magewire.directives') ?>
     <?= /* @noEscape */ $block->getChildHtml('magewire.plugins') ?>
 <?php endif ?>
