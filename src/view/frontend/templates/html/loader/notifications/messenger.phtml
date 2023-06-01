@@ -21,8 +21,6 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
     <div class="space-y-6 flex flex-col space-y-3 px-3 md:flex-col-reverse">
         <template x-for="(message, index, messages) in messageList()" x-bind:key="index">
             <button class="magewire.notification.message relative"
-                    x-data="{ show: true }"
-                    x-init="$watch('message.loading', (value) => setTimeout(() => show = false, message.timeout))"
                     x-bind:class="{
                         'sync-input' : message.update.type === '<?= /** @noEscape */ SyncInput::ACTION ?>',
                         'call-method': message.update.type === '<?= /** @noEscape */ CallMethod::ACTION ?>',
@@ -34,8 +32,8 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                     x-transition:leave="transition ease-in duration-600"
                     x-transition:leave-start="opacity-100 scale-100"
                     x-transition:leave-end="opacity-0 scale-80"
-                    x-show="show"
-                    x-on:click.once="show = false"
+                    x-show="message.active"
+                    x-on:click.once="message.active = false"
                     x-bind:diabled="message.loading"
             >
                 <div class="relative w-full
@@ -45,7 +43,7 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                             shadow-lg
                             md:max-w-sm"
                      x-bind:class="{
-                         'border-red-600 bg-red-100': message.success === false,
+                         'border-red-600 bg-red-100': message.success === false
                      }"
                 >
                     <div class="flex text-left text-sm space-x-0.5 text-gray-900">
@@ -65,7 +63,7 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                         </div>
 
                         <div class="flex-none w-5 h-5
-                                    right-3 top-0 bottom-0 m-auto md:right-5"
+                                    right-3 top-0 bottom-0 m-auto md:right-5 mt-0.5"
                         >
                             <div class="relative">
                                 <?php /* Stack items vertically to prevent layout shifting when hiding or disappearing, ensuring consistent visual layout. */ ?>
@@ -78,7 +76,8 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                                     <?= $block->getChildHtml('spinner') ?>
                                 </div>
 
-                                <svg class="w-full h-full text-green-700 stroke-[3]"
+                                <?php /* Show a checkmark icon when loading fully completed successfully. */ ?>
+                                <svg class="w-full h-full text-green-700 stroke-2"
                                      fill="none"
                                      stroke="currentColor"
                                      viewBox="0 0 24 24"
@@ -92,7 +91,8 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path>
                                 </svg>
 
-                                <svg class="w-full h-full text-red-700 stroke-[3]"
+                                <?php /* Show a exclamation triangle icon when loading failed. */ ?>
+                                <svg class="w-full h-full text-red-700 stroke-2"
                                      fill="none"
                                      stroke="currentColor"
                                      viewBox="0 0 24 24"
@@ -103,7 +103,7 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                                      x-transition:enter-start="scale-0"
                                      x-transition:enter-end="scale-100"
                                 >
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"></path>
                                 </svg>
                             </div>
                         </div>

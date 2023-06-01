@@ -45,7 +45,7 @@
 
             <?php /* Deactivate message, but not remove it fully from the array to let animations run. */ ?>
             messageDeactivate(index, failure = false) {
-                message = this.messages[index] || false;
+                let message = this.messages[index] || false;
 
                 if (message === false) {
                     return console.error('Magewire: Could not deactivate the notification message.');
@@ -57,6 +57,8 @@
 
                 message.loading = false;
                 message.success = ! failure;
+
+                setTimeout(() => message.active = false, message.timeout)
             },
 
             messageList() {

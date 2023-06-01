@@ -91,12 +91,14 @@ $magewireScripts = $block->getViewModel();
             })
         })
 
-        <?php /* Plugin registration */ ?>
+        <?php /* Custom plugin registration. */ ?>
         Magewire.plugins = {}
         <?php /* Allow component.initialize hooks to be registered before the components are initialized. */ ?>
         Magewire.dispatchEvent('available')
     </script>
 
-    <?= /* @noEscape */ $block->getChildHtml('magewire.directives') ?>
+    <?php /* Include Magewire plugin scripts. */ ?>
     <?= /* @noEscape */ $block->getChildHtml('magewire.plugins') ?>
+    <?php /* Include custom Magewire directives. */ ?>
+    <?= /* @noEscape */ $block->getChildHtml('magewire.directives') ?>
 <?php endif ?>
