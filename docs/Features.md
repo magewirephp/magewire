@@ -45,7 +45,7 @@
   - [Notification Type Styling](#notification-type-styling)
 - [Plugins](#plugins)
   - [Plugin: Loader](#plugin--loader)
-    - [Loader System Settings](#loader--system-settings)
+    - [Loader System Settings](#loader-system-settings)
   - [Plugin: Error](#plugin--error)
     - [Custom onError callback](#custom-onerror-callback)
 - [Component Resolvers](#component-resolvers)
@@ -822,7 +822,7 @@ class Explanation extends \Magewirephp\Magewire\Component
     }
 }
 ```
-> **Note:** Keep in mind that the ```$loader``` mapping only understands subsequent executable methods.
+> **Note**: Keep in mind that the ```$loader``` mapping only understands subsequent executable methods.
 
 ```html
 <!-- A loading bar will appear and disappear on load when method foo is mapped -->
@@ -830,9 +830,18 @@ class Explanation extends \Magewirephp\Magewire\Component
 ```
 
 ### Indicator Customization
+Since version: `1.10.0`
+
 ```xml
 <body>
-    <referenceBlock name="magewire.loader" template="My_Module::html/magewire/loader.phtml"/>
+    <!-- Change the global loading indicator -->
+    <referenceBlock name="magewire.loader.overlay-spinner" template="My_Module::html/loader/custom-spinner.phtml"/>
+    <!-- Change the global loading overlay (please use the original as a reference) -->
+    <referenceBlock name="magewire.loader.overlay" template="My_Module::html/loader/custom-overlay.phtml"/>
+    <!-- Change the global notification messenger (please use the original as a reference) -->
+    <referenceBlock name="magewire.loader.notifications.messenger" template="My_Module::html/loader/notifications/custom-messenger.phtml"/>
+    <!-- Change (only) the notification messenger loading spinner -->
+    <referenceBlock name="magewire.loader.notifications.messenger.spinner" template="My_Module::html/loader/custom-message-spinner.phtml"/>
 </body>
 ```
 **File**: view/frontend/layout/default_hyva.xml
@@ -847,23 +856,6 @@ class Explanation extends \Magewirephp\Magewire\Component
 </script>
 ```
 **File**: html/magewire/loader.phtml
-
-### Available Loader Window Events
-**magewire:loader:start**
-> Dispatched as soon as the first ```$loader``` driven component is active.
-
-**Test**: ```Magewire.dispatchEvent('loader:start', { detail: { title: 'Hello world', type: 'syncInput', use: true, start: Date.now(), failed: false }})```
-
-**magewire:loader:tick**
-> Dispatched when another component has ```$loader``` settings.
-
-**Test**: ```Magewire.dispatchEvent('loader:tick', { detail: { title: 'Hello world', type: 'syncInput', use: true, start: Date.now(), failed: false }})```
-
-**magewire:loader:fail**
-> Dispatched when a ```$loader``` driven component failed for whatever reason.
-
-**magewire:loader:stop**
-> Dispatched as soon as all network requests were completed (this includes emitted requests).
 
 ### Indicator Removal
 In some cases you want to implement your own loader because you have a global one in place or your just don't need to
@@ -908,6 +900,22 @@ notification type.
 - ```magewire-notification fire-event```
 - ```magewire-notification sync-input```
 - ```magewire-notification call-method```
+
+## Plugins
+Plugins are a good and easy way to create frontend functionality which can hook into initial page loads, subsequent
+request hooks.
+
+### Register a custom plugin
+To register a custom plugin, you can reference a specific container which will take care of rendering your custom
+code at the right place.
+
+An example on how you should register a custom frontend plugin:
+```xml
+<referenceContainer name="magewire.plugin.scripts">
+    <block name="magewire.plugin.my-custom-plugin"
+           template="My_Module::page/js/magewire/plugin/my-custom-plugin.phtml"/>
+</referenceContainer>
+```
 
 ### Plugin: Loader
 ```xml
