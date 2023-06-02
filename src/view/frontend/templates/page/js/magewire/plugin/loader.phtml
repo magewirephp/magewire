@@ -100,7 +100,7 @@ $magewireScripts = $block->getViewModel();
                 }
 
                 Magewire.dispatchEvent(`loader:${ first ? 'start' : 'tick' }`, {
-                    detail: Object.assign(loader, { component: component })
+                    detail: loader
                 })
             }
 
