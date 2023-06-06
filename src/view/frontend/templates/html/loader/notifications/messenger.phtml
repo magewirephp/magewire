@@ -20,22 +20,23 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
 <div class="magewire.messenger z-50 w-full fixed top-0 right-0 md:max-w-xs">
     <div class="space-y-6 flex flex-col space-y-3 px-3 md:flex-col-reverse">
         <template x-for="(message, index, messages) in messageList()" x-bind:key="index">
-            <div role="button" aria-busy="true" aria-label="off"
+            <div role="button"
+                 aria-busy="true"
+                 aria-label="off"
                  class="magewire.notification.message relative"
-                   x-bind:class="{
-                        'sync-input' : message.update.type === '<?= /** @noEscape */ SyncInput::ACTION ?>',
-                        'call-method': message.update.type === '<?= /** @noEscape */ CallMethod::ACTION ?>',
-                        'fire-event' : message.update.type === '<?= /** @noEscape */ FireEvent::ACTION ?>',
+                 x-bind:class="{
+                     'sync-input' : message.update.type === '<?= /** @noEscape */ SyncInput::ACTION ?>',
+                     'call-method': message.update.type === '<?= /** @noEscape */ CallMethod::ACTION ?>',
+                     'fire-event' : message.update.type === '<?= /** @noEscape */ FireEvent::ACTION ?>',
 
-                        'message-failure': message.success === false,
-                        'message-success': message.success === true,
-                        'cursor-not-allowed opacity-25': message.loading === true
-                    }"
-                    x-transition:leave="transition ease-in duration-600"
-                    x-transition:leave-start="opacity-100 scale-100"
-                    x-transition:leave-end="opacity-0 scale-80"
-                    x-show="message.active"
-                    x-on:click.once="if (!message.loading) message.active = false"
+                     'message-failure': message.success === false,
+                     'message-success': message.success === true
+                 }"
+                 x-transition:leave="transition ease-in duration-600"
+                 x-transition:leave-start="opacity-100 scale-100"
+                 x-transition:leave-end="opacity-0 scale-80"
+                 x-show="message.active"
+                 x-on:click.once="message.active = false"
             >
                 <div class="relative w-full
                             rounded-md border border-gray-300
