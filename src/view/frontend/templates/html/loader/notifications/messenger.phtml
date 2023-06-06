@@ -20,8 +20,9 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
 <div class="magewire.messenger z-50 w-full fixed top-0 right-0 md:max-w-xs">
     <div class="space-y-6 flex flex-col space-y-3 px-3 md:flex-col-reverse">
         <template x-for="(message, index, messages) in messageList()" x-bind:key="index">
-            <button class="magewire.notification.message relative"
-                    x-bind:class="{
+            <div role="button" aria-busy="true" aria-label="off"
+                 class="magewire.notification.message relative"
+                   x-bind:class="{
                         'sync-input' : message.update.type === '<?= /** @noEscape */ SyncInput::ACTION ?>',
                         'call-method': message.update.type === '<?= /** @noEscape */ CallMethod::ACTION ?>',
                         'fire-event' : message.update.type === '<?= /** @noEscape */ FireEvent::ACTION ?>',
@@ -34,11 +35,11 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                     x-transition:leave-end="opacity-0 scale-80"
                     x-show="message.active"
                     x-on:click.once="message.active = false"
-                    x-bind:diabled="message.loading"
+                    x-bind:disabled="message.loading"
             >
                 <div class="relative w-full
                             rounded-md border border-gray-300
-                            bg-white bg-opacity-[75%] backdrop-blur-sm bg-blur
+                            bg-white bg-opacity-75 backdrop-blur-sm bg-blur
                             py-3 px-5 md:py-4 md:pl-6 md:pr-4
                             shadow-lg
                             md:max-w-sm"
@@ -109,7 +110,7 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                         </div>
                     </div>
                 </div>
-            </button>
+            </div>
         </template>
     </div>
 </div>
