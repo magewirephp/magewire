@@ -28,14 +28,14 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                         'fire-event' : message.update.type === '<?= /** @noEscape */ FireEvent::ACTION ?>',
 
                         'message-failure': message.success === false,
-                        'message-success': message.success === true
+                        'message-success': message.success === true,
+                        'cursor-not-allowed opacity-25': message.loading === true
                     }"
                     x-transition:leave="transition ease-in duration-600"
                     x-transition:leave-start="opacity-100 scale-100"
                     x-transition:leave-end="opacity-0 scale-80"
                     x-show="message.active"
-                    x-on:click.once="message.active = false"
-                    x-bind:disabled="message.loading"
+                    x-on:click.once="if (!message.loading) message.active = false"
             >
                 <div class="relative w-full
                             rounded-md border border-gray-300
