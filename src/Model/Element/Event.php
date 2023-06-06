@@ -53,7 +53,8 @@ class Event
     {
         $output = [
             'event'  => $this->name,
-            'params' => array_values($this->params),
+            // Ensure params is a numeric indexed array. If it is an assoc, wrap it.
+            'params' => isset($this->params[0]) ? array_values($this->params) : [$this->params],
         ];
 
         if ($this->up) {
