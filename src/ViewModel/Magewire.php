@@ -32,6 +32,7 @@ class Magewire implements ArgumentInterface
     protected LayoutRenderLifecycle $layoutRenderLifecycle;
     protected Layout $layout;
     protected ComponentFactory $componentFactory;
+    protected MagewireSystemConfig $magewireSystemConfig;
 
     public function __construct(
         FormKey $formKey,
