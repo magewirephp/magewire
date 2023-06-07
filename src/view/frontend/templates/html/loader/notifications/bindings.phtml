@@ -17,13 +17,13 @@
 
                 <?php /* @see Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml */ ?>
                 document.addEventListener('magewire:loader:stop', (event) => {
-                    if (! event.detail.component && ! event.detail.component.id && event.detail.loader) {
+                    if ((! event.detail) || (! event.detail.component) || (! event.detail.component.id) || (! event.detail.loader)) {
                         return;
                     }
 
                     <?php /* Find the component by its unique key to try and deactivate it. */ ?>
                     for (let message in this.messages) {
-                        if (event.detail.loader && this.messages[message].key == event.detail.loader.key) {
+                        if (this.messages[message].key == event.detail.loader.key) {
                             return this.messageDeactivate(message, event.failure || false);
                         }
                     }
