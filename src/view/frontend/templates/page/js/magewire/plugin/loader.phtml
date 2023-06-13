@@ -26,6 +26,9 @@ $magewireScripts = $block->getViewModel();
         'use strict';
 
         (() => {
+            <?php /* Active loaders queue. */ ?>
+            let queue = [];
+
             const loaderTypeResolvers = {
                 <?= /** @noEscape */ SyncInput::ACTION ?>: (item, loader) => {
                     let name = item.payload.name;
@@ -71,9 +74,13 @@ $magewireScripts = $block->getViewModel();
                         value = [loader];
                     }
 
-                    <?php /* Wildcard support. */ ?>
-                    if (value === undefined && '*' in loader) {
-                        value = loader['*'];
+                    if (value === undefined) {
+                        value = false;
+
+                        <?php /* Include wildcard support. */ ?>
+                        if ('*' in loader) {
+                            value = loader['*'];
+                        }
                     }
 
                     data[component.id] = {
@@ -87,63 +94,140 @@ $magewireScripts = $block->getViewModel();
                 return data;
             }
 
-            <?php /* Active loaders queue. */ ?>
-            let queue = [];
-            <?php /* Main loader target to stop. */ ?>
-            let stopLoaderTarget = null;
-
             const start = function(loader, component) {
-                let first = ! queue.some(({ emit }) => emit);
+                let first = ! queue.some(({ parent }) => parent);
+                let me = queue.findIndex(item => item.component.id === component.id);
 
                 if (first) {
-                    queue.push({ loader: loader, component: component });
+                    queue.push({
+                        loader: loader,
+                        component: component
+                    });
                 }
+
+                <?php /* Sprinkle in the missing loader when this item was added from elsewhere without */ ?>
+                <?php /* knowing what the loader value is gonna be at that point in the lifecycle. */ ?>
+                if (queue[me]) {
+                    queue[me].loader = loader;
+                }
+
+                queue.forEach((item, index) => {
+                    item.parent = item.parent ?? false;
+
+                    <?php /* Lets find out which loader was already active before me and force it to stop. */ ?>
+                    if (me > index && item.loader) {
+                        stop(item.component, false, true);
+                    }
+                });
 
                 Magewire.dispatchEvent(`loader:${ first ? 'start' : 'tick' }`, {
                     detail: loader
-                })
+                });
             }
 
-            const stop = function(message, component, failure = false) {
-                if (queue.length) {
-                    queue = queue.reverse().filter(item => {
-                        if (component.id !== item.component.id) {
-                            return true;
-                        }
-                        if (stopLoaderTarget === null) {
-                            stopLoaderTarget = item.loader;
-                        }
+            <?php /* TODO: both methods are kinda the same and they should merge into one with an addition arguments. */ ?>
+            <?php /*       going for a let queue = [...queue].reverse() could be a good option for the 'after'. */ ?>
+            const everythingBeforeMe = function(component) {
+                let me = queue.findIndex(item => item.component.id === component.id);
+                let before = [];
 
-                        return false;
-                    }).reverse();
+                if (me > 0) {
+                    for (let i = queue.length - 1; i >= 0; i--) {
+                        if (component && queue[i] && queue[i].component && queue[i].component.id !== component.id) {
+                            before.push(i);
+                        }
+                    }
                 }
 
-                if (message.response && message.response.effects) {
-                    <?php /* Fill the queue for as long as the main component is fulfilling emits. */ ?>
-                    (message.response.effects['emits'] || []).forEach((emit) => {
-                        Magewire.components.componentsListeningForEvent(emit.event).forEach((component) => {
-                            queue.push({ component: component, emit: true })
-                        })
-                    })
+                return before;
+            }
+
+            const everythingAfterMe = function(component) {
+                let me = queue.findIndex(item => item.component.id === component.id);
+                let after = [];
+
+                if (me > 0) {
+                    for (let i = me + 1; i < queue.length; i++) {
+                        if (component && queue[i] && queue[i].component && queue[i].component.id !== component.id) {
+                            after.push(i);
+                        }
+                    }
                 }
 
-                <?php /* Only dispatch the stop event when all loading is done or one failed. */ ?>
-                if (failure || ! queue.length) {
-                    Magewire.dispatchEvent(`loader:stop`, {
+                return after;
+            }
+
+            const stop = function(component, failure = false, force = false) {
+                if (failure) {
+                    force = true;
+                }
+
+                <?php /* Queue items targeted to remove. */ ?>
+                let remove = [];
+                <?php /* Get my own index. */ ?>
+                let me = queue.findIndex(item => item.component.id === component.id);
+                <?php /* Store the last queue item index. */ ?>
+                let last = queue.length - 1;
+
+                if (me === last) {
+                    if (queue[me].loader) {
+                        force = true;
+                    } else {
+                        remove.push(me);
+                    }
+
+                    <?php /* Since I'm the last in line, everything before me can go. */ ?>
+                    everythingBeforeMe(component).forEach(key => remove.push(key));
+                }
+
+                if (force) {
+                    if (me < last) {
+                        let proceed = true;
+
+                        everythingAfterMe(component).forEach(index => {
+                            if (queue[index].loader) {
+                                proceed = false;
+                            }
+                            if (proceed) {
+                                remove.push(index);
+                            }
+                        });
+                    }
+
+                    remove.push(me);
+                }
+
+                <?php /* Run over the queue and remove those who are marked. In the meanwhile, when we hit */ ?>
+                <?php /* a item which seems to have a loader, it should stop itself. */ ?>
+                remove.forEach(index => {
+                    if (queue[index]) {
+                        if (queue[index].loader) {
+                            Magewire.dispatchEvent(`loader:stop`, {
+                                detail: {
+                                    loader: queue[index].loader,
+                                    component: queue[index].component,
+                                    failure: failure
+                                }
+                            });
+                        }
+
+                        delete queue[index];
+                    }
+                });
+
+                // Refresh queue.
+                queue = Object.values(queue);
+
+                if (queue.length === 0) {
+                    Magewire.dispatchEvent(`loader:done`, {
                         detail: {
-                            loader: stopLoaderTarget,
                             component: component,
                             failure: failure
                         }
                     });
 
-                    <?php /* Reset initial target when optional emits are also finished loading. */ ?>
-                    stopLoaderTarget = null;
-                }
-
-                <?php /* Since loader is custom Magewire, we need to re-assign optional new dynamic loader values. */ ?>
-                if (component.effects && message.response.effects) {
-                    component.effects.loader = message.response.effects.loader
+                    // Reset queue with a fresh array.
+                    queue = [];
                 }
             }
 
@@ -151,10 +235,10 @@ $magewireScripts = $block->getViewModel();
             Magewire.plugins.loader = (() => {
                 return {
                     start(loader, component) {
-                        return start(loader, component)
+                        return start(loader, component);
                     },
-                    stop(message, component, failure = false) {
-                        return stop(message, component, failure)
+                    stop(component, failure = false, force = false) {
+                        return stop(component, failure, force);
                     }
                 }
             })();
@@ -167,11 +251,26 @@ $magewireScripts = $block->getViewModel();
                         Magewire.plugins.loader.start(loader[component.id], component);
                     }
                 });
+
                 Magewire.hook('message.processed', (message, component) => {
-                    Magewire.plugins.loader.stop(message, component);
+                    if (message.response && message.response.effects) {
+                        (message.response.effects.emits || []).forEach((emit) => {
+                            Magewire.components.componentsListeningForEvent(emit.event)
+                                .filter(listener => ! emit.to || emit.to === listener.id)
+                                .forEach(listener => queue.push({ component: listener, parent: component }));
+                        });
+                    }
+
+                    Magewire.plugins.loader.stop(component);
+
+                    <?php /* Re-assign optional new dynamic loader values. */ ?>
+                    if (component.effects && message.response.effects) {
+                        component.effects.loader = message.response.effects.loader;
+                    }
                 });
+
                 Magewire.hook('message.failed', (message, component) => {
-                    Magewire.plugins.loader.stop(message, component, true);
+                    Magewire.plugins.loader.stop(component, true);
                 });
             });
         })();
