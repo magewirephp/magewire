@@ -8,10 +8,7 @@
                     ['x-on:magewire:loader:start.window']() {
                         this.active = true
                     },
-                    ['x-on:magewire:loader:fail.window']() {
-                        this.active = false
-                    },
-                    ['x-on:magewire:loader:stop.window']() {
+                    ['x-on:magewire:loader:done.window']() {
                         this.active = false
                     },
                     ['x-bind:class']() {
