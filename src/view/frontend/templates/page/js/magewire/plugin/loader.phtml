@@ -105,8 +105,8 @@ $magewireScripts = $block->getViewModel();
                     });
                 }
 
-                <?php /* Sprinkle in the missing loader when this item was added from elsewhere without */ ?>
-                <?php /* knowing what the loader value is gonna be at that point in the lifecycle. */ ?>
+                <?php /* Sprinkle in the missing loader when this item was added from elsewhere without
+                         knowing what the loader value is gonna be at that point in the lifecycle. */ ?>
                 if (queue[me]) {
                     queue[me].loader = loader;
                 }
@@ -125,36 +125,8 @@ $magewireScripts = $block->getViewModel();
                 });
             }
 
-            <?php /* TODO: both methods are kinda the same and they should merge into one with an addition arguments. */ ?>
-            <?php /*       going for a let queue = [...queue].reverse() could be a good option for the 'after'. */ ?>
-            const everythingBeforeMe = function(component) {
-                let me = queue.findIndex(item => item.component.id === component.id);
-                let before = [];
-
-                if (me > 0) {
-                    for (let i = queue.length - 1; i >= 0; i--) {
-                        if (component && queue[i] && queue[i].component && queue[i].component.id !== component.id) {
-                            before.push(i);
-                        }
-                    }
-                }
-
-                return before;
-            }
-
-            const everythingAfterMe = function(component) {
-                let me = queue.findIndex(item => item.component.id === component.id);
-                let after = [];
-
-                if (me > 0) {
-                    for (let i = me + 1; i < queue.length; i++) {
-                        if (component && queue[i] && queue[i].component && queue[i].component.id !== component.id) {
-                            after.push(i);
-                        }
-                    }
-                }
-
-                return after;
+            const getLoaderIndex = function() {
+                return [...queue].reverse().findIndex(item => item.loader);
             }
 
             const stop = function(component, failure = false, force = false) {
@@ -165,40 +137,26 @@ $magewireScripts = $block->getViewModel();
                 <?php /* Queue items targeted to remove. */ ?>
                 let remove = [];
                 <?php /* Get my own index. */ ?>
-                let me = queue.findIndex(item => item.component.id === component.id);
-                <?php /* Store the last queue item index. */ ?>
-                let last = queue.length - 1;
+                let me = queue.findIndex(item => item && item.component && item.component.id === component.id);
 
-                if (me === last) {
-                    if (queue[me].loader) {
-                        force = true;
-                    } else {
-                        remove.push(me);
-                    }
-
-                    <?php /* Since I'm the last in line, everything before me can go. */ ?>
-                    everythingBeforeMe(component).forEach(key => remove.push(key));
+                if (queue[me]) {
+                    queue[me].done = true;
                 }
 
                 if (force) {
-                    if (me < last) {
-                        let proceed = true;
-
-                        everythingAfterMe(component).forEach(index => {
-                            if (queue[index].loader) {
-                                proceed = false;
-                            }
-                            if (proceed) {
-                                remove.push(index);
-                            }
-                        });
-                    }
-
                     remove.push(me);
+                } else {
+                    let loader = getLoaderIndex();
+
+                    if (loader === -1 && queue.some(item => item.done)) {
+                        remove = Object.keys(queue);
+                    } else if (loader >= 0 && queue[loader].done) {
+                        remove = Object.keys(queue);
+                    }
                 }
 
-                <?php /* Run over the queue and remove those who are marked. In the meanwhile, when we hit */ ?>
-                <?php /* a item which seems to have a loader, it should stop itself. */ ?>
+                <?php /* Run over the queue and remove those who are marked. In the meanwhile, when we hit
+                         a item which seems to have a loader, it should stop itself. */ ?>
                 remove.forEach(index => {
                     if (queue[index]) {
                         if (queue[index].loader) {
@@ -215,10 +173,7 @@ $magewireScripts = $block->getViewModel();
                     }
                 });
 
-                // Refresh queue.
-                queue = Object.values(queue);
-
-                if (queue.length === 0) {
+                if (Object.values(queue).length === 0) {
                     Magewire.dispatchEvent(`loader:done`, {
                         detail: {
                             component: component,
@@ -226,7 +181,7 @@ $magewireScripts = $block->getViewModel();
                         }
                     });
 
-                    // Reset queue with a fresh array.
+                    // Empty insurance.
                     queue = [];
                 }
             }
@@ -259,6 +214,23 @@ $magewireScripts = $block->getViewModel();
                                 .filter(listener => ! emit.to || emit.to === listener.id)
                                 .forEach(listener => queue.push({ component: listener, parent: component }));
                         });
+
+                        let ids = [];
+
+                        <?php /* FIX: Sometimes, it is the case that a component has two event listeners that
+                                      both need to be applied. In such situations, these listeners should be
+                                      handled with a single request. Therefore, only one of them should be in
+                                      the queue to determine the success or failure of the operation */ ?>
+                        for (let i = queue.length - 1; i >= 0; i--) {
+                            if (queue[i]) {
+                                if (ids.indexOf(queue[i].component.id) !== -1) {
+                                    queue.splice(i, 1);
+                                    continue;
+                                }
+
+                                ids.push(queue[i].component.id);
+                            }
+                        }
                     }
 
                     Magewire.plugins.loader.stop(component);
