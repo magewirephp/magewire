@@ -39,10 +39,10 @@ class CallMethod implements ActionInterface
         // Magic or not, it's still a class method who can have no '$' as name prefix.
         $method = ltrim($payload['method'], '$');
         // Let's make sure we have an un-packable array.
-        $params = is_array($payload['params']) && isset($payload['params'][0]) ? array_values($payload['params']) : [$payload['params']];
+        $params = is_array($payload['params']) ? $payload['params'] : [$payload['params']];
 
         if ($this->isCallable($method, $component)) {
-            return $component->{$method}(...$params);
+            return $component->{$method}(...array_values($params));
         }
 
         // Determine the required type class by method in specific order.
@@ -51,7 +51,7 @@ class CallMethod implements ActionInterface
         $params[] = $component;
 
         if ($this->isCallable($method, $type)) {
-            return $type->{$method}(...$params);
+            return $type->{$method}(...array_values($params));
         }
 
         throw new ComponentActionException(__('Method %1 does not exist or can not be called', [$method]));
