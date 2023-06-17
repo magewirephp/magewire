@@ -150,7 +150,7 @@ $magewireScripts = $block->getViewModel();
 
                     if (loader === -1 && queue.some(item => item.done)) {
                         remove = Object.keys(queue);
-                    } else if (loader >= 0 && queue[loader].done) {
+                    } else if (loader >= 0 && queue[loader] && queue[loader].done) {
                         remove = Object.keys(queue);
                     }
                 }
