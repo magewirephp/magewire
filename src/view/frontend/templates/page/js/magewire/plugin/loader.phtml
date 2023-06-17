@@ -125,10 +125,6 @@ $magewireScripts = $block->getViewModel();
                 });
             }
 
-            const getLoaderIndex = function() {
-                return queue.findLastIndex(item => item.loader)
-            }
-
             const stop = function(component, failure = false, force = false) {
                 if (failure) {
                     force = true;
@@ -145,14 +141,8 @@ $magewireScripts = $block->getViewModel();
 
                 if (force) {
                     remove.push(me);
-                } else {
-                    const loader = getLoaderIndex();
-
-                    if (loader === -1 && queue.some(item => item && item.done)) {
-                        remove = Object.keys(queue);
-                    } else if (loader >= 0 && queue[loader].done) {
-                        remove = Object.keys(queue);
-                    }
+                } else if (queue.every(item => item && item.done)) {
+                    remove = Object.keys(queue);
                 }
 
                 <?php /* Run over the queue and remove those who are marked. In the meanwhile, when we hit
@@ -167,6 +157,7 @@ $magewireScripts = $block->getViewModel();
                             }
                         });
                     }
+
                     delete queue[index];
                 });
 
