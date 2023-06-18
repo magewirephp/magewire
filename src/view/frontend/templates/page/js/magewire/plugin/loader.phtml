@@ -125,10 +125,6 @@ $magewireScripts = $block->getViewModel();
                 });
             }
 
-            const getLoaderIndex = function() {
-                return [...queue].reverse().findIndex(item => item.loader);
-            }
-
             const stop = function(component, failure = false, force = false) {
                 if (failure) {
                     force = true;
@@ -137,7 +133,7 @@ $magewireScripts = $block->getViewModel();
                 <?php /* Queue items targeted to remove. */ ?>
                 let remove = [];
                 <?php /* Get my own index. */ ?>
-                let me = queue.findIndex(item => item && item.component && item.component.id === component.id);
+                const me = queue.findIndex(item => item && item.component && item.component.id === component.id);
 
                 if (queue[me]) {
                     queue[me].done = true;
@@ -145,32 +141,24 @@ $magewireScripts = $block->getViewModel();
 
                 if (force) {
                     remove.push(me);
-                } else {
-                    let loader = getLoaderIndex();
-
-                    if (loader === -1 && queue.some(item => item.done)) {
-                        remove = Object.keys(queue);
-                    } else if (loader >= 0 && queue[loader] && queue[loader].done) {
-                        remove = Object.keys(queue);
-                    }
+                } else if (queue.every(item => item && item.done)) {
+                    remove = Object.keys(queue);
                 }
 
                 <?php /* Run over the queue and remove those who are marked. In the meanwhile, when we hit
-                         a item which seems to have a loader, it should stop itself. */ ?>
+                         an item which seems to have a loader, it should stop itself. */ ?>
                 remove.forEach(index => {
-                    if (queue[index]) {
-                        if (queue[index].loader) {
-                            Magewire.dispatchEvent(`loader:stop`, {
-                                detail: {
-                                    loader: queue[index].loader,
-                                    component: queue[index].component,
-                                    failure: failure
-                                }
-                            });
-                        }
-
-                        delete queue[index];
+                    if (queue[index] && queue[index].loader) {
+                        Magewire.dispatchEvent(`loader:stop`, {
+                            detail: {
+                                loader: queue[index].loader,
+                                component: queue[index].component,
+                                failure: failure
+                            }
+                        });
                     }
+
+                    delete queue[index];
                 });
 
                 if (Object.values(queue).length === 0) {
