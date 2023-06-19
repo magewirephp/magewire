@@ -9,10 +9,13 @@
     "php": ">=7.4",
     "symfony/http-foundation": "^5.4"
   },
+  "support": {
+    "issues": "https://github.com/magewirephp/magewire/discussions",
+  },
   "authors": [
     {
       "name": "Willem Poortman",
-      "email": "magewirephp@wpoortman.nl"
+      "role": "Founder / Developer"
     }
   ],
   "license": "MIT",

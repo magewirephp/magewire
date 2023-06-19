@@ -60,8 +60,10 @@ compared to using Luma and RequireJS. — Jesse de Boer / Frontend Developer
 check it out. — Kiel Pykett / Technical Lead
 
 ## Security Vulnerabilities
-If you discover a security vulnerability within Magewire, please create a PR or send an e-mail to Willem Poortman via
-[magewirephp@wpoortman.nl](mailto:magewirephp@wpoortman.nl). All security vulnerabilities will be promptly addressed.
+If you discover a security vulnerability within Magewire, please create a
+[merge request](https://github.com/magewirephp/magewire/pulls) or an
+[discussion](https://github.com/magewirephp/magewire/discussions). All security vulnerabilities will be promptly
+addressed.
 
 ## License
 Copyright © [Willem Poortman](https://github.com/wpoortman)
