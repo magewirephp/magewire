@@ -10,7 +10,7 @@
     "symfony/http-foundation": "^5.4"
   },
   "support": {
-    "issues": "https://github.com/magewirephp/magewire/discussions",
+    "issues": "https://github.com/magewirephp/magewire/discussions"
   },
   "authors": [
     {
