@@ -28,6 +28,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
  */
 class Layout implements ResolverInterface
 {
+    public const ELEMENT_NAME_TYPE_PATTERN = '/^[a-zA-Z0-9][a-zA-Z\d\-_\.]*$/';
+
     protected ResultPageFactory $resultPageFactory;
     protected EventManagerInterface $eventManager;
     protected ComponentFactory $componentFactory;
@@ -85,7 +87,11 @@ class Layout implements ResolverInterface
     public function reconstruct(RequestInterface $request): Component
     {
         $page = $this->resultPageFactory->create();
-        $page->addHandle(strtolower($request->getFingerprint('handle')))->initLayout();
+        $handleName = $request->getFingerprint('handle');
+        if (preg_match(self::ELEMENT_NAME_TYPE_PATTERN, $handleName) !== 1) {
+            throw new HttpException(400, sprintf('Magewire component has invalid handle "%s"', $handleName));
+        }
+        $page->addHandle(strtolower($handleName))->initLayout();
 
         /**
          * @deprecated this code is no longer supported and may cause issues if used.
