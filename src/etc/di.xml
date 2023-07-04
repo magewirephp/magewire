@@ -6,4 +6,12 @@
                 type="Magewirephp\Magewire\Model\Request"/>
     <preference for="Magewirephp\Magewire\Model\ResponseInterface"
                 type="Magewirephp\Magewire\Model\Response"/>
+
+    <type name="Magento\Framework\App\Request\CompositeValidator">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="magewire_validator" xsi:type="object">Magewirephp\Magewire\Model\Request\MagewireValidator</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

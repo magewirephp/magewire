@@ -14,6 +14,17 @@ namespace Magewirephp\Magewire\Model;
 interface RequestInterface
 {
     /**
+     * @return string
+     */
+    public function getMessage(): string;
+
+    /**
+     * @param $fingerprint
+     * @return \Magewirephp\Magewire\Model\RequestInterface
+     */
+    public function setMessage(string $message): \Magewirephp\Magewire\Model\RequestInterface;
+
+    /**
      * string $index
      * @return mixed
      */
