@@ -12,6 +12,7 @@ use Magento\Framework\Exception\LocalizedException;
 
 class Request implements RequestInterface
 {
+    public $message;
     public $fingerprint;
     public $memo;
     public $meta;
@@ -19,6 +20,17 @@ class Request implements RequestInterface
 
     protected bool $isSubsequent = false;
     protected bool $isRefreshing = false;
+
+    public function getMessage(): string
+    {
+        return $this->message;
+    }
+
+    public function setMessage(string $message): \Magewirephp\Magewire\Model\RequestInterface
+    {
+        $this->message = $message;
+        return $this;
+    }
 
     public function getFingerprint(string $index = null)
     {
