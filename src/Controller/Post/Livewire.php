@@ -14,6 +14,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Helper\Security as SecurityHelper;
+use Magewirephp\Magewire\Model\Request\MagewireSubsequentActionInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Magento\Framework\App\Action\HttpPostActionInterface;
@@ -31,7 +32,7 @@ use Magento\Framework\View\Result\PageFactory;
 use Magewirephp\Magewire\Model\HttpFactory;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
+class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface, MagewireSubsequentActionInterface
 {
     public const HANDLE = 'magewire_post_livewire';
 
@@ -45,6 +46,17 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
     protected RequestInterface $request;
     protected LoggerInterface $logger;
 
+    /**
+     * @param JsonFactory $resultJsonFactory
+     * @param ComponentHelper $componentHelper
+     * @param PageFactory $resultPageFactory
+     * @param SerializerInterface $serializer
+     * @param HttpFactory $httpFactory
+     * @param EventManagerInterface $eventManager
+     * @param SecurityHelper $securityHelper
+     * @param RequestInterface $request
+     * @param LoggerInterface $logger
+     */
     public function __construct(
         JsonFactory $resultJsonFactory,
         ComponentHelper $componentHelper,
@@ -67,14 +79,16 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         $this->logger = $logger;
     }
 
+    /**
+     * @return Json
+     */
     public function execute(): Json
     {
         $result = $this->resultJsonFactory->create();
 
         try {
-            $this->validateForUpdateRequest();
+            $post = $this->request->getParams();
 
-            $post = $this->serializer->unserialize(file_get_contents('php://input'));
             /** @var Template $block */
             $block = $this->locateWireComponent($post);
 
@@ -118,6 +132,8 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
     }
 
     /**
+     * @param array $post
+     * @return BlockInterface
      * @throws NotFoundException
      */
     public function locateWireComponent(array $post): BlockInterface
@@ -140,14 +156,48 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         return $block;
     }
 
-    public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
+    public function throwException(Exception $exception): Json
     {
-        return null;
+        $result = $this->resultJsonFactory->create();
+        $statuses = $this->getHttpResponseStatuses();
+
+        $code = $exception instanceof HttpException ? $exception->getStatusCode() : $exception->getCode();
+        $message = empty($exception->getMessage()) ? ($statuses[$code] ?? 'Something went wrong') : $exception->getMessage();
+
+        // Make an exception for optional outsiders.
+        $code = in_array($code, [0, -1], true) ? Response::HTTP_INTERNAL_SERVER_ERROR : $code;
+        // Try and grep the status from the available stack or get 500 when it's unavailable.
+        $code = $statuses[$code] ? $code : Response::HTTP_INTERNAL_SERVER_ERROR;
+        // Set the status header with the returned code and belonging response phrase.
+        $result->setStatusHeader($code, AbstractMessage::VERSION_11, $statuses[$code]);
+
+        if ($code === 500) {
+            $this->logger->critical($exception->getMessage());
+        }
+
+        return $result->setData([
+            'message' => $message,
+            'code' => $code
+        ]);
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
+    {
+        $message = 'Session expired. Please refresh and try again.';
+        $result = $this->throwException(new HttpException(419, $message));
+
+        return new InvalidRequestException($result, [new Phrase($message)]);
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function validateForCsrf(RequestInterface $request): bool
     {
-        return true;
+        return $this->securityHelper->validateFormKey($this->request);
     }
 
     /**
@@ -160,6 +210,9 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         }
     }
 
+    /**
+     * @return array
+     */
     public function getHttpResponseStatuses(): array
     {
         $statuses = Response::$statusTexts;

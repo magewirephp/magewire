@@ -12,12 +12,31 @@ use Magento\Framework\Exception\LocalizedException;
 
 class Request implements RequestInterface
 {
+    public $message;
     public $fingerprint;
     public $memo;
+    public $meta;
     public $updates;
 
     protected bool $isSubsequent = false;
     protected bool $isRefreshing = false;
+
+    /**
+     * @inheritdoc
+     */
+    public function getMessage(): string
+    {
+        return $this->message;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setMessage(string $message): \Magewirephp\Magewire\Model\RequestInterface
+    {
+        $this->message = $message;
+        return $this;
+    }
 
     /**
      * @inheritdoc
