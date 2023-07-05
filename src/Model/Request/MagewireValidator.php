@@ -39,19 +39,22 @@ class MagewireValidator implements ValidatorInterface
         $handle = $input['fingerprint']['handle'] ?? null;
 
         if (! $handle || preg_match('/^[a-zA-Z0-9][a-zA-Z\d\-_\.]*$/', $handle) !== 1) {
-            $message = 'Bad Request';
-
-            $result = $this->resultJsonFactory->create();
-            $result->setStatusHeader(400);
-
-            $result->setData([
-                'message'=> $message,
-                'code' => 400
-            ]);
-
-            throw new InvalidRequestException($result, [new Phrase($message)]);
+            $this->throwException();
         }
 
         $request->setParams($input);
+    }
+
+    private function throwException($message = 'Bad Request')
+    {
+        $result = $this->resultJsonFactory->create();
+        $result->setStatusHeader(400);
+
+        $result->setData([
+            'message'=> $message,
+            'code' => 400
+        ]);
+
+        throw new InvalidRequestException($result, [new Phrase($message)]);
     }
 }
