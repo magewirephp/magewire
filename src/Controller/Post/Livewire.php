@@ -16,12 +16,13 @@ use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\Phrase;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exception\CorruptPayloadException;
+use Magewirephp\Magewire\Exception\LifecycleException;
 use Magewirephp\Magewire\Helper\Security as SecurityHelper;
 use Magewirephp\Magewire\Model\ComponentResolver;
+use Magewirephp\Magewire\Model\HttpFactory;
+use Magewirephp\Magewire\Model\RequestInterface as MagewireRequestInterface;
 use Magewirephp\Magewire\Model\Request\MagewireSubsequentActionInterface;
 use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\Response;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
@@ -29,8 +30,8 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Serialize\SerializerInterface;
-use Magewirephp\Magewire\Exception\LifecycleException;
-use Magewirephp\Magewire\Model\HttpFactory;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface, MagewireSubsequentActionInterface
@@ -67,15 +68,13 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface, Mag
     public function execute(): Json
     {
         try {
-            $post = $this->request->getParams();
-
             try {
-                $request = $this->httpFactory->createRequest($post)->isSubsequent(true);
+                $request = $this->httpFactory->createRequest($this->request->getParams())->isSubsequent(true);
             } catch (LocalizedException $exception) {
                 throw new HttpException(400);
             }
 
-            $component = $this->locateWireComponent($post, $request);
+            $component = $this->locateWireComponent($request);
             $component->setRequest($request);
 
             $html = $component->getParent()->toHtml();
@@ -102,7 +101,7 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface, Mag
     /**
      * @throws NoSuchEntityException
      */
-    public function locateWireComponent(array $post, \Magewirephp\Magewire\Model\RequestInterface $request): Component
+    public function locateWireComponent(MagewireRequestInterface $request): Component
     {
         $resolver = $this->componentResolver->get($request->getFingerprint('resolver'));
         return $resolver->reconstruct($request)->setResolver($resolver);
