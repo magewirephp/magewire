@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -6,125 +6,233 @@
  * details on copyrights and license information.
  */
 
+declare(strict_types=1);
+
+/** @var Magewire $magewireScripts */
 /** @var Escaper $escaper */
 /** @var Template $block */
 
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
-use Magewirephp\Magewire\Model\Action\SyncInput;
 use Magewirephp\Magewire\Model\Action\CallMethod;
 use Magewirephp\Magewire\Model\Action\FireEvent;
+use Magewirephp\Magewire\Model\Action\SyncInput;
+use Magewirephp\Magewire\ViewModel\Magewire;
+
+$magewireScripts = $block->getViewModel();
 ?>
-<script defer>
-    'use strict';
+<?php if ($magewireScripts->pageRequiresMagewire() && $magewireScripts->getSystemConfig()->pageRequiresLoaderPluginScript()): ?>
+    <script>
+        'use strict';
 
-    (() => {
-        document.addEventListener('DOMContentLoaded', () => {
-            let filterLoaderData = function(message, component) {
-                let loader = component.effects.loader || null
+        (() => {
+            <?php /* Active loaders queue. */ ?>
+            let queue = [];
 
-                if (loader) {
-                    let data = {}
+            const loaderTypeResolvers = {
+                <?= /** @noEscape */ SyncInput::ACTION ?>: (item, loader) => {
+                    let name = item.payload.name;
 
-                    for (let item of message.updateQueue) {
-                        let value = true
+                    let expression = [
+                        `${ name }:${ item.payload.value }`,
+                        `${ name.substr(0, name.lastIndexOf('.')) }:${ item.payload.value }`,
+                        `${ name }`,
+                        `${ name.substr(0, name.lastIndexOf('.')) }`
+                    ].filter((expression) => {
+                        return expression in loader
+                    })[0] || false;
 
-                        if (typeof loader === 'object') {
-                            switch (item.type) {
-                                case '<?= SyncInput::ACTION ?>':
-                                    value = loader[item.payload.name + '.' + item.payload.value] || loader[item.payload.name]
-                                    break
-                                case '<?= CallMethod::ACTION ?>':
-                                    value = loader[item.method]
-                                    break
-                                case '<?= FireEvent::ACTION ?>':
-                                    value = loader[item.payload.event]
-                                    break
-
-                                default:
-                                    value = true
-                            }
-                        } else if (typeof loader === 'string') {
-                            value = loader
-                        }
-
-                        data[component.id] = {
-                            key: Date.now(),
-                            id: component.id,
-                            title: null,
-                            type: item.type,
-                            use: value ? true : false
-                        }
-
-                        if (typeof value === 'object') {
-                            Object.assign(data[component.id], { title: value[item.payload.name] })
-                        } else if (typeof value === 'string') {
-                            Object.assign(data[component.id], { title: value })
-                        }
-
-                        data[component.id].hash = btoa(data[component.id].title + data[component.id].type)
+                    if (expression) {
+                        return loader[expression];
                     }
 
-                    return data
-                }
-
-                return null
-            },
-
-            queue = [],
-            start = null,
-
-            tryToStop = function(message, component, failed = false) {
-                queue = queue.filter(item => component.id !== item.component.id);
-
-                if (message.response && message.response.effects) {
-                    (message.response.effects.emits || []).forEach((emit) => {
-                        Magewire.components.componentsListeningForEvent(emit.event).forEach((component) => {
-                            queue.push({ component: component, emit: true })
-                        })
-                    })
-                }
-
-                if (failed) {
-                    Magewire.dispatchEvent('loader:fail', {
-                        detail: { component: component }
-                    })
-                }
-
-                if (queue.length === 0) {
-                    let stop = Date.now()
-
-                    Magewire.dispatchEvent('loader:stop', {
-                        detail: { component: component, stop: stop, duration:  stop - start }
-                    })
+                    return true;
+                },
+                <?= /** @noEscape */ CallMethod::ACTION ?>: (item, loader) => {
+                    return loader[item.method];
+                },
+                <?= /** @noEscape */ FireEvent::ACTION ?>: (item, loader) => {
+                    return loader[item.payload.event];
                 }
             }
 
-            Magewire.hook('message.sent', (message, component) => {
-                let loader = filterLoaderData(message, component) ?? {}
+            const getLoaderData = function(message, component) {
+                let loader = component.effects.loader || null;
 
-                if (component.id in loader && loader[component.id].use) {
-                    loader = loader[component.id]
-                    let first = queue.filter(item => item.emit || false).length === 0
+                if (! loader) {
+                    return null;
+                }
 
-                    if (first) {
-                        start = Date.now()
+                let data = {};
 
-                        queue.push({ loader: loader, component: component })
+                for (let item of message.updateQueue) {
+                    let value = true;
+
+                    if (typeof loader === 'object' && item.type in loaderTypeResolvers) {
+                        value = loaderTypeResolvers[item.type](item, loader);
+                    } else if (typeof loader === 'string') {
+                        value = [loader];
                     }
 
-                    Magewire.dispatchEvent(`loader:${ first ? 'start' : 'tick' }`, {
-                        detail: Object.assign(loader, { component: component, start: start })
-                    })
-                }
-            })
+                    if (value === undefined) {
+                        value = false;
 
-            Magewire.hook('message.processed', (message, component) => {
-                tryToStop(message, component)
-            })
-            Magewire.hook('message.failed', (message, component) => {
-                tryToStop(message, component, true)
-            })
-        })
-    })();
-</script>
+                        <?php /* Include wildcard support. */ ?>
+                        if ('*' in loader) {
+                            value = loader['*'];
+                        }
+                    }
+
+                    data[component.id] = {
+                        key: Date.now(),
+                        component: component,
+                        loader: value,
+                        update: item
+                    };
+                }
+
+                return data;
+            }
+
+            const start = function(loader, component) {
+                let first = ! queue.some(({ parent }) => parent);
+                let me = queue.findIndex(item => item.component.id === component.id);
+
+                if (first) {
+                    queue.push({
+                        loader: loader,
+                        component: component
+                    });
+                }
+
+                <?php /* Sprinkle in the missing loader when this item was added from elsewhere without
+                         knowing what the loader value is gonna be at that point in the lifecycle. */ ?>
+                if (queue[me]) {
+                    queue[me].loader = loader;
+                }
+
+                queue.forEach((item, index) => {
+                    item.parent = item.parent ?? false;
+
+                    <?php /* Lets find out which loader was already active before me and force it to stop. */ ?>
+                    if (me > index && item.loader) {
+                        stop(item.component, false, true);
+                    }
+                });
+
+                Magewire.dispatchEvent(`loader:${ first ? 'start' : 'tick' }`, {
+                    detail: loader
+                });
+            }
+
+            const stop = function(component, failure = false, force = false) {
+                if (failure) {
+                    force = true;
+                }
+
+                <?php /* Queue items targeted to remove. */ ?>
+                let remove = [];
+                <?php /* Get my own index. */ ?>
+                const me = queue.findIndex(item => item && item.component && item.component.id === component.id);
+
+                if (queue[me]) {
+                    queue[me].done = true;
+                }
+
+                if (force) {
+                    remove.push(me);
+                } else if (queue.every(item => item && item.done)) {
+                    remove = Object.keys(queue);
+                }
+
+                <?php /* Run over the queue and remove those who are marked. In the meanwhile, when we hit
+                         an item which seems to have a loader, it should stop itself. */ ?>
+                remove.forEach(index => {
+                    if (queue[index] && queue[index].loader) {
+                        Magewire.dispatchEvent(`loader:stop`, {
+                            detail: {
+                                loader: queue[index].loader,
+                                component: queue[index].component,
+                                failure: failure
+                            }
+                        });
+                    }
+
+                    delete queue[index];
+                });
+
+                if (Object.values(queue).length === 0) {
+                    Magewire.dispatchEvent(`loader:done`, {
+                        detail: {
+                            component: component,
+                            failure: failure
+                        }
+                    });
+
+                    // Empty insurance.
+                    queue = [];
+                }
+            }
+
+            <?php /* Magewire loader plugin registration. */ ?>
+            Magewire.plugins.loader = (() => {
+                return {
+                    start(loader, component) {
+                        return start(loader, component);
+                    },
+                    stop(component, failure = false, force = false) {
+                        return stop(component, failure, force);
+                    }
+                }
+            })();
+
+            document.addEventListener('DOMContentLoaded', () => {
+                Magewire.hook('message.sent', (message, component) => {
+                    let loader = getLoaderData(message, component) || {};
+
+                    if (component.id in loader && loader[component.id].loader) {
+                        Magewire.plugins.loader.start(loader[component.id], component);
+                    }
+                });
+
+                Magewire.hook('message.processed', (message, component) => {
+                    if (message.response && message.response.effects) {
+                        (message.response.effects.emits || []).forEach((emit) => {
+                            Magewire.components.componentsListeningForEvent(emit.event)
+                                .filter(listener => ! emit.to || emit.to === listener.id)
+                                .forEach(listener => queue.push({ component: listener, parent: component }));
+                        });
+
+                        let ids = [];
+
+                        <?php /* FIX: Sometimes, it is the case that a component has two event listeners that
+                                      both need to be applied. In such situations, these listeners should be
+                                      handled with a single request. Therefore, only one of them should be in
+                                      the queue to determine the success or failure of the operation */ ?>
+                        for (let i = queue.length - 1; i >= 0; i--) {
+                            if (queue[i]) {
+                                if (ids.indexOf(queue[i].component.id) !== -1) {
+                                    queue.splice(i, 1);
+                                    continue;
+                                }
+
+                                ids.push(queue[i].component.id);
+                            }
+                        }
+                    }
+
+                    Magewire.plugins.loader.stop(component);
+
+                    <?php /* Re-assign optional new dynamic loader values. */ ?>
+                    if (component.effects && message.response.effects) {
+                        component.effects.loader = message.response.effects.loader;
+                    }
+                });
+
+                Magewire.hook('message.failed', (message, component) => {
+                    Magewire.plugins.loader.stop(component, true);
+                });
+            });
+        })();
+    </script>
+<?php endif ?>

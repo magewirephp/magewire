@@ -18,6 +18,7 @@ use Magento\Framework\View\Layout;
 use Magento\Store\Model\StoreManagerInterface;
 use Magewirephp\Magewire\Model\ComponentFactory;
 use Magewirephp\Magewire\Model\LayoutRenderLifecycle;
+use Magewirephp\Magewire\Model\Magento\System\ConfigMagewire as MagewireSystemConfig;
 
 /**
  * @api
@@ -31,6 +32,7 @@ class Magewire implements ArgumentInterface
     protected LayoutRenderLifecycle $layoutRenderLifecycle;
     protected Layout $layout;
     protected ComponentFactory $componentFactory;
+    protected MagewireSystemConfig $magewireSystemConfig;
 
     public function __construct(
         FormKey $formKey,
@@ -38,14 +40,14 @@ class Magewire implements ArgumentInterface
         ProductMetadataInterface $productMetadata,
         StoreManagerInterface $storeManager,
         LayoutRenderLifecycle $layoutRenderLifecycle,
-        ComponentFactory $componentFactory
+        MagewireSystemConfig $magewireSystemConfig
     ) {
         $this->formKey = $formKey;
         $this->applicationState = $applicationState;
         $this->productMetaData = $productMetadata;
         $this->storeManager = $storeManager;
         $this->layoutRenderLifecycle = $layoutRenderLifecycle;
-        $this->componentFactory = $componentFactory;
+        $this->magewireSystemConfig = $magewireSystemConfig;
     }
 
     public function isDeveloperMode(): bool
@@ -83,5 +85,10 @@ class Magewire implements ArgumentInterface
     public function pageRequiresMagewire(): bool
     {
         return $this->layoutRenderLifecycle->hasHistory();
+    }
+
+    public function getSystemConfig(): MagewireSystemConfig
+    {
+        return $this->magewireSystemConfig;
     }
 }

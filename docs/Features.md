@@ -42,9 +42,14 @@
   - [Indicator Customization](#indicator-customization)
   - [Indicator Removal](#indicator-removal)
   - [Custom Example](#custom-example-dls)
+  - [Notification Type Styling](#notification-type-styling)
 - [Plugins](#plugins)
   - [Plugin: Loader](#plugin--loader)
-  - [Plugin: Exception](#plugin--exception)
+    - [Loader System Settings](#loader-system-settings)
+  - [Plugin: Error](#plugin--error)
+    - [Custom onError callback](#custom-onerror-callback)
+- [Component Resolvers](#component-resolvers)
+  - [Custom Resolvers](#custom-resolver)
 - [Reset](#reset)
 - [Forms](#forms)
   - [Message Translations](#message-translations--f-)
@@ -817,7 +822,7 @@ class Explanation extends \Magewirephp\Magewire\Component
     }
 }
 ```
-> **Note:** Keep in mind that the ```$loader``` mapping only understands subsequent executable methods.
+> **Note**: Keep in mind that the ```$loader``` mapping only understands subsequent executable methods.
 
 ```html
 <!-- A loading bar will appear and disappear on load when method foo is mapped -->
@@ -825,9 +830,18 @@ class Explanation extends \Magewirephp\Magewire\Component
 ```
 
 ### Indicator Customization
+Since version: `1.10.0`
+
 ```xml
 <body>
-    <referenceBlock name="magewire.loader" template="My_Module::html/magewire/loader.phtml"/>
+    <!-- Change the global loading indicator -->
+    <referenceBlock name="magewire.loader.overlay-spinner" template="My_Module::html/loader/custom-spinner.phtml"/>
+    <!-- Change the global loading overlay (please use the original as a reference) -->
+    <referenceBlock name="magewire.loader.overlay" template="My_Module::html/loader/custom-overlay.phtml"/>
+    <!-- Change the global notification messenger (please use the original as a reference) -->
+    <referenceBlock name="magewire.loader.notifications.messenger" template="My_Module::html/loader/notifications/custom-messenger.phtml"/>
+    <!-- Change (only) the notification messenger loading spinner -->
+    <referenceBlock name="magewire.loader.notifications.messenger.spinner" template="My_Module::html/loader/custom-message-spinner.phtml"/>
 </body>
 ```
 **File**: view/frontend/layout/default_hyva.xml
@@ -842,19 +856,6 @@ class Explanation extends \Magewirephp\Magewire\Component
 </script>
 ```
 **File**: html/magewire/loader.phtml
-
-### Available Loader Window Events
-```magewire:loader:start```
-> Dispatched as soon as the first ```$loader``` driven component is active.
-
-```magewire:loader:tick```
-> Dispatched when another component has ```$loader``` settings.
-
-```magewire:loader:fail```
-> Dispatched when a ```$loader``` driven component failed for whatever reason.
-
-```magewire:loader:stop```
-> Dispatched as soon as all network requests were completed (this includes emitted requests).
 
 ### Indicator Removal
 In some cases you want to implement your own loader because you have a global one in place or your just don't need to
@@ -891,15 +892,29 @@ public function start(int $seconds)
 ```
 > **Note**: This is just an example. For a disabled state you should or could use the ```wire:loading``` directive.
 
+### Notification Type Styling
+Each notification item can be one of three types (syncInput, fireEvent, callAction). By default, a notification item
+has the ```magewire-notification``` class. A related (kebab-cased) subclass will be bind dynamically based on the
+notification type.
+
+- ```magewire-notification fire-event```
+- ```magewire-notification sync-input```
+- ```magewire-notification call-method```
+
 ## Plugins
-> **Important**: This is still a proof of concept. It's possible this won't make it into the first official release.
+Plugins are a good and easy way to create frontend functionality which can hook into initial page loads, subsequent
+request hooks.
 
-It's a best practice to add your custom additions to Magewire inside the designated ```magewire.plugin``` container.
-This can come in handy when you need to check if a plugin gives any trouble after installation to just temporary remove
-it.
+### Register a custom plugin
+To register a custom plugin, you can reference a specific container which will take care of rendering your custom
+code at the right place.
 
+An example on how you should register a custom frontend plugin:
 ```xml
-<referenceContainer name="magewire.plugin" remove="true"/>
+<referenceContainer name="magewire.plugin.scripts">
+    <block name="magewire.plugin.my-custom-plugin"
+           template="My_Module::page/js/magewire/plugin/my-custom-plugin.phtml"/>
+</referenceContainer>
 ```
 
 ### Plugin: Loader
@@ -911,8 +926,18 @@ The Loader plugin is closely related to the ```$loader``` property within a comp
 either access the system configuration at **Store > Settings > Advanced > Developer > Magewire** or remove the block
 through layout XML.
 
-The loader is divided into several child blocks, giving you greater flexibility in customizing the appearance of both
-the spinner and notifications without having to overwrite all functionality.
+#### Loader System Settings
+> **Note**: All Magewire specific settings by default can be found at Store > Settings > Advanced > Developer > Magewire.
+
+- **Loader / Show:** Show or hide the global loading spinner.
+- **Loader / Enable Notifications:** Show or hide optional notification messages.
+- **Loader / Notifications / Message Fadeout Timeout:** Determine the duration for the message to fade out after its
+    target component has fully loaded.
+
+The loader is divided into several elements, giving you greater flexibility in customizing the appearance of both
+the global spinner and notifications, without having to overwrite everything.
+
+All elements can be found in the Magewire core layout `default_hyva.xml` or be found in `Magewirephp_Magewire::html/loader`.
 
 ### Plugin: Error
 ```xml
@@ -942,7 +967,8 @@ Magewire's default 419 behavior can be overridden, allowing you to modify it acc
 ```html
 <script>
     'use strict';
-    
+
+    // Please be aware of the fact that this will overwrite the original callback.
     Magewire.onPageExpired(() => {
         // A new onPageExpired callback function is registered for Magewire. Therefore, this will
         // be used when a page session expires. There is no return value required. You just need
@@ -950,6 +976,109 @@ Magewire's default 419 behavior can be overridden, allowing you to modify it acc
     })
 </script>
 ```
+
+#### Custom onError callback
+You can also overwrite or extend Magewire's onError callback.
+
+```xml
+<referenceContainer name="magewire.plugin.scripts">
+    <block name="my-custom.magewire.plugin.error"
+           after="magewire.plugin.error"
+           template="Example_Module::page/js/magewire/plugin/error.phtml"
+    />
+</referenceContainer>
+```
+
+```html
+<script>
+    'use strict';
+
+    (() => {
+        const magewireOriginOnErrorCallback = Magewire.components.onErrorCallback;
+
+        // Variable status is the HTTP response code (500, 404, 301 etc.)
+        Magewire.onError((status, response) => {
+            magewireOriginOnErrorCallback(status, response)
+            
+            // Make sure to clone the response to avoid locking.
+            response.clone().text().then((result) => {
+                result = JSON.parse(result)
+                console.error(result.message || 'Something went wrong')
+            }).catch((exception) => {
+                console.error(exception)
+            })
+        })
+    })()
+</script>
+```
+
+## Component Resolvers
+Since version: `1.9.0`
+
+The ResolverInterface enables you to implement your own method for constructing and reconstructing a component. This
+pattern is useful for examples like Dynamic Blocks and Widgets, which are not typically implemented using Layout XML.
+
+With this pattern, you can inject custom ResolverInterfaces that implement a function called complies(). In this
+function, you can verify if a given Block belongs to your custom Resolver. If it does, the Resolver will grab a unique
+name from that Resolver and automatically bind it onto the request fingerprint.
+
+This way, the right Resolver can be re-used when a component is reconstructed on a subsequent request. "Reconstruct"
+means that it uses all the ingredients to try and rebuild the component in the exact same way as it was constructed on
+page load.
+
+The gateway into Magewire remains the same, requiring a Block "magewire" data key. As soon as Magewire finds the
+required data key, it passes the block. However, it does require some custom logic to ensure your block complies with
+this requirement.
+
+If a block does have a magewire key, but none of the Resolvers comply, it will automatically fall back to the original
+Layout Resolver. This pattern is fully backwards compatible with older Magewire versions.
+
+### Custom Resolver
+```php
+use \Magento\Widget\Block\BlockInterface as WidgetBlockInterface
+
+class Widget implements ResolverInterface
+{
+    public function getName() {
+        return 'widget';
+    }
+
+    /**
+     * Check if the given block is of instance type WidgetBlockInterface
+     */
+    public function complies(BlockInterface $block): bool {
+        return $block instanceof WidgetBlockInterface;
+    }
+    
+    public function construct(Template $block): Component {
+        // Load a widget, construct and return the Component.
+    }
+    
+    public function reconstruct(RequestInterface $request): Component {
+        // Use what's available in the RequestInterface to reconstruct and return the component.
+    }
+}
+```
+
+> **Important**: When it complies, the resolver name will be cached inside the Magewire Resolver cache based on the Block cache key.
+> This way, the Component Resolver doesnt have to verify each block over and over to check which Resolver complies to
+> the given block. Therefor it's important to be aware of this caching layer.
+
+```xml
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd"
+>
+    <!-- Register custom Component Resolver -->
+    <type name="Magewirephp\Magewire\Model\ComponentResolver">
+        <arguments>
+            <argument name="resolvers" xsi:type="array">
+                <item name="widget" xsi:type="object">Example\Module\Model\Magewire\Component\Resolver\Widget</item>
+            </argument>
+        </arguments>
+    </type>
+</config>
+```
+**File**: etc/frontend/di.xml
 
 ## Reset
 Reset public property values to their initial state.

@@ -8,37 +8,43 @@
 
 namespace Magewirephp\Magewire\Model\Component;
 
-use Magento\Framework\View\Element\BlockInterface;
-use Magento\Framework\View\Element\Template;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Component;
-use Magewirephp\Magewire\Exception\MissingComponentException;
-use Magewirephp\Magewire\Model\RequestInterface;
+use Magewirephp\Magewire\Model\RequestInterface as MagewireRequestInterface;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 interface ResolverInterface
 {
     /**
+     * Returns a unique resolver name to be identified
+     * with for reconstruction. This name is publicly
+     * used in among other things, the fingerprint and
+     * therefor can be visible to end users.
+     *
+     * Important: function always need to be implemented even
+     * when inherited from another ResolverInterface.
+     */
+    public function getName(): string;
+
+    /**
      * Checks for very specific data elements to see if
-     * this component complies the requirements.
+     * this block complies the resolver requirements.
      *
      * It's recommended to keep these checks a light as
      * possible e.g. without any database interactions.
      */
-    public function complies(BlockInterface $block): bool;
+    public function complies(AbstractBlock $block): bool;
 
     /**
-     * Build component based on type.
+     * Construct a Magewire component based on type.
      */
-    public function construct(Template $block): Component;
+    public function construct(AbstractBlock $block): Component;
 
     /**
-     * Re-build component based on subsequent request data.
+     * Re-construct a Magewire component based on a subsequent request.
      *
-     * @throws MissingComponentException
+     * @throws HttpException
      */
-    public function reconstruct(RequestInterface $request): Component;
-
-    /**
-     * Returns the unique (publicly visible) name of the resolver.
-     */
-    public function getPublicName(): string;
+    public function reconstruct(MagewireRequestInterface $request): Component;
 }

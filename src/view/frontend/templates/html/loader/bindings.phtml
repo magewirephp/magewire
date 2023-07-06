@@ -1,0 +1,31 @@
+<script>
+    function magewireLoader() {
+        return {
+            active: false,
+
+            loader() {
+                return {
+                    ['x-on:magewire:loader:start.window']() {
+                        this.active = true
+                    },
+                    ['x-on:magewire:loader:done.window']() {
+                        this.active = false
+                    },
+                    ['x-bind:class']() {
+                        return {
+                            'z-50 relative': this.active
+                        };
+                    }
+                };
+            },
+
+            overlay() {
+                return {
+                    ['x-show']() {
+                        return this.active;
+                    }
+                };
+            }
+        };
+    }
+</script>

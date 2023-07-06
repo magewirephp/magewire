@@ -1,0 +1,80 @@
+<script>
+    function magewireLoaderNotifications(config = {}) {
+        return {
+            messages: [],
+
+            config: Object.assign({
+                messageHideTimeout: 2500
+            }, config),
+
+            <?php /* Should be init() for AlpineJS- v3 to autoload, but won't work with v2. */ ?>
+            <?php /* Leaving the method name init would make it initialize twice when running v3. */ ?>
+            initialize() {
+                <?php /* @see Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml */ ?>
+                document.addEventListener('magewire:loader:start', (event) => {
+                    this.messageCreate(event.detail);
+                })
+                document.addEventListener('magewire:loader:tick', (event) => {
+                    this.messageCreate(event.detail);
+                })
+
+                <?php /* @see Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml */ ?>
+                document.addEventListener('magewire:loader:stop', (event) => {
+                    if (! event.detail.component && ! event.detail.component.id && event.detail.loader) {
+                        return;
+                    }
+
+                    <?php /* Find the component by its unique key to try and deactivate it. */ ?>
+                    for (let message in this.messages) {
+                        if (event.detail.loader && this.messages[message].key == event.detail.loader.key) {
+                            return this.messageDeactivate(message, event.failure || false);
+                        }
+                    }
+                })
+            },
+
+            <?php /* Create a new message an determine if it needs to be shown or should wait. */ ?>
+            messageCreate(item) {
+                this.messages.push(
+                    Object.assign({}, item, {
+                        active : true,
+                        loader : item.loader,
+                        loading: true,
+                        success: null,
+                        timeout: this.config.messageHideTimeout
+                    })
+                );
+            },
+
+            <?php /* Deactivate message, but not remove it fully from the array to let animations run. */ ?>
+            messageDeactivate(index, failure = false) {
+                let message = this.messages[index] || false;
+
+                if (message === false) {
+                    return console.error('Magewire: Could not deactivate the notification message.');
+                }
+
+                if (failure) {
+                    message.timeout += 5000;
+                }
+
+                message.loading = false;
+                message.success = ! failure;
+
+                setTimeout(() => message.active = false, message.timeout)
+            },
+
+            messageList() {
+                return this.messages.filter(message => message.loader.length);
+            },
+
+            notifications() {
+                return {};
+            },
+
+            messenger() {
+                return {};
+            }
+        };
+    }
+</script>

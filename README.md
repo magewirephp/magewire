@@ -1,4 +1,4 @@
-# Magewire
+# Magewire PHP
 [![Latest Stable Version](http://poser.pugx.org/magewirephp/magewire/v)](https://packagist.org/packages/magewirephp/magewire)
 [![Total Downloads](http://poser.pugx.org/magewirephp/magewire/downloads)](https://packagist.org/packages/magewirephp/magewire)
 ![style CI](https://github.styleci.io/repos/414967404/shield?style=flat&branch=main)
@@ -22,10 +22,10 @@ features to your store without a full Javascript framework. Try Magewire today a
 composer require magewirephp/magewire
 ```
 
-Be aware that this extension is primarily build for Hyvä themes and won't work with RequireJS-dependent Magento theme
-out of the box. But don't worry – with a few simple tweaks, you can unleash most of the richness in your Blank or Luma
-projects. Head over to the [compatibility](./docs/Compatibility.md) section to learn more and start making your
-Magento 2 store more dynamic and engaging today!
+Please be aware that this extension is primarily build for themes running without Require JS like Hyvä Themes. It will
+not work with RequireJS-dependent Magento theme out of the box. Don't worry – with a few simple tweaks, you can unleash
+most of the richness in your Blank or Luma projects. Head over to the [compatibility](./docs/Compatibility.md) section
+to learn more and start making your Magento 2 store more dynamic and engaging today!
 
 ## Documentation
 - [Work with Alpine.js](./docs/Alpine.md)
@@ -36,50 +36,45 @@ Magento 2 store more dynamic and engaging today!
 - [Developer Tools](./docs/Tools.md)
 
 ## Sponsors
+Based on proven results, using Magewire consistently reduces work hours, offering significant benefits to agencies,
+their developers and merchants. I extend my heartfelt appreciation to my current sponsors for their support creating
+a win-win situation for all involved.
 
 |   |   |
 |---|---|
 |<a align="center" href="https://hyva.io/" target="_blank"><img width="64" alt="Hyvä Themes" src="https://user-images.githubusercontent.com/5383956/227921963-3200c66e-be02-488d-84bc-84c7b77cd042.png"></a>|<a align="center" href="https://vendic.nl/" target="_blank"><img width="64" alt="Vendic" src="https://user-images.githubusercontent.com/5383956/228823594-d3344d87-dadc-4c36-a212-89cba8c7340b.jpg"></a>|
 
 ## Developers say
-> This is a game-changing tool! You can build practically anything with almost no javascript. It saves a significant
-> amount of time and is incredibly easy to work with. It's not a matter of whether you should use it, you simply must
-> use it.
+— This is a game-changing tool! You can build practically anything with almost no javascript. It saves a significant
+amount of time and is incredibly easy to work with. It's not a matter of whether you should use it, you simply must
+use it. — Marcus Venghaus / Freelance Developer
 
-**Marcus Venghaus** - Marcus Venghaus - Freelance Developer & Big Magewire contributor
+— Magewire is like magic sauce that can save a ton of time implementing features! It’s great to see more tools from the
+Laravel ecosystem being made available within Magento — Vinai Kopp / Technical Director
 
-> Magewire is like magic sauce that can save a ton of time implementing features!
-> It’s great to see more tools from the Laravel ecosystem being made available within Magento - thanks [Willem](https://github.com/wpoortman/)!
+— Magewire gives you the ability to add reactivity without the use of a a bloated JS framework or package. Useing Magewire
+is intuitive, quick and easy to learn. It feels like a breath of fresh air to work with and takes away a lot headaches
+compared to using Luma and RequireJS. — Jesse de Boer / Frontend Developer
 
-**Vinai Kopp** - Technical Director and Partner @ [Hyvä Themes](https://hyva.io/)
-
-> Magewire gives you the ability to add reactivity without the use of a a bloated JS framework or package. Useing
-> Magewire is intuitive, quick and easy to learn. It feels like a breath of fresh air to work with and takes away a lot
-> headaches compared to using Luma and RequireJS.
-
-**Jesse de Boer** - Frontend Developer @ [Elgentos Ecommerce Solutions](https://elgentos.nl)
-
-> Magewire is one of my favourite tools! It even makes frontend morons like me capable of dynamic UIs! More people
-> should check it out.
-
-**Kiel Pykett** - Technical Lead Magento Developer @ [Fisheye - a Youwe company](https://fisheye.co.uk/)
-
-> Magewire is an awesome tool for Magento developers to build great interactive frontend features. It brings the
-> backend closer to the frontend and speeds up development times. We are now using Magewire in all our projects where
-> it makes sense to do so. I highly recommend it to Magento developers.
-
-**Ryan Copeland** - Founder, Solution Architect & Developer @ [Foundation Commerce](https://foundationcommerce.co.uk/)
+— Magewire is one of my favourite tools! It even makes frontend morons like me capable of dynamic UIs! More people should
+check it out. — Kiel Pykett / Technical Lead
 
 ## Security Vulnerabilities
-If you discover a security vulnerability within Magewire, please create a PR or send an e-mail to Willem Poortman via
-[magewirephp@wpoortman.nl](mailto:magewirephp@wpoortman.nl). All security vulnerabilities will be promptly addressed.
+If you discover a security vulnerability within Magewire, please create a
+[merge request](https://github.com/magewirephp/magewire/pulls) or an
+[discussion](https://github.com/magewirephp/magewire/discussions). All security vulnerabilities will be promptly
+addressed.
 
 ## License
 Copyright © [Willem Poortman](https://github.com/wpoortman)
 
 Magewire is open-sourced software licensed under the [MIT license](LICENSE.md).
 
-> This Magewire port would not have been
+> It's important to emphasize that this package is completely independent of any business entities. There is absolutely
+> no involvement or interference from other companies expressing their preferences. This package is created by the
+> community, for the community, ensuring its integrity and unbiased nature.
+
+_This Magewire port would not have been
 possible without the the existence of the [Laravel Livewire](https://laravel-livewire.com/) project, it's creator [Caleb Porzio](https://github.com/calebporzio) and all contributors
 with their tireless efforts and dedication. A big shoutout and thank you to all of them for the inspiration and
-motivation to make this work in- and outside the Laravel ecosystem! :heart: :heart:
+motivation to make this work in- and outside the Laravel ecosystem! :heart: :heart:_

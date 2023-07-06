@@ -8,8 +8,8 @@
 
 namespace Magewirephp\Magewire\Model\Component\Resolver;
 
-use Magento\Framework\Event\ManagerInterface as EventManagerInterfac;
-use Magento\Framework\Exception\NotFoundException;
+use Magento\Framework\Event\ManagerInterface as EventManagerInterface;
+use Magento\Framework\View\Element\AbstractBlock;
 use Magento\Framework\View\Element\BlockInterface;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Result\PageFactory as ResultPageFactory;
@@ -19,16 +19,22 @@ use Magewirephp\Magewire\Exception\MissingComponentException;
 use Magewirephp\Magewire\Model\Component\ResolverInterface;
 use Magewirephp\Magewire\Model\ComponentFactory;
 use Magewirephp\Magewire\Model\RequestInterface;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
+/**
+ * Default Component Resolver.
+ *
+ * @api
+ */
 class Layout implements ResolverInterface
 {
     protected ResultPageFactory $resultPageFactory;
-    protected EventManagerInterfac $eventManager;
+    protected EventManagerInterface $eventManager;
     protected ComponentFactory $componentFactory;
 
     public function __construct(
         ResultPageFactory $resultPageFactory,
-        EventManagerInterfac $eventManager,
+        EventManagerInterface $eventManager,
         ComponentFactory $componentFactory
     ) {
         $this->resultPageFactory = $resultPageFactory;
@@ -36,7 +42,12 @@ class Layout implements ResolverInterface
         $this->componentFactory = $componentFactory;
     }
 
-    public function complies(BlockInterface $block): bool
+    public function getName(): string
+    {
+        return 'layout';
+    }
+
+    public function complies(AbstractBlock $block): bool
     {
         return true;
     }
@@ -44,7 +55,7 @@ class Layout implements ResolverInterface
     /**
      * @throws MissingComponentException
      */
-    public function construct(Template $block): Component
+    public function construct(AbstractBlock $block): Component
     {
         $magewire = $block->getData('magewire');
 
@@ -69,7 +80,6 @@ class Layout implements ResolverInterface
     }
 
     /**
-     * @throws NotFoundException
      * @throws MissingComponentException
      */
     public function reconstruct(RequestInterface $request): Component
@@ -90,17 +100,10 @@ class Layout implements ResolverInterface
         $block = $page->getLayout()->getBlock($request->getFingerprint('name'));
 
         if ($block === false) {
-            throw new NotFoundException(
-                __('Magewire component "%1" could not be found', [$request->getFingerprint('name')])
-            );
+            throw new HttpException(404, 'Magewire component "%1" could not be found');
         }
 
         return $this->construct($block);
-    }
-
-    public function getPublicName(): string
-    {
-        return 'layout';
     }
 
     /**

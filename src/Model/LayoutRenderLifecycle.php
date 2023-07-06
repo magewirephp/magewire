@@ -101,13 +101,30 @@ class LayoutRenderLifecycle
         return $this;
     }
 
+    /**
+     * Validate if it's the overall highest laying component without a parent.
+     */
     public function isParent(string $name): bool
     {
-        return array_search($name, array_keys($this->getViews()), true) === 0;
+        $views = $this->getViews();
+        $parent = array_search($name, array_keys($views), true);
+
+        return $parent === 0;
     }
 
+    /**
+     * Validate if it's a nested component (no matter the depth).
+     */
     public function isChild(string $name): bool
     {
         return ! $this->isParent($name);
+    }
+
+    /**
+     * Validate if family member of the given parent name.
+     */
+    public function isDescendant(string $from): bool
+    {
+        return array_key_exists($from, $this->getViews()) && $this->views[$from] === null;
     }
 }

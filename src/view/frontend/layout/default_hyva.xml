@@ -4,19 +4,65 @@
 >
     <body>
         <referenceContainer name="page.bottom.container">
-            <!-- Floating Magewire element(s) which can be everywhere -->
             <block name="magewire.loader"
-                   ifconfig="dev/magewire/loader/enable"
-                   template="Magewirephp_Magewire::html/loader.phtml">
+                   template="Magewirephp_Magewire::html/loader.phtml"
+            >
                 <arguments>
                     <argument name="view_model" xsi:type="object">
                         Magewirephp\Magewire\ViewModel\Magewire
                     </argument>
                 </arguments>
 
+                <!-- Loader notifications plugin -->
                 <block name="magewire.loader.notifications"
+                       as="notifications"
                        ifconfig="dev/magewire/loader/enable_notifications"
-                       template="Magewirephp_Magewire::html/loader/notifications.phtml"/>
+                       template="Magewirephp_Magewire::html/loader/notifications.phtml"
+                >
+                    <arguments>
+                        <argument name="view_model" xsi:type="object">
+                            Magewirephp\Magewire\ViewModel\Magewire
+                        </argument>
+                    </arguments>
+
+                    <!-- Loader plugins AlpineJS bindings -->
+                    <block name="magewire.loader.notifications.messenger"
+                           as="messenger"
+                           template="Magewirephp_Magewire::html/loader/notifications/messenger.phtml"
+                    >
+                        <!-- Message item loader spinner SVG -->
+                        <block name="magewire.loader.notifications.messenger.spinner"
+                               as="spinner"
+                               template="Magewirephp_Magewire::html/loader/spinner.phtml"/>
+                    </block>
+
+                    <!-- Loader notification AlpineJS bindings -->
+                    <block name="magewire.loader.notifications.bindings"
+                           as="bindings"
+                           template="Magewirephp_Magewire::html/loader/notifications/bindings.phtml"/>
+                </block>
+
+                <!-- Loader overlay -->
+                <block name="magewire.loader.overlay"
+                       as="overlay"
+                       template="Magewirephp_Magewire::html/loader/overlay.phtml"
+                >
+                    <arguments>
+                        <argument name="view_model" xsi:type="object">
+                            Magewirephp\Magewire\ViewModel\Magewire
+                        </argument>
+                    </arguments>
+
+                    <!-- Loader spinner SVG -->
+                    <block name="magewire.loader.overlay-spinner"
+                           as="spinner"
+                           template="Magewirephp_Magewire::html/loader/spinner.phtml"/>
+                </block>
+
+                <!-- Loader plugins AlpineJS bindings -->
+                <block name="magewire.loader.bindings"
+                       as="bindings"
+                       template="Magewirephp_Magewire::html/loader/bindings.phtml"/>
             </block>
         </referenceContainer>
 
@@ -47,9 +93,16 @@
                 </container>
 
                 <container name="magewire.plugin.scripts" as="magewire.plugins">
+                    <!-- Inject the Magewire core Loader plugin -->
                     <block name="magewire.plugin.loader"
                            ifconfig="dev/magewire/loader/enable"
-                           template="Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml"/>
+                           template="Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml">
+                        <arguments>
+                            <argument name="view_model" xsi:type="object">
+                                Magewirephp\Magewire\ViewModel\Magewire
+                            </argument>
+                        </arguments>
+                    </block>
 
                     <block name="magewire.plugin.error"
                            template="Magewirephp_Magewire::page/js/magewire/plugin/error.phtml"

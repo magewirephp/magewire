@@ -13,12 +13,16 @@ use Laminas\Http\AbstractMessage;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\NotFoundException;
+use Magento\Framework\Phrase;
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Exception\CorruptPayloadException;
+use Magewirephp\Magewire\Exception\LifecycleException;
 use Magewirephp\Magewire\Helper\Security as SecurityHelper;
 use Magewirephp\Magewire\Model\ComponentResolver;
+use Magewirephp\Magewire\Model\HttpFactory;
+use Magewirephp\Magewire\Model\RequestInterface as MagewireRequestInterface;
+use Magewirephp\Magewire\Model\Request\MagewireSubsequentActionInterface;
 use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpFoundation\Response;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\App\CsrfAwareActionInterface;
 use Magento\Framework\App\Request\InvalidRequestException;
@@ -26,15 +30,14 @@ use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Serialize\SerializerInterface;
-use Magewirephp\Magewire\Exception\LifecycleException;
-use Magewirephp\Magewire\Model\HttpFactory;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
+class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface, MagewireSubsequentActionInterface
 {
     public const HANDLE = 'magewire_post_livewire';
 
-    protected SerializerInterface $serializer;
     protected HttpFactory $httpFactory;
     protected JsonFactory $resultJsonFactory;
     protected SecurityHelper $securityHelper;
@@ -53,7 +56,6 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         MagewireViewModel $magewireViewModel,
         ComponentResolver $componentResolver
     ) {
-        $this->serializer = $serializer;
         $this->httpFactory = $httpFactory;
         $this->resultJsonFactory = $resultJsonFactory;
         $this->securityHelper = $securityHelper;
@@ -65,14 +67,15 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
 
     public function execute(): Json
     {
-        $result = $this->resultJsonFactory->create();
-
         try {
-            $this->validateForUpdateRequest();
-            $post = $this->serializer->unserialize(file_get_contents('php://input'));
+            try {
+                $request = $this->httpFactory->createRequest($this->request->getParams())->isSubsequent(true);
+            } catch (LocalizedException $exception) {
+                throw new HttpException(400);
+            }
 
-            $component = $this->locateWireComponent($post);
-            $component->setRequest($this->httpFactory->createRequest($post)->isSubsequent(true));
+            $component = $this->locateWireComponent($request);
+            $component->setRequest($request);
 
             $html = $component->getParent()->toHtml();
             $response = $component->getResponse();
@@ -83,6 +86,8 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
 
             // Set final HTML for response.
             $response->effects['html'] = $html;
+            // Prepare result object.
+            $result = $this->resultJsonFactory->create();
 
             return $result->setData([
                 'effects' => $response->getEffects(),
@@ -95,28 +100,20 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
 
     /**
      * @throws NoSuchEntityException
-     * @throws NotFoundException
-     * @throws LocalizedException
      */
-    public function locateWireComponent(array $post): Component
+    public function locateWireComponent(MagewireRequestInterface $request): Component
     {
-        $request = $this->httpFactory->createRequest($post);
-
-        if ($request->getFingerprint('resolver')) {
-            return $this->componentResolver->get($post['fingerprint']['resolver'])->reconstruct($request);
-        }
-
-        throw new NotFoundException(
-            __('Component resolver could not be found.')
-        );
+        $resolver = $this->componentResolver->get($request->getFingerprint('resolver'));
+        return $resolver->reconstruct($request)->setResolver($resolver);
     }
 
     public function throwException(Exception $exception): Json
     {
         $result = $this->resultJsonFactory->create();
+        $statuses = $this->getHttpResponseStatuses();
 
         $code = $exception instanceof HttpException ? $exception->getStatusCode() : $exception->getCode();
-        $statuses = $this->getHttpResponseStatuses();
+        $message = empty($exception->getMessage()) ? ($statuses[$code] ?? 'Something went wrong') : $exception->getMessage();
 
         // Make an exception for optional outsiders.
         $code = in_array($code, [0, -1], true) ? Response::HTTP_INTERNAL_SERVER_ERROR : $code;
@@ -130,35 +127,28 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface
         }
 
         return $result->setData([
-            'message' => $exception->getMessage(),
+            'message' => $message,
             'code' => $code
         ]);
     }
 
     public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
     {
-        return null;
+        $message = 'Session expired. Please refresh and try again.';
+        $result = $this->throwException(new HttpException(419, $message));
+
+        return new InvalidRequestException($result, [new Phrase($message)]);
     }
 
     public function validateForCsrf(RequestInterface $request): bool
     {
-        return true;
-    }
-
-    /**
-     * @throws LocalizedException
-     */
-    public function validateForUpdateRequest(): void
-    {
-        if ($this->securityHelper->validateFormKey($this->request) === false) {
-            throw new HttpException(419, 'Form key expired. Please refresh and try again.');
-        }
+        return $this->securityHelper->validateFormKey($this->request);
     }
 
     public function getHttpResponseStatuses(): array
     {
         $statuses = Response::$statusTexts;
-        $statuses[419] = 'Form key expired';
+        $statuses[419] = 'Session expired';
 
         return $statuses;
     }

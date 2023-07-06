@@ -1,17 +1,21 @@
 {
   "name": "magewirephp/magewire",
   "description": "A framework that makes building dynamic interfaces simple, without leaving the comfort of Magento 2",
-  "version": "1.8.5",
+  "version": "1.10.5",
   "type": "magento2-module",
   "require": {
     "magento/framework": "*",
     "rakit/validation": "^1.0",
-    "php": ">=7.4"
+    "php": ">=7.4",
+    "symfony/http-foundation": "^5.4"
+  },
+  "support": {
+    "issues": "https://github.com/magewirephp/magewire/discussions"
   },
   "authors": [
     {
       "name": "Willem Poortman",
-      "email": "magewirephp@wpoortman.nl"
+      "role": "Founder / Developer"
     }
   ],
   "license": "MIT",
