@@ -59,4 +59,10 @@
         <plugin name="Magewirephp_Magewire_Plugin_Magento_Framework_View_TemplateEngine_Php"
                 type="Magewirephp\Magewire\Plugin\Magento\Framework\View\TemplateEngine\Php"/>
     </type>
+
+    <!-- Prevent update of private_content_version cookie -->
+    <type name="Magento\Framework\App\PageCache\Version">
+        <plugin name="Magewirephp_Magewire_Plugin_Magento_Framework_App_PageCache_Version"
+                type="Magewirephp\Magewire\Plugin\Magento\Framework\App\PageCache\Version"/>
+    </type>
 </config>
