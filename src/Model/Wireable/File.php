@@ -10,10 +10,7 @@ namespace Magewirephp\Magewire\Model\Wireable;
 
 use Magewirephp\Magewire\Model\WireableInterface;
 
-/**
- * @deprecated don't use this, it's work in progress and maybe will- or will not make it.
- */
-class WireableFile implements WireableInterface
+class File implements WireableInterface
 {
     public $src;
 
@@ -31,5 +28,10 @@ class WireableFile implements WireableInterface
     public function unwire($value): WireableInterface
     {
         return new static($value);
+    }
+
+    public function store()
+    {
+
     }
 }

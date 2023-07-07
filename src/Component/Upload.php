@@ -21,81 +21,12 @@ abstract class Upload extends Form
     public const COMPONENT_TYPE = 'file-upload';
 
     protected UploadAdapterInterface $uploadAdapter;
-    protected Filesystem $filesystem;
 
     public function __construct(
         Validator $validator,
-        UploadAdapterInterface $uploadAdapter,
-        Filesystem $filesystem
+        UploadAdapterInterface $uploadAdapter
     ) {
-        $validator->setValidator('required', new \Magewirephp\Magewire\Model\Upload\Validation\Rules\Required);
-        $validator->setValidator('mimes', new \Magewirephp\Magewire\Model\Upload\Validation\Rules\Mimes);
-        $validator->setValidator('uploaded_file', new \Magewirephp\Magewire\Model\Upload\Validation\Rules\UploadedFile);
-
-        parent::__construct($validator);
-
         $this->uploadAdapter = $uploadAdapter;
-        $this->filesystem = $filesystem;
-    }
-
-    /**
-     * @throws FileSystemException
-     * @throws AcceptableException
-     */
-    public function validate(
-        array $rules = [],
-        array $messages = [],
-        array $data = null,
-        bool $mergeWithClassProperties = true
-    ): bool {
-        $data = $this->convertFilesData($data ?? $this->getPublicProperties(true));
-
-        return parent::validate(
-            $rules,
-            $messages,
-            $data,
-            $mergeWithClassProperties
-        );
-    }
-
-    /**
-     * @throws FileSystemException
-     */
-    private function convertFilesData(array $data): array
-    {
-        foreach ($data as $key => &$value) {
-            if (is_string($value)) {
-                if (TemporaryUploader::isTemporaryFilename($value)) {
-                    $value = $this->convertFilesData($value);
-                }
-            }
-            if (is_array($value)) {
-                foreach ($value as $k => &$v) {
-                    if (TemporaryUploader::isTemporaryFilename($v)) {
-                        $v = $this->convertFileStringToArray($v);
-                    }
-                }
-            }
-        }
-
-        return $data;
-    }
-
-    /**
-     * @throws FileSystemException
-     */
-    private function convertFileStringToArray(string $value): array
-    {
-        $fileDirectory = $this->filesystem->getDirectoryWrite(DirectoryList::TMP);
-        $filePath = $fileDirectory->getAbsolutePath('magewire') . '/' . $value;
-
-        return [
-            'name' => TemporaryUploader::extractOriginalNameFromFilePath($value),
-            'type' => mime_content_type($filePath),
-            'tmp_name' => $filePath,
-            'size' => filesize($filePath),
-            'error' => ''
-        ];
     }
 
     public function getAdapter(): UploadAdapterInterface
