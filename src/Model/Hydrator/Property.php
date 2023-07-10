@@ -16,6 +16,7 @@ use Magewirephp\Magewire\Helper\Property as PropertyHelper;
 use Magewirephp\Magewire\Model\HydratorInterface;
 use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Model\ResponseInterface;
+use Magewirephp\Magewire\Model\WireableInterface;
 use Psr\Log\LoggerInterface;
 use ReflectionException;
 
@@ -48,13 +49,8 @@ class Property implements HydratorInterface
             }
         }
 
-        /** @var array $wireables */
-        $meta['wireables'] = $this->propertyHelper->searchViaDots('dataMeta.wireables', $request->memo) ?? [];
-
-        $this->propertyHelper->assign(function (Component $component, string $property, $value) use ($meta) {
-            if (in_array($property, $meta['wireables'])) {
-                $component->{$property} = $component->{$property}->unwire($value);
-            } elseif (is_array($component->{$property}) && is_array($value)) {
+        $this->propertyHelper->assign(function (Component $component, string $property, $value) {
+            if (is_array($component->{$property}) && is_array($value)) {
                 $a = $this->serializer->serialize($component->{$property});
                 $b = $this->serializer->serialize($value);
 
@@ -95,19 +91,10 @@ class Property implements HydratorInterface
                 // The property can be seen as changed and dirty data, who needs a refresh.
                 if (is_array($component->{$property})) {
                     $this->processArrayProperty($response, $property);
-                } elseif ($component->{$property} instanceof WireableInterface && version_compare(PHP_VERSION, '7.4', '>=')) {
-                    $this->processWireableproperty($response, $property);
                 } else {
                     $this->processProperty($response, $property);
                 }
             }, $component, $response->memo['data']);
-        } else {
-            array_walk($response->memo['data'], function ($value, $key) use ($component, $response) {
-                if ($value instanceof WireableInterface) {
-                    $response->memo['dataMeta']['wireables'][] = $key;
-                    $response->memo['data'][$key] = $value->wire();
-                }
-            });
         }
 
         $this->executePropertyLifecycleHook($component, 'dehydrate', $response);
@@ -131,11 +118,6 @@ class Property implements HydratorInterface
                 }
             }
         }
-    }
-
-    public function processWireableProperty(ResponseInterface $response, string $property)
-    {
-        $response->effects['dirty'][] = $property;
     }
 
     public function processProperty(ResponseInterface $response, string $property): void

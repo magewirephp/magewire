@@ -9,6 +9,7 @@
 namespace Magewirephp\Magewire\Model\Upload;
 
 use Magento\Framework\Filesystem\DriverInterface;
+use Magento\Framework\Validation\ValidationException;
 
 interface UploadAdapterInterface
 {
@@ -24,7 +25,7 @@ interface UploadAdapterInterface
     public function getGenerateSignedUploadUrlEvent(): string;
 
     /**
-     * WIP
+     * @deprecated don't use until the deprecated sign has been removed (WIP).
      */
     public function getDriver(): DriverInterface;
 
@@ -34,9 +35,9 @@ interface UploadAdapterInterface
     public function getRoute(): string;
 
     /**
-     * Returns a snake cased adapter name.
+     * Returns a snake cased adapter accessor.
      */
-    public function getName(): string;
+    public function getAccessor(): string;
 
     /**
      * Stash files temporarily (e.g. var/tmp/ directory).

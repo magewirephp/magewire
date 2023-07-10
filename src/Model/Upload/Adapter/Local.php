@@ -18,14 +18,15 @@ use Magento\Framework\Math\Random;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magewirephp\Magewire\Helper\Security as SecurityHelper;
 use Magewirephp\Magewire\Model\Upload\AbstractAdapter;
-use Magewirephp\Magewire\Model\Upload\File\TemporaryUploader;
+use Magewirephp\Magewire\Model\Upload\TemporaryFileFactory;
 
 class Local extends AbstractAdapter
 {
-    public const NAME = 'local';
+    public const ACCESSOR = 'local';
 
     protected Filesystem $fileSystem;
     protected Random $randomizer;
+    protected TemporaryFileFactory $temporaryFileFactory;
 
     public function __construct(
         DateTime $dateTime,
@@ -33,12 +34,14 @@ class Local extends AbstractAdapter
         FileDriver $fileDriver,
         RequestInterface $request,
         Filesystem $fileSystem,
-        Random $randomizer
+        Random $randomizer,
+        TemporaryFileFactory $temporaryFileFactory
     ) {
         parent::__construct($dateTime, $securityHelper, $fileDriver, $request);
 
         $this->fileSystem = $fileSystem;
         $this->randomizer = $randomizer;
+        $this->temporaryFileFactory = $temporaryFileFactory;
     }
 
     /**
@@ -50,9 +53,20 @@ class Local extends AbstractAdapter
     {
         $paths = [];
 
-        foreach ($files as $file) {
+        foreach (array_keys($files) as $file) {
+            $temporaryFiles[] = $this->temporaryFileFactory->create(['fileId' => 'files[' . $file . ']']);
+        }
+
+        foreach ($temporaryFiles ?? [] as $file) {
             $fileDirectory = $this->fileSystem->getDirectoryWrite(DirectoryList::TMP);
             $name = $file->generateHashNameWithOriginalNameEmbedded();
+
+            $file->setAllowCreateFolders(false);
+            $file->setAllowRenameFiles(true);
+            $file->setFilenamesCaseSensitivity(false);
+
+            /* @todo still needs to be caught somewhere. */
+            $file->validateFile();
 
             $file->save($fileDirectory->getAbsolutePath('magewire'), $name);
             $paths[] = $file->getUploadedFileName();
@@ -66,16 +80,14 @@ class Local extends AbstractAdapter
      */
     public function store(array $paths, string $directory = null): array
     {
-        $fileDirectoryTmp = $this->fileSystem->getDirectoryWrite(DirectoryList::TMP);
-        $fileDirectoryUpload = $this->fileSystem->getDirectoryWrite(DirectoryList::UPLOAD);
+        $sourceDirectory = $this->fileSystem->getDirectoryWrite(DirectoryList::TMP);
+        $targetDirectory = $this->fileSystem->getDirectoryWrite(DirectoryList::UPLOAD);
 
-        return array_map(function ($tmp) use ($fileDirectoryTmp, $fileDirectoryUpload) {
+        return array_map(function($tmp) use ($sourceDirectory, $targetDirectory) {
             $path = 'magewire' . DIRECTORY_SEPARATOR . $tmp;
 
-            if ($fileDirectoryTmp->isFile($path)) {
-                if ($fileDirectoryTmp->copyFile($path, $path, $fileDirectoryUpload)) {
-                    return $fileDirectoryUpload->getRelativePath($path);
-                }
+            if ($sourceDirectory->isFile($path) && $sourceDirectory->copyFile($path, $path, $targetDirectory)) {
+                return $targetDirectory->getRelativePath($path);
             }
 
             return null;

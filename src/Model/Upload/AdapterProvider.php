@@ -19,14 +19,14 @@ class AdapterProvider
         array $adapters = []
     ) {
         $this->adapters = array_filter($adapters, static function (UploadAdapterInterface $adapter, $name) {
-            return $name === $adapter->getName();
+            return $name === $adapter->getAccessor();
         }, ARRAY_FILTER_USE_BOTH);
     }
 
     /**
      * @throws NoSuchUploadAdapterInterface
      */
-    public function getByName(string $adapter): UploadAdapterInterface
+    public function getByAccessor(string $adapter): UploadAdapterInterface
     {
         $adapter = $this->adapters[$adapter];
 

@@ -18,28 +18,38 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\RuntimeException;
+use Magento\Framework\Serialize\SerializerInterface;
+use Magewirephp\Magewire\Controller\Post;
 use Magewirephp\Magewire\Exception\NoSuchUploadAdapterInterface;
-use Magewirephp\Magewire\Model\Upload\File\TemporaryUploaderFactory as TemporaryFileUploaderFactory;
+use Magewirephp\Magewire\Helper\Security as SecurityHelper;
+use Magewirephp\Magewire\Model\ComponentResolver;
+use Magewirephp\Magewire\Model\HttpFactory;
+use Magewirephp\Magewire\Model\Request\MagewireSubsequentActionInterface;
 use Magewirephp\Magewire\Model\Upload\AdapterProvider;
 use Magewirephp\Magewire\Model\Upload\UploadAdapterInterface;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class Upload implements HttpPostActionInterface, CsrfAwareActionInterface
+class Upload extends Post
 {
-    protected JsonFactory $resultJsonFactory;
     protected AdapterProvider $adapterProvider;
-    protected RequestInterface $request;
-    protected TemporaryFileUploaderFactory $temporaryFileUploaderFactory;
 
     public function __construct(
         JsonFactory $resultJsonFactory,
-        AdapterProvider $adapterProvider,
+        SecurityHelper $securityHelper,
         RequestInterface $request,
-        TemporaryFileUploaderFactory $temporaryFileUploaderFactory
+        LoggerInterface $logger,
+        AdapterProvider $adapterProvider
     ) {
-        $this->resultJsonFactory = $resultJsonFactory;
+        parent::__construct(
+            $resultJsonFactory,
+            $securityHelper,
+            $request,
+            $logger
+        );
+
         $this->adapterProvider = $adapterProvider;
-        $this->request = $request;
-        $this->temporaryFileUploaderFactory = $temporaryFileUploaderFactory;
     }
 
     /**
@@ -48,31 +58,23 @@ class Upload implements HttpPostActionInterface, CsrfAwareActionInterface
      */
     public function execute(): Json
     {
-        // CLEAN UP THE TMP DIR FIRST...
-        $result = $this->resultJsonFactory->create();
-        $adapter = $this->adapterProvider->getByName($this->request->getParam(UploadAdapterInterface::QUERY_PARAM_ADAPTER));
+        try {
+            $adapter = $this->adapterProvider->getByAccessor(
+                $this->request->getParam(UploadAdapterInterface::QUERY_PARAM_ADAPTER)
+            );
+        } catch (NoSuchUploadAdapterInterface $exception) {
+            return $this->throwException(new HttpException(400, 'Bad Request'));
+        }
 
-        if (! $adapter->hasCorrectSignature() || $adapter->signatureHasNotExpired()) {
-            return $result->setStatusHeader(401);
+        if (! $adapter->hasCorrectSignature()) {
+            return $this->throwException(new HttpException(403, 'Incorrect Signature'));
+        } elseif ($adapter->signatureHasExpired()) {
+            return $this->throwException(new HttpException(403, 'Signature Expired'));
         }
 
         try {
-            $files = $this->request->getFiles('files', []);
-            $targets = [];
-
-            foreach (array_keys($files) as $file) {
-                $target = $this->temporaryFileUploaderFactory->create(['fileId' => 'files[' . $file . ']']);
-
-                $target->setAllowCreateFolders(false);
-                $target->setAllowRenameFiles(true);
-                $target->setFilenamesCaseSensitivity(false);
-
-                $target->validateFile();
-
-                $targets[] = $target;
-            }
-
-            $paths = $adapter->stash($targets);
+            $paths = $adapter->stash($this->request->getFiles('files', []));
+            $result = $this->resultJsonFactory->create();
 
             return $result->setData([
                 'paths' => $paths
@@ -83,15 +85,5 @@ class Upload implements HttpPostActionInterface, CsrfAwareActionInterface
                 'code' => 422
             ]);
         }
-    }
-
-    public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
-    {
-        return null;
-    }
-
-    public function validateForCsrf(RequestInterface $request): bool
-    {
-        return true;
     }
 }

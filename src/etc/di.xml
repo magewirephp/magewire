@@ -6,6 +6,8 @@
                 type="Magewirephp\Magewire\Model\Request"/>
     <preference for="Magewirephp\Magewire\Model\ResponseInterface"
                 type="Magewirephp\Magewire\Model\Response"/>
+    <preference for="Magewirephp\Magewire\Model\Upload\UploadAdapterInterface"
+                type="Magewirephp\Magewire\Model\Upload\Adapter\Local"/>
 
     <type name="Magento\Framework\App\Request\CompositeValidator">
         <arguments>

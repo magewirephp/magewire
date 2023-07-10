@@ -32,7 +32,7 @@ class Upload
             $component->getAdapter()->generateSignedUploadUrl($file, $isMultiple)
         )->self();
     }
-
+    
     /**
      * @throws ComponentActionException
      */

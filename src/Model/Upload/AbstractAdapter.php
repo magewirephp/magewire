@@ -46,7 +46,7 @@ abstract class AbstractAdapter implements UploadAdapterInterface
     {
         return $this->securityHelper->generateRouteSignatureUrl($this->getRoute(), [
             UploadAdapterInterface::QUERY_PARAM_EXPIRES => $this->dateTime->gmtTimestamp() + 1900,
-            UploadAdapterInterface::QUERY_PARAM_ADAPTER => $this->getName()
+            UploadAdapterInterface::QUERY_PARAM_ADAPTER => $this->getAccessor()
         ]);
     }
 
@@ -60,9 +60,9 @@ abstract class AbstractAdapter implements UploadAdapterInterface
         return $this->fileDriver;
     }
 
-    public function getName(): string
+    public function getAccessor(): string
     {
-        return $this::NAME;
+        return $this::ACCESSOR;
     }
 
     public function getRoute(): string
@@ -77,16 +77,16 @@ abstract class AbstractAdapter implements UploadAdapterInterface
     public function hasCorrectSignature(): bool
     {
         $signature = $this->securityHelper->generateRouteSignature($this->getRoute(), [
-            UploadAdapterInterface::QUERY_PARAM_EXPIRES => $this->request->getUserParam(UploadAdapterInterface::QUERY_PARAM_EXPIRES, 0),
-            UploadAdapterInterface::QUERY_PARAM_ADAPTER => $this->getName()
+            UploadAdapterInterface::QUERY_PARAM_EXPIRES => $this->request->getParam(UploadAdapterInterface::QUERY_PARAM_EXPIRES, 0),
+            UploadAdapterInterface::QUERY_PARAM_ADAPTER => $this->getAccessor()
         ]);
 
-        return $this->request->getUserParam(UploadAdapterInterface::QUERY_PARAM_SIGNATURE) === $signature;
+        return $this->request->getParam(UploadAdapterInterface::QUERY_PARAM_SIGNATURE) === $signature;
     }
 
-    public function signatureHasNotExpired(): bool
+    public function signatureHasExpired(): bool
     {
         $timestamp = $this->dateTime->gmtTimestamp();
-        return $timestamp > (int) $this->request->getUserParam(UploadAdapterInterface::QUERY_PARAM_EXPIRES, $timestamp);
+        return $timestamp > (int) $this->request->getParam(UploadAdapterInterface::QUERY_PARAM_EXPIRES, $timestamp);
     }
 }

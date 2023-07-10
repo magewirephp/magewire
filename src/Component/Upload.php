@@ -12,7 +12,7 @@ use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Filesystem;
 use Magewirephp\Magewire\Exception\AcceptableException;
-use Magewirephp\Magewire\Model\Upload\File\TemporaryUploader;
+use Magewirephp\Magewire\Model\Upload\TemporaryFile;
 use Magewirephp\Magewire\Model\Upload\UploadAdapterInterface;
 use Rakit\Validation\Validator;
 
@@ -21,12 +21,43 @@ abstract class Upload extends Form
     public const COMPONENT_TYPE = 'file-upload';
 
     protected UploadAdapterInterface $uploadAdapter;
+    protected TemporaryFile $temporaryFile;
 
     public function __construct(
         Validator $validator,
-        UploadAdapterInterface $uploadAdapter
+        UploadAdapterInterface $uploadAdapter,
+        TemporaryFile $temporaryFile
     ) {
+        $validator->setValidator('required', new \Magewirephp\Magewire\Model\Upload\Validation\Rules\Required);
+        $validator->setValidator('mimes', new \Magewirephp\Magewire\Model\Upload\Validation\Rules\Mimes);
+        $validator->setValidator('uploaded_file', new \Magewirephp\Magewire\Model\Upload\Validation\Rules\UploadedFile);
+
+        parent::__construct($validator);
+
         $this->uploadAdapter = $uploadAdapter;
+        $this->temporaryFile = $temporaryFile;
+    }
+
+    public function hydrate(): void
+    {
+        $properties = $this->getPublicProperties(true);
+
+        if (empty($properties)) {
+            return;
+        }
+
+        $this->convertFilesData($properties);
+    }
+
+    public function dehydrate(): void
+    {
+        $properties = $this->getPublicProperties(true);
+
+        foreach ($properties as $property => $value) {
+            if ($value instanceof \Magewirephp\Magewire\Model\Upload\TemporaryFile) {
+                $break = true;
+            }
+        }
     }
 
     public function getAdapter(): UploadAdapterInterface
@@ -82,5 +113,62 @@ abstract class Upload extends Form
 //
 //            if ($uploads->getFilename() === $tmpFilename) $this->syncInput($name, null);
 //        }
+    }
+
+//    /**
+//     * @throws FileSystemException
+//     * @throws AcceptableException
+//     */
+//    public function validate(
+//        array $rules = [],
+//        array $messages = [],
+//        array $data = null,
+//        bool $mergeWithClassProperties = true
+//    ): bool {
+//        $data = $this->convertFilesData($data ?? $this->getPublicProperties(true));
+//
+//        return parent::validate(
+//            $rules,
+//            $messages,
+//            $data,
+//            $mergeWithClassProperties
+//        );
+//    }
+
+    /**
+     * @throws FileSystemException
+     */
+    private function convertFilesData(array $data): array
+    {
+        foreach ($data as $key => $value) {
+            if (is_string($value) && $this->temporaryFile->isTemporaryFilename($value)) {
+                $this->{$value} = $this->convertFilesData($value);
+            } elseif (is_array($value)) {
+                foreach ($value as $k => $v) {
+                    if ($this->temporaryFile->isTemporaryFilename($v)) {
+                        $this->{$v} = $this->convertFileStringToArray($v);
+                    }
+                }
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * @throws FileSystemException
+     */
+    private function convertFileStringToArray(string $value): array
+    {
+        $fileDirectory = $this->filesystem->getDirectoryWrite(DirectoryList::TMP);
+        $filePath = $fileDirectory->getAbsolutePath('magewire') . '/' . $value;
+
+        return [
+            'name'     => TemporaryFile::extractOriginalNameFromFilePath($value),
+            'type'     => mime_content_type($filePath),
+            'tmp_name' => $filePath,
+            'size'     => filesize($filePath),
+            'error'    => ''
+        ];
     }
 }

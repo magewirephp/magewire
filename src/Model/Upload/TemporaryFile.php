@@ -1,19 +1,24 @@
 <?php declare(strict_types=1);
+/**
+ * Copyright © Willem Poortman 2021-present. All rights reserved.
+ *
+ * Please read the README and LICENSE files for more
+ * details on copyrights and license information.
+ */
 
-namespace Magewirephp\Magewire\Model\Upload\File;
+namespace Magewirephp\Magewire\Model\Upload;
 
-class TemporaryUploader extends \Magento\MediaStorage\Model\File\Uploader
+class TemporaryFile extends \Magento\MediaStorage\Model\File\Uploader
 {
-    public const IDENTIFIER = 'tmpfile_';
+    public const IDENTIFIER = 'magewire-file';
 
     public function generateHashNameWithOriginalNameEmbedded(): string
     {
-        $identifier = self::IDENTIFIER;
         $hash = uniqid();
         $meta = str_replace('/', '_', '-meta' . base64_encode($this->_file['name']) . '-');
         $extension = '.' . $this->getFileExtension();
 
-        return $identifier . $hash . $meta . $extension;
+        return $hash . $meta . $extension;
     }
 
     public function isTemporaryFilename(string $filename): bool
