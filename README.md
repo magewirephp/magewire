@@ -4,6 +4,7 @@
 ![style CI](https://github.styleci.io/repos/414967404/shield?style=flat&branch=main)
 ![hyva](https://img.shields.io/badge/Hyva_Themes-Compatible-1abc9c)
 [![License](http://poser.pugx.org/magewirephp/magewire/license)](https://packagist.org/packages/magewirephp/magewire)
+[![sponsors](https://img.shields.io/badge/Sponsors-2-1abc9c)](https://github.com/sponsors/wpoortman)
 
 <a align="center" href="https://wpoortman.lemonsqueezy.com/" target="_blank">
     <img src="https://user-images.githubusercontent.com/5383956/225342789-ecdbf00d-e2f1-4154-b2fc-700b6a577d91.jpeg" alt="Magewire Kickstart Course"/>
@@ -42,22 +43,24 @@ a win-win situation for all involved.
 
 |   |   |
 |---|---|
-|<a align="center" href="https://hyva.io/" target="_blank"><img width="64" alt="Hyvä Themes" src="https://user-images.githubusercontent.com/5383956/227921963-3200c66e-be02-488d-84bc-84c7b77cd042.png"></a>|<a align="center" href="https://vendic.nl/" target="_blank"><img width="64" alt="Vendic" src="https://user-images.githubusercontent.com/5383956/228823594-d3344d87-dadc-4c36-a212-89cba8c7340b.jpg"></a>|
+|<a align="center" href="https://vendic.nl/" title="Vendic" target="_blank"><img width="64" alt="Vendic" src="https://user-images.githubusercontent.com/5383956/228823594-d3344d87-dadc-4c36-a212-89cba8c7340b.jpg"/></a>|<a align="center" href="https://github.com/ootri/" title="ootri" target="_blank"><img width="64" alt="ootri" src="https://github.com/magewirephp/magewire/assets/5383956/c7d1fd7b-455b-4486-b981-82344179b8bc"/></a>|
+
+Click [here](https://github.com/sponsors/wpoortman) to start sponsoring.
 
 ## Developers say
-— This is a game-changing tool! You can build practically anything with almost no javascript. It saves a significant
+- **Marcus Venghaus — Freelance Developer** — This is a game-changing tool! You can build practically anything with almost no javascript. It saves a significant
 amount of time and is incredibly easy to work with. It's not a matter of whether you should use it, you simply must
-use it. — Marcus Venghaus / Freelance Developer
+use it.
 
-— Magewire is like magic sauce that can save a ton of time implementing features! It’s great to see more tools from the
-Laravel ecosystem being made available within Magento — Vinai Kopp / Technical Director
+- **Vinai Kopp — Technical Director** — Magewire is like magic sauce that can save a ton of time implementing features! It’s great to see more tools from the
+Laravel ecosystem being made available within Magento
 
-— Magewire gives you the ability to add reactivity without the use of a a bloated JS framework or package. Useing Magewire
+- **Jesse de Boer — Frontend Developer** — Magewire gives you the ability to add reactivity without the use of a a bloated JS framework or package. Useing Magewire
 is intuitive, quick and easy to learn. It feels like a breath of fresh air to work with and takes away a lot headaches
-compared to using Luma and RequireJS. — Jesse de Boer / Frontend Developer
+compared to using Luma and RequireJS.
 
-— Magewire is one of my favourite tools! It even makes frontend morons like me capable of dynamic UIs! More people should
-check it out. — Kiel Pykett / Technical Lead
+- **Kiel Pykett — Technical Lead** — Magewire is one of my favourite tools! It even makes frontend morons like me capable of dynamic UIs! More people should
+check it out. 
 
 ## Security Vulnerabilities
 If you discover a security vulnerability within Magewire, please create a
