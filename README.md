@@ -2,7 +2,6 @@
 [![Latest Stable Version](http://poser.pugx.org/magewirephp/magewire/v)](https://packagist.org/packages/magewirephp/magewire)
 [![Total Downloads](http://poser.pugx.org/magewirephp/magewire/downloads)](https://packagist.org/packages/magewirephp/magewire)
 ![style CI](https://github.styleci.io/repos/414967404/shield?style=flat&branch=main)
-![hyva](https://img.shields.io/badge/Hyva_Themes-Compatible-1abc9c)
 [![License](http://poser.pugx.org/magewirephp/magewire/license)](https://packagist.org/packages/magewirephp/magewire)
 [![sponsors](https://img.shields.io/badge/Sponsors-2-1abc9c)](https://github.com/sponsors/wpoortman)
 
@@ -43,7 +42,7 @@ a win-win situation for all involved.
 
 |   |   |
 |---|---|
-|<a align="center" href="https://vendic.nl/" title="Vendic" target="_blank"><img width="64" alt="Vendic" src="https://user-images.githubusercontent.com/5383956/228823594-d3344d87-dadc-4c36-a212-89cba8c7340b.jpg"/></a>|<a align="center" href="https://github.com/ootri/" title="ootri" target="_blank"><img width="64" alt="ootri" src="https://github.com/magewirephp/magewire/assets/5383956/c7d1fd7b-455b-4486-b981-82344179b8bc"/></a>|
+|<a align="center" href="https://github.com/ootri/" title="ootri" target="_blank"><img width="64" alt="ootri" src="https://avatars.githubusercontent.com/u/3450878?v=4"/></a>|<a align="center" href="https://vendic.nl/" title="Vendic" target="_blank"><img width="64" alt="Vendic" src="https://user-images.githubusercontent.com/5383956/228823594-d3344d87-dadc-4c36-a212-89cba8c7340b.jpg"/></a>|
 
 Click [here](https://github.com/sponsors/wpoortman) to start sponsoring.
 
