@@ -13,6 +13,7 @@ use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Filesystem;
 use Magewirephp\Magewire\Exception\AcceptableException;
 use Magewirephp\Magewire\Model\Upload\TemporaryFile;
+use Magewirephp\Magewire\Model\Upload\TemporaryFileFactory;
 use Magewirephp\Magewire\Model\Upload\UploadAdapterInterface;
 use Rakit\Validation\Validator;
 
@@ -21,12 +22,12 @@ abstract class Upload extends Form
     public const COMPONENT_TYPE = 'file-upload';
 
     protected UploadAdapterInterface $uploadAdapter;
-    protected TemporaryFile $temporaryFile;
+    protected TemporaryFileFactory $temporaryFileFactory;
 
     public function __construct(
         Validator $validator,
         UploadAdapterInterface $uploadAdapter,
-        TemporaryFile $temporaryFile
+        TemporaryFileFactory $temporaryFileFactory
     ) {
         $validator->setValidator('required', new \Magewirephp\Magewire\Model\Upload\Validation\Rules\Required);
         $validator->setValidator('mimes', new \Magewirephp\Magewire\Model\Upload\Validation\Rules\Mimes);
@@ -35,7 +36,16 @@ abstract class Upload extends Form
         parent::__construct($validator);
 
         $this->uploadAdapter = $uploadAdapter;
-        $this->temporaryFile = $temporaryFile;
+        $this->temporaryFileFactory = $temporaryFileFactory;
+    }
+
+    public function validate(array $rules = [], array $messages = [], array $data = null, array $aliases = [], bool $mergeWithClassProperties = true): bool
+    {
+        foreach ($data ?? $this->getPublicProperties(true) as &$value) {
+            $break = true;
+        }
+
+        return parent::validate($rules, $messages, $data, $aliases, $mergeWithClassProperties);
     }
 
     public function hydrate(): void
@@ -46,18 +56,19 @@ abstract class Upload extends Form
             return;
         }
 
-        $this->convertFilesData($properties);
-    }
-
-    public function dehydrate(): void
-    {
-        $properties = $this->getPublicProperties(true);
-
         foreach ($properties as $property => $value) {
-            if ($value instanceof \Magewirephp\Magewire\Model\Upload\TemporaryFile) {
-                $break = true;
+            if ($value && substr($value, 0, strlen('magewire-file'))) {
+                $bla = base64_decode(
+                    array_first(
+                        explode('-', array_last(explode('-meta', str_replace('_', '/', $value))))
+                    )
+                );
+
+                $this->{$property} = $this->temporaryFileFactory->create(['fileId' => $value]);
             }
         }
+
+        $this->convertFilesData($properties);
     }
 
     public function getAdapter(): UploadAdapterInterface

@@ -32,20 +32,22 @@ class Upload
             $component->getAdapter()->generateSignedUploadUrl($file, $isMultiple)
         )->self();
     }
-    
+
     /**
      * @throws ComponentActionException
      */
-    public function finishUpload(string $property, $tmpPath, $isMultiple, Component $component): void
+    public function finishUpload(string $property, $temporaryPath, $isMultiple, Component $component): void
     {
         if ($isMultiple) {
 //            $file = collect($tmpPath)->map(function ($i) {
 //                return TemporaryUploadedFile::createFromLivewire($i);
 //            })->toArray();
 //            $component->emitSelf('upload:finished', $name, collect($file)->map->getFilename()->toArray())->self();
-        } else {
-            $component->emit('upload:finished', $property, [$tmpPath[0]])->self();
-            $this->syncInput->handle($component, ['name' => $property, 'value' => $tmpPath[0] ?? null]);
+
+            return;
         }
+        
+        $component->emit('upload:finished', $property, [$temporaryPath[0]])->self();
+        $this->syncInput->handle($component, ['name' => $property, 'value' => 'magewire-file:' . $temporaryPath[0] ?? null]);
     }
 }

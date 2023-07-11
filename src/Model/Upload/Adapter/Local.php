@@ -45,7 +45,13 @@ class Local extends AbstractAdapter
     }
 
     /**
-     * @param array<TemporaryUploader> $files
+     * @param array<string, array{
+     *     name: string,
+     *     type: string,
+     *     tmp_name: string,
+     *     error: int,
+     *     size: int,
+     * }> $files
      * @throws FileSystemException
      * @throws Exception
      */
@@ -54,14 +60,12 @@ class Local extends AbstractAdapter
         $paths = [];
 
         foreach (array_keys($files) as $file) {
-            $temporaryFiles[] = $this->temporaryFileFactory->create(['fileId' => 'files[' . $file . ']']);
-        }
-
-        foreach ($temporaryFiles ?? [] as $file) {
+            $file = $this->temporaryFileFactory->create(['fileId' => 'files[' . $file . ']']);
             $fileDirectory = $this->fileSystem->getDirectoryWrite(DirectoryList::TMP);
+
             $name = $file->generateHashNameWithOriginalNameEmbedded();
 
-            $file->setAllowCreateFolders(false);
+            $file->setAllowCreateFolders(true);
             $file->setAllowRenameFiles(true);
             $file->setFilenamesCaseSensitivity(false);
 
