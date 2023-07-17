@@ -8,6 +8,8 @@
 
 namespace Magewirephp\Magewire\Model\Upload;
 
+use Magewirephp\Magewire\Model\Storage\StorageDriverInterface;
+
 class TemporaryFile extends \Magento\MediaStorage\Model\File\Uploader
 {
     public const IDENTIFIER = 'magewire-file';

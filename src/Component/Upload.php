@@ -12,6 +12,9 @@ use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Filesystem;
 use Magewirephp\Magewire\Exception\AcceptableException;
+use Magewirephp\Magewire\Model\Storage\StorageDriverInterface;
+use Magewirephp\Magewire\Model\Upload\File;
+use Magewirephp\Magewire\Model\Upload\FileFactory;
 use Magewirephp\Magewire\Model\Upload\TemporaryFile;
 use Magewirephp\Magewire\Model\Upload\TemporaryFileFactory;
 use Magewirephp\Magewire\Model\Upload\UploadAdapterInterface;
@@ -21,13 +24,13 @@ abstract class Upload extends Form
 {
     public const COMPONENT_TYPE = 'file-upload';
 
-    protected UploadAdapterInterface $uploadAdapter;
-    protected TemporaryFileFactory $temporaryFileFactory;
+    protected StorageDriverInterface $storage;
+    protected FileFactory $fileFactory;
 
     public function __construct(
         Validator $validator,
-        UploadAdapterInterface $uploadAdapter,
-        TemporaryFileFactory $temporaryFileFactory
+        StorageDriverInterface $storage,
+        FileFactory $fileFactory
     ) {
         $validator->setValidator('required', new \Magewirephp\Magewire\Model\Upload\Validation\Rules\Required);
         $validator->setValidator('mimes', new \Magewirephp\Magewire\Model\Upload\Validation\Rules\Mimes);
@@ -35,8 +38,8 @@ abstract class Upload extends Form
 
         parent::__construct($validator);
 
-        $this->uploadAdapter = $uploadAdapter;
-        $this->temporaryFileFactory = $temporaryFileFactory;
+        $this->storage = $storage;
+        $this->fileFactory = $fileFactory;
     }
 
     public function validate(array $rules = [], array $messages = [], array $data = null, array $aliases = [], bool $mergeWithClassProperties = true): bool
@@ -57,23 +60,33 @@ abstract class Upload extends Form
         }
 
         foreach ($properties as $property => $value) {
-            if ($value && substr($value, 0, strlen('magewire-file'))) {
-                $bla = base64_decode(
-                    array_first(
-                        explode('-', array_last(explode('-meta', str_replace('_', '/', $value))))
-                    )
-                );
-
-                $this->{$property} = $this->temporaryFileFactory->create(['fileId' => $value]);
+            if ($value && substr($value, 0, strlen('magewire-file:'))) {
+                $this->{$property} = $this->fileFactory->create([
+                    'storage' => $this->storage,
+                    'name' => ltrim($value, 'magewire-file:')
+                ]);
             }
         }
-
-        $this->convertFilesData($properties);
     }
 
-    public function getAdapter(): UploadAdapterInterface
+    public function dehydrate(): void
     {
-        return $this->uploadAdapter;
+        $properties = $this->getPublicProperties(true);
+
+        if (empty($properties)) {
+            return;
+        }
+
+        foreach ($properties as $property => $value) {
+            if ($value instanceof File) {
+                $this->{$property} = $value->getPath();
+            } else if ($value && substr($value, 0, strlen('magewire-file:'))) {
+                $this->{$property} = $this->fileFactory->create([
+                    'storage' => $this->storage,
+                    'name' => ltrim($value, 'magewire-file:')
+                ]);
+            }
+        }
     }
 
     public function uploadErrored($name, $errorsInJson, $isMultiple)
@@ -145,41 +158,41 @@ abstract class Upload extends Form
 //            $mergeWithClassProperties
 //        );
 //    }
-
-    /**
-     * @throws FileSystemException
-     */
-    private function convertFilesData(array $data): array
-    {
-        foreach ($data as $key => $value) {
-            if (is_string($value) && $this->temporaryFile->isTemporaryFilename($value)) {
-                $this->{$value} = $this->convertFilesData($value);
-            } elseif (is_array($value)) {
-                foreach ($value as $k => $v) {
-                    if ($this->temporaryFile->isTemporaryFilename($v)) {
-                        $this->{$v} = $this->convertFileStringToArray($v);
-                    }
-                }
-            }
-        }
-
-        return $data;
-    }
-
-    /**
-     * @throws FileSystemException
-     */
-    private function convertFileStringToArray(string $value): array
-    {
-        $fileDirectory = $this->filesystem->getDirectoryWrite(DirectoryList::TMP);
-        $filePath = $fileDirectory->getAbsolutePath('magewire') . '/' . $value;
-
-        return [
-            'name'     => TemporaryFile::extractOriginalNameFromFilePath($value),
-            'type'     => mime_content_type($filePath),
-            'tmp_name' => $filePath,
-            'size'     => filesize($filePath),
-            'error'    => ''
-        ];
-    }
+//
+//    /**
+//     * @throws FileSystemException
+//     */
+//    private function convertFilesData(array $data): array
+//    {
+//        foreach ($data as $key => $value) {
+//            if (is_string($value) && $this->temporaryFile->isTemporaryFilename($value)) {
+//                $this->{$value} = $this->convertFilesData($value);
+//            } elseif (is_array($value)) {
+//                foreach ($value as $k => $v) {
+//                    if ($this->temporaryFile->isTemporaryFilename($v)) {
+//                        $this->{$v} = $this->convertFileStringToArray($v);
+//                    }
+//                }
+//            }
+//        }
+//
+//        return $data;
+//    }
+//
+//    /**
+//     * @throws FileSystemException
+//     */
+//    private function convertFileStringToArray(string $value): array
+//    {
+//        $fileDirectory = $this->filesystem->getDirectoryWrite(DirectoryList::TMP);
+//        $filePath = $fileDirectory->getAbsolutePath('magewire') . '/' . $value;
+//
+//        return [
+//            'name'     => TemporaryFile::extractOriginalNameFromFilePath($value),
+//            'type'     => mime_content_type($filePath),
+//            'tmp_name' => $filePath,
+//            'size'     => filesize($filePath),
+//            'error'    => ''
+//        ];
+//    }
 }
