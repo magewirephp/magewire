@@ -15,9 +15,9 @@ use Psr\Log\LoggerInterface;
 
 abstract class Action implements ActionInterface
 {
-    abstract function handle(Component $component, array $payload);
+    abstract public function handle(Component $component, array $payload);
 
-    function inspect(Component $component, array $updates): bool
+    public function inspect(Component $component, array $updates): bool
     {
         return true;
     }
