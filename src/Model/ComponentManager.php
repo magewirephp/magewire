@@ -63,13 +63,37 @@ class ComponentManager
             throw new LocalizedException(__('No request object found'));
         }
 
-        foreach ($updates as $update) {
-            try {
-                $this->updateActionsPool[$update['type']]->handle($component, $update['payload']);
-            } catch (AcceptableException $exception) {
-                continue;
-            } catch (Exception $exception) {
-                throw new LocalizedException(__($exception->getMessage()));
+        // Temporary typed update basket.
+        $types = [];
+        // Key to handle the update request.
+        $handle = false;
+
+        foreach ($updates as $key => $update) {
+            // Process an inspection before the first update by type runs.
+            if ($key === 0 || (isset($updates[$key]) && $updates[$key]['type'] !== $updates[$key - 1]['type'])) {
+                // Filter out only those who have an simular update type.
+                $types = array_filter($updates, fn ($value) => $value['type'] === $update['type']);
+                // Lock update handling until inspect releases it.
+                $handle = false;
+
+                if (! empty($types)) {
+                    $handle = $this->updateActionsPool[$update['type']]->inspect($component, $types);
+                }
+            }
+
+            if ($handle) {
+                try {
+                    $this->updateActionsPool[$update['type']]->handle($component, $update['payload']);
+                } catch (AcceptableException $exception) {
+                    continue;
+                } catch (Exception $exception) {
+                    throw new LocalizedException(__($exception->getMessage()));
+                }
+
+                // Process an evaluation after the last update by type ran.
+                if ((! isset($updates[$key + 1]) || $updates[$key + 1]['type'] !== $update['type'])) {
+                    $this->updateActionsPool[$update['type']]->evaluate($component, $types);
+                }
             }
         }
 

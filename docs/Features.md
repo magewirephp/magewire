@@ -378,6 +378,14 @@ class Explanation extends \Magewirephp\Magewire\Component
 {
     public $nested = ['foo' => ['bar' => 'Hello world']];
     
+    // Since v1.10.6: Before nested array properties are updating.
+    public function updatingNested(array $value): array
+    {
+        // Make sure "nested.foo.bar" is always strtolower (helloworld)
+        $value['foo']['bar'] = strtolower($value['foo']['bar']);
+        return $value;
+    }
+    
     // Before it's getting updated.
     public function updatingNestedFooBar(string $value): string
     {
@@ -390,6 +398,14 @@ class Explanation extends \Magewirephp\Magewire\Component
     {
         // Returns ['foo' => ['bar' => 'hello world']]
         return strtolower($value);
+    }
+    
+    // Since v1.10.6: After nested array properties are updated.
+    public function updatedNested(array $value): array
+    {
+        // Evantually strtoupper "nested.foo.bar" again (HELLOWORLD). 
+        $value['foo']['bar'] = strtoupper($value['foo']['bar']);
+        return $value;
     }
 }
 ```

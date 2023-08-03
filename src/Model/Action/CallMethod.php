@@ -11,11 +11,11 @@ namespace Magewirephp\Magewire\Model\Action;
 use Magento\Framework\Exception\LocalizedException;
 use Magewirephp\Magewire\Exception\ComponentActionException;
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Model\Action;
 use Magewirephp\Magewire\Model\Action\Type\Factory as TypeFactory;
 use Magewirephp\Magewire\Model\Action\Type\Magic;
-use Magewirephp\Magewire\Model\ActionInterface;
 
-class CallMethod implements ActionInterface
+class CallMethod extends Action
 {
     public const ACTION = 'callMethod';
 
