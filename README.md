@@ -14,6 +14,10 @@ Looking for an easy way to build modern, reactive, and dynamic interfaces in Mag
 experiences without leaving the comfort of Magento's core layout and template systems. Add dynamic and reactive
 features to your store without a full Javascript framework. Try Magewire today and take your store to the next level!
 
+#### Join the official Discord server
+[![Discord](https://dcbadge.vercel.app/api/server/RM5nnK5wxj)](https://discord.gg/RM5nnK5wxj)
+
+#### Follow on Twitter
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/magewirephp.svg?style=social&label=Follow:%20%40magewirephp)](https://twitter.com/magewirephp)
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/wpoortman.svg?style=social&label=Author:%20%40wpoortman)](https://twitter.com/wpoortman)
 
