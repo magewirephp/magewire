@@ -95,6 +95,12 @@ $magewireScripts = $block->getViewModel();
             }
 
             const start = function(loader, component) {
+                <?php /* Just start the loading spinner without any further details. */ ?>
+                if (! loader || ! component) {
+                    Magewire.dispatchEvent(`loader:start`);
+                    return;
+                }
+
                 let first = ! queue.some(({ parent }) => parent);
                 let me = queue.findIndex(item => item.component.id === component.id);
 

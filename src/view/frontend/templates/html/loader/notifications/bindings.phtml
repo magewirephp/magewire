@@ -12,15 +12,19 @@
             initialize() {
                 <?php /* @see Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml */ ?>
                 document.addEventListener('magewire:loader:start', (event) => {
-                    this.messageCreate(event.detail);
+                    if (event.detail) {
+                        this.messageCreate(event.detail);
+                    }
                 })
                 document.addEventListener('magewire:loader:tick', (event) => {
-                    this.messageCreate(event.detail);
+                    if (event.detail) {
+                        this.messageCreate(event.detail);
+                    }
                 })
 
                 <?php /* @see Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml */ ?>
                 document.addEventListener('magewire:loader:stop', (event) => {
-                    if (! event.detail.component && ! event.detail.component.id && event.detail.loader) {
+                    if (this.messages.length === 0 || (! event.detail.component && ! event.detail.component.id && event.detail.loader)) {
                         return;
                     }
 
