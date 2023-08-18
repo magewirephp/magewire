@@ -37,7 +37,9 @@ class FireEvent extends Action
     {
         $listeners  = $this->listenerHydrator->assimilateListeners($component);
         $method     = $listeners[$payload['event']] ?? false;
-        $parameters = $payload['params'][0] ?? [];
+        $parameters = is_array($payload['params']) && count($payload['params']) > 1
+            ? $payload['params']
+            : $payload['params'][0] ?? [];
 
         if ($method === false) {
             throw new ComponentActionException(__('Method does not exist or can not be called'));
