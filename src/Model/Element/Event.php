@@ -53,7 +53,7 @@ class Event
     {
         $output = [
             'event'  => $this->name,
-            'params' => array_values($this->params),
+            'params' => empty($this->params) ? [] : $this->params
         ];
 
         if ($this->up) {

@@ -101,12 +101,12 @@ trait Emit
     /**
      * Support legacy emits until major update.
      */
-    protected function supportLegacySyntax($firstArgs, $restArgs): array
+    protected function supportLegacySyntax($firstArg, $restArgs): array
     {
-        if (! is_array($firstArgs) || count($restArgs) > 1) {
+        if (! is_array($firstArg) || count($restArgs) > 1) {
             return $restArgs;
         }
 
-        return $firstArgs;
+        return is_array($firstArg) && empty($firstArg) ? [] : [$firstArg];
     }
 }
