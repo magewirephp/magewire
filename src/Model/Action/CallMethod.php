@@ -38,11 +38,18 @@ class CallMethod extends Action
     {
         // Magic or not, it's still a class method who can have no '$' as name prefix.
         $method = ltrim($payload['method'], '$');
-        // Let's make sure we have an un-packable array.
-        $params = is_array($payload['params']) ? $payload['params'] : [$payload['params']];
+
+        // Check if it is a numerically indexed array or otherwise.
+        if (is_array($payload['params']) && (isset($payload['params'][0]) || empty($payload['params']))) {
+            // Numerically indexed array. Ensure the keys are consecutive, so they are passed as multiple args.
+            $params = array_values($payload['params']);
+        } else {
+            // Assoc or non-array, pass as single argument.
+            $params = [$payload['params']];
+        }
 
         if ($this->isCallable($method, $component)) {
-            return $component->{$method}(...array_values($params));
+            return $component->{$method}(...$params);
         }
 
         // Determine the required type class by method in specific order.
@@ -51,7 +58,7 @@ class CallMethod extends Action
         $params[] = $component;
 
         if ($this->isCallable($method, $type)) {
-            return $type->{$method}(...array_values($params));
+            return $type->{$method}(...$params);
         }
 
         throw new ComponentActionException(__('Method %1 does not exist or can not be called', [$method]));
