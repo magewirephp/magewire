@@ -99,14 +99,23 @@ trait Emit
     }
 
     /**
+     * Returns the specified arguments as params array matching livewires behavior.
+     *
      * Support legacy emits until major update.
      */
-    protected function supportLegacySyntax($firstArgs, $restArgs): array
+    protected function supportLegacySyntax($firstArg, $restArgs): array
     {
-        if (! is_array($firstArgs) || count($restArgs) > 1) {
+        // e.g. emit('test', 'foo') or emit('test', 'foo', 'bar')
+        if (! is_array($firstArg) || count($restArgs) > 1) {
             return $restArgs;
         }
 
-        return $firstArgs;
+        // e.g. emit('test')
+        if (empty($firstArg)) {
+            return [];
+        }
+
+        // e.g. emit('test', ['foo', 'bar'])
+        return [$firstArg];
     }
 }
