@@ -65,6 +65,12 @@ compared to using Luma and RequireJS.
 - **Kiel Pykett — Technical Lead** — Magewire is one of my favourite tools! It even makes frontend morons like me capable of dynamic UIs! More people should
 check it out. 
 
+## More
+Creating layers of abstraction and tools to simplify complex situations for other developers is a major source of motivation for me.
+It's one of the reasons I love what I do. Each of my code repositories aims to achieve this. Take a look at my other repositories - they might be helpful for you.
+
+- [Magehook](https://github.com/wpoortman/magehook)
+
 ## Security Vulnerabilities
 If you discover a security vulnerability within Magewire, please create a
 [merge request](https://github.com/magewirephp/magewire/pulls) or an
