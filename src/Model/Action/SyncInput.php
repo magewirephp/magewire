@@ -86,7 +86,7 @@ class SyncInput extends Action
             $this->assign($component, $transform ? $transform['property'] : $property, $transform ? $transform['data'] : $value);
         } catch (Exception $exception) {
             $this->logger->critical(
-                sprintf('Magewire: Something went wrong while syncing property "%s" onto component "%s"', [$property, $component->name]),
+                sprintf('Magewire: Something went wrong while syncing property "%s" onto component "%s"', $property, $component->name),
                 ['exception' => $exception]
             );
 
