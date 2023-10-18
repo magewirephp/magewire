@@ -36,7 +36,7 @@ class Property
         $realpath = $path;
 
         if (!array_key_exists($property, $component->getPublicProperties())) {
-            throw new ComponentException(__('Public property %1 does\'nt exist', [$property]));
+            throw new ComponentException(__('Public property %1 doesn\'t exist', [$property]));
         }
 
         $path = substr(strstr($path, '.'), 1);
