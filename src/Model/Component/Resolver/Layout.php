@@ -100,7 +100,10 @@ class Layout implements ResolverInterface
         $block = $page->getLayout()->getBlock($request->getFingerprint('name'));
 
         if ($block === false) {
-            throw new HttpException(404, 'Magewire component "%1" could not be found');
+            throw new HttpException(
+                404,
+                sprintf('Magewire component "%1s" could not be found', $request->getFingerprint('name'))
+            );
         }
 
         return $this->construct($block);
