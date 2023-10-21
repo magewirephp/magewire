@@ -182,7 +182,7 @@ class ComponentManager
         $hydrators = array_merge(
             // Map the system hydrators into a class-order arrayed structure.
             array_map(
-                static function($hydator, $key) {
+                static function ($hydator, $key) {
                     $hydator = [
                         'class' => $hydator,
                         'order' => $key * 50
@@ -199,7 +199,7 @@ class ComponentManager
 
             //  Map injected hydrators handling an arrayed or a object type injection.
             array_map(
-                static function($hydrator) use ($systemHydrators) {
+                static function ($hydrator) use ($systemHydrators) {
 
                     /*
                      * Hydrators can be injected in two ways.
