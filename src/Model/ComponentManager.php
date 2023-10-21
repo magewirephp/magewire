@@ -200,7 +200,6 @@ class ComponentManager
             //  Map injected hydrators handling an arrayed or a object type injection.
             array_map(
                 static function ($hydrator) use ($systemHydrators) {
-
                     /*
                      * Hydrators can be injected in two ways.
                      *
