@@ -14,6 +14,7 @@ use Magento\Framework\Locale\Resolver;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Exception\AcceptableException;
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Exception\ComponentHydrationException;
 use Magewirephp\Magewire\Model\Context\Hydrator as HydratorContext;
 
 class ComponentManager
@@ -178,10 +179,59 @@ class ComponentManager
      */
     protected function sortHydrators(array $hydrators, $systemHydrators): array
     {
+        $hydrators = array_merge(
+            // Map the system hydrators into a class-order arrayed structure.
+            array_map(
+                static function($hydator, $key) {
+                    $hydator = [
+                        'class' => $hydator,
+                        'order' => $key * 50
+                    ];
+
+                    return $hydator;
+                },
+
+                // Context injected core hydrators.
+                $systemHydrators,
+                // Natural array key to detirmine the order.
+                array_keys($systemHydrators)
+            ),
+
+            //  Map injected hydrators handling an arrayed or a object type injection.
+            array_map(
+                static function($hydrator) use ($systemHydrators) {
+
+                    /*
+                     * Hydrators can be injected in two ways.
+                     *
+                     * 1. Array: where it is required to at least add a 'class' item ('order' is optional).
+                     * 2. Object: where the argument is of type 'object'.
+                     */
+                    if (is_array($hydrator) && $hydrator['class'] ?? null) {
+                        $hydrator['order'] = (int) ($hydrator['order'] ?? count($systemHydrators) * 50);
+                    } elseif (is_object($hydrator)) {
+                        $hydrator = [
+                            'class' => $hydrator,
+                            'order' => count($systemHydrators) * 50
+                        ];
+                    } else {
+                        throw new ComponentHydrationException(
+                            __('Injected hydrator can only be of type array or object.')
+                        );
+                    }
+
+                    return $hydrator;
+                },
+
+                // Additional constructor injected hydrators.
+                $hydrators
+            )
+        );
+
         usort($hydrators, static function ($x, $y) {
             return $x['order'] - $y['order'];
         });
 
-        return array_merge($systemHydrators, array_column($hydrators, 'class'));
+        return array_column($hydrators, 'class');
     }
 }
