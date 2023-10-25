@@ -1,0 +1,15 @@
+<script>
+    'use strict';
+
+    Magewire.hasPlugin = function(name) {
+        const plugins = Magewire.plugins
+
+        if (typeof plugins !== 'object' || plugins.length === 0) {
+            return false;
+        } else if (typeof name === 'object') {
+            return name.every((name) => Magewire.hasPlugin(name))
+        }
+
+        return name in plugins
+    }
+</script>
