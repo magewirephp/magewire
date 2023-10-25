@@ -9,6 +9,7 @@
 namespace Magewirephp\Magewire\Model\Magento\System;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Store\Model\ScopeInterface;
 
@@ -31,6 +32,11 @@ class ConfigMagewire
     public function canShowLoaderOverlay(): bool
     {
         return $this->isGroupFlag('enable', self::GROUP_LOADER) ?? true;
+    }
+
+    public function getLoaderOverlay(): string
+    {
+        return $this->getGroupValue('overlay', self::GROUP_LOADER) ?? 'overlay';
     }
 
     public function canShowLoaderNotificationMessages(): bool

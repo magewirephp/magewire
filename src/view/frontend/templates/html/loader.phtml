@@ -8,13 +8,15 @@
 
 declare(strict_types=1);
 
-/** @var Escaper $escaper */
-/** @var Template $block */
-
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
 
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var \Magewirephp\Magewire\ViewModel\Magewire $magewireScripts */
+
 $magewireScripts = $block->getViewModel();
+$magewireSystemConfig = $magewireScripts->getSystemConfig();
 ?>
 <?php if ($magewireScripts->pageRequiresMagewire()): ?>
     <div id="magewire-loader"
@@ -26,7 +28,7 @@ $magewireScripts = $block->getViewModel();
          role="status"
          aria-live="polite"
     >
-        <?= $block->getChildHtml('overlay') ?>
+        <?= $block->getChildHtml($magewireSystemConfig->getLoaderOverlay()) ?>
         <?= $block->getChildHtml('notifications') ?>
     </div>
 
