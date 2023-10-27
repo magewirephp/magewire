@@ -9,6 +9,7 @@
 namespace Magewirephp\Magewire\Controller\Post;
 
 use Exception;
+use RuntimeException;
 use Laminas\Http\AbstractMessage;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -32,7 +33,6 @@ use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Serialize\SerializerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface, MagewireSubsequentActionInterface
 {
@@ -71,7 +71,7 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface, Mag
             try {
                 $request = $this->httpFactory->createRequest($this->request->getParams())->isSubsequent(true);
             } catch (LocalizedException $exception) {
-                throw new HttpException(400);
+                throw new RuntimeException(400);
             }
 
             $component = $this->locateWireComponent($request);
