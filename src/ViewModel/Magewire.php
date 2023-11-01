@@ -68,7 +68,7 @@ class Magewire implements ArgumentInterface
     public function getPostRoute(): string
     {
         $postRoute = '/magewire/post';
-        if (($this->getSystemName() == 'Magento') && ($this->isBeforeTwoFourZero() === true)) {
+        if (($this->getSystemName() === 'Magento') && ($this->isBeforeTwoFourZero() === true)) {
             $postRoute = '/magewire/vintage';
         }
 
