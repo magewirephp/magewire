@@ -45,6 +45,11 @@ class Property
         return compact('property', 'data', 'realpath', 'path');
     }
 
+    public function assignViaDots(string $path, $value, array $subject)
+    {
+        return $this->arrayManager->set($path, $subject, $value, '.');
+    }
+
     public function searchViaDots(string $path, array $value)
     {
         return $this->arrayManager->get($path, $value, null, '.');

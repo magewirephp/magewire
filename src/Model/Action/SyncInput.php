@@ -145,9 +145,13 @@ class SyncInput extends Action
             if ($this->propertyHelper->containsDots($property)) {
                 try {
                     $transform = $this->propertyHelper->transformDots($property, $value, $component);
-                    $nested[$transform['property']] = $component->{$transform['property']};
 
-                    /** @todo multidimensional array support still needs to be included here. */
+                    // Only add the property once and fill it with the current data to merge new ones in.
+                    if (! is_array($nested[$transform['property']] ?? null)) {
+                        $nested[$transform['property']] = $component->{ $transform['property'] };
+                    }
+
+                    $nested = $this->propertyHelper->assignViaDots($property, $value, $nested);
                 } catch (ComponentException $exception) {
                     $this->logger->critical($exception->getMessage(), ['exception' => $exception]);
                 }
