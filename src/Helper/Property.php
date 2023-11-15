@@ -39,10 +39,17 @@ class Property
             throw new ComponentException(__('Public property %1 doesn\'t exist', [$property]));
         }
 
+        $target = $path;
+        $lastDotPosition = strrpos($realpath, '.');
+
+        if ($lastDotPosition !== false) {
+            $target = substr($realpath, $lastDotPosition + 1);
+        }
+
         $path = substr(strstr($path, '.'), 1);
         $data = $this->arrayManager->set($path, $component->{$property}, $value, '.');
 
-        return compact('property', 'data', 'realpath', 'path');
+        return compact('property', 'data', 'realpath', 'path', 'target');
     }
 
     public function assignViaDots(string $path, $value, array $subject)

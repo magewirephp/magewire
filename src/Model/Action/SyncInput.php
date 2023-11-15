@@ -69,21 +69,26 @@ class SyncInput extends Action
             $value = $this->updating($component, $property, $value);
 
             if ($nested) {
-                $transform = $this->propertyHelper->transformDots($property, $value, $component);
+                $component->{ $transform['property'] } = $this->propertyHelper->assignViaDots($transform['path'], $value, $component->{ $transform['property'] });
+            } else {
+                $component->{ $property } = $value;
             }
-
-            // Regular value assignment.
-            $this->assign($component, $transform ? $transform['property'] : $property, $transform ? $transform['data'] : $value);
 
             // Try to run post-assignment methods if they exist.
             $value = $this->updated($component, $property, $value);
 
             if ($nested) {
-                $transform = $this->propertyHelper->transformDots($property, $value, $component);
+                $component->{ $transform['property'] } = $this->propertyHelper->assignViaDots($transform['path'], $value, $component->{ $transform['property'] });
+            } else {
+                $component->{ $property } = $value;
             }
 
-            // Re-assign the final value onto the component property.
-            $this->assign($component, $transform ? $transform['property'] : $property, $transform ? $transform['data'] : $value);
+//            if ($nested) {
+//                $transform = $this->propertyHelper->transformDots($property, $value, $component);
+//            }
+//
+//            // Re-assign the final value onto the component property.
+//            $this->assign($component, $transform ? $transform['property'] : $property, $transform ? $transform['data'] : $value);
         } catch (Exception $exception) {
             $this->logger->critical(
                 sprintf('Magewire: Something went wrong while syncing property "%s" onto component "%s"', $property, $component->name),
