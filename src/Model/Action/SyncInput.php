@@ -82,13 +82,6 @@ class SyncInput extends Action
             } else {
                 $component->{ $property } = $value;
             }
-
-//            if ($nested) {
-//                $transform = $this->propertyHelper->transformDots($property, $value, $component);
-//            }
-//
-//            // Re-assign the final value onto the component property.
-//            $this->assign($component, $transform ? $transform['property'] : $property, $transform ? $transform['data'] : $value);
         } catch (Exception $exception) {
             $this->logger->critical(
                 sprintf('Magewire: Something went wrong while syncing property "%s" onto component "%s"', $property, $component->name),
