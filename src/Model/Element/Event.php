@@ -53,7 +53,7 @@ class Event
     {
         $output = [
             'event'  => $this->name,
-            'params' => array_values($this->params),
+            'params' => $this->params
         ];
 
         if ($this->up) {

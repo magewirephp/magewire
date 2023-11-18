@@ -11,10 +11,10 @@ namespace Magewirephp\Magewire\Model\Action;
 use Magento\Framework\Exception\LocalizedException;
 use Magewirephp\Magewire\Exception\ComponentActionException;
 use Magewirephp\Magewire\Component;
-use Magewirephp\Magewire\Model\ActionInterface;
+use Magewirephp\Magewire\Model\Action;
 use Magewirephp\Magewire\Model\Hydrator\Listener as ListenerHydrator;
 
-class FireEvent implements ActionInterface
+class FireEvent extends Action
 {
     public const ACTION = 'fireEvent';
 
@@ -37,7 +37,14 @@ class FireEvent implements ActionInterface
     {
         $listeners  = $this->listenerHydrator->assimilateListeners($component);
         $method     = $listeners[$payload['event']] ?? false;
-        $parameters = $payload['params'][0] ?? [];
+        // Support the different emit argument styles
+        if (is_array($payload['params']) && count($payload['params']) > 1) {
+            // Multiple arguments, e.g. emit('foo', 'bar', 'baz') or emit('foo', ['bar', 'baz'])
+            $parameters = $payload['params'];
+        } else {
+            // None or single parameter, e.g. emit('foo') or emit('foo', ['bar' => 'baz'])
+            $parameters = $payload['params'][0] ?? [];
+        }
 
         if ($method === false) {
             throw new ComponentActionException(__('Method does not exist or can not be called'));

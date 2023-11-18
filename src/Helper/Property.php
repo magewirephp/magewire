@@ -36,13 +36,25 @@ class Property
         $realpath = $path;
 
         if (!array_key_exists($property, $component->getPublicProperties())) {
-            throw new ComponentException(__('Public property %1 does\'nt exist', [$property]));
+            throw new ComponentException(__('Public property %1 doesn\'t exist', [$property]));
         }
 
-        $path   = substr(strstr($path, '.'), 1);
-        $data   = $this->arrayManager->set($path, $component->{$property}, $value, '.');
+        $target = $path;
+        $lastDotPosition = strrpos($realpath, '.');
 
-        return compact('property', 'data', 'realpath', 'path');
+        if ($lastDotPosition !== false) {
+            $target = substr($realpath, $lastDotPosition + 1);
+        }
+
+        $path = substr(strstr($path, '.'), 1);
+        $data = $this->arrayManager->set($path, $component->{$property}, $value, '.');
+
+        return compact('property', 'data', 'realpath', 'path', 'target');
+    }
+
+    public function assignViaDots(string $path, $value, array $subject)
+    {
+        return $this->arrayManager->set($path, $subject, $value, '.');
     }
 
     public function searchViaDots(string $path, array $value)
@@ -54,15 +66,16 @@ class Property
      * Use a callback function to assign component property
      * values except default reserved properties.
      */
-    public function assign(callable $callback, Component $component, array $data = null): void
+    public function assign(callable $callback, Component $component, array $data = null, bool $merge = true): void
     {
         $publicProperties = $component->getPublicProperties(true);
-        $data = $data === null ? $publicProperties : array_merge($publicProperties, $data);
+        $data = $data === null ? $publicProperties : ($merge ? array_merge($publicProperties, $data) : $data);
 
         foreach ($data as $property => $value) {
             if (in_array($property, Component::RESERVED_PROPERTIES, true)) {
                 continue;
             }
+
             if (array_key_exists($property, $publicProperties)) {
                 $callback($component, $property, $value);
             }
