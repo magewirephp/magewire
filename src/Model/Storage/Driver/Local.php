@@ -33,7 +33,7 @@ class Local extends StorageDriver
         $sourceDirectory = $this->fileSystem->getDirectoryWrite(DirectoryList::TMP);
         $targetDirectory = $this->fileSystem->getDirectoryWrite(DirectoryList::UPLOAD);
 
-        return array_map(function($file) use ($sourceDirectory, $targetDirectory, $directory, $filename) {
+        return array_map(function ($file) use ($sourceDirectory, $targetDirectory, $directory, $filename) {
             $path = 'magewire' . DIRECTORY_SEPARATOR . $file;
             $info = pathinfo($sourceDirectory->getAbsolutePath() . $path);
 
