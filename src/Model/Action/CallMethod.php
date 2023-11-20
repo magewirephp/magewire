@@ -14,11 +14,8 @@ use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Model\Action;
 use Magewirephp\Magewire\Model\Action\Type\Factory as TypeFactory;
 use Magewirephp\Magewire\Model\Action\Type\Magic;
-<<<<<<< HEAD
 use Magewirephp\Magewire\Model\Action\Type\Upload;
 use Magewirephp\Magewire\Model\ActionInterface;
-=======
->>>>>>> main
 
 class CallMethod extends Action
 {

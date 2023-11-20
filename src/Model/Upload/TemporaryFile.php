@@ -8,7 +8,7 @@
 
 namespace Magewirephp\Magewire\Model\Upload;
 
-use Magewirephp\Magewire\Model\Storage\StorageDriverInterface;
+use Magewirephp\Magewire\Model\Storage\StorageDriver;
 
 class TemporaryFile extends \Magento\MediaStorage\Model\File\Uploader
 {

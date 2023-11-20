@@ -12,7 +12,7 @@ use Magento\Framework\App\Filesystem\DirectoryList;
 use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Filesystem;
 use Magewirephp\Magewire\Exception\AcceptableException;
-use Magewirephp\Magewire\Model\Storage\StorageDriverInterface;
+use Magewirephp\Magewire\Model\Storage\StorageDriver;
 use Magewirephp\Magewire\Model\Upload\File;
 use Magewirephp\Magewire\Model\Upload\FileFactory;
 use Magewirephp\Magewire\Model\Upload\TemporaryFile;
@@ -24,12 +24,12 @@ abstract class Upload extends Form
 {
     public const COMPONENT_TYPE = 'file-upload';
 
-    protected StorageDriverInterface $storage;
+    protected StorageDriver $storage;
     protected FileFactory $fileFactory;
 
     public function __construct(
         Validator $validator,
-        StorageDriverInterface $storage,
+        StorageDriver $storage,
         FileFactory $fileFactory
     ) {
         $validator->setValidator('required', new \Magewirephp\Magewire\Model\Upload\Validation\Rules\Required);
@@ -45,7 +45,7 @@ abstract class Upload extends Form
     public function validate(array $rules = [], array $messages = [], array $data = null, array $aliases = [], bool $mergeWithClassProperties = true): bool
     {
         foreach ($data ?? $this->getPublicProperties(true) as &$value) {
-            $break = true;
+            // WIP
         }
 
         return parent::validate($rules, $messages, $data, $aliases, $mergeWithClassProperties);
@@ -60,7 +60,8 @@ abstract class Upload extends Form
         }
 
         foreach ($properties as $property => $value) {
-            if ($value && substr($value, 0, strlen('magewire-file:'))) {
+            if (is_string($value) && substr($value, 0, strlen('magewire-file:'))) {
+                // Transforms an incoming subsequent request back into a file, incorporating its chosen storage mechanism.
                 $this->{$property} = $this->fileFactory->create([
                     'storage' => $this->storage,
                     'name' => ltrim($value, 'magewire-file:')
@@ -78,13 +79,8 @@ abstract class Upload extends Form
         }
 
         foreach ($properties as $property => $value) {
-            if ($value instanceof File) {
-                $this->{$property} = $value->getPath();
-            } else if ($value && substr($value, 0, strlen('magewire-file:'))) {
-                $this->{$property} = $this->fileFactory->create([
-                    'storage' => $this->storage,
-                    'name' => ltrim($value, 'magewire-file:')
-                ]);
+            if (is_string($value) && substr($value, 0, strlen('magewire-file:'))) {
+                $this->{$property} = ltrim($value, 'magewire-file:');
             }
         }
     }

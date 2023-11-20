@@ -8,9 +8,9 @@
 
 namespace Magewirephp\Magewire\Model\Storage\Driver;
 
-use Magewirephp\Magewire\Model\Storage\StorageDriverInterface;
+use Magewirephp\Magewire\Model\Storage\StorageDriver;
 
-class S3 implements StorageDriverInterface
+class S3 extends StorageDriver
 {
     public function store(array $paths, string $directory = null): array
     {

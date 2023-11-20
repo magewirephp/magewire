@@ -15,17 +15,17 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use League\MimeTypeDetection\FinfoMimeTypeDetector;
 use Livewire\FileUploadConfiguration;
-use Magewirephp\Magewire\Model\Storage\StorageDriverInterface;
+use Magewirephp\Magewire\Model\Storage\StorageDriver;
 
 class File
 {
-    protected StorageDriverInterface $storage;
+    protected StorageDriver $storage;
     protected string $name;
 
-    private ?string $path = null;
+    private ?string $relativePath = null;
 
     public function __construct(
-        StorageDriverInterface $storage,
+        StorageDriver $storage,
         \Magento\Store\Model\StoreManagerInterface $storeManager,
         string $name
     ) {
@@ -33,19 +33,58 @@ class File
         $this->name = $name;
     }
 
-    public function getPath(): ?string
+    public function getRelativePath(): ?string
     {
-        return $this->path;
+        return $this->relativePath;
     }
 
-    public function getUrl(): string
+    /**
+     * Retrieve a public URL of the latest uploaded file.
+     */
+    public function getUrl(): ?string
     {
-        return '';
+        if ($this->relativePath) {
+            return $this->storage->getUrl($this->relativePath);
+        }
+
+        return null;
     }
 
-    public function store()
+    /**
+     * Store the uploaded file in the given directory.
+     */
+    public function store(string $directory = null): self
     {
-        $store = $this->storage->store([$this->name]);
-        $this->path = $store[0];
+        $store = $this->storage->publish([$this->name], $directory);
+        $this->relativePath = $store[0];
+
+        return $this;
+    }
+
+    /**
+     * Store in the given directory with the given filename.
+     */
+    public function storeAs(string $filename, string $directory = null): self
+    {
+        $store = $this->storage->publish([$this->name], $directory, $filename);
+        $this->relativePath = $store[0];
+
+        return $this;
+    }
+
+    /**
+     * Store in the given directory, with "public" visibility.
+     */
+    public function storePublicly(string $directory = null)
+    {
+        // WIP
+    }
+
+    /**
+     * Store in the given directory, with "public" visibility.
+     */
+    public function storePubliclyAs(string $filename, string $directory = null)
+    {
+        // WIP
     }
 }
