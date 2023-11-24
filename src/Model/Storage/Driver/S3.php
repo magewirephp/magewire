@@ -16,4 +16,9 @@ class S3 extends StorageDriver
     {
         // TODO: Implement store() method.
     }
+
+    public function publish(array $paths, string $directory = null, string $filename = null): array
+    {
+        // TODO: Implement publish() method.
+    }
 }
