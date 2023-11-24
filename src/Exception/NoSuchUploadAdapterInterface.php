@@ -9,10 +9,11 @@
 namespace Magewirephp\Magewire\Exception;
 
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Phrase;
 
 class NoSuchUploadAdapterInterface extends MagewireException
 {
-    public function __construct(string $name, Exception $cause = null, $code = 0)
+    public function __construct(Phrase $phrase, \Exception $cause = null, $code = 0)
     {
         parent::__construct(
             __('No such upload adapter.'),
