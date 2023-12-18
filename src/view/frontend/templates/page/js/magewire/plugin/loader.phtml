@@ -102,7 +102,7 @@ $magewireScripts = $block->getViewModel();
                 }
 
                 let first = ! queue.some(({ parent }) => parent);
-                let me = queue.findIndex(item => item.component.id === component.id);
+                let me = queue.findIndex(item => item && item.component && item.component.id === component.id);
 
                 if (first) {
                     queue.push({
