@@ -46,15 +46,6 @@ class Upload
      */
     public function finishUpload(string $property, $temporaryPath, $isMultiple, Component $component): void
     {
-        if ($isMultiple) {
-//            $file = collect($tmpPath)->map(function ($i) {
-//                return TemporaryUploadedFile::createFromLivewire($i);
-//            })->toArray();
-//            $component->emitSelf('upload:finished', $name, collect($file)->map->getFilename()->toArray())->self();
-
-            return;
-        }
-
         $component->emit('upload:finished', $property, [$temporaryPath[0]])->self();
         $this->syncInput->handle($component, ['name' => $property, 'value' => 'magewire-file:' . $temporaryPath[0] ?? null]);
     }

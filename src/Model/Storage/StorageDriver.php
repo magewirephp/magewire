@@ -8,13 +8,14 @@
 
 namespace Magewirephp\Magewire\Model\Storage;
 
+use Magento\Framework\App\Filesystem\DirectoryList;
 use Magewirephp\Magewire\Model\Storage;
 
 abstract class StorageDriver
 {
     /**
      * Publish the temporary file to its designated public destination
-     * and provide an array containing the relative file paths..
+     * and provide an array containing the relative file paths.
      *
      * @return  array<int, string>
      */

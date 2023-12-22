@@ -12,13 +12,8 @@ use Magewirephp\Magewire\Model\Storage\StorageDriver;
 
 class S3 extends StorageDriver
 {
-    public function store(array $paths, string $directory = null): array
-    {
-        // TODO: Implement store() method.
-    }
-
     public function publish(array $paths, string $directory = null, string $filename = null): array
     {
-        // TODO: Implement publish() method.
+        // WIP
     }
 }

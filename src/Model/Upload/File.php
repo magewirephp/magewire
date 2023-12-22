@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use League\MimeTypeDetection\FinfoMimeTypeDetector;
 use Livewire\FileUploadConfiguration;
+use Magento\Customer\Model\Customer;
 use Magewirephp\Magewire\Model\Storage\StorageDriver;
 
 class File
@@ -53,9 +54,9 @@ class File
     /**
      * Store the uploaded file in the given directory.
      */
-    public function store(string $directory = null): self
+    public function store(): self
     {
-        $store = $this->storage->publish([$this->name], $directory);
+        $store = $this->storage->publish([$this->name], null);
         $this->relativePath = $store[0];
 
         return $this;
@@ -64,9 +65,9 @@ class File
     /**
      * Store in the given directory with the given filename.
      */
-    public function storeAs(string $filename, string $directory = null): self
+    public function storeAs(string $filename): self
     {
-        $store = $this->storage->publish([$this->name], $directory, $filename);
+        $store = $this->storage->publish([$this->name], null, $filename);
         $this->relativePath = $store[0];
 
         return $this;
@@ -75,16 +76,38 @@ class File
     /**
      * Store in the given directory, with "public" visibility.
      */
-    public function storePublicly(string $directory = null)
+    public function storePublicly(string $directory = null): self
     {
-        // WIP
+        $store = $this->storage->publish([$this->name], $directory);
+        $this->relativePath = $store[0];
+
+        return $this;
     }
 
     /**
-     * Store in the given directory, with "public" visibility.
+     * Store in the given directory with the given filename, with "public" visibility.
      */
-    public function storePubliclyAs(string $filename, string $directory = null)
+    public function storePubliclyAs(string $filename, string $directory = null): self
     {
-        // WIP
+        $store = $this->storage->publish([$this->name], $directory, $filename);
+        $this->relativePath = $store[0];
+
+        return $this;
+    }
+
+    /**
+     * Store in the given directory, for the given customer.
+     */
+    public function storeForCustomer(Customer $customer, string $directory = null): self
+    {
+        return $this->storePublicly($directory); // WIP
+    }
+
+    /**
+     * Store in the given directory with the given filename, for the given customer.
+     */
+    public function storeAsForCustomer(Customer $customer, string $filename, string $directory = null): self
+    {
+        return $this->storePubliclyAs($filename, $directory); // WIP
     }
 }
