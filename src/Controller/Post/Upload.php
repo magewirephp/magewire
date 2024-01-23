@@ -37,6 +37,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 class Upload extends Post
 {
     protected DateTime $dateTime;
+    protected TemporaryFileFactory $temporaryFileFactory;
+    protected Filesystem $fileSystem;
 
     public function __construct(
         JsonFactory $resultJsonFactory,

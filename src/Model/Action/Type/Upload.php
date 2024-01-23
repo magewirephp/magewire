@@ -19,6 +19,7 @@ class Upload
 {
     protected SyncInput $syncInput;
     protected UrlInterface $urlBuilder;
+    protected DateTime $dateTime;
 
     public function __construct(
         SyncInput $syncInput,
