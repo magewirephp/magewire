@@ -44,8 +44,8 @@ Based on proven results, using Magewire consistently reduces work hours, offerin
 their developers and merchants. I extend my heartfelt appreciation to my current sponsors for their support creating
 a win-win situation for all involved.
 
-|   |   |
-|---|---|
+|   |   |   |
+|---|---|---|
 |<a align="center" href="https://github.com/ootri/" title="ootri" target="_blank"><img width="64" alt="ootri" src="https://avatars.githubusercontent.com/u/3450878?v=4"/></a>|<a align="center" href="https://vendic.nl/" title="Vendic" target="_blank"><img width="64" alt="Vendic" src="https://user-images.githubusercontent.com/5383956/228823594-d3344d87-dadc-4c36-a212-89cba8c7340b.jpg"/></a>|<a align="center" href="https://www.zero1.co.uk/" title="Zero 1" target="_blank"><img width="64" alt="Zero 1" src="https://github.com/magewirephp/magewire/assets/5383956/6f385d3c-87c9-433d-8921-c40de0f00573"/></a>|
 
 
