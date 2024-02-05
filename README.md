@@ -3,7 +3,7 @@
 [![Total Downloads](http://poser.pugx.org/magewirephp/magewire/downloads)](https://packagist.org/packages/magewirephp/magewire)
 ![style CI](https://github.styleci.io/repos/414967404/shield?style=flat&branch=main)
 [![License](http://poser.pugx.org/magewirephp/magewire/license)](https://packagist.org/packages/magewirephp/magewire)
-[![sponsors](https://img.shields.io/badge/Sponsors-2-1abc9c)](https://github.com/sponsors/wpoortman)
+[![sponsors](https://img.shields.io/badge/Sponsors-3-1abc9c)](https://github.com/sponsors/wpoortman)
 
 <a align="center" href="https://wpoortman.lemonsqueezy.com/" target="_blank">
     <img src="https://user-images.githubusercontent.com/5383956/225342789-ecdbf00d-e2f1-4154-b2fc-700b6a577d91.jpeg" alt="Magewire Kickstart Course"/>
