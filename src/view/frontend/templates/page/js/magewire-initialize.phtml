@@ -34,8 +34,23 @@ $magewireScripts = $block->getViewModel();
         window.Livewire = window.magewire
         window.Magewire = window.magewire
         window.livewire_app_url = '<?= $escaper->escapeUrl($magewireScripts->getApplicationUrl()) ?>'
-        <?php /* Still Hyvä dependent, will change in the future to spread compatibility. */ ?>
-        window.livewire_token = window.hyva.getFormKey()
+
+        <?php /* Hyva / Breeze switch */ ?>
+        if (typeof window.hyva === 'undefined') {
+            <?php /* Still Breeze dependent, will change in the future to spread compatibility. */ ?>
+            let formkey
+            const nameEQ = 'form_key='
+            const cookieArr = document.cookie.split(';')
+            for (let i = 0; i < cookieArr.length; i++) {
+                if(cookieArr[i].split(nameEQ)[0].trim() == ''){
+                    formkey = cookieArr[i].split(nameEQ)[1].trim()
+                }
+            }
+            window.livewire_token = formkey
+        }else{
+            <?php /* Still Hyvä dependent, will change in the future to spread compatibility. */ ?>
+            window.livewire_token = window.hyva.getFormKey()
+        }
 
         <?php /* Make sure Magewire loads first. */ ?>
         if (window.Alpine) {
