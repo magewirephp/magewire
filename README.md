@@ -39,6 +39,18 @@ to learn more and start making your Magento 2 store more dynamic and engaging to
 - [More about Hydrators](./docs/Hydrators.md)
 - [Developer Tools](./docs/Tools.md)
 
+## Testing
+
+Playwright is being used to End 2 End test. You need a working Magento environment with the [Magewire Examples](https://magewire-magento.test/magewire/examples) installed. If you have that, you can run tests like this:
+
+```bash
+npm ci
+npx playwright install --with-deps
+
+# Change the URL to your Magento environment
+BASE_URL=http://localhost:8080/ npx playwright test
+```
+
 ## Sponsors
 Based on proven results, using Magewire consistently reduces work hours, offering significant benefits to agencies,
 their developers and merchants. I extend my heartfelt appreciation to my current sponsors for their support creating
