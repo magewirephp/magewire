@@ -494,6 +494,15 @@ Magewire.emit('youCanCallMe', {value: 'hi there'})
 Magewire.emitTo('my.custom.block.name', 'youCanCallMe', {value: 'hi there'})
 ```
 
+[As documented in the Livewire documentation](https://laravel-livewire.com/docs/2.x/events#in-js), it is possible to
+listen to messages emit by components in JavaScript:
+```js
+// Listen for the 'youCanCallMe' event
+Magewire.on('youCanCallMe', event => {
+    console.log(event.value); // outputs 'hi there'
+});
+```
+
 ### Magic Actions Compatibility
 You are able to use magic methods within your emits if this is required. Thanks to this feature you are able to for example refresh a component or set data without having to write this functionality inside your targeted component.
 ```php
