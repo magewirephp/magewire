@@ -315,7 +315,7 @@ public function refresh() {}
 ## Properties
 Assign properties including a lifecycle ```updating``` and ```updated``` method.
 ```php
-public $foo = 'bar'
+public $foo = 'bar';
 
 /**
  * OPTIONAL METHOD: Gets executed right before the property gets assigned.
