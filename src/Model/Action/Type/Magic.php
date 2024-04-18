@@ -44,7 +44,7 @@ class Magic
      */
     public function set(string $property, $value, Component $component): void
     {
-        try{
+        try {
             // Transform a magic property value.
             if (is_string($value)
             && strrpos($value, '$') === 0
