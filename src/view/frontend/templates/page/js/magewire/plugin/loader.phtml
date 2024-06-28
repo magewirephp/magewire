@@ -94,91 +94,91 @@ $magewireScripts = $block->getViewModel();
                 return data;
             }
 
-            const start = function(loader, component) {
-                <?php /* Just start the loading spinner without any further details. */ ?>
-                if (! loader || ! component) {
-                    Magewire.dispatchEvent(`loader:start`);
-                    return;
-                }
+            //const start = function(loader, component) {
+            //    <?php ///* Just start the loading spinner without any further details. */ ?>
+            //    if (! loader || ! component) {
+            //        Magewire.dispatchEvent(`loader:start`);
+            //        return;
+            //    }
+            //
+            //    let first = ! queue.some(({ parent }) => parent);
+            //    let me = queue.findIndex(item => item && item.component && item.component.id === component.id);
+            //
+            //    if (first) {
+            //        queue.push({
+            //            loader: loader,
+            //            component: component
+            //        });
+            //    }
+            //
+            //    <?php ///* Sprinkle in the missing loader when this item was added from elsewhere without
+            //             knowing what the loader value is gonna be at that point in the lifecycle. */ ?>
+            //    if (queue[me]) {
+            //        queue[me].loader = loader;
+            //    }
+            //
+            //    queue.forEach((item, index) => {
+            //        item.parent = item.parent ?? false;
+            //
+            //        <?php ///* Lets find out which loader was already active before me and force it to stop. */ ?>
+            //        if (me > index && item.loader) {
+            //            stop(item.component, false, true);
+            //        }
+            //    });
+            //
+            //    Magewire.dispatchEvent(`loader:${ first ? 'start' : 'tick' }`, {
+            //        detail: loader
+            //    });
+            //}
 
-                let first = ! queue.some(({ parent }) => parent);
-                let me = queue.findIndex(item => item && item.component && item.component.id === component.id);
-
-                if (first) {
-                    queue.push({
-                        loader: loader,
-                        component: component
-                    });
-                }
-
-                <?php /* Sprinkle in the missing loader when this item was added from elsewhere without
-                         knowing what the loader value is gonna be at that point in the lifecycle. */ ?>
-                if (queue[me]) {
-                    queue[me].loader = loader;
-                }
-
-                queue.forEach((item, index) => {
-                    item.parent = item.parent ?? false;
-
-                    <?php /* Lets find out which loader was already active before me and force it to stop. */ ?>
-                    if (me > index && item.loader) {
-                        stop(item.component, false, true);
-                    }
-                });
-
-                Magewire.dispatchEvent(`loader:${ first ? 'start' : 'tick' }`, {
-                    detail: loader
-                });
-            }
-
-            const stop = function(component, failure = false, force = false) {
-                if (failure) {
-                    force = true;
-                }
-
-                <?php /* Queue items targeted to remove. */ ?>
-                let remove = [];
-                <?php /* Get my own index. */ ?>
-                const me = queue.findIndex(item => item && item.component && item.component.id === component.id);
-
-                if (queue[me]) {
-                    queue[me].done = true;
-                }
-
-                if (force) {
-                    remove.push(me);
-                } else if (queue.every(item => item && item.done)) {
-                    remove = Object.keys(queue);
-                }
-
-                <?php /* Run over the queue and remove those who are marked. In the meanwhile, when we hit
-                         an item which seems to have a loader, it should stop itself. */ ?>
-                remove.forEach(index => {
-                    if (queue[index] && queue[index].loader) {
-                        Magewire.dispatchEvent(`loader:stop`, {
-                            detail: {
-                                loader: queue[index].loader,
-                                component: queue[index].component,
-                                failure: failure
-                            }
-                        });
-                    }
-
-                    delete queue[index];
-                });
-
-                if (Object.values(queue).length === 0) {
-                    Magewire.dispatchEvent(`loader:done`, {
-                        detail: {
-                            component: component,
-                            failure: failure
-                        }
-                    });
-
-                    // Empty insurance.
-                    queue = [];
-                }
-            }
+            //const stop = function(component, failure = false, force = false) {
+            //    if (failure) {
+            //        force = true;
+            //    }
+            //
+            //    <?php ///* Queue items targeted to remove. */ ?>
+            //    let remove = [];
+            //    <?php ///* Get my own index. */ ?>
+            //    const me = queue.findIndex(item => item && item.component && item.component.id === component.id);
+            //
+            //    if (queue[me]) {
+            //        queue[me].done = true;
+            //    }
+            //
+            //    if (force) {
+            //        remove.push(me);
+            //    } else if (queue.every(item => item && item.done)) {
+            //        remove = Object.keys(queue);
+            //    }
+            //
+            //    <?php ///* Run over the queue and remove those who are marked. In the meanwhile, when we hit
+            //             an item which seems to have a loader, it should stop itself. */ ?>
+            //    remove.forEach(index => {
+            //        if (queue[index] && queue[index].loader) {
+            //            Magewire.dispatchEvent(`loader:stop`, {
+            //                detail: {
+            //                    loader: queue[index].loader,
+            //                    component: queue[index].component,
+            //                    failure: failure
+            //                }
+            //            });
+            //        }
+            //
+            //        delete queue[index];
+            //    });
+            //
+            //    if (Object.values(queue).length === 0) {
+            //        Magewire.dispatchEvent(`loader:done`, {
+            //            detail: {
+            //                component: component,
+            //                failure: failure
+            //            }
+            //        });
+            //
+            //        // Empty insurance.
+            //        queue = [];
+            //    }
+            //}
 
             <?php /* Magewire loader plugin registration. */ ?>
             Magewire.plugins.loader = (() => {
@@ -193,51 +193,119 @@ $magewireScripts = $block->getViewModel();
             })();
 
             document.addEventListener('DOMContentLoaded', () => {
+                let messagePromises = [];
+                let messageLoaders = {};
+
                 Magewire.hook('message.sent', (message, component) => {
-                    let loader = getLoaderData(message, component) || {};
+                    let loader = getLoaderData(message, component) || {}
 
                     if (component.id in loader && loader[component.id].loader) {
-                        Magewire.plugins.loader.start(loader[component.id], component);
+                        let target = component
+
+                        messageLoaders[`${loader[component.id].key}-${component.id}`] = {
+                            id: `${loader[component.id].key}-${component.id}`,
+                            loader: loader,
+                            component: component,
+                            queue: {}
+                        }
+
+                        messagePromises[component.id] = new Promise((resolve, reject) => {
+                            Magewire.dispatchEvent(`loader:${ messagePromises.length === 0 ? 'start' : 'tick' }`, {
+                                detail: loader[component.id]
+                            })
+
+                            Magewire.hook('message.processed', (message, component) => {
+                                try {
+                                    const tryToGrepTheLoader = messageLoaders[`${loader[component.id].key}-${component.id}`]
+
+                                    if (tryToGrepTheLoader) {
+                                        <?php /* Re-assign optional new dynamic loader values. */ ?>
+                                        if (component.effects && message.response.effects) {
+                                            component.effects.loader = message.response.effects.loader;
+                                        }
+
+                                        (message.response.effects.emits || []).forEach(emit => {
+                                            Magewire.components.componentsListeningForEvent(emit.event)
+                                                .filter(listener => !emit.to || emit.to === listener.id)
+                                                .forEach(listener => {
+                                                    tryToGrepTheLoader.queue[`${loader[component.id].key}-${component.id}-${listener.id}`] = {
+                                                        id: `${loader[component.id].key}-${component.id}-${listener.id}`,
+                                                        component: listener,
+                                                        parent: component,
+                                                        loader: loader
+                                                    };
+                                                });
+                                        });
+
+                                        if (tryToGrepTheLoader.queue.length === 0) {
+                                            console.log('A')
+
+                                            Magewire.dispatchEvent(`loader:stop`, {
+                                                detail: {
+                                                    loader: tryToGrepTheLoader.loader[component.id],
+                                                    component: component
+                                                }
+                                            })
+
+                                            resolve({
+                                                target: target,
+                                                component: component,
+                                                loader: tryToGrepTheLoader.loader
+                                            })
+                                        }
+                                    }
+                                } catch (exception) {
+                                    // IGNORE FOR NOW
+                                }
+                            })
+                        })
                     }
-                });
+
+                    if (messagePromises.length) {
+                        Promise.all(messagePromises)
+                            .catch(exception => {
+                                console.log('WOOOPS', exception)
+                            })
+                            .finally(() => {
+                                messagePromises = []
+
+                                Magewire.dispatchEvent(`loader:done`, {
+                                    detail: {
+                                        component: component,
+                                        failure: false
+                                    }
+                                })
+                            })
+                    }
+                })
 
                 Magewire.hook('message.processed', (message, component) => {
-                    if (message.response && message.response.effects) {
-                        (message.response.effects.emits || []).forEach((emit) => {
-                            Magewire.components.componentsListeningForEvent(emit.event)
-                                .filter(listener => ! emit.to || emit.to === listener.id)
-                                .forEach(listener => queue.push({ component: listener, parent: component }));
-                        });
-
-                        let ids = [];
-
-                        <?php /* FIX: Sometimes, it is the case that a component has two event listeners that
-                                      both need to be applied. In such situations, these listeners should be
-                                      handled with a single request. Therefore, only one of them should be in
-                                      the queue to determine the success or failure of the operation */ ?>
-                        for (let i = queue.length - 1; i >= 0; i--) {
-                            if (queue[i]) {
-                                if (ids.indexOf(queue[i].component.id) !== -1) {
-                                    queue.splice(i, 1);
-                                    continue;
-                                }
-
-                                ids.push(queue[i].component.id);
-                            }
+                    Object.values(messageLoaders).forEach((messageLoaderItem) => {
+                        if (messageLoaderItem.component.id === component.id) {
+                            return
                         }
-                    }
 
-                    Magewire.plugins.loader.stop(component);
+                        const id = messageLoaderItem.id
 
-                    <?php /* Re-assign optional new dynamic loader values. */ ?>
-                    if (component.effects && message.response.effects) {
-                        component.effects.loader = message.response.effects.loader;
-                    }
-                });
 
-                Magewire.hook('message.failed', (message, component) => {
-                    Magewire.plugins.loader.stop(component, true);
-                });
+                        Object.values(messageLoaderItem.queue).forEach(value => {
+                            delete messageLoaders[id].queue[value.id]
+
+                            if (Object.values(messageLoaders[id].queue).length === 0) {
+                                console.log('STOPPED BY', value.id, 'FOR', id)
+
+                                Magewire.dispatchEvent(`loader:stop`, {
+                                    detail: {
+                                        loader: messageLoaderItem.loader[messageLoaderItem.component.id],
+                                        component: messageLoaderItem.component
+                                    }
+                                })
+
+                                messagePromises.splice(messageLoaderItem.component.id, 1)
+                            }
+                        })
+                    })
+                })
             });
         })();
     </script>
