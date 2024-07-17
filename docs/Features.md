@@ -83,7 +83,7 @@ inside the [Livewire docs](https://laravel-livewire.com/docs/2.x/reference#globa
 - magewire:update
 - magewire:available
 - magewire:loader:start ```(event) => {}```
-- magewire:loader:stop ```(event) => {}```
+- magewire:loader:done ```(event) => {}```
 
 ### Lifecycle Hooks
 [Read all about hooks](https://laravel-livewire.com/docs/2.x/reference#js-hooks)
@@ -875,7 +875,7 @@ Since version: `1.10.0`
     window.addEventListener('magewire:loader:start', () => {
         document.body.style.cursor = 'wait'
     })
-    window.addEventListener('magewire:loader:stop', () => {
+    window.addEventListener('magewire:loader:done', () => {
         document.body.style.cursor = 'pointer'
     })
 </script>
