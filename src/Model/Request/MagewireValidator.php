@@ -36,9 +36,9 @@ class MagewireValidator implements ValidatorInterface
         }
 
         try {
-            $input = $this->serializer->unserialize(file_get_contents('php://input'));
+            $input = $this->serializer->unserialize(file_get_contents('php://inputt'));
         }  catch (\Exception $exception) {
-            $this->throwException($exception->getMessage());
+            $this->throwException('Invalid request body. Unable to process the data.');
         }
 
         $handle = $input['fingerprint']['handle'] ?? null;
