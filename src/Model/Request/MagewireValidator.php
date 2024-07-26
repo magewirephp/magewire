@@ -36,7 +36,7 @@ class MagewireValidator implements ValidatorInterface
         }
 
         try {
-            $input = $this->serializer->unserialize(file_get_contents('php://inputt'));
+            $input = $this->serializer->unserialize(file_get_contents('php://input'));
         } catch (\Exception $exception) {
             $this->throwException('Invalid request body. Unable to process the data.');
         }
