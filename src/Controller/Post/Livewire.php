@@ -45,6 +45,7 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface, Mag
     protected LoggerInterface $logger;
     protected MagewireViewModel $magewireViewModel;
     protected ComponentResolver $componentResolver;
+    protected SerializerInterface $serializer;
 
     public function __construct(
         JsonFactory $resultJsonFactory,
@@ -63,13 +64,14 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface, Mag
         $this->logger = $logger;
         $this->magewireViewModel = $magewireViewModel;
         $this->componentResolver = $componentResolver;
+        $this->serializer = $serializer;
     }
 
     public function execute(): Json
     {
         try {
             try {
-                $request = $this->httpFactory->createRequest($this->request->getParams())->isSubsequent(true);
+                $request = $this->httpFactory->createRequest($this->getRequestParams())->isSubsequent(true);
             } catch (LocalizedException $exception) {
                 throw new HttpException(400);
             }
@@ -151,5 +153,15 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface, Mag
         $statuses[419] = 'Session expired';
 
         return $statuses;
+    }
+
+    private function getRequestParams(): array
+    {
+        $content = $this->request->getContent();
+        if (!empty($content)) {
+            return $this->serializer->unserialize($content);
+        }
+
+        return $this->request->getParams();
     }
 }
