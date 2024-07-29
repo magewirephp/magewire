@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -6,10 +6,13 @@
  * details on copyrights and license information.
  */
 
+declare(strict_types=1);
+
 namespace Magewirephp\Magewire\Controller\Post;
 
 use Exception;
 use Laminas\Http\AbstractMessage;
+use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\NotFoundException;
@@ -64,7 +67,9 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface, Mag
         $this->logger = $logger;
         $this->magewireViewModel = $magewireViewModel;
         $this->componentResolver = $componentResolver;
-        $this->serializer = $serializer;
+
+        $this->serializer = $serializer
+            ?: ObjectManager::getInstance()->get(SerializerInterface::class);
     }
 
     public function execute(): Json
@@ -155,10 +160,20 @@ class Livewire implements HttpPostActionInterface, CsrfAwareActionInterface, Mag
         return $statuses;
     }
 
+    /**
+     * Allows the Livewire Browser Plugin to modify component properties,
+     * which triggers an AJAX call similar to the MageWire JS API's form.set('address.country_id', 'NL').
+     * In such cases, the request parameters, including the fingerprint, are sent in a JSON body
+     * instead of traditional request parameters.
+     *
+     * This method ensures compatibility by supporting both JSON body and request parameters,
+     * enabling seamless interaction between the client and server.
+     */
     private function getRequestParams(): array
     {
         $content = $this->request->getContent();
-        if (!empty($content)) {
+
+        if (! empty($content)) {
             return $this->serializer->unserialize($content);
         }
 
