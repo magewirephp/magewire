@@ -1202,7 +1202,7 @@ Show corresponding error messages below the field.
 #### Example 2 (md)
 Display a stack of error messages on above the form.
 ```html
-<?php if ($magewire->hasErrors(): ?>
+<?php if ($magewire->hasErrors()): ?>
 <ul>
     <?php foreach ($magewire->getErrors() as $error): ?>
     <li class="text-red-800"><?= $error ?></li>    
