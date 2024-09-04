@@ -5,10 +5,6 @@
 [![License](http://poser.pugx.org/magewirephp/magewire/license)](https://packagist.org/packages/magewirephp/magewire)
 [![sponsors](https://img.shields.io/badge/Sponsors-3-1abc9c)](https://github.com/sponsors/wpoortman)
 
-<a align="center" href="https://wpoortman.lemonsqueezy.com/" target="_blank">
-    <img src="https://user-images.githubusercontent.com/5383956/225342789-ecdbf00d-e2f1-4154-b2fc-700b6a577d91.jpeg" alt="Magewire Kickstart Course"/>
-</a>
-
 Looking for an easy way to build modern, reactive, and dynamic interfaces in Magento 2? Meet Magewire - the
 [Laravel Livewire](https://laravel-livewire.com/) port for Magento 2. With Magewire, you can create engaging user
 experiences without leaving the comfort of Magento's core layout and template systems. Add dynamic and reactive
