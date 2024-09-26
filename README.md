@@ -1,9 +1,10 @@
 # Magewire PHP
-[![Latest Stable Version](http://poser.pugx.org/magewirephp/magewire/v)](https://packagist.org/packages/magewirephp/magewire)
-[![Total Downloads](http://poser.pugx.org/magewirephp/magewire/downloads)](https://packagist.org/packages/magewirephp/magewire)
-![style CI](https://github.styleci.io/repos/414967404/shield?style=flat&branch=main)
-[![License](http://poser.pugx.org/magewirephp/magewire/license)](https://packagist.org/packages/magewirephp/magewire)
-[![sponsors](https://img.shields.io/badge/Sponsors-3-1abc9c)](https://github.com/sponsors/wpoortman)
+[![Latest Stable Version](https://img.shields.io/packagist/v/magewirephp/magewire)](https://packagist.org/packages/magewirephp/magewire)
+[![Downloads](https://img.shields.io/packagist/dm/magewirephp/magewire)](https://packagist.org/packages/magewirephp/magewire)
+![Style CI](https://github.styleci.io/repos/414967404/shield?style=flat&branch=main)
+[![License](https://img.shields.io/packagist/l/magewirephp/magewire)](https://packagist.org/packages/magewirephp/magewire)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/wpoortman)](https://github.com/sponsors/wpoortman)
+![GitHub contributors](https://img.shields.io/github/contributors/magewirephp/magewire)
 
 Looking for an easy way to build modern, reactive, and dynamic interfaces in Magento 2? Meet Magewire - the
 [Laravel Livewire](https://laravel-livewire.com/) port for Magento 2. With Magewire, you can create engaging user
