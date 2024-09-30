@@ -104,11 +104,6 @@
                     </argument>
                 </arguments>
 
-                <container name="magewire.directive.scripts" as="magewire.directives">
-                    <block name="magewire.directive.select"
-                           template="Magewirephp_Magewire::page/js/magewire/directive/select.phtml"/>
-                </container>
-
                 <container name="magewire.plugin.scripts" as="magewire.plugins">
                     <!-- Inject the Magewire core Loader plugin -->
                     <block name="magewire.plugin.loader"
@@ -137,6 +132,16 @@
                             </argument>
                         </arguments>
                     </block>
+                </container>
+
+                <container name="magewire.directive.scripts" as="magewire.directives">
+                    <block name="magewire.directive.select"
+                           template="Magewirephp_Magewire::page/js/magewire/directive/select.phtml"/>
+                </container>
+
+                <container name="magewire.extend.scripts" as="magewire.extends">
+                    <block name="magewire.extend.plugin"
+                           template="Magewirephp_Magewire::page/js/magewire/extend/plugin.phtml"/>
                 </container>
             </block>
         </referenceContainer>
