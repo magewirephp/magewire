@@ -33,6 +33,11 @@ class ConfigMagewire
         return $this->isGroupFlag('enable', self::GROUP_LOADER) ?? true;
     }
 
+    public function getLoaderOverlay(): string
+    {
+        return $this->getGroupValue('overlay', self::GROUP_LOADER) ?? 'overlay';
+    }
+
     public function canShowLoaderNotificationMessages(): bool
     {
         return $this->isGroupFlag('enable', self::GROUP_NOTIFICATIONS) ?? true;

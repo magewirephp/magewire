@@ -1,13 +1,10 @@
 # Magewire PHP
-[![Latest Stable Version](http://poser.pugx.org/magewirephp/magewire/v)](https://packagist.org/packages/magewirephp/magewire)
-[![Total Downloads](http://poser.pugx.org/magewirephp/magewire/downloads)](https://packagist.org/packages/magewirephp/magewire)
-![style CI](https://github.styleci.io/repos/414967404/shield?style=flat&branch=main)
-[![License](http://poser.pugx.org/magewirephp/magewire/license)](https://packagist.org/packages/magewirephp/magewire)
-[![sponsors](https://img.shields.io/badge/Sponsors-2-1abc9c)](https://github.com/sponsors/wpoortman)
-
-<a align="center" href="https://wpoortman.lemonsqueezy.com/" target="_blank">
-    <img src="https://user-images.githubusercontent.com/5383956/225342789-ecdbf00d-e2f1-4154-b2fc-700b6a577d91.jpeg" alt="Magewire Kickstart Course"/>
-</a>
+[![Latest Stable Version](https://img.shields.io/packagist/v/magewirephp/magewire)](https://packagist.org/packages/magewirephp/magewire)
+[![Downloads](https://img.shields.io/packagist/dm/magewirephp/magewire)](https://packagist.org/packages/magewirephp/magewire)
+![Style CI](https://github.styleci.io/repos/414967404/shield?style=flat&branch=main)
+[![License](https://img.shields.io/packagist/l/magewirephp/magewire)](https://packagist.org/packages/magewirephp/magewire)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/wpoortman)](https://github.com/sponsors/wpoortman)
+![GitHub contributors](https://img.shields.io/github/contributors/magewirephp/magewire)
 
 Looking for an easy way to build modern, reactive, and dynamic interfaces in Magento 2? Meet Magewire - the
 [Laravel Livewire](https://laravel-livewire.com/) port for Magento 2. With Magewire, you can create engaging user
@@ -46,7 +43,8 @@ a win-win situation for all involved.
 
 |   |   |
 |---|---|
-|<a align="center" href="https://github.com/ootri/" title="ootri" target="_blank"><img width="64" alt="ootri" src="https://avatars.githubusercontent.com/u/3450878?v=4"/></a>|<a align="center" href="https://vendic.nl/" title="Vendic" target="_blank"><img width="64" alt="Vendic" src="https://user-images.githubusercontent.com/5383956/228823594-d3344d87-dadc-4c36-a212-89cba8c7340b.jpg"/></a>|
+|<a align="center" href="https://vendic.nl/" title="Vendic" target="_blank"><img width="64" alt="Vendic" src="https://user-images.githubusercontent.com/5383956/228823594-d3344d87-dadc-4c36-a212-89cba8c7340b.jpg"/></a>|<a align="center" href="https://www.zero1.co.uk/" title="Zero 1" target="_blank"><img width="64" alt="Zero 1" src="https://github.com/magewirephp/magewire/assets/5383956/6f385d3c-87c9-433d-8921-c40de0f00573"/></a>|
+
 
 Click [here](https://github.com/sponsors/wpoortman) to start sponsoring.
 

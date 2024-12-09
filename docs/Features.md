@@ -83,7 +83,7 @@ inside the [Livewire docs](https://laravel-livewire.com/docs/2.x/reference#globa
 - magewire:update
 - magewire:available
 - magewire:loader:start ```(event) => {}```
-- magewire:loader:stop ```(event) => {}```
+- magewire:loader:done ```(event) => {}```
 
 ### Lifecycle Hooks
 [Read all about hooks](https://laravel-livewire.com/docs/2.x/reference#js-hooks)
@@ -494,6 +494,15 @@ Magewire.emit('youCanCallMe', {value: 'hi there'})
 Magewire.emitTo('my.custom.block.name', 'youCanCallMe', {value: 'hi there'})
 ```
 
+[As documented in the Livewire documentation](https://laravel-livewire.com/docs/2.x/events#in-js), it is possible to
+listen to messages emit by components in JavaScript:
+```js
+// Listen for the 'youCanCallMe' event
+Magewire.on('youCanCallMe', event => {
+    console.log(event.value); // outputs 'hi there'
+});
+```
+
 ### Magic Actions Compatibility
 You are able to use magic methods within your emits if this is required. Thanks to this feature you are able to for example refresh a component or set data without having to write this functionality inside your targeted component.
 ```php
@@ -866,7 +875,7 @@ Since version: `1.10.0`
     window.addEventListener('magewire:loader:start', () => {
         document.body.style.cursor = 'wait'
     })
-    window.addEventListener('magewire:loader:stop', () => {
+    window.addEventListener('magewire:loader:done', () => {
         document.body.style.cursor = 'pointer'
     })
 </script>
@@ -1193,7 +1202,7 @@ Show corresponding error messages below the field.
 #### Example 2 (md)
 Display a stack of error messages on above the form.
 ```html
-<?php if ($magewire->hasErrors(): ?>
+<?php if ($magewire->hasErrors()): ?>
 <ul>
     <?php foreach ($magewire->getErrors() as $error): ?>
     <li class="text-red-800"><?= $error ?></li>    
