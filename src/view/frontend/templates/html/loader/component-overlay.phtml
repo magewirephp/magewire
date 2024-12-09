@@ -1,0 +1,33 @@
+<?php declare(strict_types=1);
+/**
+ * Copyright © Willem Poortman 2021-present. All rights reserved.
+ *
+ * Please read the README and LICENSE files for more
+ * details on copyrights and license information.
+ */
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire;
+
+/** @var Magewire $magewireScripts */
+/** @var Escaper $escaper */
+/** @var Template $block */
+
+$magewireScripts = $block->getViewModel();
+?>
+<div <?php /* AlpineJS v2.x */ ?>
+     x-spread="componentOverlay()"
+     <?php /* AlpineJS v3.x */ ?>
+     x-bind="componentOverlay()"
+     role="status"
+     aria-live="polite"
+>
+    <template id="magewire-loader-component-overlay" x-ref="overlay">
+        <div class="absolute -inset-4 bg-white/5 backdrop-blur-[2px] grid cursor-wait">
+            <div class="w-12 h-6 m-auto">
+                <?= $block->getChildHtml('spinner') ?>
+            </div>
+        </div>
+    </template>
+</div>

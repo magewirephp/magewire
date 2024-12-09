@@ -59,6 +59,23 @@
                            template="Magewirephp_Magewire::html/loader/spinner.phtml"/>
                 </block>
 
+                <!-- Loader overlay -->
+                <block name="magewire.loader.component-overlay"
+                       as="component-overlay"
+                       template="Magewirephp_Magewire::html/loader/component-overlay.phtml"
+                >
+                    <arguments>
+                        <argument name="view_model" xsi:type="object">
+                            Magewirephp\Magewire\ViewModel\Magewire
+                        </argument>
+                    </arguments>
+
+                    <!-- Loader spinner SVG -->
+                    <block name="magewire.loader.component-overlay-spinner"
+                           as="spinner"
+                           template="Magewirephp_Magewire::html/loader/spinner.phtml"/>
+                </block>
+
                 <!-- Loader plugins AlpineJS bindings -->
                 <block name="magewire.loader.bindings"
                        as="bindings"
