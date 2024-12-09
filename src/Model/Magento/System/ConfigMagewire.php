@@ -9,7 +9,6 @@
 namespace Magewirephp\Magewire\Model\Magento\System;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Store\Model\ScopeInterface;
 
