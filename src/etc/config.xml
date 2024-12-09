@@ -7,6 +7,7 @@
             <magewire>
                 <loader>
                     <enable>1</enable>
+                    <overlay>overlay</overlay>
                     <enable_notifications>1</enable_notifications>
 
                     <notifications>

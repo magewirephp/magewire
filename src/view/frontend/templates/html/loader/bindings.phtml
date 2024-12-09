@@ -25,6 +25,22 @@
                         return this.active;
                     }
                 };
+            },
+
+            componentOverlay() {
+                return {
+                    ['x-init']() {
+                        Magewire.hook('message.sent', (message, component) => {
+                            const componentOverlayElement = document.getElementById('magewire-loader-component-overlay')
+
+                            if (! component.el.classList.contains('relative')) {
+                                component.el.classList.add('relative')
+                            }
+
+                            component.el.appendChild(componentOverlayElement.content.cloneNode(true))
+                        })
+                    }
+                }
             }
         };
     }
