@@ -44,4 +44,8 @@
             }
         };
     }
+    (() => {
+        const initFn = () => Alpine.data('magewireLoader', magewireLoader);
+        window.Alpine ? initFn() : window.addEventListener('alpine:init', initFn, {once: true})
+    })()
 </script>

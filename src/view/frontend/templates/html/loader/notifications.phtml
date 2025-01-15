@@ -18,13 +18,13 @@ $magewireScripts = $block->getViewModel();
 $magewireConfig = $magewireScripts->getSystemConfig();
 ?>
 <div id="magewire-loader-notifications"
-     x-data="magewireLoaderNotifications()"
+     x-data="magewireLoaderNotifications"
      data-config="<?= $escaper->escapeHtmlAttr(json_encode(['messageHideTimeout' => $magewireConfig->getNotificationMessageFadeoutTimeout()])) ?>"
-     x-init="initialize()"
+     x-init="initialize"
      <?php /* AlpineJS v2.x */ ?>
-     x-spread="notifications()"
+     x-spread="notifications"
      <?php /* AlpineJS v3.x */ ?>
-     x-bind="notifications()"
+     x-bind="notifications"
 >
     <?= $block->getChildHtml('messenger') ?>
 </div>

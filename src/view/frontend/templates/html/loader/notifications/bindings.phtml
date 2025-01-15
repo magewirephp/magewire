@@ -90,4 +90,8 @@
             }
         };
     }
+    (() => {
+        const initFn = () => Alpine.data('magewireLoaderNotifications', magewireLoaderNotifications);
+        window.Alpine ? initFn() : window.addEventListener('alpine:init', initFn, {once: true})
+    })()
 </script>
