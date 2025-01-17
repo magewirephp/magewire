@@ -4,7 +4,7 @@
 Below is a collection of tools that work well together when developing with Magewire.
 
 ## Tools
-- [Livewire Devtools](https://chrome.google.com/webstore/detail/livewire-devtools/ahcmcdmhdcgbpklkdhpejphjekpmhkll) by [Beyond Code](https://beyondco.de/)
+- [Livewire Devtools](https://chromewebstore.google.com/detail/livewire-devtools/dnociedgpnpfnbkafoiilldfhpcjmikd) by [Beyond Code](https://beyondco.de/)
 - [The VarDumper Component](https://symfony.com/doc/current/components/var_dumper.html) by [Symfony](https://symfony.com/)
 - [Ray](https://spatie.be/docs/ray/v1/introduction) by [Spatie](https://spatie.be/)
 
