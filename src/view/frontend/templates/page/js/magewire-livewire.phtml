@@ -23,7 +23,7 @@ use Magewirephp\Magewire\ViewModel\Magewire;
 $magewireScripts = $block->getViewModel();
 ?>
 <?php if ($magewireScripts->pageRequiresMagewire()): ?>
-<script nonce="<?= /* @noEscape */ $block->helper(\Magewirephp\Magewire\Helper\CspNonceProvider::class)->generateNonce() ?>">
+<script nonce="<?= /* @noEscape */ $this->helper(\Magewirephp\Magewire\Helper\CspNonceProvider::class)->generateNonce() ?>">
     document.addEventListener('livewire:available', (event) => {
         const orig = Element.prototype.setAttribute;
 

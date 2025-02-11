@@ -14,7 +14,7 @@ use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\ViewModel\Magewire;
 ?>
-<script nonce="<?= /* @noEscape */ $block->helper(\Magewirephp\Magewire\Helper\CspNonceProvider::class)->generateNonce() ?>">
+<script nonce="<?= /* @noEscape */ $this->helper(\Magewirephp\Magewire\Helper\CspNonceProvider::class)->generateNonce() ?>">
     Magewire.directive('select', (element, directive, component) => {
         if (element.tagName !== 'SELECT') {
             console.error('Magewire: [wire:select] can only be applied on elements of type select.', element)
