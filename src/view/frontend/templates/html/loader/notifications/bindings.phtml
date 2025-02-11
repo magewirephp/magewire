@@ -1,3 +1,11 @@
+<?php
+
+use Magewirephp\Magewire\Model\Action\SyncInput;
+use Magewirephp\Magewire\Model\Action\CallMethod;
+use Magewirephp\Magewire\Model\Action\FireEvent;
+
+
+?>
 <script>
     function magewireLoaderNotifications(config = {}) {
         return {
@@ -87,6 +95,44 @@
 
             messenger() {
                 return {};
+            },
+
+            getButtonClasses() {
+                const message = this.message;
+                return {
+                    'sync-input' : message.update.type === '<?= /** @noEscape */ SyncInput::ACTION ?>',
+                    'call-method': message.update.type === '<?= /** @noEscape */ CallMethod::ACTION ?>',
+                    'fire-event' : message.update.type === '<?= /** @noEscape */ FireEvent::ACTION ?>',
+
+                    'message-failure': message.success === false,
+                    'message-success': message.success === true
+                }
+            },
+
+            inactivateMessage() {
+                this.message.active = false
+            },
+
+            getUnsuccessfulBorderClasses() {
+                return {
+                    'border-red-600 bg-red-100': this.message.success === false
+                }
+            },
+
+            getTitleClasses() {
+                return {
+                    'font-bold': (this.position <= 1 && this.loaders.length >= 3) || (this.position == 0 && this.loaders.length >= 1),
+                    'text-gray-400 uppercase': this.position === 0 && this.loaders.length > 2,
+                    'text-red-800': this.message.success === false
+                }
+            },
+
+            isSuccessMessage() {
+                return this.message.success === true
+            },
+
+            isNotSuccessMessage() {
+                return this.message.success === false
             }
         };
     }
