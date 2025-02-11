@@ -17,7 +17,7 @@ use Magewirephp\Magewire\ViewModel\Magewire;
 $magewireScripts = $block->getViewModel();
 $messages = $block->getData('status_messages');
 ?>
-<script>
+<script nonce="<?= /* @noEscape */ $block->helper(\Magewirephp\Magewire\Helper\CspNonceProvider::class)->generateNonce() ?>">
     'use strict';
 
     Magewire.onPageExpired(() => {

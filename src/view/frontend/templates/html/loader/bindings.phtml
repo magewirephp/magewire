@@ -1,4 +1,4 @@
-<script>
+<script nonce="<?= /* @noEscape */ $block->helper(\Magewirephp\Magewire\Helper\CspNonceProvider::class)->generateNonce() ?>">
     function magewireLoader() {
         return {
             active: false,

@@ -1,4 +1,4 @@
-<script>
+<script nonce="<?= /* @noEscape */ $block->helper(\Magewirephp\Magewire\Helper\CspNonceProvider::class)->generateNonce() ?>">
     'use strict';
 
     Magewire.hasPlugin = function(name) {
