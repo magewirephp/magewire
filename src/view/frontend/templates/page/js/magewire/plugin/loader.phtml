@@ -22,7 +22,7 @@ use Magewirephp\Magewire\ViewModel\Magewire;
 $magewireScripts = $block->getViewModel();
 ?>
 <?php if ($magewireScripts->pageRequiresMagewire() && $magewireScripts->getSystemConfig()->pageRequiresLoaderPluginScript()): ?>
-    <script nonce="<?= /* @noEscape */ $this->helper(\Magewirephp\Magewire\Helper\CspNonceProvider::class)->generateNonce() ?>">
+    <script<?= /* @noEscape */ $block->getViewModelCsp()->generateNonce(true) ?>>
         'use strict';
 
         (() => {

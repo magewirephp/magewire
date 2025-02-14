@@ -6,7 +6,7 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
 
 
 ?>
-<script nonce="<?= /* @noEscape */ $this->helper(\Magewirephp\Magewire\Helper\CspNonceProvider::class)->generateNonce() ?>">
+<script<?= /* @noEscape */ $block->getViewModelCsp()->generateNonce(true) ?>>
     function magewireLoaderNotifications(config = {}) {
         return {
             messages: [],

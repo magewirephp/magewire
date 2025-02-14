@@ -19,7 +19,7 @@ use Magewirephp\Magewire\ViewModel\Magewire;
 $magewireScripts = $block->getViewModel();
 ?>
 <?php if ($magewireScripts->pageRequiresMagewire()): ?>
-    <script nonce="<?= /* @noEscape */ $this->helper(\Magewirephp\Magewire\Helper\CspNonceProvider::class)->generateNonce() ?>">
+    <script<?= /* @noEscape */ $block->getViewModelCsp()->generateNonce(true) ?>>
         'use strict';
 
         if (window.magewire) {
@@ -100,7 +100,7 @@ $magewireScripts = $block->getViewModel();
     <?php /* Include a space specified to extend the Magewire object with addition methods. */ ?>
     <?= /* @noEscape */ $block->getChildHtml('magewire.extends') ?>
 
-    <script nonce="<?= /* @noEscape */ $this->helper(\Magewirephp\Magewire\Helper\CspNonceProvider::class)->generateNonce() ?>">
+    <script<?= /* @noEscape */ $block->getViewModelCsp()->generateNonce(true) ?>>
         Magewire.dispatchEvent('available')
     </script>
 
