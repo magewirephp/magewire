@@ -1,12 +1,25 @@
 <?php
+/**
+ * Copyright © Willem Poortman 2021-present. All rights reserved.
+ *
+ * Please read the README and LICENSE files for more
+ * details on copyrights and license information.
+ */
 
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Model\Action\SyncInput;
 use Magewirephp\Magewire\Model\Action\CallMethod;
 use Magewirephp\Magewire\Model\Action\FireEvent;
+use Magewirephp\Magewire\ViewModel\Magewire;
 
+/** @var Template $block */
+/** @var Magewire $magewireScripts */
 
+$magewireScripts = $block->getViewModel();
 ?>
-<script<?= /* @noEscape */ $block->getViewModelCsp()->generateNonce(true) ?>>
+<script<?= /* @noEscape */ $magewireScripts->csp()->generateNonceAttribute() ?>>
     function magewireLoaderNotifications(config = {}) {
         return {
             messages: [],
@@ -136,8 +149,9 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
             }
         };
     }
+
     (() => {
         const initFn = () => Alpine.data('magewireLoaderNotifications', magewireLoaderNotifications);
-        window.Alpine ? initFn() : window.addEventListener('alpine:init', initFn, {once: true})
+        window.Alpine ? initFn() : window.addEventListener('alpine:init', initFn, { once: true })
     })()
 </script>

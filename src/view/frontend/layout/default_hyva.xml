@@ -11,7 +11,6 @@
                     <argument name="view_model" xsi:type="object">
                         Magewirephp\Magewire\ViewModel\Magewire
                     </argument>
-                    <argument name="view_model_csp" xsi:type="object">Magewirephp\Magewire\ViewModel\Csp</argument>
                 </arguments>
 
                 <!-- Loader notifications plugin -->
@@ -34,17 +33,15 @@
                         <!-- Message item loader spinner SVG -->
                         <block name="magewire.loader.notifications.messenger.spinner"
                                as="spinner"
-                               template="Magewirephp_Magewire::html/loader/spinner.phtml"/>
+                               template="Magewirephp_Magewire::html/loader/spinner.phtml"
+                        />
                     </block>
 
                     <!-- Loader notification AlpineJS bindings -->
                     <block name="magewire.loader.notifications.bindings"
                            as="bindings"
-                           template="Magewirephp_Magewire::html/loader/notifications/bindings.phtml">
-                        <arguments>
-                            <argument name="view_model_csp" xsi:type="object">Magewirephp\Magewire\ViewModel\Csp</argument>
-                        </arguments>
-                    </block>
+                           template="Magewirephp_Magewire::html/loader/notifications/bindings.phtml"
+                    />
                 </block>
 
                 <!-- Loader overlay -->
@@ -61,7 +58,8 @@
                     <!-- Loader spinner SVG -->
                     <block name="magewire.loader.overlay-spinner"
                            as="spinner"
-                           template="Magewirephp_Magewire::html/loader/spinner.phtml"/>
+                           template="Magewirephp_Magewire::html/loader/spinner.phtml"
+                    />
                 </block>
 
                 <!-- Loader overlay -->
@@ -70,37 +68,33 @@
                        template="Magewirephp_Magewire::html/loader/component-overlay.phtml"
                 >
                     <arguments>
-                        <argument name="view_model" xsi:type="object">
-                            Magewirephp\Magewire\ViewModel\Magewire
-                        </argument>
+                        <argument name="view_model" xsi:type="object">Magewirephp\Magewire\ViewModel\Magewire</argument>
                     </arguments>
 
                     <!-- Loader spinner SVG -->
                     <block name="magewire.loader.component-overlay-spinner"
                            as="spinner"
-                           template="Magewirephp_Magewire::html/loader/spinner.phtml"/>
+                           template="Magewirephp_Magewire::html/loader/spinner.phtml"
+                    />
                 </block>
 
                 <!-- Loader plugins AlpineJS bindings -->
                 <block name="magewire.loader.bindings"
                        as="bindings"
-                       template="Magewirephp_Magewire::html/loader/bindings.phtml">
-                    <arguments>
-                        <argument name="view_model_csp" xsi:type="object">Magewirephp\Magewire\ViewModel\Csp</argument>
-                    </arguments>
-                </block>
+                       template="Magewirephp_Magewire::html/loader/bindings.phtml"
+                />
             </block>
         </referenceContainer>
 
         <referenceContainer name="before.body.end">
             <block name="magewire.livewire"
                    before="script-alpine-js"
-                   template="Magewirephp_Magewire::page/js/magewire-livewire.phtml">
+                   template="Magewirephp_Magewire::page/js/magewire-livewire.phtml"
+            >
                 <arguments>
                     <argument name="view_model" xsi:type="object">
                         Magewirephp\Magewire\ViewModel\Magewire
                     </argument>
-                    <argument name="view_model_csp" xsi:type="object">Magewirephp\Magewire\ViewModel\Csp</argument>
                 </arguments>
             </block>
 
@@ -112,19 +106,18 @@
                     <argument name="view_model" xsi:type="object">
                         Magewirephp\Magewire\ViewModel\Magewire
                     </argument>
-                    <argument name="view_model_csp" xsi:type="object">Magewirephp\Magewire\ViewModel\Csp</argument>
                 </arguments>
 
                 <container name="magewire.plugin.scripts" as="magewire.plugins">
                     <!-- Inject the Magewire core Loader plugin -->
                     <block name="magewire.plugin.loader"
                            ifconfig="dev/magewire/loader/enable"
-                           template="Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml">
+                           template="Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml"
+                    >
                         <arguments>
                             <argument name="view_model" xsi:type="object">
                                 Magewirephp\Magewire\ViewModel\Magewire
                             </argument>
-                            <argument name="view_model_csp" xsi:type="object">Magewirephp\Magewire\ViewModel\Csp</argument>
                         </arguments>
                     </block>
 
@@ -135,7 +128,6 @@
                             <argument name="view_model" xsi:type="object">
                                 Magewirephp\Magewire\ViewModel\Magewire
                             </argument>
-                            <argument name="view_model_csp" xsi:type="object">Magewirephp\Magewire\ViewModel\Csp</argument>
 
                             <!-- Specify specific messages for each HTTP status code. -->
                             <argument name="status_messages" xsi:type="array">
@@ -149,20 +141,14 @@
 
                 <container name="magewire.directive.scripts" as="magewire.directives">
                     <block name="magewire.directive.select"
-                           template="Magewirephp_Magewire::page/js/magewire/directive/select.phtml">
-                            <arguments>
-                                <argument name="view_model_csp" xsi:type="object">Magewirephp\Magewire\ViewModel\Csp</argument>
-                            </arguments>
-                    </block>
+                           template="Magewirephp_Magewire::page/js/magewire/directive/select.phtml"
+                    />
                 </container>
 
                 <container name="magewire.extend.scripts" as="magewire.extends">
                     <block name="magewire.extend.plugin"
-                           template="Magewirephp_Magewire::page/js/magewire/extend/plugin.phtml">
-                        <arguments>
-                            <argument name="view_model_csp" xsi:type="object">Magewirephp\Magewire\ViewModel\Csp</argument>
-                        </arguments>
-                    </block>
+                           template="Magewirephp_Magewire::page/js/magewire/extend/plugin.phtml"
+                    />
                 </container>
             </block>
         </referenceContainer>

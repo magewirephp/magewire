@@ -1,4 +1,22 @@
-<script<?= /* @noEscape */ $block->getViewModelCsp()->generateNonce(true) ?>>
+<?php
+/**
+ * Copyright © Willem Poortman 2021-present. All rights reserved.
+ *
+ * Please read the README and LICENSE files for more
+ * details on copyrights and license information.
+ */
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire;
+
+/** @var Template $block */
+/** @var Magewire $magewireScripts */
+
+$magewireScripts = $block->getViewModel();
+?>
+<script<?= /* @noEscape */ $magewireScripts->csp()->generateNonceAttribute() ?>>
     function magewireLoader() {
         return {
             active: false,
@@ -44,6 +62,7 @@
             }
         };
     }
+
     (() => {
         const initFn = () => Alpine.data('magewireLoader', magewireLoader);
         window.Alpine ? initFn() : window.addEventListener('alpine:init', initFn, {once: true})

@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -6,15 +6,15 @@
  * details on copyrights and license information.
  */
 
-/** @var Magewire $magewireScripts */
-/** @var Escaper $escaper */
-/** @var Template $block */
+declare(strict_types=1);
 
-use Magento\Framework\Escaper;
+/** @var Template $block */
+/** @var Magewire $magewireScripts */
+
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\ViewModel\Magewire;
 ?>
-<script<?= /* @noEscape */ $block->getViewModelCsp()->generateNonce(true) ?>>
+<script<?= /* @noEscape */ $magewireScripts->csp()->generateNonceAttribute() ?>>
     Magewire.directive('select', (element, directive, component) => {
         if (element.tagName !== 'SELECT') {
             console.error('Magewire: [wire:select] can only be applied on elements of type select.', element)
