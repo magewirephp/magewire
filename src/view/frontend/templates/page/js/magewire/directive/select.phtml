@@ -13,6 +13,8 @@ declare(strict_types=1);
 
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\ViewModel\Magewire;
+
+$magewireScripts = $block->getViewModel();
 ?>
 <script<?= /* @noEscape */ $magewireScripts->csp()->generateNonceAttribute() ?>>
     Magewire.directive('select', (element, directive, component) => {
