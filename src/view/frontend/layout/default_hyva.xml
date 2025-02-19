@@ -8,9 +8,7 @@
                    template="Magewirephp_Magewire::html/loader.phtml"
             >
                 <arguments>
-                    <argument name="view_model" xsi:type="object">
-                        Magewirephp\Magewire\ViewModel\Magewire
-                    </argument>
+                    <argument name="view_model" xsi:type="object">Magewirephp\Magewire\ViewModel\Magewire</argument>
                 </arguments>
 
                 <!-- Loader notifications plugin -->
@@ -20,9 +18,7 @@
                        template="Magewirephp_Magewire::html/loader/notifications.phtml"
                 >
                     <arguments>
-                        <argument name="view_model" xsi:type="object">
-                            Magewirephp\Magewire\ViewModel\Magewire
-                        </argument>
+                        <argument name="view_model" xsi:type="object">Magewirephp\Magewire\ViewModel\Magewire</argument>
                     </arguments>
 
                     <!-- Loader plugins AlpineJS bindings -->
@@ -40,8 +36,11 @@
                     <!-- Loader notification AlpineJS bindings -->
                     <block name="magewire.loader.notifications.bindings"
                            as="bindings"
-                           template="Magewirephp_Magewire::html/loader/notifications/bindings.phtml"
-                    />
+                           template="Magewirephp_Magewire::html/loader/notifications/bindings.phtml">
+                        <arguments>
+                            <argument name="view_model" xsi:type="object">Magewirephp\Magewire\ViewModel\Magewire</argument>
+                        </arguments>
+                    </block>
                 </block>
 
                 <!-- Loader overlay -->
@@ -50,9 +49,7 @@
                        template="Magewirephp_Magewire::html/loader/overlay.phtml"
                 >
                     <arguments>
-                        <argument name="view_model" xsi:type="object">
-                            Magewirephp\Magewire\ViewModel\Magewire
-                        </argument>
+                        <argument name="view_model" xsi:type="object">Magewirephp\Magewire\ViewModel\Magewire</argument>
                     </arguments>
 
                     <!-- Loader spinner SVG -->
@@ -67,10 +64,6 @@
                        as="component-overlay"
                        template="Magewirephp_Magewire::html/loader/component-overlay.phtml"
                 >
-                    <arguments>
-                        <argument name="view_model" xsi:type="object">Magewirephp\Magewire\ViewModel\Magewire</argument>
-                    </arguments>
-
                     <!-- Loader spinner SVG -->
                     <block name="magewire.loader.component-overlay-spinner"
                            as="spinner"
@@ -81,8 +74,11 @@
                 <!-- Loader plugins AlpineJS bindings -->
                 <block name="magewire.loader.bindings"
                        as="bindings"
-                       template="Magewirephp_Magewire::html/loader/bindings.phtml"
-                />
+                       template="Magewirephp_Magewire::html/loader/bindings.phtml">
+                    <arguments>
+                        <argument name="view_model" xsi:type="object">Magewirephp\Magewire\ViewModel\Magewire</argument>
+                    </arguments>
+                </block>
             </block>
         </referenceContainer>
 
@@ -92,9 +88,7 @@
                    template="Magewirephp_Magewire::page/js/magewire-livewire.phtml"
             >
                 <arguments>
-                    <argument name="view_model" xsi:type="object">
-                        Magewirephp\Magewire\ViewModel\Magewire
-                    </argument>
+                    <argument name="view_model" xsi:type="object">Magewirephp\Magewire\ViewModel\Magewire</argument>
                 </arguments>
             </block>
 
@@ -103,9 +97,7 @@
                    template="Magewirephp_Magewire::page/js/magewire-initialize.phtml"
             >
                 <arguments>
-                    <argument name="view_model" xsi:type="object">
-                        Magewirephp\Magewire\ViewModel\Magewire
-                    </argument>
+                    <argument name="view_model" xsi:type="object">Magewirephp\Magewire\ViewModel\Magewire</argument>
                 </arguments>
 
                 <container name="magewire.plugin.scripts" as="magewire.plugins">
@@ -115,9 +107,7 @@
                            template="Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml"
                     >
                         <arguments>
-                            <argument name="view_model" xsi:type="object">
-                                Magewirephp\Magewire\ViewModel\Magewire
-                            </argument>
+                            <argument name="view_model" xsi:type="object">Magewirephp\Magewire\ViewModel\Magewire</argument>
                         </arguments>
                     </block>
 
@@ -125,9 +115,7 @@
                            template="Magewirephp_Magewire::page/js/magewire/plugin/error.phtml"
                     >
                         <arguments>
-                            <argument name="view_model" xsi:type="object">
-                                Magewirephp\Magewire\ViewModel\Magewire
-                            </argument>
+                            <argument name="view_model" xsi:type="object">Magewirephp\Magewire\ViewModel\Magewire</argument>
 
                             <!-- Specify specific messages for each HTTP status code. -->
                             <argument name="status_messages" xsi:type="array">
@@ -141,14 +129,20 @@
 
                 <container name="magewire.directive.scripts" as="magewire.directives">
                     <block name="magewire.directive.select"
-                           template="Magewirephp_Magewire::page/js/magewire/directive/select.phtml"
-                    />
+                           template="Magewirephp_Magewire::page/js/magewire/directive/select.phtml">
+                        <arguments>
+                            <argument name="view_model" xsi:type="object">Magewirephp\Magewire\ViewModel\Magewire</argument>
+                        </arguments>
+                    </block>
                 </container>
 
                 <container name="magewire.extend.scripts" as="magewire.extends">
                     <block name="magewire.extend.plugin"
-                           template="Magewirephp_Magewire::page/js/magewire/extend/plugin.phtml"
-                    />
+                           template="Magewirephp_Magewire::page/js/magewire/extend/plugin.phtml">
+                        <arguments>
+                            <argument name="view_model" xsi:type="object">Magewirephp\Magewire\ViewModel\Magewire</argument>
+                        </arguments>
+                    </block>
                 </container>
             </block>
         </referenceContainer>
