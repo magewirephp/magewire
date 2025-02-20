@@ -20,11 +20,11 @@ $magewireSystemConfig = $magewireScripts->getSystemConfig();
 ?>
 <?php if ($magewireScripts->pageRequiresMagewire()): ?>
     <div id="magewire-loader"
-         x-data="magewireLoader()"
+         x-data="magewireLoader"
          <?php /* AlpineJS v2.x */ ?>
-         x-spread="loader()"
+         x-spread="loader"
          <?php /* AlpineJS v3.x */ ?>
-         x-bind="loader()"
+         x-bind="loader"
          role="status"
          aria-live="polite"
     >

@@ -19,24 +19,17 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
 ?>
 <div class="magewire.messenger z-50 w-full fixed top-0 right-0 md:max-w-xs">
     <div class="space-y-6 flex flex-col space-y-3 px-3 md:flex-col-reverse">
-        <template x-for="(message, index, messages) in messageList()" x-bind:key="index">
+        <template x-for="(message, index, messages) in messageList" x-bind:key="index">
             <div role="button"
                  aria-busy="true"
                  aria-label="off"
                  class="magewire.notification.message relative"
-                 x-bind:class="{
-                     'sync-input' : message.update.type === '<?= /** @noEscape */ SyncInput::ACTION ?>',
-                     'call-method': message.update.type === '<?= /** @noEscape */ CallMethod::ACTION ?>',
-                     'fire-event' : message.update.type === '<?= /** @noEscape */ FireEvent::ACTION ?>',
-
-                     'message-failure': message.success === false,
-                     'message-success': message.success === true
-                 }"
+                 x-bind:class="getButtonClasses"
                  x-transition:leave="transition ease-in duration-600"
                  x-transition:leave-start="opacity-100 scale-100"
                  x-transition:leave-end="opacity-0 scale-80"
                  x-show="message.active"
-                 x-on:click.once="message.active = false"
+                 x-on:click.once="inactivateMessage"
             >
                 <div class="relative w-full
                             rounded-md border border-gray-300
@@ -44,20 +37,14 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                             py-3 px-5 md:py-4 md:pl-6 md:pr-4
                             shadow-lg
                             md:max-w-sm"
-                     x-bind:class="{
-                         'border-red-600 bg-red-100': message.success === false
-                     }"
+                     x-bind:class="getUnsuccessfulBorderClasses"
                 >
                     <div class="flex text-left text-sm space-x-0.5 text-gray-900">
                         <div class="flex-grow w-0 space-y-1">
                             <template x-for="(title, position, loaders) in message.loader" :key="position">
                                 <p class="hyphens-auto leading-tight"
                                    x-text="title"
-                                   x-bind:class="{
-                                       'font-bold': (position <= 1 && loaders.length >= 3) || (position == 0 && loaders.length >= 1),
-                                       'text-gray-400 uppercase': position === 0 && loaders.length > 2,
-                                       'text-red-800': message.success === false
-                                   }"
+                                   x-bind:class="getTitleClasses"
                                 >
                                     <!-- Title placeholder -->
                                 </p>
@@ -85,7 +72,7 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                                      viewBox="0 0 24 24"
                                      xmlns="http://www.w3.org/2000/svg"
                                      aria-hidden="true"
-                                     x-show="message.success === true"
+                                     x-show="isSuccessMessage"
                                      x-transition:enter="transition ease-in duration-200"
                                      x-transition:enter-start="scale-0"
                                      x-transition:enter-end="scale-100"
@@ -100,7 +87,7 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                                      viewBox="0 0 24 24"
                                      xmlns="http://www.w3.org/2000/svg"
                                      aria-hidden="true"
-                                     x-show="message.success === false"
+                                     x-show="isNotSuccessMessage"
                                      x-transition:enter="transition ease-in duration-200"
                                      x-transition:enter-start="scale-0"
                                      x-transition:enter-end="scale-100"
