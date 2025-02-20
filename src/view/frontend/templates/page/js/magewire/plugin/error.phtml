@@ -1,10 +1,12 @@
-<?php declare(strict_types=1);
+<?php
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
  * Please read the README and LICENSE files for more
  * details on copyrights and license information.
  */
+
+declare(strict_types=1);
 
 /** @var Magewire $magewireScripts */
 /** @var Escaper $escaper */
@@ -17,9 +19,7 @@ use Magewirephp\Magewire\ViewModel\Magewire;
 $magewireScripts = $block->getViewModel();
 $messages = $block->getData('status_messages');
 ?>
-<script>
-    'use strict';
-
+<script<?= /* @noEscape */ $magewireScripts->csp()->generateNonceAttribute() ?>>
     Magewire.onPageExpired(() => {
         alert('<?= $escaper->escapeJs(__($messages[419] ?? 'Your session has expired due to inactivity.')) ?>')
         window.location.reload()

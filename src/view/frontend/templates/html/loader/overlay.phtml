@@ -6,15 +6,12 @@
  * details on copyrights and license information.
  */
 
-/** @var Magewire $magewireScripts */
 /** @var Escaper $escaper */
 /** @var Template $block */
 
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
-use Magewirephp\Magewire\ViewModel\Magewire;
 
-$magewireScripts = $block->getViewModel();
 ?>
 <div class="magewire-loader-overlay
             fixed
@@ -23,9 +20,9 @@ $magewireScripts = $block->getViewModel();
             overflow-hidden
             bg-white bg-opacity-90"
      <?php /* AlpineJS v2.x */ ?>
-     x-spread="overlay()"
+     x-spread="overlay"
      <?php /* AlpineJS v3.x */ ?>
-     x-bind="overlay()"
+     x-bind="overlay"
      x-cloak
      x-transition:enter="transition duration-300"
      x-transition:enter-start="opacity-0"

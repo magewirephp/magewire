@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -9,22 +9,25 @@
  * @version 2.10.7
  * @author Caleb Porzio (Laravel Livewire)
  * @link https://laravel-livewire.com/
- *
- * @var Escaper $escaper
- * @var Template $block
- * @var Magewire $magewireScripts
- * @var ViewModelRegistry $viewModels
  */
+
+declare(strict_types=1);
 
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\ViewModel\Magewire;
 
+/**
+ * @var Escaper $escaper
+ * @var Template $block
+ * @var Magewire $magewireScripts
+ */
+
 $magewireScripts = $block->getViewModel();
 ?>
 <?php if ($magewireScripts->pageRequiresMagewire()): ?>
-<script>
-    document.addEventListener('livewire:available', (event) => {
+<script<?= /* @noEscape */ $magewireScripts->csp()->generateNonceAttribute() ?>>
+    document.addEventListener('livewire:available', () => {
         const orig = Element.prototype.setAttribute;
 
         Element.prototype.setAttribute = function patchLivewireSetAttribute(name, value) {

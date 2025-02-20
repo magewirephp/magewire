@@ -30,6 +30,7 @@ to learn more and start making your Magento 2 store more dynamic and engaging to
 
 ## Documentation
 - [Work with Alpine.js](./docs/Alpine.md)
+- [Content Security Policy](./docs/ContentSecurityPolicy.md)
 - [Features & Examples](./docs/Features.md)
 - [More about Compatibility](./docs/Compatibility.md)
 - [More about Components](./docs/Component.md)
