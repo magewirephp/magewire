@@ -11,6 +11,9 @@ if you use payment buttons on product pages.
 By default it was possible to add scripts to your existing code which could be loaded side-by-side with your `.phtml` files.
 Livewire would parse the new dom and if scripts where added evaluate them inline. This does not work when CSP is enabled.
 
+> [!IMPORTANT]  
+> You need at least Alpine JS version 3 for this.
+
 The solution is to separate your `scripts` (for instance Alpine) and `.phtml` into two files, where the scripts are loaded on page load.
 In Alpine there is a container `magewire.plugin.scripts` which will be loaded on the first page load.
 
@@ -22,7 +25,7 @@ This nonce is also added to the `Content-Security-Policy` header. Your browser w
 
 ```diff
 -<script>
-+<script nonce="<?= /* @noEscape */ $block->helper(\Magewirephp\Magewire\Helper\CspNonceProvider::class)->generateNonce() ?>">
++<script<?= /* @noEscape */ $magewireScripts->csp()->generateNonceAttribute() ?>>
 ```
 
 Scripts must be seperated from the dynamic `phtml` files. See [#Example]
@@ -127,7 +130,7 @@ Make sure to load the `-csp` version of alpine on csp enforced pages.
 `awesome-js.phtml`
 ```php
 ?>
-<script nonce="<?= /* @noEscape */ $block->helper(\Magewirephp\Magewire\Helper\CspNonceProvider::class)->generateNonce() ?>">
+<script<?= /* @noEscape */ $magewireScripts->csp()->generateNonceAttribute() ?>>
     function awesome() {
         const $wire = this.$wire;
         
