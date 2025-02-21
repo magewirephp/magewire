@@ -22,9 +22,11 @@ use Magewirephp\Magewire\ViewModel\Magewire;
      aria-live="polite"
 >
     <template id="magewire-loader-component-overlay" x-ref="overlay">
-        <div class="absolute -inset-4 bg-white/5 backdrop-blur-[2px] grid cursor-wait">
-            <div class="w-12 h-6 m-auto">
-                <?= $block->getChildHtml('spinner') ?>
+        <div class="absolute -inset-4 grid cursor-wait place-items-center">
+            <div class="w-20 h-20 p-3 bg-white/90 rounded-full flex items-center justify-center shadow-md">
+                <div class="w-9 h-9">
+                    <?= $block->getChildHtml('spinner') ?>
+                </div>
             </div>
         </div>
     </template>
