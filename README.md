@@ -14,9 +14,17 @@ features to your store without a full Javascript framework. Try Magewire today a
 #### Join the official Discord server
 [![Discord](https://dcbadge.vercel.app/api/server/RM5nnK5wxj)](https://discord.gg/RM5nnK5wxj)
 
-#### Follow on Twitter
-[![Twitter](https://img.shields.io/twitter/url/https/twitter.com/magewirephp.svg?style=social&label=Follow:%20%40magewirephp)](https://twitter.com/magewirephp)
-[![Twitter](https://img.shields.io/twitter/url/https/twitter.com/wpoortman.svg?style=social&label=Author:%20%40wpoortman)](https://twitter.com/wpoortman)
+## Updates
+I've decided to move away from X (formerly Twitter). Going forward, all updates will be shared exclusively on Discord while I search for a platform that is both popular among developers and suitable for sharing technical updates.
+
+#### Magewire V3
+After over a year of working on Magewire V3, the release is finally approaching. While there are still some key technical decisions to be made, once they’re resolved, nothing will stand in the way of the first alpha release.
+
+I've been sharing more in-depth videos on my [personal YouTube channel](https://www.youtube.com/@wpoortman) and invite you to check them out if you're interested.
+
+In the meantime, I’m looking to expand the V3 team with passionate contributors willing to invest their time and become core contributors. There are opportunities at all levels—from writing tests and documentation to ensuring feature compatibility.
+
+If you're interested, feel free to reach out to me on Discord or LinkedIn.
 
 ## Installation
 ```
