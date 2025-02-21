@@ -10,9 +10,9 @@ namespace Magewirephp\Magewire\Model\Magento\Config\Source;
 
 class LoaderOverlay implements \Magento\Framework\Data\OptionSourceInterface
 {
-    /**
-     * @param array<string, string> $options
-     */
+    /** @var array<string, string> $options */
+    private array $options;
+
     public function __construct(
         array $options = []
     ) {
