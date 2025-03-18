@@ -34,8 +34,6 @@ $magewireScripts = $block->getViewModel();
         window.Livewire = window.magewire
         window.Magewire = window.magewire
         window.livewire_app_url = '<?= $escaper->escapeUrl($magewireScripts->getApplicationUrl()) ?>'
-        <?php /* Still Hyvä dependent, will change in the future to spread compatibility. */ ?>
-        window.livewire_token = window.hyva.getFormKey()
 
         <?php /* Make sure Magewire loads first. */ ?>
         if (window.Alpine) {
@@ -53,6 +51,9 @@ $magewireScripts = $block->getViewModel();
             const startMagewireOnce = () => {
                 document.removeEventListener('DOMContentLoaded', startMagewireOnce)
                 window.removeEventListener('alpine:init', startMagewireOnce)
+                <?php /* Still Hyvä dependent, will change in the future to spread compatibility. */ ?>
+                window.livewire_token = window.hyva.getFormKey()
+
                 window.magewire.start()
             }
 
