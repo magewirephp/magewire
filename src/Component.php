@@ -110,7 +110,7 @@ abstract class Component implements ArgumentInterface
      * @param bool $boot
      * @return $this
      */
-    public function reset(array $specific = null, bool $boot = false): self
+    public function reset(?array $specific = null, bool $boot = false): self
     {
         $properties = array_diff($specific ?? array_keys($this->getPublicProperties()), self::RESERVED_PROPERTIES);
         $instance = ObjectManager::getInstance()->create(static::class);

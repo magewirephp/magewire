@@ -66,7 +66,7 @@ class Property
      * Use a callback function to assign component property
      * values except default reserved properties.
      */
-    public function assign(callable $callback, Component $component, array $data = null, bool $merge = true): void
+    public function assign(callable $callback, Component $component, ?array $data = null, bool $merge = true): void
     {
         $publicProperties = $component->getPublicProperties(true);
         $data = $data === null ? $publicProperties : ($merge ? array_merge($publicProperties, $data) : $data);

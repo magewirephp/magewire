@@ -39,7 +39,7 @@ abstract class Pagination extends Component implements PaginationInterface
      * @param string|null $template
      * @return string
      */
-    public function renderPagination(string $template = null): string
+    public function renderPagination(?string $template = null): string
     {
         try {
             if (($parent = $this->getParent()) === null) {

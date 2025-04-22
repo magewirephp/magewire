@@ -27,7 +27,7 @@ class ComponentFactory
         $this->layout = $layout;
     }
 
-    public function create(Component $component = null, array $data = []): Component
+    public function create(?Component $component = null, array $data = []): Component
     {
         $class = $component ? get_class($component) : Component::class;
 

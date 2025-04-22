@@ -16,7 +16,7 @@ class RootTagMissingFromViewException extends MagewireException
      * @param Exception|null $cause
      * @param int $code
      */
-    public function __construct(Exception $cause = null, $code = 0)
+    public function __construct(?Exception $cause = null, $code = 0)
     {
         parent::__construct(__('Missing root tag when trying to render the Magewire component'), $cause, $code);
     }

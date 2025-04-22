@@ -60,7 +60,7 @@ class ConfigMagewire
      */
     public function getGroupValue(
         string $path,
-        string $group = null,
+        ?string $group = null,
         string $scopeType = ScopeInterface::SCOPE_STORE,
         $scopeCode = null
     ) {
@@ -72,14 +72,14 @@ class ConfigMagewire
      */
     public function isGroupFlag(
         string $path,
-        string $group = null,
+        ?string $group = null,
         string $scopeType = ScopeInterface::SCOPE_STORE,
         $scopeCode = null
     ): bool {
         return $this->scopeConfig->isSetFlag($this->createPath($path, $group), $scopeType, $scopeCode);
     }
 
-    protected function createPath(string $path, string $group = null)
+    protected function createPath(string $path, ?string $group = null)
     {
         return sprintf('dev/%s/%s', $group ? 'magewire/' . $group : 'magewire', trim($path));
     }
