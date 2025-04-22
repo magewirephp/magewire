@@ -44,7 +44,7 @@ class Magewire implements ArgumentInterface
         StoreManagerInterface $storeManager,
         LayoutRenderLifecycle $layoutRenderLifecycle,
         MagewireSystemConfig $magewireSystemConfig,
-        CspViewModel $cspViewModel = null
+        ?CspViewModel $cspViewModel = null
     ) {
         $this->formKey = $formKey;
         $this->applicationState = $applicationState;

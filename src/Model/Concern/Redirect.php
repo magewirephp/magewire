@@ -17,7 +17,7 @@ trait Redirect
     /**
      * Redirect away from the current page.
      */
-    public function redirect(string $path, array $params = null, bool $secure = true): RedirectElement
+    public function redirect(string $path, ?array $params = null, bool $secure = true): RedirectElement
     {
         return $this->redirect = new RedirectElement($path, $params, $secure);
     }

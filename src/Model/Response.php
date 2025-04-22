@@ -39,7 +39,7 @@ class Response implements ResponseInterface
         return $this;
     }
 
-    public function getFingerprint(string $index = null)
+    public function getFingerprint(?string $index = null)
     {
         if ($index !== null && is_array($this->memo)) {
             return $this->fingerprint[$index] ?? null;
@@ -54,7 +54,7 @@ class Response implements ResponseInterface
         return $this;
     }
 
-    public function getServerMemo(string $index = null)
+    public function getServerMemo(?string $index = null)
     {
         if ($index !== null && is_array($this->memo)) {
             return $this->memo[$index] ?? null;
@@ -69,7 +69,7 @@ class Response implements ResponseInterface
         return $this;
     }
 
-    public function getEffects(string $index = null)
+    public function getEffects(?string $index = null)
     {
         if ($index !== null && is_array($this->memo)) {
             return $this->effects[$index] ?? null;

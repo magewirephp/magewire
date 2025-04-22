@@ -23,7 +23,7 @@ trait Children
         return $this->previouslyRenderedChildren[$id]['tag'];
     }
 
-    public function logRenderedChild(string $id, string $tag, string $cacheEntity = null): void
+    public function logRenderedChild(string $id, string $tag, ?string $cacheEntity = null): void
     {
         $this->renderedChildren[$cacheEntity ?? $id] = ['id' => $id, 'tag' => $tag];
     }
