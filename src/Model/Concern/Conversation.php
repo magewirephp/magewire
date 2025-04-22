@@ -17,7 +17,7 @@ trait Conversation
     protected $request;
     protected $response;
 
-    public function hasRequest(string $section = null): bool
+    public function hasRequest(?string $section = null): bool
     {
         if (is_string($section)) {
             return $this->hasRequest() && is_array($this->request->getSectionByName($section));
@@ -29,7 +29,7 @@ trait Conversation
     /**
      * @return RequestInterface|array|null
      */
-    public function getRequest(string $section = null)
+    public function getRequest(?string $section = null)
     {
         if (is_string($section)) {
             return $this->request->getSectionByName($section);
@@ -44,7 +44,7 @@ trait Conversation
         return $this;
     }
 
-    public function hasResponse(string $section = null): bool
+    public function hasResponse(?string $section = null): bool
     {
         if (is_string($section)) {
             try {
@@ -60,7 +60,7 @@ trait Conversation
     /**
      * @return ResponseInterface|array
      */
-    public function getResponse(string $section = null)
+    public function getResponse(?string $section = null)
     {
         if (is_string($section)) {
             return $this->response->getSectionByName($section);

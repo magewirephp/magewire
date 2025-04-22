@@ -32,7 +32,7 @@ class Request implements RequestInterface
         return $this;
     }
 
-    public function getFingerprint(string $index = null)
+    public function getFingerprint(?string $index = null)
     {
         if ($index !== null && is_array($this->fingerprint)) {
             return $this->fingerprint[$index] ?? null;
@@ -47,7 +47,7 @@ class Request implements RequestInterface
         return $this;
     }
 
-    public function getServerMemo(string $index = null)
+    public function getServerMemo(?string $index = null)
     {
         if ($index !== null && is_array($this->memo)) {
             return $this->memo[$index] ?? null;
@@ -62,7 +62,7 @@ class Request implements RequestInterface
         return $this;
     }
 
-    public function getUpdates(string $index = null)
+    public function getUpdates(?string $index = null)
     {
         if ($index !== null && is_array($this->updates)) {
             return $this->updates[$index] ?? null;
@@ -89,7 +89,7 @@ class Request implements RequestInterface
         throw new LocalizedException(__('Request section %s does not exist', $section));
     }
 
-    public function isSubsequent(bool $flag = null, bool $force = false)
+    public function isSubsequent(?bool $flag = null, bool $force = false)
     {
         if ($flag === null) {
             return $this->isSubsequent;
@@ -108,7 +108,7 @@ class Request implements RequestInterface
         return ! $this->isSubsequent();
     }
 
-    public function isRefreshing(bool $flag = null)
+    public function isRefreshing(?bool $flag = null)
     {
         if ($flag === null) {
             return $this->isRefreshing;

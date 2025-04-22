@@ -135,7 +135,7 @@ class ComponentManager
         Template $block,
         Component $component,
         array $arguments,
-        string $handle = null
+        ?string $handle = null
     ): Request {
         $properties = $component->getPublicProperties();
         $request = $block->getRequest();
