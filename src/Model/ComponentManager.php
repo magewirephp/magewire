@@ -12,6 +12,7 @@ use Exception;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Locale\Resolver;
 use Magento\Framework\View\Element\Template;
+use Magento\Framework\View\Page\Config;
 use Magewirephp\Magewire\Exception\AcceptableException;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exception\ComponentHydrationException;
@@ -21,6 +22,7 @@ class ComponentManager
 {
     protected Resolver $localeResolver;
     protected HttpFactory $httpFactory;
+    protected Config $pageConfig;
     protected array $updateActionsPool;
     protected array $hydrationPool;
 
@@ -28,12 +30,14 @@ class ComponentManager
         HydratorContext $hydratorContext,
         Resolver $localeResolver,
         HttpFactory $httpFactory,
+        Config $pageConfig,
         array $updateActionsPool = [],
         array $hydrationPool = []
     ) {
         $this->localeResolver = $localeResolver;
         $this->updateActionsPool = $updateActionsPool;
         $this->httpFactory = $httpFactory;
+        $this->pageConfig = $pageConfig;
 
         // Core Hydrate & Dehydrate lifecycle sort order.
         $this->hydrationPool = $this->sortHydrators($hydrationPool, [
@@ -153,7 +157,8 @@ class ComponentManager
 
                 // Custom relative to Livewire's core.
                 'handle' => $handle ?? $request->getFullActionName(),
-                'type' => $component::COMPONENT_TYPE
+                'type' => $component::COMPONENT_TYPE,
+                'layout' => $this->pageConfig->getPageLayout()
             ],
 
             'serverMemo' => [
