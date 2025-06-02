@@ -4,7 +4,7 @@
 
 [![Latest Stable Version](http://poser.pugx.org/magewirephp/magewire/v)](https://packagist.org/packages/magewirephp/magewire)
 [![Total Downloads](http://poser.pugx.org/magewirephp/magewire/downloads)](https://packagist.org/packages/magewirephp/magewire)
-[![style CI](https://github.styleci.io/repos/414967404/shield?style=flat&branch=main)
+[![style CI](https://github.styleci.io/repos/414967404/shield?style=flat&branch=main)](https://github.styleci.io/repos/414967404/shield?style=flat&branch=main)
 [![License](http://poser.pugx.org/magewirephp/magewire/license)](https://packagist.org/packages/magewirephp/magewire)
 
 MagewirePHP brings the power of reactive, server-driven UI development to Magento 2—without writing JavaScript.
@@ -30,10 +30,6 @@ MagewirePHP helps you deliver modern UX experiences in Magento—faster, cleaner
 - [Advanced](https://magewirephp.github.io/magewire-docs/pages/advanced/troubleshooting.html)
 
 ## Installation
-
-   ```shell
-   composer config repositories.magewirephp/magewire-three git git@github.com:magewirephp/magewire-three.git
-   ```
 
 To install Magewire in your Magento 2 project, follow these steps:
 
