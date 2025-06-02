@@ -1,0 +1,71 @@
+name: End 2 End Tests
+on: [push, pull_request]
+
+jobs:
+  end-2-end-tests:
+    strategy:
+      matrix:
+        include:
+          - PHP_VERSION: php74-fpm
+            MAGENTO_VERSION: 2.4.3
+          - PHP_VERSION: php81-fpm
+            MAGENTO_VERSION: 2.4.6
+          - PHP_VERSION: php82-fpm
+            MAGENTO_VERSION: 2.4.6
+    runs-on: ubuntu-latest
+    steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+
+        - name: Start Docker
+          run: docker run --detach -p 8080:80 --name magento-project-community-edition michielgerritsen/magento-project-community-edition:${{ matrix.PHP_VERSION }}-magento${{ matrix.MAGENTO_VERSION }}
+
+        - name: Change the version in composer.json so we can install the examples
+          run: |
+            sed -i -E 's/"version": "[0-9]+\.[0-9]+\.[0-9]+"/"version": "1.99.0"/' composer.json
+
+        - name: Install Hyvä & prepare Magento
+          run: |
+                docker exec magento-project-community-edition sh -c "mkdir -p ~/.ssh/ && echo \"${{ secrets.SSH_PRIVATE_KEY }}\" > ~/.ssh/id_ed25519"
+                docker exec magento-project-community-edition sh -c "chmod 700 ~/.ssh && chmod 600 ~/.ssh/id_ed25519"
+                docker exec magento-project-community-edition sh -c "ssh-keyscan -t rsa gitlab.hyva.io >> ~/.ssh/known_hosts"
+                docker exec magento-project-community-edition ./retry "composer config repositories.hyva-themes/magento2-theme-module git git@gitlab.hyva.io:hyva-themes/magento2-theme-module.git && composer config repositories.hyva-themes/magento2-reset-theme git git@gitlab.hyva.io:hyva-themes/magento2-reset-theme.git && composer config repositories.hyva-themes/magento2-email-module git git@gitlab.hyva.io:hyva-themes/magento2-email-module.git && composer config repositories.hyva-themes/magento2-default-theme git git@gitlab.hyva.io:hyva-themes/magento2-default-theme.git"
+                docker exec magento-project-community-edition ./retry "composer require hyva-themes/magento2-default-theme"
+                docker exec magento-project-community-edition ./retry "bin/magento setup:upgrade"
+                
+                HYVA_ID=$(docker exec magento-project-community-edition sh -c "magerun2 dev:theme:list --format=json --skip-root-check | jq -r '.[] | select(.code == \"Hyva\\/default\") | .id'")
+                echo "Hyvä has theme ID $HYVA_ID"
+                docker exec magento-project-community-edition ./retry "magerun2 config:store:set design/theme/theme_id $HYVA_ID --scope=stores --scope-id=1"
+                docker exec magento-project-community-edition /bin/bash ./change-base-url http://localhost:8080/
+                docker exec magento-project-community-edition ./retry "bin/magento cache:flush"
+
+        - name: Upload the code into the docker container
+          run: |
+                docker cp $(pwd) magento-project-community-edition:/data/extensions/
+                docker exec magento-project-community-edition composer require --no-plugins --no-interaction magewirephp/magewire:@dev magewirephp/magewire-examples
+                docker exec magento-project-community-edition ./retry "bin/magento setup:upgrade"
+                docker exec magento-project-community-edition ./retry "bin/magento cache:flush"
+
+        - name: Check webserver
+          run: curl --fail-with-body -vvv http://localhost:8080
+
+        - name: Install Node.js
+          uses: actions/setup-node@v3
+          with:
+            node-version: 18
+
+        - name: Install dependencies
+          run: npm ci
+
+        - name: Install Playwright Browsers
+          run: npx playwright install --with-deps
+
+        - name: Run Playwright tests
+          run: BASE_URL=http://localhost:8080/ npx playwright test
+
+        - uses: actions/upload-artifact@v2
+          if: always()
+          with:
+            name: playwright-report
+            path: playwright-report/
+            retention-days: 30
