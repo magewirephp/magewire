@@ -1,0 +1,24 @@
+<?php
+/**
+ * Copyright © Willem Poortman 2021-present. All rights reserved.
+ *
+ * Please read the README and LICENSE files for more
+ * details on copyrights and license information.
+ */
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+
+/** @var Template $block */
+
+/*
+ * AlpineJS is bundled with Magewire, so it must not be loaded twice on the same page.
+ * When the Magewire package is loaded, we need to disable any additional AlpineJS loading.
+ * In the Hyvä theme, AlpineJS is loaded via a phtml file specified in Hyva_Theme::layout/default_hyva.xml.
+ *
+ * To ensure child elements are maintained and certain plugins or directives continue to function,
+ * we still want to render these elements.
+ */
+?>
+<?= $block->getChildHtml() ?>

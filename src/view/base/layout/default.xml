@@ -1,0 +1,160 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+>
+    <body>
+        <block name="magewire" template="Magewirephp_Magewire::magewire.phtml">
+            <container name="magewire.before" as="before">
+                <container name="magewire.alpinejs">
+                    <!-- Intended to hold custom AlpineJS code that must render
+                         before any Magewire-related AlpineJS code. -->
+                    <container name="magewire.alpinejs.before">
+                        <!-- Magewire (global functions) -->
+                        <block name="magewire.alpinejs.magewire"
+                               template="Magewirephp_Magewire::js/alpinejs/magewire.phtml"
+                        />
+                    </container>
+
+                    <container name="magewire.alpinejs.components">
+                        <!-- Magewire Notifier - AlpineJS component -->
+                        <block name="magewire.alpinejs.components.magewire-notifier"
+                               template="Magewirephp_Magewire::js/alpinejs/components/magewire-notifier.phtml"
+                        >
+                            <block name="magewire.alpinejs.components.magewire-notifier.script-data"
+                                   template="Magewirephp_Magewire::js/alpinejs/components/magewire-notifier/script-data.phtml"
+                                   as="script.data"
+                            />
+                            <block name="magewire.alpinejs.components.magewire-notifier.script-bind"
+                                   template="Magewirephp_Magewire::js/alpinejs/components/magewire-notifier/script-bind.phtml"
+                                   as="script.bind"
+                            />
+                        </block>
+                    </container>
+                </container>
+
+                <!-- Intended to hold custom AlpineJS directives. -->
+                <container name="magewire.alpinejs.directives"/>
+
+                <!-- Intended to hold custom AlpineJS UI-components. -->
+                <container name="magewire.ui-components">
+                    <block name="magewire.ui-components.notifier"
+                           template="Magewirephp_Magewire::magewire/ui-components/notifier.phtml"
+                    >
+                        <!-- Before notification. -->
+                        <block name="magewire.ui-components.notifier.notification.before"
+                               as="notification.before"
+                        />
+
+                        <!-- After notification. -->
+                        <block name="magewire.ui-components.notifier.notification.after"
+                               as="notification.after"
+                        >
+                            <!-- Inject a notification activity state. -->
+                            <block name="magewire.ui-components.notifier.activity-state"
+                                   template="Magewirephp_Magewire::magewire/ui-components/notifier/activity-state.phtml"
+                            >
+                                <!-- Inject loading icon (e.g. spinner). -->
+                                <block name="magewire.ui-components.notifier.activity-state.loader-icon"
+                                       as="loader"
+                                       template="Magewirephp_Magewire::magewire/utils/icons/loading.phtml"
+                                />
+                            </block>
+                        </block>
+                    </block>
+                </container>
+
+                <!-- Intended to hold custom AlpineJS code that must render
+                     after any Magewire-related AlpineJS code. -->
+                <container name="magewire.alpinejs.after"/>
+            </container>
+
+            <container name="magewire.before.internal" as="before.internal">
+                <!-- Debug: Show disabled notification when Magewire is disabled. -->
+                <block name="magewire.state.enabled"
+                       template="Magewirephp_Magewire::js/magewire/state.phtml"
+                       ifconfig="dev/magewire/debug/enable"
+                >
+                    <arguments>
+                        <argument name="state" xsi:type="boolean">true</argument>
+                    </arguments>
+                </block>
+            </container>
+
+            <!-- Intended for non-overridable internal code. -->
+            <block name="magewire.internal"
+                   as="internal"
+                   template="Magewirephp_Magewire::js/magewire/internal.phtml"
+            />
+
+            <!-- Intended for injecting the <script> element loading the Magewire JS. -->
+            <!-- Docs: This doesn't have a template because it should be applied per theme specifically
+                       using a layout block reference and a template attribute. -->
+            <block name="magewire.script"
+                   as="script"
+                   template="Magewirephp_Magewire::js/magewire/script.phtml"
+            />
+
+            <!--
+                Magewire Utilities.
+            -->
+            <container name="magewire.utilities" as="utilities">
+                <block name="magewire.utilities.dom"
+                       template="Magewirephp_Magewire::js/magewire/utils/dom.phtml"
+                />
+                <block name="magewire.utilities.loader"
+                       template="Magewirephp_Magewire::js/magewire/utils/loader.phtml"
+                />
+            </container>
+
+            <!--
+                Magewire Addons.
+            -->
+            <container name="magewire.addons" as="addons">
+                <block name="magewire.addons.notifier"
+                       template="Magewirephp_Magewire::js/magewire/addons/notifier.phtml"
+                />
+            </container>
+
+            <!--
+                Magewire Directives.
+            -->
+            <container name="magewire.directives" as="directives">
+                <!-- The primary defense mechanism to mitigate an excessive influx of XHR requests. -->
+                <block name="magewire.directives.throttle"
+                       template="Magewirephp_Magewire::js/magewire/directives/throttle.phtml"
+                />
+                <!-- Manages notifications on the frontend, eliminating the need to use the $loader property in the component class. -->
+                <block name="magewire.directives.notify"
+                       template="Magewirephp_Magewire::js/magewire/directives/notify.phtml"
+                />
+            </container>
+
+            <!--
+                Magewire Features.
+            -->
+            <container name="magewire.features" as="features">
+                <block name="magewire.features.support-magewire-loaders"
+                       template="Magewirephp_Magewire::js/magewire/features/support-magewire-loaders/support-magewire-loaders.phtml"
+                />
+            </container>
+
+            <container name="magewire.after.internal" as="after.internal"/>
+
+            <!-- Container only loaded when Magewire is disabled. -->
+            <container name="magewire.disabled" as="disabled">
+                <!-- Debug: Show disabled notification when Magewire is disabled. -->
+                <block name="magewire.state.disabled"
+                       template="Magewirephp_Magewire::js/magewire/state.phtml"
+                       ifconfig="dev/magewire/debug/enable"
+                >
+                    <arguments>
+                        <argument name="state" xsi:type="boolean">false</argument>
+                    </arguments>
+                </block>
+            </container>
+
+            <!-- Intended for everything else not-related to features or directive. -->
+            <container name="magewire.after" as="after"/>
+        </block>
+    </body>
+</page>

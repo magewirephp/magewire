@@ -1,0 +1,20 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireUtility = $magewireViewModel->utils()->magewire();
+?>
+<script
+    src="<?= $escaper->escapeUrl($magewireUtility->mechanisms()->frontendAssets()->getScriptPath()) ?>"
+    x-data="magewireScript"
+    x-bind="magewireScriptBindings({ csrfToken: hyva.getFormKey() })"
+></script>

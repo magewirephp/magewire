@@ -1,0 +1,43 @@
+<?php
+/**
+ * Copyright © Willem Poortman 2021-present. All rights reserved.
+ *
+ * Please read the README and LICENSE files for more
+ * details on copyrights and license information.
+ */
+
+declare(strict_types=1);
+
+use Magento\Framework\App\State as ApplicationState;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+
+$id = $block->getNameInLayout() ?? '';
+
+$state = $block->getData('application_state');
+$exception = $block->getData('exception');
+?>
+<?php if ($state instanceof ApplicationState && $state->getMode() === ApplicationState::MODE_DEVELOPER): ?>
+<div class="magewire-exception">
+    <pre class="whitespace-pre-line text-sm text-gray-600 border rounded border-gray-600 p-4 overflow-auto">
+        <span class="text-red-600 font-bold">Exception:</span> <?= $exception->getMessage() ?>
+    </pre>
+
+    <p class="text-xs mt-2 italic">
+        <?php if (strlen($id) === 0): ?>
+            <?= $escaper->escapeHtml(__('An exception occurred while parsing and/or rendering the Magewire component.')) ?>
+        <?php else: ?>
+            <?= $escaper->escapeHtml(__('An exception occurred while parsing and/or rendering the Magewire component associated with a block named: %1.', $id)) ?>
+        <?php endif ?>
+    </p>
+</div>
+<?php endif ?>
+
+<?php if (strlen($id) === 0): ?>
+    <!-- Magewire exception: <?= $id ?> -->
+<?php else: ?>
+    <!-- Magewire exception -->
+<?php endif ?>

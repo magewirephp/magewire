@@ -1,0 +1,23 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+/**
+ * AlpineJS - Global
+ *
+ * @internal Do not modify to ensure Magewire continues to function correctly.
+ */
+$magewireViewModel = $block->getData('view_model');
+$magewireViewUtilities = $magewireViewModel->utils();
+
+$templateUtilities = $magewireViewUtilities->template();
+$layoutUtilities = $magewireViewUtilities->layout();
+?>
+<?= $templateUtilities->echoCodeComment('notifier', false, 'AlpineJS') ?>
+<?= $layoutUtilities->renderBlockAsContainer($block) ?>

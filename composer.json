@@ -1,0 +1,60 @@
+{
+    "name": "magewirephp/magewire",
+    "description": "A framework that makes building reactive and dynamic interfaces simple in Magento 2",
+    "type": "magento2-module",
+    "require": {
+        "php": ">=8.1",
+        "magento/framework": "*",
+        "illuminate/support": "^10.48",
+        "rakit/validation": "^1.0"
+    },
+    "require-dev": {
+        "magewirephp/portman": "^0.5.10",
+        "friendsofphp/php-cs-fixer": "^v3.75.0",
+        "rector/rector": "^2.0.16",
+        "ramsey/conventional-commits": "^1.6",
+        "captainhook/captainhook": "^5.25",
+        "captainhook/hook-installer": "^1.0"
+    },
+    "support": {
+        "issues": "https://github.com/magewirephp/magewire/discussions"
+    },
+    "authors": [
+        {
+            "name": "Willem Poortman",
+            "role": "Founder / Developer"
+        }
+    ],
+    "license": "MIT",
+    "minimum-stability": "stable",
+    "autoload": {
+        "files": [
+            "lib/magewire-helpers.php",
+            "src/registration.php",
+            "themes/Backend/registration.php",
+            "themes/Breeze/registration.php",
+            "themes/Hyva/registration.php",
+            "themes/Luma/registration.php"
+        ],
+        "psr-4": {
+            "Magewirephp\\Magento\\": "lib/Magento/",
+            "Magewirephp\\Symfony\\": "lib/Symfony/",
+            "Magewirephp\\Magewire\\": [
+                "src/",
+                "dist/",
+                "lib/Magewire/",
+                "lib/MagewireBc/"
+            ],
+            "Magewirephp\\MagewireCompatibilityWithBackend\\": "themes/Backend/",
+            "Magewirephp\\MagewireCompatibilityWithBreeze\\": "themes/Breeze/",
+            "Magewirephp\\MagewireCompatibilityWithHyva\\": "themes/Hyva/",
+            "Magewirephp\\MagewireCompatibilityWithLuma\\": "themes/Luma/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "magento/composer-dependency-version-audit-plugin": false,
+            "captainhook/hook-installer": true
+        }
+    }
+}

@@ -1,0 +1,171 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Model\Magewire\Notifier\NotificationStateEnum;
+use Magewirephp\Magewire\Model\Magewire\Notifier\NotificationTypeEnum;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireTemplateFragment = $magewireViewModel->utils()->template()->fragment();
+
+/** @internal Do not modify to ensure Magewire continues to function correctly. */
+?>
+<?php $script = $magewireTemplateFragment->script()->start() ?>
+<script>
+    function magewireNotifierAddon() {
+        'use strict';
+
+        return {
+            notifications: [],
+
+            create: function(notification, hooks = {}, activate = true) {
+                notification = { ...{
+                        title: null,
+                        text: '<?= $escaper->escapeJs(__('Unknown Text')) ?>',
+                        type: '<?= NotificationTypeEnum::INFO->value ?>',
+                        duration: 3500
+                    }, ...notification }
+
+                // Default Hooks.
+                notification.hooks = { ...{
+                        onTermination: notification => notification.active = false,
+                        onActivation: (notification, resolve) => resolve(true),
+                        onFailure: (notification, reason) => console.warn(`Notification failure: ${reason}`),
+                        onCleanup: notification => notification.timeout = setTimeout(() => notification.active = false, notification.duration),
+                        onFinish: () => {
+                        },
+                    }, ...hooks }
+
+                // Defaults.
+                notification.id = Date.now()
+                notification.state = '<?= NotificationStateEnum::IDLE->value ?>'
+                notification.active = false
+
+                // Actions.
+                notification.terminate = notification => {
+                    notification.hooks.onTermination(notification)
+                }
+                notification.activate = (notification, resolve, reject) => {
+                    notification.hooks.onActivation(notification, resolve, reject)
+                }
+                notification.fail = (notification, reason) => {
+                    notification.hooks.onFailure(notification, reason)
+                }
+                notification.cleanup = notification => {
+                    notification.hooks.onCleanup(notification)
+                }
+                notification.finish = (notification, result) => {
+                    notification.hooks.onFinish(notification, result)
+                }
+
+                this.notifications.push(notification)
+
+                if (activate) {
+                    this.activate(notification.id)
+                }
+
+                return notification.id
+            },
+
+            get: function(id) {
+                return this.notifications.find(notification => notification.id === id)
+            },
+
+            activate: function(id) {
+                const notification = this.get(id)
+
+                notification.state  = '<?= NotificationStateEnum::RUNNING->value ?>'
+                notification.active = typeof notification.text === 'string' && notification.text.length !== 0
+
+                new Promise(async (resolve, reject) => await notification.activate(notification, resolve, reject))
+
+                    .then(result => result ? this.finish(id) : this.fail(id))
+
+                    .catch(reason => this.fail(id, reason))
+
+                    .finally(async () => {
+                        const notification = this.get(id)
+
+                        if (notification.state) {
+                            await this.cleanup(id)
+                        }
+                    })
+            },
+
+            finish: function(id) {
+                const notification = this.get(id)
+                notification.state = '<?= NotificationStateEnum::SUCCEEDED->value ?>'
+
+                notification.finish(notification)
+            },
+
+            terminate: function(id) {
+                const notification = this.get(id)
+                notification.state = '<?= NotificationStateEnum::TERMINATED->value ?>'
+
+                notification.terminate(notification)
+            },
+
+            fail: function(id, reason = null) {
+                const notification = this.get(id)
+                notification.state = '<?= NotificationStateEnum::FAILED->value ?>'
+
+                notification.fail(notification, reason)
+            },
+
+            cleanup: function(id) {
+                const notification = this.get(id)
+
+                notification.cleanup(notification)
+            },
+
+            clearTimeout: function(id) {
+                const notification = this.get(id)
+
+                if (notification.timeout) {
+                    clearTimeout(notification.timeout)
+                }
+            },
+
+            fetch: function() {
+                return this.notifications
+            },
+
+            <?php /* API version with Content Security Policy (CSP) compliance. */ ?>
+            csp: function() {
+                const origin = this
+
+                return {
+                    ...origin,
+
+                    create: function() {
+                        origin.create(Magewire.utilities.dom.filterDataAttributes(this.$el, 'create'))
+                    },
+                    terminate: function() {
+                        origin.terminate(this.notification.id)
+                    },
+                    fail: function() {
+                        origin.fail(this.notification.id)
+                    },
+                    cleanup: function() {
+                        origin.cleanup(this.notification.id)
+                    },
+                    clearTimeout: function() {
+                        origin.clearTimeout(this.notification.id)
+                    },
+                }
+            }
+        }
+    }
+
+    <?php /* Register as Magewire utility. */ ?>
+    document.addEventListener('magewire:init', () => Magewire.addon('notifier', magewireNotifierAddon, true), { once: true });
+</script>
+<?php $script->end() ?>

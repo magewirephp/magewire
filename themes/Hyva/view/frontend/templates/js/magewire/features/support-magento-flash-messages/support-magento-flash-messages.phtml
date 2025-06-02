@@ -1,0 +1,20 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireTemplateFragment = $magewireViewModel->utils()->template()->fragment();
+?>
+<?php $script = $magewireTemplateFragment->script()->start() ?>
+<script>
+    (() => {
+        window.addEventListener('magewire:flash-messages:dispatch', event => dispatchMessages(event.detail));
+    })();
+</script>
+<?php $script->end() ?>

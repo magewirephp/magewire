@@ -1,0 +1,11 @@
+# Ignore other folders and files
+lib/Livewire/
+node_modules/
+vendor/
+composer.lock
+.php-cs-fixer.cache
+portman.log
+/.DS_Store
+test/Playwright/.env
+package.json
+package-lock.json

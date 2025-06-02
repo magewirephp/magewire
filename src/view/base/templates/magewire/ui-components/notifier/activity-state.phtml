@@ -1,0 +1,60 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Model\Magewire\Notifier\NotificationStateEnum;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+
+$blockLoaderIcon = $block->getChildBlock('loader')
+?>
+<div class="inline-flex justify-center flex-shrink-0">
+    <div class="activity-state size-5">
+        <div class="relative" x-show="notification.loader">
+            <?php /* Stack items vertically to prevent layout shifting when hiding or disappearing, ensuring consistent visual layout. */ ?>
+            <?php if ($blockLoaderIcon): ?>
+            <div class="absolute"
+                 x-show="notification.state === '<?= NotificationStateEnum::RUNNING->value ?>'"
+                 x-transition:leave="transition ease-in duration-600"
+                 x-transition:leave-start="scale-100"
+                 x-transition:leave-end="scale-0"
+            >
+                <?= $blockLoaderIcon->toHtml() ?>
+            </div>
+            <?php endif ?>
+
+            <?php /* Show a checkmark icon when loading fully completed successfully. */ ?>
+            <svg class="w-full h-full text-green-700 stroke-2"
+                 fill="none"
+                 stroke="currentColor"
+                 viewBox="0 0 24 24"
+                 xmlns="http://www.w3.org/2000/svg"
+                 aria-hidden="true"
+                 x-show="notification.state === '<?= NotificationStateEnum::SUCCEEDED->value ?>'"
+                 x-transition:enter="transition ease-in duration-200"
+                 x-transition:enter-start="scale-0"
+                 x-transition:enter-end="scale-100"
+            >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path>
+            </svg>
+
+            <?php /* Show an exclamation triangle icon when loading failed. */ ?>
+            <svg class="w-full h-full text-red-700 stroke-2"
+                 fill="none"
+                 stroke="currentColor"
+                 viewBox="0 0 24 24"
+                 xmlns="http://www.w3.org/2000/svg"
+                 aria-hidden="true"
+                 x-show="notification.state === '<?= NotificationStateEnum::FAILED->value ?>'"
+                 x-transition:enter="transition ease-in duration-200"
+                 x-transition:enter-start="scale-0"
+                 x-transition:enter-end="scale-100"
+            >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"></path>
+            </svg>
+        </div>
+    </div>
+</div>

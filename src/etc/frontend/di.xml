@@ -1,0 +1,466 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd"
+>
+    <!--
+        Bindings: Frontend Proxies
+
+        DOC: Magento Proxies optimize performance by delaying the instantiation of resource-intensive objects until they are needed.
+        They act as placeholders, initializing the original class only when a method is called.
+        Proxies reduce memory usage and improve efficiency in dependency injection scenarios. Magento automatically generates
+        them using the Proxy class suffix.
+    -->
+    <!-- N/A -->
+
+    <!--
+        Service Type: Mechanisms
+
+        Mechanisms are an integral part of Magewire, serving as irreplaceable elements essential for its core functionality.
+        While Features can be removed or replaced, Mechanisms cannot. They encompass critical tasks such as handling components,
+        resolving them into functional components, and processing requests. These are fundamental operations within the
+        lifecycle of the system and its components.
+
+        IMPORTANT: Since Magento cannot handle argument item merging within the global DI, all Mechanisms and Features
+        must be defined per area. This approach allows both to be unique for each area. Always ensure these are added
+        via the corresponding area-specific DI configuration and never in the global `di.xml`.
+    -->
+    <type name="Magewirephp\Magewire\Mechanisms">
+        <arguments>
+            <!-- Mechanisms registration. -->
+            <argument name="items" xsi:type="array">
+                <!--
+                    Mechanisms sort order.
+
+                    The order of ported Livewire mechanisms follows their original registration order within the Livewire framework,
+                    as defined in Livewire\LivewireServiceProvider::getMechanisms.
+
+                    Magewire-specific mechanisms rely solely on whether a mechanism needs to load before or after another,
+                    rather than a strict sort order.
+                -->
+                <item name="resolve_components" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Mechanisms\ResolveComponents\ResolveComponents</item>
+                    <item name="sort_order" xsi:type="number">1000</item>
+                    <item name="view_model" xsi:type="object">Magewirephp\Magewire\Mechanisms\ResolveComponents\ResolveComponentsViewModel</item>
+                </item>
+
+                <item name="persist_middleware" xsi:type="string" sortOrder="1050">
+                    Magewirephp\Magewire\Mechanisms\PersistentMiddleware\PersistentMiddleware
+                </item>
+
+                <item name="handle_components" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Mechanisms\HandleComponents\HandleComponents</item>
+                    <item name="facade" xsi:type="string">Magewirephp\Magewire\Mechanisms\HandleComponents\HandleComponentsFacade</item>
+                    <item name="sort_order" xsi:type="number">1100</item>
+                </item>
+
+                <item name="handle_requests" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Mechanisms\HandleRequests\HandleRequests</item>
+                    <item name="facade" xsi:type="string">Magewirephp\Magewire\Mechanisms\HandleRequests\HandleRequestFacade</item>
+                    <item name="sort_order" xsi:type="number">1200</item>
+                </item>
+
+                <item name="frontend_assets" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Mechanisms\FrontendAssets\FrontendAssets</item>
+                    <item name="facade" xsi:type="string">Magewirephp\Magewire\Mechanisms\FrontendAssets\FrontendAssetsFacade</item>
+                    <item name="view_model" xsi:type="object">Magewirephp\Magewire\Mechanisms\FrontendAssets\FrontendAssetsViewModel</item>
+                    <item name="sort_order" xsi:type="number">1400</item>
+
+                    <item name="data" xsi:type="array">
+                        <item name="script" xsi:type="array">
+                            <item name="file_path" xsi:type="string">
+                                Magewirephp_Magewire::js/magewire.min.js
+                            </item>
+
+                            <item name="query_params" xsi:type="array">
+                                <!-- See: web/js/manifest.json -->
+                                <item name="id" xsi:type="string">df3a17f2</item>
+                            </item>
+
+                            <item name="html_attributes" xsi:type="array">
+                                <!-- See: \Livewire\Features\SupportNavigate\SupportNavigate -->
+                                <item name="data-navigate-once" xsi:type="string">true</item>
+                            </item>
+                        </item>
+                    </item>
+                </item>
+
+                <item name="data_store" xsi:type="string" sortOrder="1250">
+                    Magewirephp\Magewire\Mechanisms\DataStore
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!--
+        Service Type: Features
+
+        Features are considered a non-essential part of Magewire, at least that was the original idea when Caleb Porzio
+        designed the framework by separating Features and Mechanisms. In hindsight, this distinction isn't entirely accurate,
+        as some Features are effectively non-removable. Nevertheless, Features are fundamentally smaller and simpler, focusing
+        on managing specific, smaller aspects of the overall system.
+
+        IMPORTANT: Since Magento cannot handle argument item merging within the global DI, all Features and Mechanisms
+        must be defined per area. This approach allows both to be unique for each area. Always ensure these are added
+        via the corresponding area-specific DI configuration and never in the global `di.xml`.
+    -->
+    <type name="Magewirephp\Magewire\Features">
+        <arguments>
+            <!-- Features registration. -->
+            <argument name="items" xsi:type="array">
+                <!--
+                    Features sort order.
+
+                    The order of ported Livewire features follows their original registration order within the Livewire framework,
+                    as defined in Livewire\LivewireServiceProvider::bootFeatures.
+
+                    Magewire-specific features rely solely on whether a feature needs to load before or after another,
+                    rather than a strict sort order.
+                -->
+                <item name="nesting_components" xsi:type="string" sortOrder="1000">Magewirephp\Magewire\Features\SupportNestingComponents\SupportNestingComponents</item>
+                <item name="magewire_nesting_components" xsi:type="string" sortOrder="1100">Magewirephp\Magewire\Features\SupportMagewireNestingComponents\SupportMagewireNestingComponents</item>
+                <item name="attributes" xsi:type="string" sortOrder="1200">Magewirephp\Magewire\Features\SupportAttributes\SupportAttributes</item>
+                <item name="redirects" xsi:type="string" sortOrder="1300">Magewirephp\Magewire\Features\SupportRedirects\SupportRedirects</item>
+                <item name="locales" xsi:type="string" sortOrder="1400">Magewirephp\Magewire\Features\SupportLocales\SupportLocales</item>
+                <item name="events" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportEvents\SupportEvents</item>
+                    <item name="sort_order" xsi:type="number">1500</item>
+                </item>
+
+                <item name="magento_layouts" xsi:type="string" sortOrder="5000">Magewirephp\Magewire\Features\SupportMagentoLayouts\SupportMagentoLayouts</item>
+                <!-- This functionality requires customization for each theme, as each theme may handle the dispatching of flash messages differently. -->
+                <item name="magento_flash_messages" xsi:type="string" sortOrder="5100">Magewirephp\Magewire\Features\SupportMagentoFlashMessages\SupportMagentoFlashMessages</item>
+
+                <item name="magewire_loaders" xsi:type="string" sortOrder="5200">Magewirephp\Magewire\Features\SupportMagewireLoaders\SupportMagewireLoaders</item>
+                <item name="magewire_notifications" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireNotifications\SupportMagewireNotifications</item>
+                    <item name="facade" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireNotifications\MagewireNotificationsFacade</item>
+                    <item name="sort_order" xsi:type="number">5200</item>
+                </item>
+                <item name="magewire_view_instructions" xsi:type="string" sortOrder="5300">Magewirephp\Magewire\Features\SupportMagewireViewInstructions\SupportMagewireViewInstructions</item>
+
+                <!-- HIGHEST PRIORITIY: Do not register features above this sort order range. -->
+                <item name="lifecycle_hooks" xsi:type="string" sortOrder="99000">Magewirephp\Magewire\Features\SupportLifecycleHooks\SupportLifecycleHooks</item>
+                <item name="magewire_backwards_compatibility" xsi:type="string" sortOrder="99050">Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\SupportMagewireBackwardsCompatibility</item>
+
+                <item name="magewire_compiling" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireCompiling\SupportMagewireCompiling</item>
+                    <item name="sort_order" xsi:type="number">99100</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!--
+        Feature: Magewire Compiler
+
+        Injecting a default compiler for the abstraction required by this feature
+        instead of having to interface it and use a reference.
+
+        IMPORTANT: A different compiler can be injected if needed, but doing so without
+        a full understanding of the implications is not recommended.
+    -->
+    <type name="Magewirephp\Magewire\Features\SupportMagewireCompiling\SupportMagewireCompiling">
+        <arguments>
+            <argument name="compiler" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\MagewireCompiler</argument>
+        </arguments>
+    </type>
+
+    <!-- Directive area: Global (no prefix) -->
+    <virtualType name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\BaseDirectiveArea"
+                 type="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\DirectiveArea"
+    >
+        <arguments>
+            <!-- All global directives without a prefix. -->
+            <argument name="directives" xsi:type="array">
+                <item name="json" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Json</item>
+
+                <!-- Basic PHP loops. -->
+                <item name="if" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope\Proxy</item>
+                <item name="else" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope\Proxy</item>
+                <item name="elseif" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope\Proxy</item>
+                <item name="endif" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope\Proxy</item>
+                <item name="foreach" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope\Proxy</item>
+                <item name="endforeach" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope\Proxy</item>
+
+                <!-- Basic PHP methods. -->
+                <!-- WIP... -->
+
+                <!-- Magento basic methods. -->
+                <item name="translate" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Base\Proxy</item>
+
+                <!-- Magento authentication methods. -->
+                <item name="auth" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Auth\Proxy</item>
+                <item name="endauth" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Auth\Proxy</item>
+                <item name="guest" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Auth\Proxy</item>
+                <item name="endguest" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Auth\Proxy</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Directive area: Block -->
+    <virtualType name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\MagentoBlockDirectiveArea"
+                 type="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\DirectiveArea"
+    >
+        <arguments>
+            <!-- All Block-specific directives without the prefix. -->
+            <argument name="directives" xsi:type="array">
+                <item name="parent" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Block\Proxy</item>
+                <item name="child" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Block\Proxy</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Directive area: Escape -->
+    <virtualType name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\MagentoEscapeDirectiveArea"
+                 type="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\DirectiveArea"
+    >
+        <arguments>
+            <!-- All Escape-specific directives without the prefix. -->
+            <argument name="directives" xsi:type="array">
+                <item name="url" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Escape\Proxy</item>
+                <item name="attr" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Escape\Proxy</item>
+                <item name="js" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Escape\Proxy</item>
+                <item name="html" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Escape\Proxy</item>
+                <item name="css" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Escape\Proxy</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Directive area: Customer -->
+    <virtualType name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\MagentoCustomerDirectiveArea"
+                 type="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\DirectiveArea"
+    >
+        <arguments>
+            <!-- All Customer-specific directives without the prefix. -->
+            <argument name="directives" xsi:type="array">
+                <!-- WIP... -->
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Directive area: Magewire -->
+    <virtualType name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\MagewireDirectiveArea"
+                 type="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\DirectiveArea"
+    >
+        <arguments>
+            <!-- All Magewire-specific directives without the prefix. -->
+            <argument name="directives" xsi:type="array">
+                <!-- WIP... -->
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Directive area: AlpineJS -->
+    <virtualType name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\AlpinejsDirectiveArea"
+                 type="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\DirectiveArea"
+    />
+    <!-- Directive area: Tailwindcss -->
+    <virtualType name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\TailwindcssDirectiveArea"
+                 type="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\DirectiveArea"
+    />
+
+    <type name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\DirectiveManager">
+        <arguments>
+            <!-- Injecting base directives that are not dependent on an area prefix (e.g., @json, @escape, etc.). -->
+            <argument name="directives" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\BaseDirectiveArea</argument>
+
+            <!-- Injecting area-specific directives, likely one per library (e.g., @magewireTeleport, @tailwindcssClass etc.). -->
+            <argument name="areas" xsi:type="array">
+                <item name="render" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\MagentoBlockDirectiveArea</item>
+                <item name="escape" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\MagentoEscapeDirectiveArea</item>
+                <item name="customer" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\MagentoCustomerDirectiveArea</item>
+                <item name="magewire" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\MagewireDirectiveArea</item>
+                <item name="alpinejs" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\AlpinejsDirectiveArea</item>
+                <item name="twcss" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\TailwindcssDirectiveArea</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- View Action Management -->
+    <type name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\ActionManager">
+        <arguments>
+            <!-- Defining the default action subject. -->
+            <argument name="action" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Action\Magewire\Proxy</argument>
+
+            <argument name="namespaces" xsi:type="array">
+                <item name="magento.auth" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Action\Auth\Proxy</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!--
+        Service Type: Containers
+
+        The `app()` method in Laravel is a helper function that provides access to the application container,
+        a core part of Laravel's service container. It is used to resolve services or classes by their bindings,
+        facilitating dependency injection and simplifying access to shared instances.
+
+        In Laravel, bindings are typically registered using methods like `app()->bind()`. However, in Magewire,
+        bindings are managed via `di.xml`, as some code—originating from Livewire—still utilizes the `app()` helper.
+        These bindings are made accessible through Magewire's Container system.
+    -->
+    <type name="Magewirephp\Magewire\Containers">
+        <arguments>
+            <!-- Services registration. -->
+            <argument name="items" xsi:type="array">
+                <item name="livewire" xsi:type="string" sortOrder="1000">Magewirephp\Magewire\Containers\Livewire</item>
+                <item name="redirect" xsi:type="string" sortOrder="1010">Magewirephp\Magewire\Containers\Redirect</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!--
+        Concept: Service Provider
+
+        The ServerProvider in Magewire is responsible for setting up server-related configurations.
+        It ensures that necessary services are registered and available for the application.
+
+        This provider is crucial for managing server-specific dependencies efficiently
+        during the application's lifecycle.
+    -->
+    <type name="Magewirephp\Magewire\MagewireServiceProvider">
+        <arguments>
+            <argument name="containers" xsi:type="object">Magewirephp\Magewire\Containers\Proxy</argument>
+            <argument name="mechanisms" xsi:type="object">Magewirephp\Magewire\Mechanisms\Proxy</argument>
+            <argument name="features" xsi:type="object">Magewirephp\Magewire\Features\Proxy</argument>
+        </arguments>
+    </type>
+
+    <!--
+        Concept: View Fragments
+
+        View Fragments are self-contained sections of code, typically HTML,
+        that can be both validated and modified.
+    -->
+    <type name="Magewirephp\Magewire\Model\View\Fragment\Script">
+        <arguments>
+            <argument name="modifiers" xsi:type="array">
+                <!-- CSP support for inline scripts. -->
+                <!-- Maximum sort order to make sure this modifier is run last. -->
+                <item name="csp" sortOrder="9900" xsi:type="object">Magewirephp\Magewire\Model\View\Fragment\Modifier\Csp</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!--
+        Mechanism: Component Resolving
+
+        Component Resolvers are used to construct and reconstruct components in various ways. By default, they rely on
+        Layout XML and blocks, using the "magewire" argument. A Layout Resolver manages both the construction during
+        page load and the reconstruction during a component update request.
+    -->
+    <type name="Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolverManagement">
+        <arguments>
+            <!-- Component resolver registration. -->
+            <argument name="resolvers" xsi:type="array">
+                <item name="layout" xsi:type="object" sortOrder="99900">Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolver\LayoutResolver</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolver\LayoutResolver">
+        <arguments>
+            <argument name="handlesToExclude" xsi:type="array">
+                <!-- Compatibility: Magento / Mage-OS. -->
+                <item name="default" xsi:type="boolean">true</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!--
+        Solution: Laravel config() Bindings
+
+        The config() helper in Laravel is used to retrieve or set configuration values from
+        the application's config files. You can access a value with config('config.path').
+
+        In Magewire, the `config()` helper functions similarly to how it works in Livewire,
+        allowing access to configuration values.  Some Livewire-derived code can still retrieve
+        these values using the helper. These paths can be mapped to actual System Config paths,
+        following the format accepted by Magento.
+    -->
+    <type name="Magewirephp\Magewire\Config">
+        <arguments>
+            <!-- Paths can be both .env array or config.xml paths. -->
+            <argument name="paths" xsi:type="array">
+                <item name="app.debug" xsi:type="string">dev/magewire/debug</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!--
+        Solution: MethodsMap Simulation
+
+        The MethodsMap in the Magento framework is a useful class for extracting information about a class's methods.
+        However, it relies on a TypeProcessor that reflects the method's docblock to determine type details, which can
+        break methods lacking a docblock or having incomplete information. Since the Magewire Wrapped class heavily
+        uses this functionality, a custom MethodsMap `virtual type` with a modified TypeProcessor resolves the issue
+        by returning an empty array when needed, ensuring compatibility.
+    -->
+    <virtualType name="Magewirephp\Magewire\Virtual\Magento\Framework\Reflection\MethodsMap"
+                 type="Magento\Framework\Reflection\MethodsMap"
+    >
+        <arguments>
+            <argument name="typeProcessor" xsi:type="object">Magewirephp\Magento\Framework\Reflection\TypeProcessor</argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Magewirephp\Magewire\Wrapped">
+        <arguments>
+            <argument name="methodsMap" xsi:type="object">Magewirephp\Magewire\Virtual\Magento\Framework\Reflection\MethodsMap</argument>
+        </arguments>
+    </type>
+
+    <!--
+        Concept: Synthesizers
+
+        Natively, PHP serializes most primitive values into JSON easily. However, in order for Magewire components
+        to support more sophisticated property types (like Models, Collections and DataObjects),
+        a more robust system is needed.
+    -->
+    <type name="Magewirephp\Magewire\Mechanisms\HandleComponents\HandleComponents">
+        <arguments>
+            <!-- Synthesizers mapping. -->
+            <argument name="synthesizers" xsi:type="array">
+                <item name="magento_data_object" xsi:type="string" sortOrder="1050">
+                    Magewirephp\Magewire\Mechanisms\HandleComponents\Synthesizers\DataObjectSynth
+                </item>
+                <item name="array" xsi:type="string" sortOrder="1000">
+                    Magewirephp\Magewire\Mechanisms\HandleComponents\Synthesizers\ArraySynth
+                </item>
+                <item name="enum" xsi:type="string" sortOrder="1050">
+                    Magewirephp\Magewire\Mechanisms\HandleComponents\Synthesizers\EnumSynth
+                </item>
+                <item name="float" xsi:type="string" sortOrder="1100">
+                    Magewirephp\Magewire\Mechanisms\HandleComponents\Synthesizers\FloatSynth
+                </item>
+                <item name="int" xsi:type="string" sortOrder="1150">
+                    Magewirephp\Magewire\Mechanisms\HandleComponents\Synthesizers\IntSynth
+                </item>
+                <item name="std_class" xsi:type="string" sortOrder="1200">
+                    Magewirephp\Magewire\Mechanisms\HandleComponents\Synthesizers\StdClassSynth
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- Magewire Update Route: Frontend -->
+    <type name="Magewirephp\Magewire\Controller\Router">
+        <arguments>
+            <argument name="routes" xsi:type="array">
+                <item name="update" xsi:type="object" sortOrder="10">Magewirephp\Magewire\Controller\MagewireUpdateRouteFrontend</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Framework\App\RouterList">
+        <arguments>
+            <argument name="routerList" xsi:type="array">
+                <item name="magewire" xsi:type="array">
+                    <item name="class" xsi:type="string">Magewirephp\Magewire\Controller\Router</item>
+                    <item name="disable" xsi:type="boolean">false</item>
+                    <item name="sortOrder" xsi:type="string">5</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+</config>
