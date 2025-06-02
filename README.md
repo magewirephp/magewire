@@ -1,4 +1,6 @@
-# Magewire PHP
+# Magewire PHP - BETA
+
+> **⚠️ BETA WARNING:** The main branch contains the beta version of MagewirePHP v3. For stable v1 documentation and releases, please switch to the [1.x branch]([../../tree/1.x](https://github.com/magewirephp/magewire/tree/1.x)).
 
 [![Discord](https://dcbadge.vercel.app/api/server/RM5nnK5wxj)](https://discord.gg/RM5nnK5wxj)
 
