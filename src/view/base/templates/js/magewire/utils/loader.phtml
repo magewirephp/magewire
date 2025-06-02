@@ -1,0 +1,84 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireTemplateFragment = $magewireViewModel->utils()->template()->fragment();
+
+/** @internal Do not modify to ensure Magewire continues to function correctly. */
+?>
+<?php $script = $magewireTemplateFragment->script()->start() ?>
+<script>
+    function magewireLoaderUtility() {
+        'use strict';
+
+        return {
+            parseText: function(text) {
+                if (typeof text !== 'string') {
+                    throw new Error('Input must be a string');
+                }
+
+                text = text.trim();
+
+                if (! text) {
+                    return [{ text: '' }];
+                }
+
+                <?php /* Splitting strategies. */ ?>
+                const CONTINUATION = '...';
+                const SEPARATOR = ' ... ';
+
+                let parts;
+
+                if (text.startsWith(CONTINUATION)) {
+                    <?php /* Handle continuation format: "...text" */ ?>
+                    parts = [null, text.substring(CONTINUATION.length)];
+                } else if (text.includes(SEPARATOR)) {
+                    <?php /* Handle separator format: "text ... more text" */ ?>
+                    parts = text.split(new RegExp(`\\s*\\.\\.\\.\\s*`));
+                } else {
+                    <?php /* Handle a single text format */ ?>
+                    parts = [text];
+                }
+
+                return parts.map(part => this.parsePart(part));
+            },
+
+            parsePart: function(part) {
+                if (part === null) {
+                    return { text: null };
+                }
+                if (typeof part !== 'string') {
+                    return { text: part };
+                }
+
+                part = part.trim();
+
+                if (! part.includes(': ')) {
+                    return { text: part };
+                }
+
+                <?php /* Split on the first colon only. */ ?>
+                const DELIMITER = ': ';
+
+                const index = part.indexOf(DELIMITER);
+                const title = part.substring(0, index).trim();
+                const text  = part.substring(index + DELIMITER.length).trim();
+
+                return { text, title };
+            }
+        }
+    }
+
+    <?php /* Register as Magewire utility. */ ?>
+    document.addEventListener('magewire:init', () => Magewire.utility('loader', magewireLoaderUtility), { once: true });
+</script>
+<?php $script->end() ?>

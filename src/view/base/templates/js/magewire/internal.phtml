@@ -1,0 +1,100 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireTemplateFragment = $magewireViewModel->utils()->template()->fragment();
+
+/** @internal Do not modify to ensure Magewire continues to function correctly. */
+?>
+<?php $script = $magewireTemplateFragment->script()->start() ?>
+<script>
+    (() => {
+        'use strict';
+
+        if (! window.Livewire) {
+            console.warn('Magewire: Livewire is not available. Skipping initialization.');
+            return;
+        }
+
+        window.Magewire = window.Livewire;
+
+        window.Magewire.utilities = window.Magewire.utilities || {};
+        window.Magewire.addons = window.Magewire.addons || {};
+
+        function registerMagewireNamespace(namespace, name, callback, reactive = false) {
+            const type = namespace.slice(0, -1);
+
+            if (typeof name !== 'string' || name.trim() === '') {
+                throw new Error(`Magewire: ${type} name must be a non-empty string`);
+            }
+            if (typeof callback !== 'function') {
+                throw new Error(`Magewire: ${type} callback must be a function`);
+            }
+
+            const target = Magewire[namespace];
+
+            if (target.hasOwnProperty(name)) {
+                console.warn(`Magewire: ${type} "${name}" is already registered. Overwriting existing ${type}.`);
+            }
+
+            try {
+                const result = callback();
+                const subject = reactive ? Alpine.reactive(result) : result;
+
+                target[name] = subject;
+                Magewire[namespace][name] = subject;
+
+                return subject;
+            } catch (error) {
+                throw new Error(`Magewire: Failed to register ${type} "${name}": ${error.message}`);
+            }
+        }
+
+        window.Magewire.utility = function(name, callback) {
+            return registerMagewireNamespace('utilities', name, callback, false);
+        };
+        window.Magewire.addon = function(name, callback, reactive = false) {
+            return registerMagewireNamespace('addons', name, callback, reactive);
+        };
+
+        const EVENTS = [
+            { from: 'init', to: 'init' },
+            { from: 'initialized', to: 'initialized' }
+        ];
+
+        EVENTS.forEach(({ from, to }) => {
+            document.addEventListener(`livewire:${from}`, original => {
+                const kebabCaseEvent = to.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+
+                document.dispatchEvent(new CustomEvent(`magewire:${kebabCaseEvent}`, {
+                    detail: { ...original.detail },
+                    bubbles: original.bubbles,
+                    cancelable: original.cancelable
+                }));
+            });
+        });
+
+        const EVENTS_LEGACY = [
+            { from: 'magewire:init', to: 'magewire:load' },
+            { from: 'magewire:initialized', to: 'magewire:available' }
+        ];
+
+        EVENTS_LEGACY.forEach(({ from, to }) => {
+            document.addEventListener(from, event => {
+                window.dispatchEvent(new CustomEvent(to, {
+                    detail: event.detail,
+                    bubbles: event.bubbles,
+                    cancelable: event.cancelable
+                }));
+            });
+        });
+    })();
+</script>
+<?php $script->end() ?>

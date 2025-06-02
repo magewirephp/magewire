@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd"
+>
+    <group id="loader"
+           translate="label"
+           sortOrder="999"
+           showInDefault="1"
+           showInWebsite="1"
+           showInStore="1"
+    >
+        <label>Loader</label>
+
+        <field id="enable"
+               translate="label comment"
+               type="select"
+               sortOrder="10"
+               showInDefault="1"
+               canRestore="1"
+        >
+            <label>Show</label>
+            <comment>Show a loading screen overlay while a component is busy loading.</comment>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+        </field>
+
+        <field id="enable_notifications"
+               translate="label comment"
+               type="select"
+               sortOrder="10"
+               showInDefault="1"
+               canRestore="1"
+        >
+            <label>Enable Notifications</label>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <comment>Display notification component messages when set.</comment>
+
+            <depends>
+                <field id="dev/magewire/loader/enable">1</field>
+            </depends>
+        </field>
+
+        <include path="Magewirephp_Magewire::system/dev/magewire/loader/notifications.xml"/>
+    </group>
+</include>

@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+>
+    <body>
+        <!-- MOVES -->
+        <!-- Ensure all AlpineJS scripts load first to guarantee they are available before Magewire initializes. -->
+        <move element="script-alpine-js" destination="magewire.alpinejs.before"/>
+
+        <!-- REFERENCES -->
+        <!-- Disable loading Alpine.js separately through the theme since it is already included with Magewire. -->
+        <referenceBlock name="script-alpine-js"
+                        template="Magewirephp_MagewireCompatibilityWithHyva::js/disable-alpinejs.phtml"
+        />
+        <!-- Injecting a Hyvä specific way of loading the Magewire JS-lib. -->
+        <referenceBlock name="magewire.script"
+                        template="Magewirephp_MagewireCompatibilityWithHyva::js/magewire/script.phtml"
+        />
+
+        <referenceContainer name="magewire.disabled">
+            <block name="magewire.alpinejs.script" template="Hyva_Theme::page/js/alpinejs.phtml"/>
+        </referenceContainer>
+
+        <referenceContainer name="magewire.features">
+            <!-- Make the flash messages feature compatible with the Hyvä theme. -->
+            <block name="magewire.features.support-magento-flash-messages"
+                   template="Magewirephp_MagewireCompatibilityWithHyva::js/magewire/features/support-magento-flash-messages/support-magento-flash-messages.phtml"
+            />
+        </referenceContainer>
+    </body>
+</page>

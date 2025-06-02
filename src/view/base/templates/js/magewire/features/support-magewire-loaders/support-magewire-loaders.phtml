@@ -1,0 +1,106 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireTemplateFragment = $magewireViewModel->utils()->template()->fragment();
+
+/** @internal Do not modify to ensure Magewire continues to function correctly. */
+?>
+<?php $script = $magewireTemplateFragment->script()->start() ?>
+<script>
+    document.addEventListener('magewire:init', () => {
+        Magewire.hook('commit', ({ component, commit, succeed, fail }) => {
+            const notify = function(text, title = null) {
+                const parts = Magewire.utilities.loader.parseText(text)
+
+                const hooks = {
+                    onActivation: (notification, resolve, reject) => {
+                        succeed(({ snapshot, effect }) => {
+                            if (parts.length === 2) {
+                                Magewire.addons.notifier.create({
+                                    title: title ? title : (parts[0].title || (parts[1].title || null)),
+                                    text: parts[1].text
+                                })
+                            }
+
+                            resolve(true)
+                        })
+
+                        fail(() => reject('Something went wrong'))
+                    }
+                }
+
+                const notification = {
+                    title: title ? title : (parts[0].title || null),
+                    text: parts[0].text || null,
+
+                    loader: {
+                        active: true
+                    }
+                }
+
+                Magewire.addons.notifier.create(notification, hooks)
+            }
+
+            const expression = {
+                update: (prop, value, loader) => {
+                    const expression = [
+                        `${ prop }:${ value }`,
+                        `${ prop.substring(0, prop.lastIndexOf('.')) }:${ value }`,
+                        `${ prop }`,
+                        `${ prop.substring(0, prop.lastIndexOf('.')) }`
+                    ].filter(expression => {
+                        return expression in loader
+                    })[0] || false
+
+                    return expression ? (loader[expression] ?? false) : false
+                },
+                call: (item, loader) => {
+                    return loader[item.method]
+                }
+            }
+
+            if (component.effects.loader) {
+                if (commit.calls.length !== 0) {
+                    commit.calls.forEach(call => {
+                        const notification = expression.call(call, component.effects.loader[0])
+
+                        if (typeof notification === 'object') {
+                            notify(notification[0])
+                        } else if (notification === true) {
+                            // WIP.
+                        }
+                    })
+                }
+
+                if (Object.values(commit.updates).length !== 0) {
+                    for (let key in commit.updates) {
+                        if (commit.updates.hasOwnProperty(key)) {
+                            const previous = component.canonical[key]
+                            const value = commit.updates[key]
+
+                            const notification = expression.update(key, value, component.effects.loader[0])
+
+                            if (typeof notification === 'object') {
+                                notify(notification[0]
+                                    .replace(/{value}/g, value)
+                                    .replace(/{previous_value}/g, previous)
+                                )
+                            } else if (notification === true) {
+                                // WIP.
+                            }
+                        }
+                    }
+                }
+            }
+        })
+    })
+</script>
+<?php $script->end() ?>

@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd"
+>
+    <event name="hyva_config_generate_before">
+        <!-- Registering a module for inclusion in hyva-themes.json -->
+        <!-- @see https://docs.hyva.io/hyva-themes/compatibility-modules/tailwind-config-merging.html -->
+        <observer name="MagewirephpMagewireCompatibilityWithHyvaHyvaConfigGenerateBefore"
+                  instance="Magewirephp\MagewireCompatibilityWithHyva\Observer\Frontend\HyvaConfigGenerateBefore"/>
+    </event>
+</config>

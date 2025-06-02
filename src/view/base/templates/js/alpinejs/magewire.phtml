@@ -1,0 +1,32 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireTemplateFragment = $magewireViewModel->utils()->template()->fragment();
+
+/**
+ * AlpineJS - Global
+ *
+ * @internal Do not modify to ensure Magewire continues to function correctly.
+ */
+?>
+<?php $script = $magewireTemplateFragment->script()->start() ?>
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.store('magewire', {
+            console: {
+                log: message => console.log(`Magewire: ${ message }`),
+                error: message => console.error(`Magewire: ${ message }`),
+                warn: message => console.warn(`Magewire: ${ message }`),
+            }
+        })
+    })
+</script>
+<?php $script->end() ?>

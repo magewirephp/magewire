@@ -1,0 +1,25 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireTemplateFragment = $magewireViewModel->utils()->template()->fragment();
+?>
+<?php $script = $magewireTemplateFragment->script()->start() ?>
+<script>
+    (() => {
+        'use strict';
+
+        console.debug('IMPORTANT: Unable to load Magewire due to a missing script DOM element responsible for loading the JavaScript source. ' +
+            'Since the correct source varies across Magento themes, you must override the "magewire.script" block template. ' +
+            'Ensure the template includes a script element with a "src" attribute pointing to the correct JavaScript file. ' +
+            'For detailed guidance, refer to the Magewire documentation.');
+    })();
+</script>
+<?php $script->end() ?>

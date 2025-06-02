@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd"
+>
+    <event name="view_block_abstract_to_html_before">
+        <observer name="MagewirephpMagewireViewBlockAbstractToHtmlBefore"
+                  instance="Magewirephp\Magewire\Observer\ViewBlockAbstractToHtmlBefore"
+        />
+    </event>
+
+    <event name="view_block_abstract_to_html_after">
+        <observer name="MagewirephpMagewireViewBlockAbstractToHtmlAfter"
+                  instance="Magewirephp\Magewire\Observer\ViewBlockAbstractToHtmlAfter"
+        />
+    </event>
+
+    <event name="controller_action_predispatch">
+        <observer name="MagewirephpMagewireControllerActionPredispatch"
+                  instance="Magewirephp\Magewire\Observer\ControllerActionPredispatch"
+        />
+    </event>
+</config>

@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd"
+>
+    <type name="Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolver\LayoutResolver">
+        <arguments>
+            <argument name="handlesToExclude" xsi:type="array">
+                <item name="hyva_default" xsi:type="boolean">true</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- Directive area: Hyva -->
+    <virtualType name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\HyvaDirectiveArea"
+                 type="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\DirectiveArea"
+    >
+        <arguments>
+            <!-- All Hyva-specific directives without the prefix. -->
+            <argument name="directives" xsi:type="array">
+                <item name="svgIcon" xsi:type="object">
+                    Magewirephp\MagewireCompatibilityWithHyva\Magewire\Features\SupportMagewireCompiling\View\Directive\Hyva\SvgIcon
+                </item>
+                <item name="dialog" xsi:type="object">
+                    Magewirephp\MagewireCompatibilityWithHyva\Magewire\Features\SupportMagewireCompiling\View\Directive\Hyva\Dialog
+                </item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\DirectiveManager">
+        <arguments>
+            <argument name="areas" xsi:type="array">
+                <!-- Register the "hyva" directive area prefix. -->
+                <item name="hyva" xsi:type="object">
+                    Magewirephp\Magewire\Features\SupportMagewireCompiling\View\HyvaDirectiveArea
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\ActionManager">
+        <arguments>
+            <argument name="namespaces" xsi:type="array">
+                <item name="hyva.svg-icons" xsi:type="object">
+                    Magewirephp\MagewireCompatibilityWithHyva\Magewire\Features\SupportMagewireCompiling\View\Action\Hyva\SvgIconViewAction
+                </item>
+            </argument>
+        </arguments>
+    </type>
+</config>

@@ -1,0 +1,17 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+
+/** @internal Do not modify to ensure Magewire continues to function correctly. */
+?>
+<script type="module"
+        src="<?= $escaper->escapeUrl($block->getViewFileUrl("Magewirephp_Magewire::js/alpinejs.min.js")) ?>"
+        defer
+        crossorigin
+></script>

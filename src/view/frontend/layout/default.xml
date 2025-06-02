@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+>
+    <body>
+        <!-- MOVES -->
+        <!-- Include Magewire. -->
+        <move element="magewire" destination="before.body.end"/>
+
+        <!-- REFERENCES -->
+        <referenceContainer name="magewire.alpinejs">
+            <!-- Intended to hold custom AlpineJS re-usable data components. -->
+            <referenceContainer name="magewire.alpinejs.components">
+                <!-- Magewire Script -->
+                <block name="magewire.alpinejs.components.magewire-script"
+                       template="Magewirephp_Magewire::js/alpinejs/components/magewire-script.phtml"
+                >
+                    <block name="magewire.alpinejs.components.magewire-script.script-data"
+                           template="Magewirephp_Magewire::js/alpinejs/components/magewire-script/script-data.phtml"
+                           as="script.data"
+                    />
+                    <block name="magewire.alpinejs.components.magewire-script.script-bind"
+                           template="Magewirephp_Magewire::js/alpinejs/components/magewire-script/script-bind.phtml"
+                           as="script.bind"
+                    />
+
+                    <container name="magewire.alpinejs.components.magewire-script.after"
+                               as="after"
+                    />
+                </block>
+            </referenceContainer>
+        </referenceContainer>
+
+        <referenceContainer name="magewire.disabled">
+            <!-- Fallback: Loads AlpineJS when Magewire is disabled. -->
+            <block name="magewire.alpinejs.script"
+                   template="Magewirephp_Magewire::js/alpinejs.phtml"
+            />
+        </referenceContainer>
+    </body>
+</page>

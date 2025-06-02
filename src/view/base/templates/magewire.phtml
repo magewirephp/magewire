@@ -1,0 +1,45 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+/** @internal Do not modify to ensure Magewire continues to function correctly. */
+
+$magewireViewModel = $block->getData('view_model');
+$resolveComponentsViewModel = $magewireViewModel->utils()->magewire()->mechanisms()->resolveComponents();
+$templateUtil = $magewireViewModel->utils()->template();
+?>
+<?= $templateUtil->echoCodeComment('start', true) ?>
+<?= $templateUtil->echoCodeComment('before', false, 'container') ?>
+<?= $block->getChildHtml('before') ?>
+
+<?php if ($resolveComponentsViewModel->doesPageHaveComponents()): ?>
+    <?= $templateUtil->echoCodeComment('internal before', false, 'container') ?>
+    <?= $block->getChildHtml('before.internal') ?>
+    <?= $templateUtil->echoCodeComment('script') ?>
+    <?= $block->getChildHtml('script') ?>
+    <?= $templateUtil->echoCodeComment('internal') ?>
+    <?= $block->getChildHtml('internal') ?>
+    <?= $templateUtil->echoCodeComment('utilities', false, 'container') ?>
+    <?= $block->getChildHtml('utilities') ?>
+    <?= $templateUtil->echoCodeComment('addons', false, 'container') ?>
+    <?= $block->getChildHtml('addons') ?>
+    <?= $templateUtil->echoCodeComment('directives', false, 'container') ?>
+    <?= $block->getChildHtml('directives') ?>
+    <?= $templateUtil->echoCodeComment('features', false, 'container') ?>
+    <?= $block->getChildHtml('features') ?>
+    <?= $templateUtil->echoCodeComment('internal after', false, 'container') ?>
+    <?= $block->getChildHtml('after.internal') ?>
+<?php else: ?>
+    <?= $templateUtil->echoCodeComment('disabled', false, 'container') ?>
+    <?= $block->getChildHtml('disabled') ?>
+<?php endif ?>
+
+<?= $templateUtil->echoCodeComment('after', false, 'container') ?>
+<?= $block->getChildHtml('after') ?>
+<?= $templateUtil->echoCodeComment('end', true) ?>

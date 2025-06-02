@@ -1,0 +1,63 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireTemplateFragment = $magewireViewModel->utils()->template()->fragment();
+?>
+<?php $script = $magewireTemplateFragment->script()->start() ?>
+<script>
+    (() => {
+        'use strict';
+
+        const variants = {
+            calls: {
+                button: 'click'
+            },
+            updates: {
+                input: 'mousedown|keydown'
+            }
+        }
+
+        const listeners = {
+
+        }
+
+        document.addEventListener('magewire:initialized', event => {
+            Magewire.hook('commit.prepare', ({component}) => {
+                // WIP
+            })
+
+            Magewire.directive('mage:notify', ({el, directive, component, cleanup}) => {
+                let variant = el.tagName.toLowerCase() in variants.calls ? 'call'
+                    : el.tagName.toLowerCase() in variants.updates ? 'update' : null;
+
+                <?php /* Map the variant as the 'event' value to always have an object value. */ ?>
+                variant = typeof variant === 'string' ? { event: variant } : variant
+
+                if (! variant) {
+                    return
+                }
+
+                const action = event => {
+
+                }
+
+                variant.event.split('|').forEach(event => {
+                    el.addEventListener(event, action, {
+                        capture: true
+                    })
+
+                    cleanup(() => el.removeEventListener(event, action))
+                })
+            })
+        })
+    })();
+</script>
+<?php $script->end() ?>

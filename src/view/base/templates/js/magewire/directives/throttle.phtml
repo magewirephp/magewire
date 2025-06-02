@@ -1,0 +1,81 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireTemplateFragment = $magewireViewModel->utils()->template()->fragment();
+?>
+<?php $script = $magewireTemplateFragment->script()->start() ?>
+<script>
+    (() => {
+        'use strict';
+
+        const queue = new WeakMap()
+
+        const variants = {
+            button: 'click',
+            input : 'mousedown|keydown'
+        }
+
+        const effects = {
+            disable: (el) => {
+                el.disabled = true
+
+                return () => {
+                    el.disabled = false
+                }
+            }
+        }
+
+        document.addEventListener('magewire:initialized', event => {
+            Magewire.directive('mage:throttle', ({ el, directive, component, cleanup }) => {
+                let variant = variants[el.tagName.toLowerCase()]
+
+                <?php /* Try to locate a given duration modifier. */ ?>
+                let useDuration = directive.modifiers
+                    .filter(item => typeof item === 'string' && item.endsWith('ms') && /^\d/.test(item))
+                    .map(item => parseInt(item.slice(0, -2), 10))
+
+                <?php /* Use the expression as the variant event. */ ?>
+                variant = directive.expression.length === 0 ? variant : directive.expression
+                <?php /* Map the variant as the 'event' value to always have an object value. */ ?>
+                variant = typeof variant === 'string' ? { event: variant } : variant
+
+                if (! variant in variant || ! variant.event) {
+                    return
+                }
+
+                const action = event => {
+                    const item = queue.get(component)
+
+                    if (item) {
+                        event.preventDefault()
+                        event.stopImmediatePropagation()
+
+                        item.i++
+                        return
+                    }
+
+                    queue.set(component, { el: el, i: 0 })
+
+                    setTimeout(() => queue.delete(component), useDuration.length ? useDuration[0] : 5000)
+                }
+
+                variant.event.split('|').forEach(event => {
+                    el.addEventListener(event, action, {
+                        capture: true
+                    })
+
+                    cleanup(() => el.removeEventListener(event, action))
+                })
+            })
+        })
+    })();
+</script>
+<?php $script->end() ?>

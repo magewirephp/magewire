@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+      layout="1column"
+>
+    <body>
+        <referenceContainer name="content">
+            <container name="magewire.playwright.directives"
+                       htmlClass="grid grid-cols-2 gap-x-8 gap-y-96"
+                       htmlId="magewire-playwrgith-directives"
+                       htmlTag="div"
+            >
+                <block name="magewire.playwright.directives.base"
+                       template="Magewirephp_Magewire::magewire/tests/playwright/directives/base.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire" xsi:type="object">
+                            Magewirephp\Magewire\Magewire\Playwright\Directives\Base
+                        </argument>
+                    </arguments>
+                </block>
+
+                <block name="magewire.playwright.directives.scope"
+                       template="Magewirephp_Magewire::magewire/tests/playwright/directives/scope.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire" xsi:type="object">
+                            Magewirephp\Magewire\Magewire\Playwright\Directives\Scope
+                        </argument>
+                    </arguments>
+                </block>
+            </container>
+
+            <container name="magewire.playwright.directive.areas"
+                       htmlClass="grid grid-cols-1 gap-x-8 gap-y-96 mt-8"
+                       htmlId="magewire-playwrgith-directive-areas"
+                       htmlTag="div"
+            >
+                <block name="magewire.playwright.directive.areas.escape"
+                       template="Magewirephp_Magewire::magewire/tests/playwright/directives/area/escape.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire" xsi:type="object">
+                            Magewirephp\Magewire\Magewire\Playwright\Directives\Scope
+                        </argument>
+                    </arguments>
+                </block>
+
+                <block name="magewire.playwright.directive.areas.render"
+                       template="Magewirephp_Magewire::magewire/tests/playwright/directives/area/render.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire" xsi:type="object">
+                            Magewirephp\Magewire\Magewire\Playwright\Directives\Render
+                        </argument>
+                    </arguments>
+
+                    <block name="magewire.playwright.directive.areas.render.child"
+                           template="Magewirephp_Magewire::magewire/tests/playwright/directives/area/render/child.phtml"
+                           as="child"
+                    >
+                        <arguments>
+                            <argument name="magewire" xsi:type="object">
+                                Magewirephp\Magewire\Magewire\Playwright\Directives\Render
+                            </argument>
+                        </arguments>
+
+                        <block name="magewire.playwright.directive.areas.render.child-child"
+                               template="Magewirephp_Magewire::magewire/tests/playwright/directives/area/render/child-child.phtml"
+                               as="child-child"
+                        >
+                            <arguments>
+                                <argument name="magewire" xsi:type="object">
+                                    Magewirephp\Magewire\Magewire\Playwright\Directives\Render
+                                </argument>
+                            </arguments>
+                        </block>
+                    </block>
+                </block>
+            </container>
+        </referenceContainer>
+    </body>
+</page>

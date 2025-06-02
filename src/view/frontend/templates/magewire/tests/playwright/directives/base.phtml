@@ -1,0 +1,33 @@
+
+<div>
+    <h2 class="text-lg mb-6 font-bold">
+        Basics
+    </h2>
+
+    <table class="w-full text-left border">
+        <thead class="uppercase">
+            <tr>
+                <th scope="col" class="px-6 py-3">Directive</th>
+                <th scope="col" class="px-6 py-3">Input</th>
+                <th scope="col" class="px-6 py-3">Result</th>
+                <th scope="col" class="px-6 py-3">Expected</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr>
+                <td class="px-6 py-3">translate</td>
+                <td class="px-6 py-3">foo</td>
+                <td class="px-6 py-3">@translate(value: 'foo', escape: false)</td>
+                <td class="px-6 py-3">foo</td>
+            </tr>
+
+            <tr>
+                <td class="px-6 py-3">translate (escaped)</td>
+                <td class="px-6 py-3">bar</td>
+                <td class="px-6 py-3">@translate(value: 'bar')</td>
+                <td class="px-6 py-3">bar</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

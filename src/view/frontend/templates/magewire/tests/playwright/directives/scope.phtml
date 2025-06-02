@@ -1,0 +1,23 @@
+<div>
+    <h2 class="text-lg mb-6 font-bold">
+        Scope
+    </h2>
+
+    <table id="scope-directive-foreach" class="w-full text-left border">
+        <thead class="uppercase">
+            <tr>
+                <th scope="col" class="px-6 py-3">Key</th>
+                <th scope="col" class="px-6 py-3">Value</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach(['a', 'b', 'c'] as $key => $value)
+            <tr>
+                <td class="px-6 py-3"><?= $key ?></td>
+                <td class="px-6 py-3"><?= $value ?></td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
