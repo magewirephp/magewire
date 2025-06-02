@@ -8,6 +8,7 @@
 
 namespace Magewirephp\Magewire\Model\Action\Type;
 
+use Exception;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exception\ComponentException;
 use Magewirephp\Magewire\Helper\Property as PropertyHelper;
@@ -43,22 +44,49 @@ class Magic
      */
     public function set(string $property, $value, Component $component): void
     {
-        if ($this->propertyHelper->containsDots($property)) {
-            $transform = $this->propertyHelper->transformDots($property, $value, $component);
-
-            $property = $transform['property'];
-            $value    = $transform['data'];
-        }
-
-        // Transform a magic property value.
-        if (is_string($value)
+        try {
+            // Transform a magic property value.
+            if (is_string($value)
             && strrpos($value, '$') === 0
             && ($value = ltrim($value, '$'))
             && array_key_exists($value, $component->getPublicProperties())) {
-            $value = $component->{$value};
-        }
+                $value = $component->{$value};
+            }
 
-        $component->{$property} = $value;
+            $nested = $this->propertyHelper->containsDots($property);
+            $transform = [];
+
+            if ($nested) {
+                $transform = $this->propertyHelper->transformDots($property, $value, $component);
+                $property = $transform['property'];
+                $value = $transform['data'];
+            }
+
+            // Try to run existing pre-assignment methods if they exist.
+            $value = $this->updating($component, $property, $value);
+
+            if ($nested) {
+                $component->{ $transform['property'] } = $this->propertyHelper->assignViaDots($transform['path'], $value, $component->{ $transform['property'] });
+            } else {
+                $component->{ $property } = $value;
+            }
+
+            // Try to run post-assignment methods if they exist.
+            $value = $this->updated($component, $property, $value);
+
+            if ($nested) {
+                $component->{ $transform['property'] } = $this->propertyHelper->assignViaDots($transform['path'], $value, $component->{ $transform['property'] });
+            } else {
+                $component->{ $property } = $value;
+            }
+        } catch (Exception $exception) {
+            $this->logger->critical(
+                sprintf('Magewire: Something went wrong while syncing property "%s" onto component "%s"', $property, $component->name),
+                ['exception' => $exception]
+            );
+
+            return;
+        }
     }
 
     /**
@@ -66,5 +94,31 @@ class Magic
      */
     public function refresh(): void //phpcs:ignore
     {
+    }
+
+    private function updating(Component $component, string $property, $value)
+    {
+        $methods = ['updating' . str_replace(' ', '', ucwords(str_replace(['-', '_', '.'], ' ', $property))), 'updating'];
+
+        foreach ($methods as $method) {
+            if (method_exists($component, $method)) {
+                $value = $component->{$method}($value, $property);
+            }
+        }
+
+        return $value;
+    }
+
+    private function updated(Component $component, string $property, $value)
+    {
+        $methods = ['updated', 'updated' . str_replace(' ', '', ucwords(str_replace(['-', '_', '.'], ' ', $property)))];
+
+        foreach ($methods as $method) {
+            if (method_exists($component, $method)) {
+                $value = $component->{$method}($value, $property);
+            }
+        }
+
+        return $value;
     }
 }
