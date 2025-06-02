@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+>
+    <body>
+        <referenceContainer name="before.body.end">
+<!--            <block name="magewire.livewire"-->
+<!--                   before="script-alpine-js"-->
+<!--                   template="Magewirephp_Magewire::page/js/magewire-livewire.phtml">-->
+<!--                <arguments>-->
+<!--                    <argument name="view_model" xsi:type="object">-->
+<!--                        Magewirephp\Magewire\ViewModel\Magewire-->
+<!--                    </argument>-->
+<!--                </arguments>-->
+<!--            </block>-->
+
+<!--            <block name="magewire.initialize"-->
+<!--                   after="magewire.livewire"-->
+<!--                   template="Magewirephp_Magewire::page/js/magewire-initialize.phtml"-->
+<!--            >-->
+<!--                <arguments>-->
+<!--                    <argument name="view_model" xsi:type="object">-->
+<!--                        Magewirephp\Magewire\ViewModel\Magewire-->
+<!--                    </argument>-->
+<!--                </arguments>-->
+
+<!--                <container name="magewire.plugin.scripts" as="magewire.plugins">-->
+<!--                    &lt;!&ndash; Inject the Magewire core Loader plugin &ndash;&gt;-->
+<!--                    <block name="magewire.plugin.loader"-->
+<!--                           ifconfig="dev/magewire/loader/enable"-->
+<!--                           template="Magewirephp_Magewire::page/js/magewire/plugin/loader.phtml">-->
+<!--                        <arguments>-->
+<!--                            <argument name="view_model" xsi:type="object">-->
+<!--                                Magewirephp\Magewire\ViewModel\Magewire-->
+<!--                            </argument>-->
+<!--                        </arguments>-->
+<!--                    </block>-->
+
+<!--                    <block name="magewire.plugin.error"-->
+<!--                           template="Magewirephp_Magewire::page/js/magewire/plugin/error.phtml"-->
+<!--                    >-->
+<!--                        <arguments>-->
+<!--                            <argument name="view_model" xsi:type="object">-->
+<!--                                Magewirephp\Magewire\ViewModel\Magewire-->
+<!--                            </argument>-->
+
+<!--                            &lt;!&ndash; Specify specific messages for each HTTP status code. &ndash;&gt;-->
+<!--                            <argument name="status_messages" xsi:type="array">-->
+<!--                                <item name="419" xsi:type="string">-->
+<!--                                    The session has expired. Therefore, the page will be refreshed when you confirm.-->
+<!--                                </item>-->
+<!--                            </argument>-->
+<!--                        </arguments>-->
+<!--                    </block>-->
+<!--                </container>-->
+
+<!--                <container name="magewire.directive.scripts" as="magewire.directives">-->
+<!--                    <block name="magewire.directive.select"-->
+<!--                           template="Magewirephp_Magewire::page/js/magewire/directive/select.phtml"/>-->
+<!--                </container>-->
+
+<!--                <container name="magewire.extend.scripts" as="magewire.extends">-->
+<!--                    <block name="magewire.extend.plugin"-->
+<!--                           template="Magewirephp_Magewire::page/js/magewire/extend/plugin.phtml"/>-->
+<!--                </container>-->
+<!--            </block>-->
+        </referenceContainer>
+
+        <!-- Global Magewire pager placeholder -->
+        <block name="magewire.pagination.pager"/>
+    </body>
+</page>
