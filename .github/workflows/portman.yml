@@ -1,0 +1,42 @@
+name: 'Portman Build'
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'portman/**'
+      - 'src/**'
+      - 'lib/**'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+
+  portman:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.MY_TOKEN }}
+
+      - name: Setup php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Install composer
+        uses: ramsey/composer-install@v3
+        with:
+          composer-options: "--no-scripts"
+
+      - name: Portman build
+        run: ./vendor/bin/portman build
+
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore(portman) build'
