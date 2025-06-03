@@ -2,8 +2,6 @@
 
 > **⚠️ BETA WARNING:** The main branch contains the beta version of MagewirePHP v3. For stable v1 documentation and releases, please switch to the [1.x branch]([../../tree/1.x](https://github.com/magewirephp/magewire/tree/1.x)).
 
-[![Discord](https://dcbadge.vercel.app/api/server/RM5nnK5wxj)](https://discord.gg/RM5nnK5wxj)
-
 [![Latest Stable Version](http://poser.pugx.org/magewirephp/magewire/v)](https://packagist.org/packages/magewirephp/magewire)
 [![Total Downloads](http://poser.pugx.org/magewirephp/magewire/downloads)](https://packagist.org/packages/magewirephp/magewire)
 [![style CI](https://github.styleci.io/repos/414967404/shield?style=flat&branch=main)](https://github.styleci.io/repos/414967404/shield?style=flat&branch=main)
@@ -21,6 +19,8 @@ component-based approach that stays true to Magento’s conventions while simpli
 - ✅ Ideal for dynamic UIs like filters, modals, and configurators
 
 MagewirePHP helps you deliver modern UX experiences in Magento—faster, cleaner, and with less frontend overhead.
+
+[![Discord](https://dcbadge.vercel.app/api/server/RM5nnK5wxj)](https://discord.gg/zS7z7rmH)
 
 ## Documentation
 
