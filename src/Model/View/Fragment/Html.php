@@ -31,30 +31,40 @@ class Html extends Fragment
         return parent::start()->withValidator(static fn ($html) => str_starts_with($html, '<'));
     }
 
-    protected function render(): string
-    {
-        $output = parent::render();
-
-        // WIP: Does need a performance gain trying to avoid a preg_replace, does the job for now.
-        foreach ($this->attributes as $attribute => $value) {
-            if (is_numeric($attribute)) {
-                $output = preg_replace('/^(<[^>\s]+)/', '$1 ' . $value, $output);
-            } else {
-                $output = preg_replace('/^(<[^>\s]+)/', '$1 ' . $attribute . '="' . $this->escaper->escapeHtmlAttr($value) . '"', $output);
-            }
-        }
-
-        return $output;
-    }
-
-    public function setAttribute(string $name, string|float|int|null $value = null): static
+    public function setAttribute(string $name, string|float|int|null $value = null, string $area = 'root'): static
     {
         if ($value === null) {
-            $this->attributes[] = $name;
+            $this->attributes[$area] = $name;
         } else {
-            $this->attributes[$name] = $value;
+            $this->attributes[$area][$name] = $value;
         }
 
         return $this;
+    }
+
+    protected function render(): string
+    {
+        $render = parent::render();
+
+        // WIP: Does need a performance gain trying to avoid a preg_replace, does the job for now.
+        foreach ($this->getAreaAttributes('root') as $attribute => $value) {
+            if (is_numeric($attribute)) {
+                $render = preg_replace('/^(<[^>\s]+)/', '$1 ' . $value, $render);
+            } else {
+                $render = preg_replace('/^(<[^>\s]+)/', '$1 ' . $attribute . '="' . $this->escaper->escapeHtmlAttr($value) . '"', $render);
+            }
+        }
+
+        return $render;
+    }
+
+    protected function getAttributes(): array
+    {
+        return $this->attributes;
+    }
+
+    protected function getAreaAttributes(string $area): array
+    {
+        return $this->attributes[$area] ?? [];
     }
 }

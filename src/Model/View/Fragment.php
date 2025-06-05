@@ -78,9 +78,13 @@ abstract class Fragment
         $this->raw = trim(ob_get_clean());
         $this->buffering = false;
 
-        $output = $this->render();
+        try {
+            $output = $this->render();
+        } catch (EmptyFragmentException $exception) {
+            // Unreachable: fragment buffering state verified in method preconditions
+        }
 
-        echo $output;
+        echo $output ?? '';
     }
 
     /**
@@ -161,32 +165,50 @@ abstract class Fragment
         return $this->raw;
     }
 
+    /**
+     * @throws EmptyFragmentException
+     */
     protected function render(): string
     {
-        try {
-            $this->validate();
-            $output = $this->raw;
+        $output = $this->raw;
 
-            if ($output) {
-                foreach ($this->getModifiers() as $modifier) {
-                    try {
-                        if ($modifier instanceof Modifier) {
-                            $output = $modifier->modify($output, $this);
-                        }
-                    } catch (Throwable $exception) {
-                        $this->handleModifierException($exception);
-                    }
+        if ($output) {
+            try {
+                if ($this->validate()) {
+                    $this->applyModifications();
                 }
+            } catch (Throwable $exception) {
+                $output = $this->handleValidationException($exception);
             }
-        } catch (Throwable $exception) {
-            $output = $this->handleValidationException($exception);
+
+            return $output;
         }
 
-        return $output;
+        if ($this->isBuffering()) {
+            throw new EmptyFragmentException(
+                'Unclosed output buffer detected. Fragment buffering must be properly terminated.'
+            );
+        }
+
+        return '';
     }
 
-    protected function getModifiers(): array
+    protected function applyModifications(): static
     {
-        return $this->modifiable ? $this->modifiers : [];
+        $output = $this->raw;
+
+        if ($this->modifiable && $output) {
+            foreach ($this->modifiers as $modifier) {
+                try {
+                    if ($modifier instanceof Modifier) {
+                        $modifier->modify($this);
+                    }
+                } catch (Throwable $exception) {
+                    $this->handleModifierException($exception);
+                }
+            }
+        }
+
+        return $this;
     }
 }

@@ -20,5 +20,5 @@ abstract class Modifier
      *
      * @throws Throwable
      */
-    abstract public function modify(string $output, Fragment $fragment): string;
+    abstract public function modify(Fragment $fragment): Fragment;
 }
