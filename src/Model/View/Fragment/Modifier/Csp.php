@@ -28,13 +28,13 @@ class Csp extends Fragment\Modifier
         //
     }
 
-    public function modify(string $output, Fragment $fragment): string
+    public function modify(Fragment $fragment): Fragment
     {
         if (! $fragment instanceof Fragment\Script) {
-            return $output;
+            return $fragment;
         }
         if (! $this->csp->isCspAvailable()) {
-            return $output;
+            return $fragment;
         }
 
         if ($this->useCspHeader()) {
@@ -43,7 +43,7 @@ class Csp extends Fragment\Modifier
             $fragment->setAttribute('nonce', $this->csp->getMagentoCspNonceProvider()->generateNonce());
         }
 
-        return $output;
+        return $fragment;
     }
 
     private function includeCspHeader(Fragment\Script $fragment): void
