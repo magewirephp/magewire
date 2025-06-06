@@ -16,8 +16,9 @@ use Magento\Framework\App\Cache\State as CacheState;
 use Magento\Framework\View\LayoutInterface;
 use Magento\PageCache\Model\Cache\Type as FPC;
 use Magewirephp\Magewire\Model\View\Fragment;
+use Magewirephp\Magewire\Model\View\FragmentModifier;
 
-class Csp extends Fragment\Modifier
+class Csp extends FragmentModifier
 {
     public function __construct(
         private readonly \Magewirephp\Magewire\Model\Csp $csp,

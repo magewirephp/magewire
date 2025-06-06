@@ -12,7 +12,6 @@ namespace Magewirephp\Magewire\Model\View;
 
 use Magewirephp\Magewire\Model\View\Fragment\Exceptions\EmptyFragmentException;
 use Magewirephp\Magewire\Model\View\Fragment\Exceptions\FragmentValidationException;
-use Magewirephp\Magewire\Model\View\Fragment\Modifier;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
@@ -33,11 +32,11 @@ abstract class Fragment
     private array $validators = [];
 
     /**
-     * @param array<int|string, Modifier $modifiers
+     * @param array<int|string, FragmentModifier|callable> $modifiers
      */
     public function __construct(
         private readonly LoggerInterface $logger,
-        private readonly array $modifiers = []
+        private array $modifiers = []
     ) {
         //
     }
@@ -145,6 +144,13 @@ abstract class Fragment
         return $this;
     }
 
+    protected function withModifier(FragmentModifier|callable $modifier): static
+    {
+        $this->modifiers[] = $modifier;
+
+        return $this;
+    }
+
     protected function handleModifierException(Throwable $exception): static
     {
         $message = 'An unexpected exception occurred while modifying a fragment.';
@@ -175,7 +181,7 @@ abstract class Fragment
         if ($output) {
             try {
                 if ($this->validate()) {
-                    $this->applyModifications();
+                    $this->modify();
                 }
             } catch (Throwable $exception) {
                 $output = $this->handleValidationException($exception);
@@ -193,14 +199,16 @@ abstract class Fragment
         return '';
     }
 
-    protected function applyModifications(): static
+    protected function modify(): static
     {
         $output = $this->raw;
 
         if ($this->modifiable && $output) {
             foreach ($this->modifiers as $modifier) {
                 try {
-                    if ($modifier instanceof Modifier) {
+                    if (is_callable($modifier)) {
+                        $modifier($this);
+                    } else if ($modifier instanceof FragmentModifier) {
                         $modifier->modify($this);
                     }
                 } catch (Throwable $exception) {
