@@ -21,20 +21,22 @@ class Html extends Fragment
     public function __construct(
         private readonly LoggerInterface $logger,
         private readonly Escaper $escaper,
-        private readonly array $modifiers = []
+        private array $modifiers = []
     ) {
         parent::__construct($this->logger, $this->modifiers);
     }
 
     public function start(): static
     {
-        return parent::start()->withValidator(static fn ($html) => str_starts_with($html, '<'));
+        return parent::start()
+
+            ->withValidator(static fn ($html) => str_starts_with($html, '<'));
     }
 
     public function setAttribute(string $name, string|float|int|null $value = null, string $area = 'root'): static
     {
         if ($value === null) {
-            $this->attributes[$area] = $name;
+            $this->attributes[$area][] = $name;
         } else {
             $this->attributes[$area][$name] = $value;
         }
