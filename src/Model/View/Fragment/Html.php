@@ -21,7 +21,7 @@ class Html extends Fragment
     public function __construct(
         private readonly LoggerInterface $logger,
         private readonly Escaper $escaper,
-        private array $modifiers = []
+        private readonly array $modifiers = []
     ) {
         parent::__construct($this->logger, $this->modifiers);
     }
