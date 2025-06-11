@@ -2,22 +2,77 @@
 
 declare(strict_types=1);
 
+use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
 
+/** @var Escaper $escaper */
 /** @var Template $block */
 /** @var MagewireViewModel $magewireViewModel */
 
-/**
- * AlpineJS - Global
- *
- * @internal Do not modify to ensure Magewire continues to function correctly.
- */
 $magewireViewModel = $block->getData('view_model');
-$magewireViewUtilities = $magewireViewModel->utils();
+$magewireTemplate = $magewireViewModel->utils()->template();
+$magewireTemplateFragment = $magewireTemplate->fragment();
 
-$templateUtilities = $magewireViewUtilities->template();
-$layoutUtilities = $magewireViewUtilities->layout();
+/** @internal Do not modify to ensure Magewire continues to function correctly. */
 ?>
-<?= $templateUtilities->echoCodeComment('notifier', false, 'AlpineJS') ?>
-<?= $layoutUtilities->renderBlockAsContainer($block) ?>
+<?= $magewireTemplate->echoCodeComment('magewire notifier', false, 'AlpineJS') ?>
+<?php $script = $magewireTemplateFragment->script()->start() ?>
+<script>
+    function magewireNotifier() {
+        'use strict';
+
+        const notifier = Magewire.addons.notifier
+
+        return {
+            get notifications() {
+                return notifier.notifications;
+            },
+
+            terminate: function() {
+                notifier.terminate(this.notification.id)
+            },
+            hold: function() {
+                notifier.hold(this.notification.id)
+            },
+            cleanup: function() {
+                notifier.cleanup(this.notification.id)
+            },
+
+            bindings: {
+                notification: {
+                    item: function() {
+                        return {
+                            'x-on:click'() {
+                                this.terminate()
+                            },
+                            'x-on:mouseenter'() {
+                                this.hold()
+                            },
+                            'x-on:mouseleave'() {
+                                this.cleanup()
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    function magewireNotifierBindings() {
+        'use strict';
+
+        return {
+            'x-bind:class'() {
+                return 'magewire-notifier';
+            }
+        };
+    }
+
+    <?php /* Register as Alpine component. */ ?>
+    document.addEventListener('alpine:init', () => Alpine.data('magewireNotifier', magewireNotifier), { once: true });
+    <?php /* Register Alpine component bindings (for optional usage). */ ?>
+    document.addEventListener('alpine:init', () => Alpine.bind('magewireNotifierBindings', magewireNotifierBindings), { once: true });
+</script>
+<?php $script->end() ?>
+

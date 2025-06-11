@@ -25,148 +25,138 @@ $magewireTemplateFragment = $magewireViewModel->utils()->template()->fragment();
         return {
             notifications: [],
 
-            create: function(notification, hooks = {}, activate = true) {
-                notification = { ...{
+            defaults: {
+                notification: {
+                    state: '<?= NotificationStateEnum::IDLE->value ?>',
+                    type: '<?= NotificationTypeEnum::INFO->value ?>',
+                    duration: null,
+
+                    hooks: {
+                        onActivation: () => {},
+                        onCleanup: () => {},
+                        onFinish: () => {},
+                        onTermination: () => {},
+
+                        onFailure: (notification, reason) => {
+                            console.warn(`Notification: ${reason || 'no reason given.'}`);
+                        }
+                    },
+                }
+            },
+
+            create: async function(message, options = {}, hooks = {}, activate = true) {
+                let notification = { ...{
                         title: null,
-                        text: '<?= $escaper->escapeJs(__('Unknown Text')) ?>',
-                        type: '<?= NotificationTypeEnum::INFO->value ?>',
-                        duration: 3500
-                    }, ...notification }
+                        message: message || '<?= $escaper->escapeJs(__('Message Unknown')) ?>',
+                        type: this.defaults.notification.type,
+                        duration: this.defaults.notification.duration
+                    }, ...options };
 
                 <?php /* Keeps the notification visible for a day. */ ?>
                 if (notification.duration === 0 || notification.duration === false) {
-                    debugger
-                    notification.duration = (60 * 60 * 1000) * 24
+                    notification.duration = (60 * 60 * 1000) * 24;
+                }
+
+                <?php /* Calculate reading duration based on the message length. */ ?>
+                if (notification.duration === null) {
+                    notification.duration = Magewire.utilities.str.calculateReadingDurationByStrLength(notification.message);
                 }
 
                 // Default Hooks.
-                notification.hooks = { ...{
-                        onTermination: notification => notification.active = false,
-                        onActivation: (notification, resolve) => resolve(true),
-                        onFailure: (notification, reason) => console.warn(`Notification failure: ${reason}`),
-                        onCleanup: notification => notification.timeout = setTimeout(() => notification.active = false, notification.duration),
-                        onFinish: () => {
-                        },
-                    }, ...hooks }
+                notification.hooks = { ...this.defaults.notification.hooks, ...hooks };
 
                 // Defaults.
-                notification.id = Date.now()
-                notification.state = '<?= NotificationStateEnum::IDLE->value ?>'
-                notification.active = false
+                notification.id = Date.now();
+                notification.state = this.defaults.notification.state;
+                notification.active = false;
 
-                // Actions.
-                notification.terminate = notification => {
-                    notification.hooks.onTermination(notification)
-                }
-                notification.activate = (notification, resolve, reject) => {
-                    notification.hooks.onActivation(notification, resolve, reject)
-                }
-                notification.fail = (notification, reason) => {
-                    notification.hooks.onFailure(notification, reason)
-                }
-                notification.cleanup = notification => {
-                    notification.hooks.onCleanup(notification)
-                }
-                notification.finish = (notification, result) => {
-                    notification.hooks.onFinish(notification, result)
-                }
-
-                this.notifications.push(notification)
+                this.notifications.push(notification);
 
                 if (activate) {
-                    this.activate(notification.id)
+                    await this.activate(notification.id);
                 }
 
-                return notification.id
+                return notification;
             },
 
             get: function(id) {
-                return this.notifications.find(notification => notification.id === id)
+                try {
+                    return this.notifications.find(notification => notification.id === id);
+                } catch (exception) {
+                    return null;
+                }
             },
 
-            activate: function(id) {
-                const notification = this.get(id)
+            activate: async function(id) {
+                try {
+                    const notification = this.get(id);
 
-                notification.state  = '<?= NotificationStateEnum::RUNNING->value ?>'
-                notification.active = typeof notification.text === 'string' && notification.text.length !== 0
+                    notification.state = '<?= NotificationStateEnum::RUNNING->value ?>';
+                    notification.active = typeof notification.message === 'string' && notification.message.length !== 0;
 
-                new Promise(async (resolve, reject) => await notification.activate(notification, resolve, reject))
-
-                    .then(result => result ? this.finish(id) : this.fail(id))
-
-                    .catch(reason => this.fail(id, reason))
-
-                    .finally(async () => {
-                        const notification = this.get(id)
-
+                    try {
+                        await Promise.resolve(notification.hooks.onActivation()).then(() => this.finish(id));
+                    } catch (reason) {
+                        await this.fail(id, reason);
+                    } finally {
                         if (notification.state) {
-                            await this.cleanup(id)
+                            await this.cleanup(id);
                         }
-                    })
+                    }
+                } catch(exception) {
+                    await Promise.reject(exception)
+                }
             },
 
-            finish: function(id) {
-                const notification = this.get(id)
-                notification.state = '<?= NotificationStateEnum::SUCCEEDED->value ?>'
+            finish: async function(id) {
+                const notification = this.get(id);
 
-                notification.finish(notification)
+                notification.state = '<?= NotificationStateEnum::SUCCEEDED->value ?>';
+                await notification.hooks.onFinish(notification);
+
+                return notification;
             },
 
-            terminate: function(id) {
-                const notification = this.get(id)
-                notification.state = '<?= NotificationStateEnum::TERMINATED->value ?>'
+            terminate: async function(id) {
+                const notification = this.get(id);
 
-                notification.terminate(notification)
+                notification.state = '<?= NotificationStateEnum::TERMINATED->value ?>';
+                notification.active = false;
+                await notification.hooks.onTermination(notification);
+
+                return notification;
             },
 
-            fail: function(id, reason = null) {
-                const notification = this.get(id)
-                notification.state = '<?= NotificationStateEnum::FAILED->value ?>'
+            fail: async function(id, reason = null) {
+                const notification = this.get(id);
 
-                notification.fail(notification, reason)
+                notification.state = '<?= NotificationStateEnum::FAILED->value ?>';
+                await notification.hooks.onFailure(notification, reason);
+
+                return notification;
             },
 
-            cleanup: function(id) {
-                const notification = this.get(id)
+            cleanup: async function(id) {
+                const notification = this.get(id);
 
-                notification.cleanup(notification)
+                notification.timeout = setTimeout(() => notification.active = false, notification.duration);
+                await notification.hooks.onCleanup(notification);
+
+                return notification;
             },
 
-            clearTimeout: function(id) {
-                const notification = this.get(id)
+            hold: async function(id) {
+                const notification = this.get(id);
 
                 if (notification.timeout) {
-                    clearTimeout(notification.timeout)
+                    await clearTimeout(notification.timeout);
                 }
+
+                return notification;
             },
 
             fetch: function() {
-                return this.notifications
-            },
-
-            <?php /* API version with Content Security Policy (CSP) compliance. */ ?>
-            csp: function() {
-                const origin = this
-
-                return {
-                    ...origin,
-
-                    create: function() {
-                        origin.create(Magewire.utilities.dom.filterDataAttributes(this.$el, 'create'))
-                    },
-                    terminate: function() {
-                        origin.terminate(this.notification.id)
-                    },
-                    fail: function() {
-                        origin.fail(this.notification.id)
-                    },
-                    cleanup: function() {
-                        origin.cleanup(this.notification.id)
-                    },
-                    clearTimeout: function() {
-                        origin.clearTimeout(this.notification.id)
-                    },
-                }
+                return this.notifications;
             }
         }
     }
