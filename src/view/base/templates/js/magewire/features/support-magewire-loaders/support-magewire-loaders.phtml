@@ -2,9 +2,11 @@
 
 declare(strict_types=1);
 
+use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
 
+/** @var Escaper $escaper */
 /** @var Template $block */
 /** @var MagewireViewModel $magewireViewModel */
 
@@ -15,38 +17,44 @@ $magewireTemplateFragment = $magewireViewModel->utils()->template()->fragment();
 ?>
 <?php $script = $magewireTemplateFragment->script()->start() ?>
 <script>
-    document.addEventListener('magewire:init', () => {
-        Magewire.hook('commit', ({ component, commit, succeed, fail }) => {
+    document.addEventListener('magewire:init', event => {
+        const { addons, utilities } = event.detail.magewire;
+
+        Magewire.hook('commit', ({ component, commit, respond, succeed, fail }) => {
             const notify = function(text, title = null) {
-                const parts = Magewire.utilities.loader.parseText(text)
+                const parts = utilities.loader.parseText(text)
 
-                const hooks = {
-                    onActivation: (notification, resolve, reject) => {
-                        succeed(({ snapshot, effect }) => {
-                            if (parts.length === 2) {
-                                Magewire.addons.notifier.create({
-                                    title: title ? title : (parts[0].title || (parts[1].title || null)),
-                                    text: parts[1].text
-                                })
-                            }
-
-                            resolve(true)
+                const trySecondaryPart = parts => {
+                    if (parts.length === 2 && parts[1].text) {
+                        addons.notifier.create(parts[1].text, {
+                            title: title ? title : (parts[1].title || null)
                         })
-
-                        fail(() => reject('Something went wrong'))
                     }
                 }
 
-                const notification = {
+                const options = {
                     title: title ? title : (parts[0].title || null),
-                    text: parts[0].text || null,
 
                     loader: {
                         active: true
                     }
                 }
 
-                Magewire.addons.notifier.create(notification, hooks)
+                const hooks = {
+                    onActivation: notification => {
+                        return new Promise(resolve => {
+                            succeed(({ snapshot, effect }) => {
+                                trySecondaryPart(parts)
+
+                                resolve(true)
+                            })
+                        })
+                    }
+                }
+
+                parts[0].text
+                    ? addons.notifier.create(parts[0].text, options, hooks)
+                    : succeed(({ snapshot, effect }) => trySecondaryPart(parts))
             }
 
             const expression = {

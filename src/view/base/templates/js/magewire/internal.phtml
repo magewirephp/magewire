@@ -29,7 +29,8 @@ $magewireTemplateFragment = $magewireViewModel->utils()->template()->fragment();
         window.Magewire.addons = window.Magewire.addons || {};
 
         function registerMagewireNamespace(namespace, name, callback, reactive = false) {
-            const type = namespace.slice(0, -1);
+            let type = namespace.slice(0, -1);
+            type = type.endsWith('ie') ? type.slice(0, -2) + 'y' : type;
 
             if (typeof name !== 'string' || name.trim() === '') {
                 throw new Error(`Magewire: ${type} name must be a non-empty string`);
@@ -45,11 +46,11 @@ $magewireTemplateFragment = $magewireViewModel->utils()->template()->fragment();
             }
 
             try {
-                const result = callback();
+                const result = callback(window.Magewire);
                 const subject = reactive ? Alpine.reactive(result) : result;
 
                 target[name] = subject;
-                Magewire[namespace][name] = subject;
+                window.Magewire[namespace][name] = subject;
 
                 return subject;
             } catch (error) {
@@ -65,22 +66,23 @@ $magewireTemplateFragment = $magewireViewModel->utils()->template()->fragment();
         };
 
         const EVENTS = [
-            { from: 'init', to: 'init' },
-            { from: 'initialized', to: 'initialized' }
+            { from: 'init', to: 'init', magewire: { ...window.Magewire } },
+            { from: 'initialized', to: 'initialized', magewire: { ...window.Magewire } }
         ];
 
-        EVENTS.forEach(({ from, to }) => {
+        EVENTS.forEach(({ from, to, magewire }) => {
             document.addEventListener(`livewire:${from}`, original => {
                 const kebabCaseEvent = to.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
 
                 document.dispatchEvent(new CustomEvent(`magewire:${kebabCaseEvent}`, {
-                    detail: { ...original.detail },
+                    detail: { ...original.detail, magewire: magewire },
                     bubbles: original.bubbles,
                     cancelable: original.cancelable
                 }));
             });
         });
 
+        /** @deprecated: Both :load and :available will be removed. **/
         const EVENTS_LEGACY = [
             { from: 'magewire:init', to: 'magewire:load' },
             { from: 'magewire:initialized', to: 'magewire:available' }
@@ -88,7 +90,7 @@ $magewireTemplateFragment = $magewireViewModel->utils()->template()->fragment();
 
         EVENTS_LEGACY.forEach(({ from, to }) => {
             document.addEventListener(from, event => {
-                window.dispatchEvent(new CustomEvent(to, {
+                document.dispatchEvent(new CustomEvent(to, {
                     detail: event.detail,
                     bubbles: event.bubbles,
                     cancelable: event.cancelable
