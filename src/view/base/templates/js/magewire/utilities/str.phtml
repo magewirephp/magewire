@@ -1,0 +1,48 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireTemplateFragment = $magewireViewModel->utils()->template()->fragment();
+
+/** @internal Do not modify to ensure Magewire continues to function correctly. */
+?>
+<?php $script = $magewireTemplateFragment->script()->start() ?>
+<script>
+    function magewireStrUtility() {
+        'use strict';
+
+        return {
+            calculateReadingDurationByStrLength: function(message, options = {}) {
+                const {
+                    minDuration = 3500,
+                    maxDuration = 15000,
+                    baseCharsPerSecond = 15,
+                    bufferTime = 1000
+                } = options;
+
+                // Short messages get minimum duration.
+                if (message.length <= 50) {
+                    return minDuration;
+                }
+
+                const readingTime = (message.length / baseCharsPerSecond) * 1000;
+                const totalDuration = readingTime + bufferTime;
+
+                return Math.min(Math.max(totalDuration, minDuration), maxDuration);
+            }
+        }
+    }
+
+    <?php /* Register as Magewire utility. */ ?>
+    document.addEventListener('magewire:init', () => Magewire.utility('str', magewireStrUtility), { once: true });
+</script>
+<?php $script->end() ?>
