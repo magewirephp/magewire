@@ -1,0 +1,31 @@
+.magewire-notifier {
+    @apply space-y-2 z-50 w-full fixed bottom-4 left-6 md:max-w-xs ml-2 mb-2 flex flex-col;
+}
+
+.magewire-notifier__notification {
+    @apply pointer-events-auto relative w-full py-2 px-5 max-w-sm rounded-lg drop-shadow-md bg-white border-l-6 border-l-gray-600;
+}
+
+.magewire-notifier__notification-content {
+    @apply flex items-center justify-between;
+}
+
+.magewire-notifier__notification-before {
+    @apply flex items-center space-x-3;
+}
+
+.magewire-notifier__notification-text {
+
+}
+
+.magewire-notifier__notification-title {
+
+}
+
+.magewire-notifier__notification-message {
+
+}
+
+.magewire-notifier__notification-after {
+    @apply flex items-center space-x-3;
+}
