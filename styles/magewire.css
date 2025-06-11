@@ -1,0 +1,9 @@
+/* Minimal Tailwind CSS layers */
+@import "tailwindcss" layer(utilities);
+
+/* UI Components */
+@import "./ui-component/notifier.css";
+
+/* Purge Sources */
+@source "../src/view/base/templates/**/*.{phtml,js}";
+@source "../src/view/frontend/templates/**/*.{phtml,js}";

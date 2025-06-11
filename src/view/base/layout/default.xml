@@ -2,6 +2,10 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
 >
+    <head>
+        <css src="Magewirephp_Magewire::css/magewire.css"/>
+    </head>
+
     <body>
         <block name="magewire" template="Magewirephp_Magewire::magewire.phtml">
             <container name="magewire.before" as="before">
@@ -19,16 +23,7 @@
                         <!-- Magewire Notifier - AlpineJS component -->
                         <block name="magewire.alpinejs.components.magewire-notifier"
                                template="Magewirephp_Magewire::js/alpinejs/components/magewire-notifier.phtml"
-                        >
-                            <block name="magewire.alpinejs.components.magewire-notifier.script-data"
-                                   template="Magewirephp_Magewire::js/alpinejs/components/magewire-notifier/script-data.phtml"
-                                   as="script.data"
-                            />
-                            <block name="magewire.alpinejs.components.magewire-notifier.script-bind"
-                                   template="Magewirephp_Magewire::js/alpinejs/components/magewire-notifier/script-bind.phtml"
-                                   as="script.bind"
-                            />
-                        </block>
+                        />
                     </container>
                 </container>
 
@@ -99,10 +94,13 @@
             -->
             <container name="magewire.utilities" as="utilities">
                 <block name="magewire.utilities.dom"
-                       template="Magewirephp_Magewire::js/magewire/utils/dom.phtml"
+                       template="Magewirephp_Magewire::js/magewire/utilities/dom.phtml"
                 />
                 <block name="magewire.utilities.loader"
-                       template="Magewirephp_Magewire::js/magewire/utils/loader.phtml"
+                       template="Magewirephp_Magewire::js/magewire/utilities/loader.phtml"
+                />
+                <block name="magewire.utilities.str"
+                       template="Magewirephp_Magewire::js/magewire/utilities/str.phtml"
                 />
             </container>
 

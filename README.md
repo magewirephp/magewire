@@ -60,6 +60,20 @@ To install Magewire in your Magento 2 project, follow these steps:
    bin/magento cache:flush
    ```
 
+## Styles
+
+To run styles, follow these steps:
+
+1. Install packages:
+  ```shell
+  npm ci
+  ```
+2. Run styles:
+  ```shell
+  npx @tailwindcss/cli -i ./styles/magewire.css -o ./src/view/base/web/css/magewire.css --optimize
+  ```
+  Use the `--watch` flag to re-compile on template changes.
+
 ## Sponsors
 
 |   |   |   |
