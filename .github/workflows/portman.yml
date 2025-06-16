@@ -37,6 +37,6 @@ jobs:
       - name: Portman build
         run: ./vendor/bin/portman build
 
-      - uses: stefanzweifel/git-auto-commit-action@v5
+      - uses: stefanzweifel/git-auto-commit-action@v6
         with:
           commit_message: 'chore(portman) build'
