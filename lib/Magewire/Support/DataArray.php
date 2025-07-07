@@ -135,7 +135,7 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
     /**
      * Returns a filtered array.
      */
-    public function filter(callable $filter, array $array = null): array
+    public function filter(callable $filter, ?array $array = null): array
     {
         return array_filter($array ?? $this->items, $filter);
     }

@@ -23,7 +23,7 @@ class GeneratorPool extends \Magento\Framework\View\Layout\GeneratorPool
         ConditionFactory $conditionFactory,
         LoggerInterface $logger,
         MagewireLayoutScheduledStructureHelper $magewireLayoutScheduledStructureHelper,
-        array $generators = null,
+        ?array $generators = null,
         ?State $state = null
     ) {
         parent::__construct($helper, $conditionFactory, $logger, $generators, $state);

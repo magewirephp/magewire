@@ -71,7 +71,7 @@ class MagewireManager
     /**
      * @throws NotFoundException
      */
-    public function mount($name, $params = [], $key = null, AbstractBlock $block = null, Component $component = null): void
+    public function mount($name, $params = [], $key = null, ?AbstractBlock $block = null, ?Component $component = null): void
     {
         /** @var HandleComponentsFacade $handleComponentsMechanismFacade */
         $handleComponentsMechanismFacade = $this->magewireServiceProvider->getHandleComponentsMechanismFacade();
@@ -102,7 +102,7 @@ class MagewireManager
      * @throws RuntimeException
      * @throws NotFoundException
      */
-    public function update($snapshot, $diff, $calls, AbstractBlock $block = null): void
+    public function update($snapshot, $diff, $calls, ?AbstractBlock $block = null): void
     {
         /** @var HandleComponentsFacade $handleComponentsMechanismFacade */
         $handleComponentsMechanismFacade = $this->magewireServiceProvider->getHandleComponentsMechanismFacade();

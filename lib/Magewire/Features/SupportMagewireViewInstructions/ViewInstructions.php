@@ -76,7 +76,7 @@ class ViewInstructions
     /**
      * Returns the amount of batched evaluation results.
      */
-    public function count(array $items = null): int
+    public function count(?array $items = null): int
     {
         return count($items ?? $this->instructions);
     }
@@ -84,7 +84,7 @@ class ViewInstructions
     /**
      * Clear the current batch from existing evaluation results.
      */
-    public function clear(callable $filter = null): self
+    public function clear(?callable $filter = null): self
     {
         $this->instructions = $filter ? $this->filter($filter) : [];
 
@@ -142,7 +142,7 @@ class ViewInstructions
     /**
      * Walk over each evaluation result object.
      */
-    public function walk(callable $callback, callable $filter = null): self
+    public function walk(callable $callback, ?callable $filter = null): self
     {
         // Emulates the functionality of array_walk while incorporating filtering capabilities.
         foreach (array_filter($this->instructions, $filter ?? fn () => true) as $item) {
@@ -155,7 +155,7 @@ class ViewInstructions
     /**
      * Returns if the batch doesn't contain any results.
      */
-    public function isEmpty(callable $filter = null): bool
+    public function isEmpty(?callable $filter = null): bool
     {
         return $this->count($filter ? $this->filter($filter) : $this->instructions) === 0;
     }
@@ -163,7 +163,7 @@ class ViewInstructions
     /**
      * Returns if the batch contains more then one result.
      */
-    public function isPlural(callable $filter = null): bool
+    public function isPlural(?callable $filter = null): bool
     {
         return $this->count($filter ? $this->filter($filter) : $this->instructions) > 1;
     }
@@ -171,7 +171,7 @@ class ViewInstructions
     /**
      * Returns if the batch contains only one result.
      */
-    public function isSingular(callable $filter = null): bool
+    public function isSingular(?callable $filter = null): bool
     {
         return $this->count($filter ? $this->filter($filter) : $this->instructions) === 1;
     }
