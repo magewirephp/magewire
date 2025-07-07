@@ -35,12 +35,14 @@ class HandleComponents extends Mechanism
     protected $propertySynthesizers = [Synthesizers\CarbonSynth::class, Synthesizers\CollectionSynth::class, Synthesizers\StringableSynth::class, Synthesizers\EnumSynth::class, Synthesizers\StdClassSynth::class, Synthesizers\ArraySynth::class, Synthesizers\IntSynth::class, Synthesizers\FloatSynth::class];
     public static $renderStack = [];
     public static $componentStack = [];
+
     public function registerPropertySynthesizer($synth)
     {
-        foreach ((array) $synth as $class) {
+        foreach ((array)$synth as $class) {
             array_unshift($this->propertySynthesizers, $class);
         }
     }
+
     public function mount($name, $params = [], $key = null, AbstractBlock $block = null, Component $component = null)
     {
         $parent = last(self::$componentStack);
@@ -91,6 +93,7 @@ class HandleComponents extends Mechanism
             return [$block, $finish($html, $snapshot)];
         };
     }
+
     protected function shortCircuitMount($name, $params, $key, $parent)
     {
         $newHtml = null;
@@ -99,6 +102,7 @@ class HandleComponents extends Mechanism
         });
         return $newHtml;
     }
+
     /**
      * @throws FileSystemException
      * @throws ComponentNotFoundException
@@ -152,6 +156,7 @@ class HandleComponents extends Mechanism
             return [$snapshot, $context->effects];
         };
     }
+
     /**
      * @throws ComponentNotFoundException
      * @throws FileSystemException
@@ -174,6 +179,7 @@ class HandleComponents extends Mechanism
         $this->hydrateProperties($context->getComponent(), $snapshot['data'], $context);
         return [$component, $context];
     }
+
     public function snapshot($component, $context = null)
     {
         $context ??= $this->componentContextFactory->create(['component' => $component]);
@@ -182,6 +188,7 @@ class HandleComponents extends Mechanism
         $snapshot['checksum'] = $this->checksum->generate($snapshot);
         return $snapshot;
     }
+
     protected function dehydrateProperties($component, $context)
     {
         $data = Utils::getPublicPropertiesDefinedOnSubclass($component);
@@ -190,6 +197,7 @@ class HandleComponents extends Mechanism
         }
         return $data;
     }
+
     protected function dehydrate($target, $context, $path)
     {
         if (Utils::isAPrimitive($target)) {
@@ -202,6 +210,7 @@ class HandleComponents extends Mechanism
         $meta['s'] = $synth::getKey();
         return [$data, $meta];
     }
+
     protected function hydrateProperties($component, $data, $context)
     {
         foreach ($data as $key => $value) {
@@ -216,6 +225,7 @@ class HandleComponents extends Mechanism
             $component->{$key} = $child;
         }
     }
+
     protected function hydrate($valueOrTuple, $context, $path)
     {
         if (!Utils::isSyntheticTuple($value = $tuple = $valueOrTuple)) {
@@ -230,6 +240,7 @@ class HandleComponents extends Mechanism
             return $this->hydrate($child, $context, "{$path}.{$name}");
         });
     }
+
     protected function render($component, $default = null, string $html = null)
     {
         $replace = store($component)->get('skipRender', false);
@@ -249,6 +260,7 @@ class HandleComponents extends Mechanism
             }, $component->block());
         });
     }
+
     protected function getView($component)
     {
         //        WIP
@@ -264,6 +276,7 @@ class HandleComponents extends Mechanism
         //        }
         return [$component->block(), Utils::getPublicPropertiesDefinedOnSubclass($component)];
     }
+
     protected function trackInRenderStack($component, $callback)
     {
         static::$renderStack[] = $component;
@@ -271,6 +284,7 @@ class HandleComponents extends Mechanism
             array_pop(static::$renderStack);
         });
     }
+
     protected function updateProperties($component, $updates, $data, $context)
     {
         $finishes = [];
@@ -285,6 +299,7 @@ class HandleComponents extends Mechanism
             $finish();
         }
     }
+
     public function updateProperty($component, $path, $value, $context)
     {
         $segments = explode('.', $path);
@@ -304,6 +319,7 @@ class HandleComponents extends Mechanism
         }
         return $finish;
     }
+
     protected function hydrateForUpdate($raw, $path, $value, $context)
     {
         $meta = $this->getMetaForPath($raw, $path);
@@ -326,6 +342,7 @@ class HandleComponents extends Mechanism
         }
         return $value;
     }
+
     protected function getMetaForPath($raw, $path)
     {
         $segments = explode('.', $path);
@@ -337,6 +354,7 @@ class HandleComponents extends Mechanism
         }
         return $meta;
     }
+
     protected function recursivelySetValue($baseProperty, $target, $leafValue, $segments, $index = 0, $context = null)
     {
         $isLastSegment = count($segments) === $index + 1;
@@ -364,6 +382,7 @@ class HandleComponents extends Mechanism
         $synth->{$method}($target, $property, $toSet, $pathThusFar, $fullPath);
         return $target;
     }
+
     protected function setComponentPropertyAwareOfTypes($component, $property, $value)
     {
         try {
@@ -379,6 +398,7 @@ class HandleComponents extends Mechanism
             }
         }
     }
+
     /**
      * @throws MethodNotFoundException
      */
@@ -418,6 +438,7 @@ class HandleComponents extends Mechanism
         }
         $context->addEffect('returns', $returns);
     }
+
     public function findSynth($keyOrTarget, $component): ?Synth
     {
         $context = new ComponentContext($component);
@@ -427,10 +448,12 @@ class HandleComponents extends Mechanism
             return null;
         }
     }
+
     public function propertySynth($keyOrTarget, $context, $path): Synth
     {
         return is_string($keyOrTarget) ? $this->getSynthesizerByKey($keyOrTarget, $context, $path) : $this->getSynthesizerByTarget($keyOrTarget, $context, $path);
     }
+
     /**
      * @throws Exception
      */
@@ -443,6 +466,7 @@ class HandleComponents extends Mechanism
         }
         throw new Exception('No synthesizer found for key: "' . $key . '"');
     }
+
     /**
      * @throws Exception
      */
@@ -455,6 +479,7 @@ class HandleComponents extends Mechanism
         }
         throw new Exception('Property type not supported in Magewire for property: [' . json_encode($target) . ']');
     }
+
     protected function getSynthesizerByType($type, $context, $path)
     {
         foreach ($this->propertySynthesizers as $synth) {
@@ -464,23 +489,28 @@ class HandleComponents extends Mechanism
         }
         return null;
     }
+
     protected function pushOntoComponentStack($component)
     {
         array_push($this::$componentStack, $component);
     }
+
     protected function popOffComponentStack()
     {
         array_pop($this::$componentStack);
     }
+
     protected function isRemoval($value)
     {
         return $value === '__rm__';
     }
+
     public function __construct(private readonly ComponentContextFactory $componentContextFactory, private readonly Checksum $checksum, protected array $synthesizers = [])
     {
         // Improve modularity by injecting property synthesizers via dependency injection.
         $this->propertySynthesizers = $synthesizers;
     }
+
     public static function provide()
     {
         on('pre-mount', function ($target, $view) {
@@ -492,6 +522,7 @@ class HandleComponents extends Mechanism
             };
         });
     }
+
     public function boot()
     {
         on('snapshot-verified', function (array $snapshot, Component $component) {
@@ -500,3 +531,4 @@ class HandleComponents extends Mechanism
             }
         });
     }
+}
