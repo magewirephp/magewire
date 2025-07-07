@@ -14,7 +14,7 @@ use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ViewAction as Vi
 
 class Tailwindcss extends ViewAction
 {
-    public function classes(string $for, ?string $variant = null)
+    public function classes(string $for, string|null $variant = null)
     {
 
     }

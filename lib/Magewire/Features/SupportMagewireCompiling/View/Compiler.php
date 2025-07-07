@@ -112,7 +112,7 @@ abstract class Compiler
         return true;
     }
 
-    public function canCompile(?bool $choice = null): bool|static
+    public function canCompile(bool|null $choice = null): bool|static
     {
         if ($choice) {
             $this->compile = $choice;

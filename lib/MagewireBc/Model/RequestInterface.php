@@ -73,7 +73,7 @@ interface RequestInterface
      * @param bool $force
      * @return \Magewirephp\Magewire\Model\RequestInterface|bool
      */
-    public function isSubsequent(?bool $flag = null, bool $force = false);
+    public function isSubsequent(bool|null $flag = null, bool $force = false);
 
     /**
      * Check if on a component initialization request.
@@ -88,7 +88,7 @@ interface RequestInterface
      * @param bool|null $flag
      * @return \Magewirephp\Magewire\Model\RequestInterface|bool
      */
-    public function isRefreshing(?bool $flag = null);
+    public function isRefreshing(bool|null $flag = null);
 
     /**
      * @return array

@@ -17,7 +17,7 @@ trait HandlesMagewireCompiling
     private Compiler|null $compiler = null;
     private bool $compile = true;
 
-    public function compiler(?Compiler $compiler = null): Compiler|null
+    public function compiler(Compiler|null $compiler = null): Compiler|null
     {
         if ($compiler) {
             $this->compiler = $compiler;
