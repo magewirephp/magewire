@@ -500,4 +500,3 @@ class HandleComponents extends Mechanism
             }
         });
     }
-}
