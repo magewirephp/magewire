@@ -8,8 +8,11 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments;
+namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\Exceptions;
 
-class LayoutArguments extends AbstractArguments
+use InvalidArgumentException;
+
+class DirectiveExpressionParseException extends InvalidArgumentException
 {
+    //
 }

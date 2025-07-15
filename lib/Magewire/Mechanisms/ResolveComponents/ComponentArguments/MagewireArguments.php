@@ -15,7 +15,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
 use Magento\Framework\View\Element\AbstractBlock;
 
-abstract class AbstractArguments extends DataObject
+abstract class MagewireArguments extends DataObject
 {
     private bool $assembled = false;
 

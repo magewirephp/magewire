@@ -12,7 +12,6 @@ namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management
 
 use Magento\Framework\App\ObjectManager;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ViewAction;
-use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\ActionManagerFactory;
 
 class ActionManager
 {
@@ -29,11 +28,24 @@ class ActionManager
 
     public function execute(string $method, ...$arguments): mixed
     {
-        $method = lcfirst(str_replace(' ', '', ucwords(str_replace('_', ' ', $method))));
+        $method = lcfirst(str_replace('_', '', ucwords($method, '_')));
 
         return $this->action->$method(...$arguments);
     }
 
+    /**
+     * Load and create an ActionManager instance based on the provided namespace.
+     *
+     * This method attempts to resolve the namespace in the following order:
+     * 1. If the namespace is an existing class, creates an ActionManager with that class
+     * 2. If the namespace exists in the registered namespaces array:
+     *    - Uses the object directly if it's already instantiated
+     *    - Creates the object via ObjectManager if it's a class name
+     * 3. Returns the current instance if no resolution is possible
+     *
+     * @param string $namespace The namespace/class name to load, or a key from registered namespaces
+     * @return ActionManager Returns a new ActionManager instance or the current instance as fallback
+     */
     public function load(string $namespace): ActionManager
     {
         if (class_exists($namespace)) {

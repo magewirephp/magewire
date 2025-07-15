@@ -9,10 +9,10 @@
                 type="Magewirephp\Magewire\Support\DataScope\Compiler\RecursiveArray"/>
 
     <!-- Global Non-Shareables -->
-    <type name="Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\LayoutArguments" shared="false"/>
+    <type name="Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\LayoutBlockArguments" shared="false"/>
     <type name="Magewirephp\Magewire\Support\DataScope" shared="false"/>
     <type name="Magewirephp\Magewire\Support\Conditions" shared="false"/>
-    <type name="DataArray" shared="false"/>
+    <type name="Magewirephp\Magewire\Support\DataArray" shared="false"/>
 
     <!-- Global Plugins -->
     <type name="Magento\Framework\View\TemplateEngine\Php">

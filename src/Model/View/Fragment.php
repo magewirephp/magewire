@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Model\View;
 
+use Magento\Framework\View\Element\BlockInterface;
+use Magewirephp\Magento\Framework\View\BlockRenderingRegistry;
 use Magewirephp\Magewire\Model\View\Fragment\Exceptions\EmptyFragmentException;
 use Magewirephp\Magewire\Model\View\Fragment\Exceptions\FragmentValidationException;
 use Psr\Log\LoggerInterface;
@@ -20,14 +22,15 @@ abstract class Fragment
     // Unchanged raw buffer output, if any.
     protected string|bool $raw = false;
     // Indicates whether the fragment is allowed to be modified.
-    protected bool $modifiable = true;
+    protected bool $mutable = true;
+    // Indicated whether the fragment should skip echoing.
+    protected bool $render = true;
 
     // Flag to indicate whether the fragment is currently buffering output.
     private bool $buffering = false;
     // The current output buffer level, if any.
     private int|null $level = null;
 
-    // The fragment's validation callbacks.
     /** @var array<int, callable> $validators */
     private array $validators = [];
 
@@ -35,8 +38,9 @@ abstract class Fragment
      * @param array<int|string, FragmentModifier|callable> $modifiers
      */
     public function __construct(
-        private readonly LoggerInterface $logger,
-        private array $modifiers = []
+        private readonly LoggerInterface        $logger,
+        private readonly BlockRenderingRegistry $renderRegistry,
+        private array                           $modifiers = []
     ) {
         //
     }
@@ -80,10 +84,10 @@ abstract class Fragment
         try {
             $output = $this->render();
         } catch (EmptyFragmentException $exception) {
-            // Unreachable: fragment buffering state verified in method preconditions
+            // Unreachable: fragment buffering state verified in method preconditions.
         }
 
-        echo $output ?? '';
+        echo $this->render ? ($output ?? '') : '';
     }
 
     /**
@@ -107,9 +111,25 @@ abstract class Fragment
      */
     public function lock(): static
     {
-        $this->modifiable = false;
-
+        $this->mutable = false;
         return $this;
+    }
+
+    /**
+     * Avoid output echoing.
+     */
+    public function mute(): static
+    {
+        $this->render = false;
+        return $this;
+    }
+
+    /**
+     * Returns the current block.
+     */
+    public function block(): BlockInterface|null
+    {
+        return $this->renderRegistry->current();
     }
 
     /**
@@ -144,6 +164,9 @@ abstract class Fragment
         return $this;
     }
 
+    /**
+     * Set a fragment modifier.
+     */
     protected function withModifier(FragmentModifier|callable $modifier): static
     {
         $this->modifiers[] = $modifier;
@@ -172,6 +195,8 @@ abstract class Fragment
     }
 
     /**
+     * Returns the final fragment output.
+     *
      * @throws EmptyFragmentException
      */
     protected function render(): string
@@ -199,11 +224,14 @@ abstract class Fragment
         return '';
     }
 
+    /**
+     * Runs all injected fragment modifiers.
+     */
     protected function modify(): static
     {
         $output = $this->raw;
 
-        if ($this->modifiable && $output) {
+        if ($this->mutable && $output) {
             foreach ($this->modifiers as $modifier) {
                 try {
                     if (is_callable($modifier)) {

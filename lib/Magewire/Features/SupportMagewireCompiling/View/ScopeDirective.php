@@ -10,13 +10,30 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View;
 
+use ReflectionClass;
+
 abstract class ScopeDirective extends Directive
 {
-    abstract public function start(string $expression, string $directive): string;
-    abstract public function end(string $directive): string;
+    private array $scopeResponsibilities = [];
 
-    public function compile(string $expression, string $directive): string
+    /**
+     * @return string[]
+     */
+    public function getResponsibilitiesFor(string $directive): array
     {
-        return str_starts_with($directive, 'end') ? $this->end($directive) : $this->start($expression, $directive);
+        if (! ($this->scopeResponsibilities[$directive] ?? null)) {
+            $reflection = new ReflectionClass($this);
+
+            foreach ($reflection->getMethods() as $method) {
+                $attributes = $method->getAttributes(ScopeDirectiveChain::class);
+                $attribute  = ($attributes[0] ?? null) ? $attributes[0]->newInstance() : null;
+
+                if ($attribute) {
+                    $this->scopeResponsibilities[$method->getName()] = $attribute->methods;
+                }
+            }
+        }
+
+        return $this->scopeResponsibilities[$directive] ?? [];
     }
 }

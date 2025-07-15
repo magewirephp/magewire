@@ -34,7 +34,7 @@ class MagewireCompiler extends Compiler
     }
 
     /**
-     * Append the compile date and time to the compiled string.
+     * Append the compilation date and time to the compiled string.
      */
     protected function appendCompileDate(string $contents): string
     {

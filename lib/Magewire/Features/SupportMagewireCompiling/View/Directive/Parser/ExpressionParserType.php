@@ -11,7 +11,6 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Parser;
 
 use Magento\Framework\App\ObjectManager;
-use Magewirephp\Magewire\Support\Parser;
 
 /**
  * WIP: This enum currently behaves like a Factory but is intended to represent as an Enum type.
@@ -19,28 +18,34 @@ use Magewirephp\Magewire\Support\Parser;
  *      it is assumed that most developers won't interact with it directly during development.
  *      As a result, this class is still subject to change.
  */
-enum ParserType
+enum ExpressionParserType
 {
+    case CONDITION;
     case FUNCTION_ARGUMENTS;
+    case ITERATION_CLAUSE;
 
     /**
      * Returns a new instance of a parse result.
      *
-     * @template T of ParserType
+     * @template T of ExpressionParserType
      * @param array $arguments
-     * @return Parser
+     * @return ExpressionParser
      */
-    public function create(array $arguments = []): Parser
+    public function create(array $arguments = []): ExpressionParser
     {
         return match ($this) {
-            self::FUNCTION_ARGUMENTS => ObjectManager::getInstance()->create($this->getTypeClass(), $arguments)
+            self::CONDITION,
+            self::FUNCTION_ARGUMENTS,
+            self::ITERATION_CLAUSE => ObjectManager::getInstance()->create($this->getTypeClass(), $arguments)
         };
     }
 
     public function getTypeClass(): string
     {
         return match ($this) {
-            self::FUNCTION_ARGUMENTS => FunctionArgumentsParser::class
+            self::CONDITION => ConditionExpressionParser::class,
+            self::FUNCTION_ARGUMENTS => FunctionExpressionParser::class,
+            self::ITERATION_CLAUSE => IterationClauseExpressionParser::class,
         };
     }
 }

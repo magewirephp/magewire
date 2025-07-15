@@ -23,9 +23,14 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
     use WithFactory;
 
     private array $items = [];
+    private array $snapshots = [];
 
     /**
-     * Map argument values to specific argument names.
+     * Maps (renames) multiple keys in the collection based on a mapping array.
+     *
+     * Iterates through the provided mapping array and renames keys from the source key
+     * to the target key. Only processes mappings where the source key is a string or integer
+     * and the target key is a string. Invalid mappings are silently skipped.
      *
      * @param array<string, string> $map
      */
@@ -41,6 +46,21 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
     }
 
     /**
+     * Replaces the value of an existing key in the collection.
+     *
+     * Only updates the value if the key already exists in the collection.
+     * If the key doesn't exist, no action is taken and the collection remains unchanged.
+     */
+    public function replace(string $key, $value): static
+    {
+        if ($this->isset($key)) {
+            $this->items[$key] = $value;
+        }
+
+        return $this;
+    }
+
+    /**
      * Rename an argument if it exists.
      */
     public function rename(string $from, string $to): static
@@ -49,7 +69,27 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
     }
 
     /**
-     * Copy an arguments value into a new argument.
+     * Executes a callback function for each item in the collection.
+     *
+     * Iterates through all items and calls the provided callback with the collection instance,
+     * the item's value, and the item's key. This method is useful for performing side effects
+     * or operations that don't need to modify the collection structure.
+     */
+    public function each(callable $callback): static
+    {
+        foreach ($this->items as $key => $value) {
+            $callback($this, $value, $key);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Copies the value from one key to another key in the collection.
+     *
+     * Creates a duplicate of the value at the source key and assigns it to the target key.
+     * Only performs the copy if the source key exists in the collection. Optionally removes
+     * the original key after copying (effectively becoming a move operation).
      */
     public function copy(string $from, string $to, bool $unset = false): static
     {
@@ -64,10 +104,12 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
         return $this;
     }
 
-    public function unset(string $name): static
+    public function unset(string ...$keys): static
     {
-        if ($this->isset($name)) {
-            unset($this->items[$name]);
+        foreach ($keys as $key) {
+            if ($this->isset($key)) {
+                unset($this->items[$key]);
+            }
         }
 
         return $this;
@@ -79,10 +121,21 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
             return $this;
         }
 
+        // Substitute parameter references (e.g., ':name' becomes the value of 'name').
+        if (is_string($value) && str_starts_with($value, ':') && $this->isset(substr($value, 1))) {
+            $value = $this->get(substr($value, 1));
+        }
+
         $this->items[$name] = $value;
         return $this;
     }
 
+    /**
+     * Merges an array of items into the collection.
+     *
+     * Iterates through the provided array and adds each key-value pair to the collection.
+     * Existing keys will be overwritten with the new values from the merged array.
+     */
     public function merge(array $items): static
     {
         foreach ($items as $key => $value) {
@@ -92,14 +145,13 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
         return $this;
     }
 
-    public function fill(array $items): static
+    public function fill(array $items, bool $merge = true): static
     {
-        if ($this->count() !== 0) {
+        if ($merge) {
             return $this->merge($items);
         }
 
         $this->items = $items;
-
         return $this;
     }
 
@@ -109,11 +161,21 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
     }
 
     /**
+     * Returns all collection items.
+     *
      * @return array<string, mixed>
      */
     public function all(): array
     {
         return $this->items;
+    }
+
+    /**
+     * Returns a filtered items collection.
+     */
+    public function fetch(callable $filter): array
+    {
+        return $this->filter($filter, false);
     }
 
     /**
@@ -133,11 +195,17 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
     }
 
     /**
-     * Returns a filtered array.
+     * Returns a filtered array and optionally apply it as the latest state.
      */
-    public function filter(callable $filter, array $array = null): array
+    public function filter(callable $filter, bool $apply = true): array
     {
-        return array_filter($array ?? $this->items, $filter);
+        $items = array_filter($this->items, $filter, ARRAY_FILTER_USE_BOTH);
+
+        if ($apply) {
+            $this->fill($items);
+        }
+
+        return $items;
     }
 
     /**
@@ -152,42 +220,78 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
     /**
      * Reset the array to a given state.
      */
-    public function reset(array $value): static
+    public function reset(): static
     {
-        $this->items = $value;
+        $i = count($this->snapshots);
 
-        return $this;
+        if ($i === 0) {
+            $this->fill([]);
+        }
+
+        return $this->revert($i);
     }
 
     /**
      * Ensure a default value is set for a given key, guaranteeing its presence
      * regardless of whether it previously existed.
      */
-    public function default(string $name, $value): static
+    public function default(string $key, $value): static
     {
-        if ($this->isset($name)) {
+        if ($this->isset($key)) {
             return $this;
         }
 
-        return $this->set($name, $value);
+        return $this->set($key, $value);
     }
 
     /**
-     * Clears the array.
+     * Clears the collection.
      */
-    public function clear(): static
+    public function clear(callable|null $filter = null): static
     {
-        $this->items = [];
+        $this->items = $filter ? array_filter($this->items, $filter, ARRAY_FILTER_USE_BOTH) : [];
 
         return $this;
     }
 
     /**
-     * Returns the number of items.
+     * Returns the number of collection items.
      */
     public function count(): int
     {
         return count($this->items);
+    }
+
+    /**
+     * Take a snapshot of the current data state.
+     */
+    public function snapshot(): static
+    {
+        $this->snapshots[] = [
+            'items' => $this->items,
+            'snapshots' => $this->snapshots,
+        ];
+
+        return $this;
+    }
+
+    /**
+     * Revert to a specific taken snapshot.
+     */
+    public function revert(int $offset = 1): static
+    {
+        $i = count($this->snapshots);
+
+        if ($i < $offset) {
+            return $this;
+        }
+
+        $latest = $this->snapshots[$i - $offset];
+
+        $this->items = $latest['items'];
+        $this->snapshots = $latest['snapshots'];
+
+        return $this;
     }
 
     public function offsetExists($offset): bool

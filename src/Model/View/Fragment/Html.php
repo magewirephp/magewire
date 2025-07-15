@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Model\View\Fragment;
 
 use Magento\Framework\Escaper;
+use Magewirephp\Magento\Framework\View\BlockRenderingRegistry;
 use Magewirephp\Magewire\Model\View\Fragment;
 use Psr\Log\LoggerInterface;
 
@@ -21,9 +22,10 @@ class Html extends Fragment
     public function __construct(
         private readonly LoggerInterface $logger,
         private readonly Escaper $escaper,
+        private readonly BlockRenderingRegistry $renderRegistry,
         private readonly array $modifiers = []
     ) {
-        parent::__construct($this->logger, $this->modifiers);
+        parent::__construct($this->logger, $this->renderRegistry, $this->modifiers);
     }
 
     public function start(): static
@@ -33,7 +35,7 @@ class Html extends Fragment
             ->withValidator(static fn ($html) => str_starts_with($html, '<'));
     }
 
-    public function setAttribute(string $name, string|float|int|null $value = null, string $area = 'root'): static
+    public function withAttribute(string $name, string|float|int|null $value = null, string $area = 'root'): static
     {
         if ($value === null) {
             $this->attributes[$area][] = $name;
@@ -48,7 +50,7 @@ class Html extends Fragment
     {
         $render = parent::render();
 
-        // WIP: Does need a performance gain trying to avoid a preg_replace, does the job for now.
+        // @todo: Does need a performance gain trying to avoid a preg_replace, does the job for now.
         foreach ($this->getAreaAttributes('root') as $attribute => $value) {
             if (is_numeric($attribute)) {
                 $render = preg_replace('/^(<[^>\s]+)/', '$1 ' . $value, $render);
@@ -57,7 +59,7 @@ class Html extends Fragment
             }
         }
 
-        return $render;
+        return trim($render);
     }
 
     protected function getAttributes(): array

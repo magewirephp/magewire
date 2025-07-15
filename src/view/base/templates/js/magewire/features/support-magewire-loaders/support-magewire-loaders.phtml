@@ -11,17 +11,17 @@ use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
 /** @var MagewireViewModel $magewireViewModel */
 
 $magewireViewModel = $block->getData('view_model');
-$magewireTemplateFragment = $magewireViewModel->utils()->template()->fragment();
+$magewireFragment = $magewireViewModel->utils()->fragment();
 
 /** @internal Do not modify to ensure Magewire continues to function correctly. */
 ?>
-<?php $script = $magewireTemplateFragment->script()->start() ?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
 <script>
     document.addEventListener('magewire:init', event => {
         const { addons, utilities } = event.detail.magewire;
 
         Magewire.hook('commit', ({ component, commit, respond, succeed, fail }) => {
-            const notify = function(text, title = null) {
+            const notify = function(text, title = null, options = {}, hooks = {}) {
                 const parts = utilities.loader.parseText(text)
 
                 const trySecondaryPart = parts => {
@@ -32,58 +32,167 @@ $magewireTemplateFragment = $magewireViewModel->utils()->template()->fragment();
                     }
                 }
 
-                const options = {
+                options = {
                     title: title ? title : (parts[0].title || null),
 
                     loader: {
                         active: true
-                    }
+                    },
+
+                    ...options
                 }
 
-                const hooks = {
-                    onActivation: notification => {
+                <?php /* Backup possible 'onActivation' overwrite. */ ?>
+                const onActivation = hooks.onActivation
+
+                hooks = {
+                    onActivation: async notification => {
+                        if (onActivation) {
+                            await onActivation(notification);
+                        }
+
                         return new Promise(resolve => {
                             succeed(({ snapshot, effect }) => {
-                                trySecondaryPart(parts)
+                                trySecondaryPart(parts);
+                                resolve(true);
+                            });
+                        });
+                    },
 
-                                resolve(true)
-                            })
-                        })
-                    }
+                    ...hooks
                 }
 
-                parts[0].text
+                parts[0]
                     ? addons.notifier.create(parts[0].text, options, hooks)
                     : succeed(({ snapshot, effect }) => trySecondaryPart(parts))
             }
 
             const expression = {
                 update: (prop, value, loader) => {
-                    const expression = [
-                        `${ prop }:${ value }`,
-                        `${ prop.substring(0, prop.lastIndexOf('.')) }:${ value }`,
-                        `${ prop }`,
-                        `${ prop.substring(0, prop.lastIndexOf('.')) }`
-                    ].filter(expression => {
-                        return expression in loader
-                    })[0] || false
+                    // Define expressions in order of specificity (most specific first)
+                    const expressions = [
+                        `${prop}:${value}`,                                     // 1. MOST SPECIFIC: exact property:value match
+                        prop.includes('.') ? `${prop.substring(0, prop.lastIndexOf('.'))}:${value}` : null, // 2. parent:value
+                        `${prop.split('.').pop()}:${value}`,                   // 3. last segment with value
+                        prop,                                                   // 4. exact property name
+                        prop.includes('.') ? prop.substring(0, prop.lastIndexOf('.')) : null, // 5. parent property
+                        prop.split('.').pop(),                                  // 6. LEAST SPECIFIC: last segment only
+                    ].filter(expr => expr !== null);
 
-                    return expression ? (loader[expression] ?? false) : false
+                    // Find the first (most specific) matching expression
+                    const matchedExpression = expressions.find(expr => {
+                        const property = expr.includes(':') ? expr.split(':')[0] : expr;
+
+                        if (typeof loader === 'boolean') {
+                            return loader;
+                        }
+                        if (typeof loader === 'string') {
+                            return true;
+                        }
+                        if (Array.isArray(loader)) {
+                            return loader.includes(expr) || loader.includes(property);
+                        }
+                        if (typeof loader === 'object' && loader !== null) {
+                            return expr in loader || property in loader;
+                        }
+
+                        return false;
+                    });
+
+                    // If no expression matches, return false
+                    if (!matchedExpression) {
+                        return false;
+                    }
+
+                    // Return the appropriate value based on loader type
+                    if (typeof loader === 'boolean') {
+                        return loader;
+                    }
+                    if (typeof loader === 'string') {
+                        return loader;
+                    }
+                    if (Array.isArray(loader) || typeof loader === 'object') {
+                        return loader[matchedExpression] ?? loader[matchedExpression.split(':')[0]] ?? loader;
+                    }
+
+                    return false;
                 },
+
                 call: (item, loader) => {
-                    return loader[item.method]
+                    const method = item.method;
+
+                    const expression = [
+                        method,                                                 // exact method name
+                        method.includes('.') ? method.substring(0, method.lastIndexOf('.')) : null, // parent method
+                        method.split('.').pop(),                                // last segment only
+                        '*',                                                    // wildcard match
+                    ].filter(expr => expr !== null).filter(expr => {
+                        const methodName = expr.includes(':') ? expr.split(':')[0] : expr;
+
+                        if (typeof loader === 'boolean') {
+                            return loader;
+                        }
+                        if (typeof loader === 'string') {
+                            return true;
+                        }
+
+                        if (Array.isArray(loader)) {
+                            return loader.includes(expr) || loader.includes(methodName) || methodName in loader;
+                        }
+                        if (typeof loader === 'object' && loader !== null) {
+                            return methodName in loader || expr in loader;
+                        }
+
+                        return false;
+                    })[0] || false;
+
+                    if (! expression) {
+                        return false;
+                    }
+                    if (typeof loader === 'boolean') {
+                        return loader;
+                    }
+                    if (typeof loader === 'string') {
+                        return loader;
+                    }
+
+                    if (Array.isArray(loader) || typeof loader === 'object') {
+                        return loader[expression] ?? loader;
+                    }
+
+                    return false;
                 }
             }
 
             if (component.effects.loader) {
                 if (commit.calls.length !== 0) {
                     commit.calls.forEach(call => {
-                        const notification = expression.call(call, component.effects.loader[0])
+                        const notifications = expression.call(call, component.effects.loader[0]);
 
-                        if (typeof notification === 'object') {
-                            notify(notification[0])
-                        } else if (notification === true) {
-                            // WIP.
+                        /**
+                        protected $loader = [
+                            'save' => 'Saving data...',
+                            'delete' => 'Deleting item...',
+                            'updateProfile' => 'Updating your profile...',
+                            'user.save' => 'Saving user data...',
+
+                            // Method with specific parameters
+                            'save:{"draft":true}' => 'Saving as draft...',
+                            'delete:{"force":true}' => 'Permanently deleting...',
+
+                            // Parent method matching
+                            'user' => 'Processing user action...',
+
+                            // Last segment matching
+                            'save' => 'Saving changes...',
+
+                            // Wildcard
+                            '*' => 'Processing request...',
+                            '*:{"confirm":true}' => 'Confirming action...'
+                         ];
+                         */
+                        if (typeof notifications === 'object') {
+                            notifications.forEach(notification => notify(notification))
                         }
                     })
                 }
@@ -93,16 +202,38 @@ $magewireTemplateFragment = $magewireViewModel->utils()->template()->fragment();
                         if (commit.updates.hasOwnProperty(key)) {
                             const previous = component.canonical[key]
                             const value = commit.updates[key]
+                            const notifications = expression.update(key, value, component.effects.loader[0])
 
-                            const notification = expression.update(key, value, component.effects.loader[0])
+                            /**
+                            protected $loader = [
+                                // Exact property:value matches
+                                'status:active' => 'Activating status...',
+                                'user.role:admin' => 'Setting admin privileges...',
 
-                            if (typeof notification === 'object') {
-                                notify(notification[0]
+                                // Property names
+                                'foo' => 'Processing foo...',
+                                'user.name' => 'Updating user name...',
+
+                                // Parent properties (for nested properties)
+                                'user' => 'Updating user data...',
+                                'profile' => 'Updating profile...',
+
+                                // Last segment matching
+                                'name' => 'Updating name field...',
+                                'email' => 'Updating email...',
+
+                                // Wildcard matches
+                                '*' => 'Processing request...',
+                                '*:true' => 'Enabling feature...',
+                                '*:false' => 'Disabling feature...'
+                             ];
+                             */
+
+                            if (typeof notifications === 'object') {
+                                notifications.forEach(notification => notify(notification
                                     .replace(/{value}/g, value)
                                     .replace(/{previous_value}/g, previous)
-                                )
-                            } else if (notification === true) {
-                                // WIP.
+                                ))
                             }
                         }
                     }

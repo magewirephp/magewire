@@ -10,19 +10,15 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento;
 
-use Magento\Framework\App\Http\Context;
-use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive;
+use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Parser\ExpressionParserType;
+use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\FunctionDirective;
+use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ScopeDirectiveParser;
 
-class Block extends Directive
+class Block extends FunctionDirective
 {
-    public function __construct(
-        private readonly Context $userContext
-    ) {
-        //
-    }
-
+    #[ScopeDirectiveParser(ExpressionParserType::FUNCTION_ARGUMENTS)]
     public function child(string $alias): string
     {
-        return "<?= \$block->getChildBlock({$alias}) ? \$block->getChildBlock({$alias})->toHtml() : '' ?>";
+        return "<?php echo \$block->getChildBlock({$alias}) ? \$block->getChildBlock({$alias})->toHtml() : '' ?>";
     }
 }

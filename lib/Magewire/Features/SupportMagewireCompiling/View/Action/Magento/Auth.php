@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Action;
+namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Action\Magento;
 
 use Magento\Customer\Model\Context;
 use Magento\Framework\App\Http\Context as HttpContext;

@@ -12,7 +12,7 @@ namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\
 
 use Magewirephp\Magewire\Support\DataArray;
 
-class FunctionArguments extends DataArray
+class Arguments extends DataArray
 {
     public function render(string $format = '$value'): string
     {
@@ -28,8 +28,18 @@ class FunctionArguments extends DataArray
         return implode(', ', array_map(fn($k, $v) => str_replace(['$key', '$value'], [$k, var_export($v, true)], $format), $this->keys(), $values));
     }
 
-    public function renderWithNames(): string
+    public function renderAsNamed(): string
     {
         return $this->render('$key: $value');
+    }
+
+    public function renderAsCondition(): string
+    {
+        return ''; // wip
+    }
+
+    public function renderAsIterationClause(): string
+    {
+        return ''; // wip
     }
 }

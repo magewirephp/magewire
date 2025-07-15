@@ -12,10 +12,16 @@ namespace Magewirephp\Magewire\Support\Concerns;
 
 use Magento\Framework\App\ObjectManager;
 
+/**
+ * WIP...
+ */
 trait WithFactory
 {
-    public function factory(array $arguments = []): static
+    /**
+     * Returns a new instance of the current object.
+     */
+    public function newInstance(array $arguments = []): static
     {
-        return ObjectManager::getInstance()->create(self::class, $arguments);
+        return ObjectManager::getInstance()->create(static::class, $arguments);
     }
 }

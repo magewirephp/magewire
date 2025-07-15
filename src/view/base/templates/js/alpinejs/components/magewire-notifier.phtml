@@ -12,12 +12,12 @@ use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
 
 $magewireViewModel = $block->getData('view_model');
 $magewireTemplate = $magewireViewModel->utils()->template();
-$magewireTemplateFragment = $magewireTemplate->fragment();
+$magewireFragment = $magewireViewModel->utils()->fragment();
 
 /** @internal Do not modify to ensure Magewire continues to function correctly. */
 ?>
 <?= $magewireTemplate->echoCodeComment('magewire notifier', false, 'AlpineJS') ?>
-<?php $script = $magewireTemplateFragment->script()->start() ?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
 <script>
     function magewireNotifier() {
         'use strict';

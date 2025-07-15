@@ -47,6 +47,8 @@ abstract class Component implements ArgumentInterface
     protected $__id;
     protected $__name;
 
+    protected string|null $__alias = null;
+
     function id()
     {
         return $this->getId();
@@ -73,6 +75,21 @@ abstract class Component implements ArgumentInterface
     function getName()
     {
         return $this->__name;
+    }
+
+    function setAlias(string|null$alias): void
+    {
+        $this->__alias = $alias;
+    }
+
+    function getAlias(): string|null
+    {
+        return $this->__alias;
+    }
+
+    function hasAlias(): bool
+    {
+        return $this->__alias !== null;
     }
 
     function skipRender($html = null)

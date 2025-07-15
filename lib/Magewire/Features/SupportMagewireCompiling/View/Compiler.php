@@ -35,7 +35,8 @@ abstract class Compiler
         private readonly DirectoryList $directoryList,
         private readonly CompileManager $manager,
         private readonly CompilerUtils $utils,
-        private readonly PipelineFactory $pipelineFactory
+        private readonly PipelineFactory $pipelineFactory,
+        private readonly array $precompilers = []
     ) {
         $this->resourcePath = $this->directoryList->getPath(\Magento\Framework\App\Filesystem\DirectoryList::GENERATED)
             . DIRECTORY_SEPARATOR
@@ -76,11 +77,23 @@ abstract class Compiler
         return $this->filesystem;
     }
 
+    /**
+     * WIP.
+     */
     public function precompiler(): Pipeline
     {
-        return $this->precompiler ??= $this->pipelineFactory->create();
+        $pipeline = $this->precompiler ??= $this->pipelineFactory->create();
+
+        foreach ($this->precompilers as $precompiler) {
+            $pipeline->pipe(fn ($throughput, callable $next) => $next($precompiler->precompile($throughput)));
+        }
+
+        return $pipeline;
     }
 
+    /**
+     * WIP.
+     */
     public function optimizer(): Pipeline
     {
         return $this->optimizer ??= $this->pipelineFactory->create();
@@ -129,7 +142,7 @@ abstract class Compiler
     {
         $result = '';
 
-        // Try to run the precompile pipeline.
+        // Try to run the precompiler pipeline.
         $value = $this->precompiler()->run($value);
 
         /*

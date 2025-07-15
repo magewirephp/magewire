@@ -47,9 +47,4 @@ class Template implements UtilsInterface
 
         return '';
     }
-
-    public function fragment(): FragmentFactory
-    {
-        return $this->fragmentFactory;
-    }
 }

@@ -12,6 +12,7 @@ namespace Magewirephp\Magewire\ViewModel;
 
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magewirephp\Magewire\Model\Magento\System\ConfigMagewire as MagewireSystemConfig;
+use Magewirephp\Magewire\Model\View\Builder as ViewBuilder;
 use Magewirephp\Magewire\Model\View\Utils as ViewUtils;
 
 class Magewire implements ArgumentInterface

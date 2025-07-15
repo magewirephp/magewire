@@ -57,6 +57,10 @@ class ComponentResolverManagement
          */
         $resolver ??= $block->getData('magewire:resolver') ?? null;
 
+        if ($resolver instanceof ComponentResolver) {
+            return $resolver;
+        }
+
         // Check the Magewire blocks cache to find the cached resolver accessor.
         $resolver ??= $cache['blocks'][$this->getBlockCacheKey($block)] ?? null;
 
@@ -97,25 +101,23 @@ class ComponentResolverManagement
      *
      * @throws NotFoundException
      */
-    public function createResolverByAccessor(string $resolver): ComponentResolver
+    public function createResolverByAccessor(string $resolver, array $data = []): ComponentResolver
     {
-        return $this->createResolverByType($this->getResolverClass($resolver), $resolver);
+        return $this->createResolverByType($this->getResolverClass($resolver), $data);
     }
 
     /**
      * @throws NotFoundException
      */
-    public function createResolverByType(string $class, string $accessor): ComponentResolver
+    public function createResolverByType(string $class, array $data = []): ComponentResolver
     {
-        $instance = ObjectManager::getInstance()->create($class, [
-            'accessor' => $accessor
-        ]);
+        $instance = ObjectManager::getInstance()->create($class, $data);
 
         if ($instance instanceof ComponentResolver) {
             return $instance;
         }
 
-        throw new NotFoundException(__('No block resolver found'));
+        throw new NotFoundException(__('Component resolver cannot be found.'));
     }
 
     /**

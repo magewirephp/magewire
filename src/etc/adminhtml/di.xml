@@ -287,7 +287,7 @@
             </argument>
 
             <argument name="namespaces" xsi:type="array">
-                <item name="magento.auth" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Action\Auth\Proxy</item>
+                <item name="magento.auth" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Action\Magento\Auth\Proxy</item>
             </argument>
         </arguments>
     </type>

@@ -48,7 +48,7 @@
                             <block name="magewire.ui-components.notifier.activity-state"
                                    template="Magewirephp_Magewire::magewire/ui-components/notifier/activity-state.phtml"
                             >
-                                <!-- Inject loading icon (e.g. spinner). -->
+                                <!-- Inject loading icon (e.g., spinner). -->
                                 <block name="magewire.ui-components.notifier.activity-state.loader-icon"
                                        as="loader"
                                        template="Magewirephp_Magewire::magewire/utils/icons/loading.phtml"
