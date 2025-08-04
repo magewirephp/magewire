@@ -10,13 +10,11 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolver;
 
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\RuntimeException;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Mechanisms\HandleRequests\ComponentRequestContext;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\MagewireArguments;
-use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\LayoutArgumentsFactory;
 use Magewirephp\Magewire\Support\Conditions;
 
 /**

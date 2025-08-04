@@ -33,7 +33,10 @@ class SupportMagewireFlakes extends ComponentHook
 
                 if (is_array($metadata)) {
                     $fragment = $this->flakeFragmentFactory->create();
-                    $fragment->withAttributes($metadata['element']['attributes']);
+
+                    if (is_array($metadata['element'] ?? null)) {
+                        $fragment->withAttributes($metadata['element']['attributes']);
+                    }
 
                     return $fragment->wrap($html);
                 }
@@ -42,18 +45,18 @@ class SupportMagewireFlakes extends ComponentHook
             };
         });
 
-        on('hydrate', function (Component $component, $b, ComponentContext $context) {
+        on('hydrate', function (Component $component, array $memo) {
             $block = $component->block();
 
-            if (is_array($b['flake'] ?? null)) {
-                $block->setData('magewire:flake', $b['flake']);
+            if (is_array($memo['flake'] ?? null)) {
+                $block->setData('magewire:flake', $memo['flake']);
             }
         });
 
         on('dehydrate', function (Component $component, ComponentContext $context) {
             $metadata = $component->block()->getData('magewire:flake');
 
-            if (is_array($metadata)) {
+            if (is_array($metadata) && is_array($metadata['element'] ?? null)) {
                 $context->pushMemo('flake', $metadata['element'], 'element');
             }
         });
