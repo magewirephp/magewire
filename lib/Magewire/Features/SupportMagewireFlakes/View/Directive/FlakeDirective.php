@@ -14,7 +14,7 @@ use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Parser\ExpressionParserType;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ScopeDirectiveParser;
 
-class Flake extends Directive
+class FlakeDirective extends Directive
 {
     #[ScopeDirectiveParser(expressionParserType: ExpressionParserType::FUNCTION_ARGUMENTS)]
     public function flake(string $arguments): string
@@ -26,8 +26,8 @@ class Flake extends Directive
 echo \$__magewire->action('magewire.flake')->execute(
     'create',
     flake: \$decoded['flake'],
-    content: \$decoded['content'],
-    data: \$decoded['data'] ?? []
+    data: \$decoded['data'] ?? [],
+    metadata: \$decoded['metadata'] ?? []
 );
 
 unset(\$decoded, \$fragment);

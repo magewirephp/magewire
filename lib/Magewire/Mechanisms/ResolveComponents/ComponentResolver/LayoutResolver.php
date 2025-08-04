@@ -19,6 +19,7 @@ use Magewirephp\Magento\View\LayoutBuilder;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
+use Magewirephp\Magewire\Mechanisms\HandleComponents\Snapshot;
 use Magewirephp\Magewire\Mechanisms\HandleRequests\ComponentRequestContext;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\MagewireArguments;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\LayoutBlockArgumentsFactory;
@@ -91,8 +92,7 @@ class LayoutResolver extends ComponentResolver
 
         // Register a dehydrate listener to attach necessary layout handles to the server memo.
         on('dehydrate', function (Component $component, ComponentContext $context) {
-            $handles = $context->getBlock()->getLayout()->getUpdate()->getHandles();
-            $context->addMemo('handles', array_values($handles));
+            $this->memorizeLayoutHandles($context);
 
             if ($alias = $component->block()->getData('magewire:alias')) {
                 $context->addMemo('alias', $alias);
@@ -121,7 +121,10 @@ class LayoutResolver extends ComponentResolver
         $alias = $snapshot->getMemoValue('alias');
         $name = $snapshot->getMemoValue('name');
 
-        $layout = $this->generateBlocks($snapshot->getMemoValue('handles'));
+        // Retrieve the layout handles that were stored on the context snapshot.
+        $handles = $this->recoverLayoutHandles($snapshot);
+        // Build the complete layout structure by processing the recovered handles into renderable blocks.
+        $layout = $this->generateBlocks($handles);
 
         /** @var Template|false $block */
         $block = $layout->getBlock($alias ?? $name);
@@ -175,5 +178,26 @@ class LayoutResolver extends ComponentResolver
     protected function isBlock(mixed $block): bool
     {
         return $block instanceof AbstractBlock;
+    }
+
+    protected function recoverLayoutHandles(Snapshot $snapshot): array
+    {
+        return $snapshot->getMemoValue('handles');
+    }
+
+    /**
+     * @throws LocalizedException
+     */
+    protected function memorizeLayoutHandles(ComponentContext $context): ComponentContext
+    {
+        $handles = $context->getBlock()->getLayout()->getUpdate()->getHandles();
+        $context->addMemo('handles', array_values($handles));
+
+        return $context;
+    }
+
+    protected function canShareHandles(): bool
+    {
+        return true;
     }
 }

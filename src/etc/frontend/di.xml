@@ -170,11 +170,10 @@
         </arguments>
     </type>
 
-
     <type name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\MagewireCompiler">
         <arguments>
             <argument name="precompilers" xsi:type="array">
-                <item name="flakes" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Precompiler\FlakePrecompiler</item>
+                <item name="flakes" sortOrder="1000" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Precompiler\FlakePrecompiler</item>
             </argument>
         </arguments>
     </type>
@@ -196,7 +195,9 @@
                 <item name="script" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Script</item>
                 <item name="fragment" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Fragment</item>
 
-                <item name="flake" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Directive\Flake</item>
+                <item name="flake" xsi:type="object">
+                    Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Directive\FlakeDirective
+                </item>
 
                 <!-- Basic PHP methods. -->
                 <!-- WIP... -->
@@ -299,7 +300,7 @@
             <argument name="namespaces" xsi:type="array">
                 <item name="magento.auth" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Action\Magento\Auth\Proxy</item>
                 <item name="magewire" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Action\Magewire\Proxy</item>
-                <item name="magewire.flake" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Action\Magewire\Flake\Proxy</item>
+                <item name="magewire.flake" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Action\Magewire\FlakeViewAction\Proxy</item>
             </argument>
         </arguments>
     </type>
@@ -363,7 +364,9 @@
     <type name="Magewirephp\Magewire\Model\View\FragmentFactory">
         <arguments>
             <argument name="types" xsi:type="array">
-                <item name="flake" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Fragment\Flake</item>
+                <item name="flake" xsi:type="string">
+                    Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Fragment\FlakeFragment
+                </item>
             </argument>
         </arguments>
     </type>

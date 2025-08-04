@@ -12,6 +12,8 @@ namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\Mechanisms\Resolve
 
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Element\AbstractBlock;
+use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
+use Magewirephp\Magewire\Mechanisms\HandleComponents\Snapshot;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolver\LayoutResolver;
 
 class FlakeResolver extends LayoutResolver
@@ -30,13 +32,39 @@ class FlakeResolver extends LayoutResolver
         return $this->conditions()->evaluate($block, $magewire);
     }
 
+    protected function recoverLayoutHandles(Snapshot $snapshot): array
+    {
+        $handles = $snapshot->getMemoValue('handles') ?? [];
+        $flake = $snapshot->getMemoValue('flake');
+
+        $layout = $flake['layout'] ?? [];
+
+        if (is_array($layout['handles'] ?? null)) {
+            return array_unique(array_merge($handles, $layout['handles']));
+        }
+
+        return $handles;
+    }
+
+    protected function memorizeLayoutHandles(ComponentContext $context): ComponentContext
+    {
+        $context->pushMemo('flake', ['handles' => ['magewire_flakes']], 'layout');
+
+        return $context;
+    }
+
     /**
      * @throws LocalizedException
      */
-    public function make(string $name): bool|AbstractBlock
+    public function make(string $name, array $data = []): bool|AbstractBlock
     {
         $layout = $this->layoutBuilder->withHandle('magewire_flakes')->build();
+        $block = $layout->getBlock($name);
 
-        return $layout->getBlock($name);
+        if ($block) {
+            $block->addData($data);
+        }
+
+        return $block;
     }
 }

@@ -8,11 +8,11 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Magewire\Magewire;
+namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Fragment;
 
-use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Model\View\Fragment\Html;
 
-class Dynamic extends Component
+class FlakeFragment extends Html
 {
-
+    protected array $attributes = ['wire:flake'];
 }

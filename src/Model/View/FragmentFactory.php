@@ -50,11 +50,6 @@ class FragmentFactory
         return $this->create(Style::class);
     }
 
-    public function variant(string $name): Variant
-    {
-        return $this->create(Variant::class);
-    }
-
     /**
      * @template T of Fragment
      * @param string $name

@@ -32,7 +32,7 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
      * to the target key. Only processes mappings where the source key is a string or integer
      * and the target key is a string. Invalid mappings are silently skipped.
      *
-     * @param array<string, string> $map
+     * @param array<string|int, string|int> $map
      */
     public function map(array $map): static
     {
@@ -51,7 +51,7 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
      * Only updates the value if the key already exists in the collection.
      * If the key doesn't exist, no action is taken and the collection remains unchanged.
      */
-    public function replace(string $key, $value): static
+    public function replace(string|int $key, $value): static
     {
         if ($this->isset($key)) {
             $this->items[$key] = $value;
@@ -63,7 +63,7 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
     /**
      * Rename an argument if it exists.
      */
-    public function rename(string $from, string $to): static
+    public function rename(string|int $from, string|int $to): static
     {
         return $this->copy($from, $to, true);
     }
@@ -91,7 +91,7 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
      * Only performs the copy if the source key exists in the collection. Optionally removes
      * the original key after copying (effectively becoming a move operation).
      */
-    public function copy(string $from, string $to, bool $unset = false): static
+    public function copy(string|int $from, string|int $to, bool $unset = false): static
     {
         if ($this->isset($from)) {
             $this->set($to, $this->items[$from]);
@@ -104,7 +104,7 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
         return $this;
     }
 
-    public function unset(string ...$keys): static
+    public function unset(string|int ...$keys): static
     {
         foreach ($keys as $key) {
             if ($this->isset($key)) {
@@ -127,6 +127,15 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
         }
 
         $this->items[$name] = $value;
+        return $this;
+    }
+
+    public function put(string|int|array $name, $value): static
+    {
+        if ($this->isset($name)) {
+            $this->items[$name] = $value;
+        }
+
         return $this;
     }
 
@@ -163,7 +172,7 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
     /**
      * Returns all collection items.
      *
-     * @return array<string, mixed>
+     * @return array<string|int, mixed>
      */
     public function all(): array
     {
@@ -176,6 +185,29 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
     public function fetch(callable $filter): array
     {
         return $this->filter($filter, false);
+    }
+
+    /**
+     * Extracts values from the collection for the specified keys.
+     *
+     * Returns an associative array containing only the specified keys and their
+     * corresponding values from the collection. If a key doesn't exist in the
+     * collection, a default value can be provided; otherwise the key will be
+     * omitted from the result.
+     */
+    public function pluck(array $keys, array $defaults = []): array
+    {
+        $result = [];
+
+        foreach ($keys as $key) {
+            if ($this->isset($key)) {
+                $result[$key] = $this->get($key);
+            } elseif (array_key_exists($key, $defaults)) {
+                $result[$key] = $defaults[$key];
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -212,7 +244,7 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
      * Retrieves the value for the given name, returning the default if it doesn't exist,
      * with an option to set the default before returning.
      */
-    public function get(string $name, $default = null, bool $set = false)
+    public function get(string|int $name, $default = null, bool $set = false)
     {
         return $this->items[$name] ?? ($set ? $this->default($name, $default)->get($name) : $default);
     }
@@ -235,7 +267,7 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
      * Ensure a default value is set for a given key, guaranteeing its presence
      * regardless of whether it previously existed.
      */
-    public function default(string $key, $value): static
+    public function default(string|int $key, $value): static
     {
         if ($this->isset($key)) {
             return $this;

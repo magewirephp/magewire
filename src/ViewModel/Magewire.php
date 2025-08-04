@@ -10,31 +10,19 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\ViewModel;
 
-use Magento\Framework\View\Element\Block\ArgumentInterface;
+use Magewirephp\Magewire\Features\SupportMagewireViewModel\MagewireViewModel;
 use Magewirephp\Magewire\Model\Magento\System\ConfigMagewire as MagewireSystemConfig;
-use Magewirephp\Magewire\Model\View\Builder as ViewBuilder;
 use Magewirephp\Magewire\Model\View\Utils as ViewUtils;
 
-class Magewire implements ArgumentInterface
+class Magewire extends MagewireViewModel
 {
-    function __construct(
-        private readonly ViewUtils $utils
-    ) {
-        //
-    }
-
-    public function utils(string $name = null, array $arguments = []): ViewUtils
-    {
-        return $name ? $this->utils->$name($arguments) : $this->utils;
-    }
-
     /**
      * @deprecated To make backwards compatible, utils()->environment() should be used instead.
      * @see ViewUtils\Environment
      */
     function isDeveloperMode(): bool
     {
-        return $this->utils->env()->isDeveloperMode();
+        return $this->utils()->env()->isDeveloperMode();
     }
 
     /**
@@ -43,7 +31,7 @@ class Magewire implements ArgumentInterface
      */
     function isProductionMode(): bool
     {
-        return $this->utils->env()->isProductionMode();
+        return $this->utils()->env()->isProductionMode();
     }
 
     /**

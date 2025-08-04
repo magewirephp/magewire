@@ -10,8 +10,6 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Model\View;
 
-use Magento\Framework\View\Element\BlockInterface;
-use Magewirephp\Magento\Framework\View\BlockRenderingRegistry;
 use Magewirephp\Magewire\Model\View\Fragment\Exceptions\EmptyFragmentException;
 use Magewirephp\Magewire\Model\View\Fragment\Exceptions\FragmentValidationException;
 use Psr\Log\LoggerInterface;
@@ -21,15 +19,14 @@ abstract class Fragment
 {
     // Unchanged raw buffer output, if any.
     protected string|bool $raw = false;
+    // Flag to indicate whether the fragment is currently buffering output.
+    protected bool $buffering = false;
     // Indicates whether the fragment is allowed to be modified.
     protected bool $mutable = true;
     // Indicated whether the fragment should skip echoing.
     protected bool $render = true;
-
-    // Flag to indicate whether the fragment is currently buffering output.
-    private bool $buffering = false;
     // The current output buffer level, if any.
-    private int|null $level = null;
+    protected int|null $level = null;
 
     /** @var array<int, callable> $validators */
     private array $validators = [];
@@ -38,9 +35,8 @@ abstract class Fragment
      * @param array<int|string, FragmentModifier|callable> $modifiers
      */
     public function __construct(
-        private readonly LoggerInterface        $logger,
-        private readonly BlockRenderingRegistry $renderRegistry,
-        private array                           $modifiers = []
+        private readonly LoggerInterface $logger,
+        private array $modifiers = []
     ) {
         //
     }
@@ -60,13 +56,13 @@ abstract class Fragment
         ob_start();
 
         $this->buffering = true;
-        $this->level = ob_get_level();
+        $this->level = $this->level ?? ob_get_level();
 
         return $this;
     }
 
     /**
-     * Ends output buffering and processes the captured content.
+     * Ends output buffering, processes and echos the captured content.
      *
      * Retrieves the buffered output as raw content, applies an optional transformation
      * to produce the final content, and triggers the inspection process.
@@ -93,17 +89,9 @@ abstract class Fragment
     /**
      * Retrieves the raw output content.
      */
-    public function getRawOutput(): string
+    protected function getRawOutput(): string
     {
         return $this->raw === false ? '' : $this->raw;
-    }
-
-    /**
-     * Determines whether the fragment is currently buffering output.
-     */
-    public function isBuffering(): bool
-    {
-        return $this->buffering;
     }
 
     /**
@@ -125,19 +113,11 @@ abstract class Fragment
     }
 
     /**
-     * Returns the current block.
-     */
-    public function block(): BlockInterface|null
-    {
-        return $this->renderRegistry->current();
-    }
-
-    /**
      * @throws FragmentValidationException
      */
     protected function validate(): bool
     {
-        if ($this->isBuffering()) {
+        if ($this->buffering) {
             return false;
         }
 
@@ -191,34 +171,44 @@ abstract class Fragment
         $message = 'A validation exception occurred while processing the fragment.';
         $this->logger->critical($message, ['exception' => $exception]);
 
-        return $this->raw;
+        return $this->raw ?? '';
+    }
+
+    protected function handleRenderException(Throwable $exception): string
+    {
+        $message = 'A render exception occurred while processing the fragment.';
+        $this->logger->critical($message, ['exception' => $exception]);
+
+        return '';
     }
 
     /**
      * Returns the final fragment output.
-     *
-     * @throws EmptyFragmentException
      */
     protected function render(): string
     {
-        $output = $this->raw;
+        try {
+            $output = $this->raw;
 
-        if ($output) {
-            try {
-                if ($this->validate()) {
-                    $this->modify();
+            if ($output) {
+                try {
+                    if ($this->validate()) {
+                        $this->modify();
+                    }
+                } catch (Throwable $exception) {
+                    $output = $this->handleValidationException($exception);
                 }
-            } catch (Throwable $exception) {
-                $output = $this->handleValidationException($exception);
+
+                return $output;
             }
 
-            return $output;
-        }
-
-        if ($this->isBuffering()) {
-            throw new EmptyFragmentException(
-                'Unclosed output buffer detected. Fragment buffering must be properly terminated.'
-            );
+            if ($this->buffering) {
+                throw new EmptyFragmentException(
+                    'Unclosed output buffer detected. Fragment buffering must be properly terminated.'
+                );
+            }
+        } catch (Throwable $exception) {
+            return $this->handleRenderException($exception);
         }
 
         return '';

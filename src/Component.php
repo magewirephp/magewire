@@ -22,6 +22,7 @@ use Magewirephp\Magewire\Concerns\InteractsWithProperties;
 use Magewirephp\Magewire\Exceptions\PropertyNotFoundException;
 use Magewirephp\Magewire\Features\SupportEvents\HandlesEvents;
 use Magewirephp\Magewire\Features\SupportMagewireViewInstructions\HandlesMagewireViewInstructions;
+use Magewirephp\Magewire\Features\SupportMagewireViewModel\HandlesMagewireViewModel;
 use Magewirephp\Magewire\Features\SupportRedirects\HandlesRedirects;
 
 abstract class Component implements ArgumentInterface
@@ -41,6 +42,7 @@ abstract class Component implements ArgumentInterface
     use HandlesMagewireFlashMessages;
     use HandlesMagewireLoaders;
     use HandlesMagewireViewInstructions;
+    use HandlesMagewireViewModel;
     use HandlesComponentBackwardsCompatibility;
     use HandlesMagewireCompiling;
 

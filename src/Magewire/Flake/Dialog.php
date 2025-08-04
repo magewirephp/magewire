@@ -22,11 +22,6 @@ class Dialog extends Component
     public function increment()
     {
         $this->count++;
-    }
-
-    public function mount(string $title = '')
-    {
-        $this->title = $title;
-        $break = true;
+        $this->title = $this->title === 'A' ? 'B' : 'A';
     }
 }

@@ -36,7 +36,8 @@ abstract class Compiler
         private readonly CompileManager $manager,
         private readonly CompilerUtils $utils,
         private readonly PipelineFactory $pipelineFactory,
-        private readonly array $precompilers = []
+        private readonly array $precompilers = [],
+        private readonly array $optimizers = []
     ) {
         $this->resourcePath = $this->directoryList->getPath(\Magento\Framework\App\Filesystem\DirectoryList::GENERATED)
             . DIRECTORY_SEPARATOR
@@ -75,28 +76,6 @@ abstract class Compiler
     public function filesystem(): Filesystem
     {
         return $this->filesystem;
-    }
-
-    /**
-     * WIP.
-     */
-    public function precompiler(): Pipeline
-    {
-        $pipeline = $this->precompiler ??= $this->pipelineFactory->create();
-
-        foreach ($this->precompilers as $precompiler) {
-            $pipeline->pipe(fn ($throughput, callable $next) => $next($precompiler->precompile($throughput)));
-        }
-
-        return $pipeline;
-    }
-
-    /**
-     * WIP.
-     */
-    public function optimizer(): Pipeline
-    {
-        return $this->optimizer ??= $this->pipelineFactory->create();
     }
 
     /**
@@ -173,5 +152,27 @@ abstract class Compiler
         }
 
         return $content;
+    }
+
+    protected function precompiler(): Pipeline
+    {
+        $pipeline = $this->precompiler ??= $this->pipelineFactory->create();
+
+        foreach ($this->precompilers as $precompiler) {
+            $pipeline->pipe(fn ($throughput, callable $next) => $next($precompiler->precompile($throughput)));
+        }
+
+        return $pipeline;
+    }
+
+    protected function optimizer(): Pipeline
+    {
+        $pipeline = $this->optimizer ??= $this->pipelineFactory->create();
+
+        foreach ($this->optimizers as $optimizer) {
+            $pipeline->pipe(fn ($throughput, callable $next) => $next($optimizer->optimize($throughput)));
+        }
+
+        return $pipeline;
     }
 }

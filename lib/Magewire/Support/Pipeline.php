@@ -46,6 +46,7 @@ class Pipeline
      * Try to run the pipeline using mixed type throughput.
      *
      * @throws RuntimeException
+     * @throws Throwable
      */
     public function run(mixed $throughput): mixed
     {

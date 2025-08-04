@@ -11,12 +11,10 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Action\Magewire;
 
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\View\Element\AbstractBlock;
-use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ViewAction as ViewAction;
 use Magewirephp\Magewire\Features\SupportMagewireFlakes\Mechanisms\ResolveComponent\ComponentResolver\FlakeResolver;
 
-class Flake extends ViewAction
+class FlakeViewAction extends ViewAction
 {
     public function __construct(
         private readonly FlakeResolver $flakeResolver
@@ -26,24 +24,29 @@ class Flake extends ViewAction
 
     /**
      * @throws LocalizedException
-     * @throws ComponentNotFoundException
      */
     public function create(
         string $flake,
-        string $content,
         array $data = [],
-        array $attributes = []
+        array $metadata = []
     ): string {
-        $block = $this->flakeResolver->make($flake);
+        $block = $this->flakeResolver->make($flake, $data);
 
-        if ($block instanceof AbstractBlock) {
-            $data['magewire:alias'] = $flake;
-            $block->setNameInLayout($data['magewire:name']);
-
-            $block->addData($data);
-            return $block->toHtml();
+        if (! $block) {
+            return '<div></div>'; // TBD
         }
 
-        return ''; // TBD
+        $block->setData('magewire:alias', $flake);
+
+        // Flake metadata.
+        $block->setData('magewire:flake', [
+            'element' => [
+                'attributes' => $metadata['attributes'] ?? []
+            ]
+        ]);
+
+        $block->setNameInLayout($data['magewire:name']);
+
+        return $block->toHtml();
     }
 }

@@ -12,5 +12,5 @@ namespace Magewirephp\Magewire\Model\View;
 
 interface UtilsInterface
 {
-
+    //
 }
