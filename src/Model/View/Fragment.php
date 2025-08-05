@@ -217,7 +217,7 @@ abstract class Fragment
     /**
      * Runs all injected fragment modifiers.
      */
-    protected function modify(): static
+    private function modify(): static
     {
         $output = $this->raw;
 

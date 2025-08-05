@@ -29,7 +29,9 @@ class Html extends Fragment
 
     public function start(): static
     {
-        return parent::start()->withValidator(static fn ($html) => str_starts_with($html, '<'));
+        $this->withValidator(static fn ($html) => str_starts_with($html, '<'));
+
+        return parent::start();
     }
 
     /**

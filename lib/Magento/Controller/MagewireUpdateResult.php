@@ -19,7 +19,7 @@ class MagewireUpdateResult extends AbstractResult
 {
     private ?Closure $renderer = null;
 
-    function __construct(
+    public function __construct(
         private readonly JsonSerializer $jsonSerializer,
         private readonly array $components = [],
         private readonly array $assets = []
@@ -27,24 +27,24 @@ class MagewireUpdateResult extends AbstractResult
         //
     }
 
-    function renderWith(Closure $renderer): self
+    public function renderWith(Closure $renderer): self
     {
         $this->renderer = $renderer;
 
         return $this;
     }
 
-    function getComponents(): array
+    public function getComponents(): array
     {
         return $this->components;
     }
 
-    function getAssets(): array
+    public function getAssets(): array
     {
         return $this->assets;
     }
 
-    function render(HttpResponseInterface $response): self
+    public function render(HttpResponseInterface $response): self
     {
         $this->renderer ??= function (HttpResponseInterface $response, MagewireUpdateResult $result): HttpResponseInterface {
             return $response->setBody(
