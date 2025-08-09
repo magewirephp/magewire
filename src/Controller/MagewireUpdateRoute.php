@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Controller;
 
 use Exception;
+use Magewirephp\Magewire\Mechanisms\HandleComponents\Checksum;
 use Magento\Framework\App\Action\Forward;
 use Magento\Framework\App\ActionFactory;
 use Magento\Framework\App\ActionInterface;
@@ -24,6 +25,7 @@ use Magewirephp\Magewire\MagewireServiceProvider;
 use Magewirephp\Magewire\Mechanisms\HandleRequests\ComponentRequestContext;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+use function Magewirephp\Magewire\trigger;
 
 abstract class MagewireUpdateRoute extends MagewireRoute
 {
@@ -37,7 +39,8 @@ abstract class MagewireUpdateRoute extends MagewireRoute
         private readonly MagewireServiceProvider $magewireServiceProvider,
         private readonly ActionFactory $actionFactory,
         private readonly LoggerInterface $logger,
-        private readonly MagewireRouteValidator $magewireRouteValidator
+        private readonly MagewireRouteValidator $magewireRouteValidator,
+        private readonly Checksum $checksum
     ) {
         parent::__construct($this->actionFactory, $this->logger, $this->magewireRouteValidator);
     }
@@ -82,6 +85,9 @@ abstract class MagewireUpdateRoute extends MagewireRoute
 
         foreach ($input[self::PARAM_COMPONENTS] as $key => $component) {
             $component['snapshot'] = $this->serializer->unserialize($component['snapshot']);
+
+            $this->checksum->verify($component['snapshot']);
+            trigger('snapshot-verified', $component['snapshot']);
 
             $handle = $component['snapshot']['memo']['handle'] ?? null;
             $resolver = $component['snapshot']['memo']['resolver'] ?? null;

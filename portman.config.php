@@ -5,8 +5,8 @@ return [
             'lib/Livewire' => [
                 'composer' => [
                     'name'   => 'livewire/livewire',
-                    'version'   => '~3.0.0',
-                    'version-lock'   => '3.6.3',
+                    'version'   => '~3.6.4',
+                    'version-lock'   => '3.6.4',
                     'base-path'   => 'src'
                 ],
                 'glob' => '**/*.php',

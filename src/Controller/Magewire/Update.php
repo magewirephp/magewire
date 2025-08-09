@@ -94,7 +94,7 @@ class Update implements HttpPostActionInterface, CsrfAwareActionInterface
     /**
      * @throws LocalizedException
      */
-    public function validateForCsrf(RequestInterface $request): ?bool
+    public function validateForCsrf(RequestInterface $request): bool|null
     {
         return Security::compareStrings($request->getParam('token'), $this->formKey->getFormKey());
     }

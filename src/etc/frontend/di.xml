@@ -151,6 +151,11 @@
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireCompiling\SupportMagewireCompiling</item>
                     <item name="sort_order" xsi:type="number">99200</item>
                 </item>
+
+                <item name="magento_observer_events" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagentoObserverEvents\SupportMagentoObserverEvents</item>
+                    <item name="sort_order" xsi:type="number">99300</item>
+                </item>
             </argument>
         </arguments>
     </type>

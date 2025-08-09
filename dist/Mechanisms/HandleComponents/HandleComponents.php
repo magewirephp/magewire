@@ -165,9 +165,6 @@ class HandleComponents extends Mechanism
         } elseif (!$block->getData('magewire') instanceof Component) {
             throw new ComponentNotFoundException(sprintf('Unable to find component: [%s]', $block->getNameInLayout()));
         }
-        $component = $block->getData('magewire');
-        $this->checksum->verify($snapshot);
-        trigger('snapshot-verified', $snapshot, $component);
         /** @var Component $component */
         $component = $block->getData('magewire');
         $context = $this->componentContextFactory->create(['component' => $component, 'block' => $block]);
@@ -228,6 +225,21 @@ class HandleComponents extends Mechanism
         $synth = $this->propertySynth($meta['s'], $context, $path);
         return $synth->hydrate($value, $meta, function ($name, $child) use ($context, $path) {
             return $this->hydrate($child, $context, "{$path}.{$name}");
+        });
+    }
+    protected function hydratePropertyUpdate($valueOrTuple, $context, $path, $raw)
+    {
+        if (!Utils::isSyntheticTuple($value = $tuple = $valueOrTuple)) {
+            return $value;
+        }
+        [$value, $meta] = $tuple;
+        // Nested properties get set as `__rm__` when they are removed. We don't want to hydrate these.
+        if ($this->isRemoval($value) && str($path)->contains('.')) {
+            return $value;
+        }
+        $synth = $this->propertySynth($meta['s'], $context, $path);
+        return $synth->hydrate($value, $meta, function ($name, $child) use ($context, $path, $raw) {
+            return $this->hydrateForUpdate($raw, "{$path}.{$name}", $child, $context);
         });
     }
     protected function render($component, $default = null, string $html = null)
@@ -309,11 +321,11 @@ class HandleComponents extends Mechanism
         $meta = $this->getMetaForPath($raw, $path);
         // If we have meta data already for this property, let's use that to get a synth...
         if ($meta) {
-            return $this->hydrate([$value, $meta], $context, $path);
+            return $this->hydratePropertyUpdate([$value, $meta], $context, $path, $raw);
         }
         // If we don't, let's check to see if it's a typed property and fetch the synth that way...
         $parent = str($path)->contains('.') ? data_get($context->component, str($path)->beforeLast('.')->toString()) : $context->component;
-        $childKey = str($path)->afterLast('.')->toString();
+        $childKey = str($path)->afterLast('.');
         if ($parent && is_object($parent) && property_exists($parent, $childKey) && Utils::propertyIsTyped($parent, $childKey)) {
             $type = Utils::getProperty($parent, $childKey)->getType();
             $types = $type instanceof ReflectionUnionType ? $type->getTypes() : [$type];
@@ -490,14 +502,6 @@ class HandleComponents extends Mechanism
                 }
                 return $html;
             };
-        });
-    }
-    public function boot()
-    {
-        on('snapshot-verified', function (array $snapshot, Component $component) {
-            if ($component->getId() !== $snapshot['memo']['id'] || $component->getName() !== $snapshot['memo']['name']) {
-                throw new CorruptComponentPayloadException();
-            }
         });
     }
 }
