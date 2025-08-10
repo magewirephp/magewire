@@ -13,11 +13,14 @@ namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Action\Magewi
 use Magento\Framework\Exception\LocalizedException;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ViewAction as ViewAction;
 use Magewirephp\Magewire\Features\SupportMagewireFlakes\Mechanisms\ResolveComponent\ComponentResolver\FlakeResolver;
+use Magewirephp\Magewire\Support\DataArray;
+use Magewirephp\Magewire\Support\DataArrayFactory;
 
 class FlakeViewAction extends ViewAction
 {
     public function __construct(
-        private readonly FlakeResolver $flakeResolver
+        private readonly FlakeResolver $flakeResolver,
+        private readonly DataArrayFactory $attributesFactory
     ) {
         //
     }
@@ -28,8 +31,21 @@ class FlakeViewAction extends ViewAction
     public function create(
         string $flake,
         array $data = [],
-        array $metadata = []
+        array $metadata = [],
+        array $variables = []
     ): string {
+        $data = $this->attributesFactory->create()->fill($data)
+
+            ->each(function (DataArray $array, $value, $key) use ($variables) {
+                if (str_starts_with($value, '$')) {
+                    $value = trim($value, '$');
+
+                    if (array_key_exists($value, $variables)) {
+                        $array->put($key, $variables[$value]);
+                    }
+                }
+            })->all();
+
         $block = $this->flakeResolver->make($flake, $data);
 
         if (! $block) {

@@ -22,15 +22,17 @@ class FlakeDirective extends Directive
         return <<<DIRECTIVE
 <?php
 \$decoded = unserialize(base64_decode('$arguments'));
+\$variables = get_defined_vars();
 
 echo \$__magewire->action('magewire.flake')->execute(
     'create',
     flake: \$decoded['flake'],
     data: \$decoded['data'] ?? [],
-    metadata: \$decoded['metadata'] ?? []
+    metadata: \$decoded['metadata'] ?? [],
+    variables: \$variables
 );
 
-unset(\$decoded, \$fragment);
+unset(\$decoded, \$fragment, \$variables);
 ?>
 DIRECTIVE;
     }

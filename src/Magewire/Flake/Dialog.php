@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Magewire\Flake;
 
+use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Component;
 
 class Dialog extends Component
@@ -18,6 +19,11 @@ class Dialog extends Component
     public bool $test = false;
     public $upload = null;
     public string $title = '';
+
+    public function mount(AbstractBlock $block)
+    {
+        $break = true;
+    }
 
     public function increment()
     {
