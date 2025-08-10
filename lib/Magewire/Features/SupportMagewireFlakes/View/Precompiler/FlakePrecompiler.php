@@ -70,7 +70,6 @@ class FlakePrecompiler extends Precompiler
     {
         $component = $matches[1];
         $attributes = trim($matches[2]);
-        //$content = $matches[3];
 
         $parse = $this->domElementParser->newInstance()
 
