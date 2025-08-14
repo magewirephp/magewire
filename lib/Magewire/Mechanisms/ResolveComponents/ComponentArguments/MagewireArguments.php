@@ -14,7 +14,11 @@ use Magento\Framework\DataObject;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
 use Magento\Framework\View\Element\AbstractBlock;
+use Magewirephp\Magewire\Support\Str;
 
+/**
+ * @todo DataObject needs to be replaced with our own DataArray.
+ */
 abstract class MagewireArguments extends DataObject
 {
     private bool $assembled = false;
@@ -33,9 +37,9 @@ abstract class MagewireArguments extends DataObject
         }
 
         // Assemble public arguments.
-        $this->addData($this->filterPublicArguments($block));
+        $this->addData($this->assemblePublicArguments($block));
         // Assemble private group arguments.
-        $this->groups = $this->filterGroupArguments($block);
+        $this->groups = $this->assembleGroupArguments($block);
 
         $this->assembled = true;
 
@@ -76,7 +80,7 @@ abstract class MagewireArguments extends DataObject
      */
     public function forMount(): array
     {
-        return array_merge($this->toParams(), $this->forGroup('mount'));
+        return $this->forGroup('mount');
     }
 
     /**
@@ -102,19 +106,19 @@ abstract class MagewireArguments extends DataObject
         return (bool) $this->getData('lazy');
     }
 
-    protected function filterPublicArguments(AbstractBlock $block): array
+    protected function assemblePublicArguments(AbstractBlock $block): array
     {
         $arguments = array_filter($block->getData(), function ($key) {
             return str_starts_with($key, 'magewire.');
         }, ARRAY_FILTER_USE_KEY);
 
-        // Remove the "magewire." prefix from the extracted arguments to create new non-prefixed arguments.
+        // Remove the "magewire." prefix and convert kebab-case to camelCase
         return array_combine(array_map(function($key) {
-            return substr($key, 9);
+            return Str::camel(substr($key, 9));
         }, array_keys($arguments)), array_values($arguments));
     }
 
-    protected function filterGroupArguments(AbstractBlock $block): array
+    protected function assembleGroupArguments(AbstractBlock $block): array
     {
         $arguments = array_filter($block->getData(), function ($key) {
             return str_starts_with($key, 'magewire:');
@@ -122,7 +126,7 @@ abstract class MagewireArguments extends DataObject
 
         foreach ($arguments as $key => $value) {
             if (preg_match('/^magewire:([^:]+):([^:]+)/', $key, $matches)) {
-                $groups[$matches[1]][$matches[2]] = $value;
+                $groups[$matches[1]][Str::camel($matches[2])] = $value;
             }
         }
 

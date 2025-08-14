@@ -116,6 +116,7 @@
                     Magewire-specific features rely solely on whether a feature needs to load before or after another,
                     rather than a strict sort order.
                 -->
+                <item name="magento_exception_handling" xsi:type="string" sortOrder="900">Magewirephp\Magewire\Features\SupportMagentoExceptionHandling\SupportMagentoExceptionHandling</item>
                 <item name="nesting_components" xsi:type="string" sortOrder="1000">Magewirephp\Magewire\Features\SupportNestingComponents\SupportNestingComponents</item>
                 <item name="magewire_nesting_components" xsi:type="string" sortOrder="1100">Magewirephp\Magewire\Features\SupportMagewireNestingComponents\SupportMagewireNestingComponents</item>
                 <item name="attributes" xsi:type="string" sortOrder="1200">Magewirephp\Magewire\Features\SupportAttributes\SupportAttributes</item>
