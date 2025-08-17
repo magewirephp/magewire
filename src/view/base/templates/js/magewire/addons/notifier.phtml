@@ -129,7 +129,8 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                     notification.active = typeof notification.message === 'string' && notification.message.length !== 0;
 
                     try {
-                        await this.trigger('activate', { notification: notification }).then(() => this.finish(id));
+                        await this.trigger('activate', { notification: notification }, notification)
+                            .then(() => this.finish(id));
                     } catch (reason) {
                         await this.fail(id, reason);
                     } finally {
@@ -155,7 +156,8 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
 
                 notification.state = '<?= $escaper->escapeJs(NotificationStateEnum::TERMINATED->getState()) ?>';
                 notification.active = false;
-                await this.trigger(id, 'terminate', { notification: notification });
+
+                await this.trigger('terminate', { notification: notification }, notification);
 
                 return notification;
             },
@@ -164,7 +166,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 const notification = this.get(id);
 
                 notification.state = '<?= $escaper->escapeJs(NotificationStateEnum::FAILED->getState()) ?>';
-                await this.trigger('failure', { notification: notification, reason: reason })
+                await this.trigger('failure', { notification: notification, reason: reason }, notification)
 
                 return notification;
             },
@@ -173,7 +175,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 const notification = this.get(id);
 
                 notification.timeout = setTimeout(() => notification.active = false, notification.duration);
-                await this.trigger('cleanup', { notification: notification });
+                await this.trigger('cleanup', { notification: notification }, notification);
 
                 return notification;
             },
@@ -199,19 +201,20 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
 
                 <?php /* Execute notification hook if it exists. */ ?>
                 const notificationHook = notification?.hooks?.[method];
+
                 if (typeof notificationHook === 'function') {
                     await notificationHook({ ...args });
                 }
 
                 <?php /* Trigger global hooks. */ ?>
-                Magewire.trigger(`addons.notifier.${hook}`, args);
+                await Magewire.triggerAsync(`addons.notifier.${hook}`, args);
             },
 
             recover: async function(id) {
                 await this.hold(id);
 
                 const notification = this.get(id);
-                await this.trigger('recover', { notification: notification });
+                await this.trigger('recover', { notification: notification }, notification);
 
                 notification.state = '<?= $escaper->escapeJs(NotificationStateEnum::RECOVERED->value) ?>';
 

@@ -42,13 +42,13 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                     ...options
                 }
 
-                <?php /* Backup possible 'onActivation' overwrite. */ ?>
-                const onActivation = hooks.onActivation
+                <?php /* Backup possible 'onActivate' overwrite. */ ?>
+                const activateHook = hooks.onActivate
 
                 hooks = {
-                    onActivation: async notification => {
-                        if (onActivation) {
-                            await onActivation({ notification: notification });
+                    onActivate: async notification => {
+                        if (typeof activateHook === 'function') {
+                            await activateHook({ notification: notification });
                         }
 
                         return new Promise(resolve => {
@@ -106,7 +106,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                     });
 
                     // If no expression matches, return false
-                    if (!matchedExpression) {
+                    if (! matchedExpression) {
                         return false;
                     }
 
