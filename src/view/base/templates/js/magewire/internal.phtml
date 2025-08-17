@@ -46,7 +46,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             }
 
             try {
-                const result = callback(window.Magewire);
+                const result  = callback({ magewire: window.Magewire });
                 const subject = reactive ? Alpine.reactive(result) : result;
 
                 target[name] = subject;
@@ -95,12 +95,6 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                     bubbles: event.bubbles,
                     cancelable: event.cancelable
                 }));
-            });
-        });
-
-        window.addEventListener('magewire:init', () => {
-            Magewire.addons.notifier.hook('stateChange', ({ state, previous, notification }) => {
-                console.log('State change', state, previous, notification)
             });
         });
     })();
