@@ -48,7 +48,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 hooks = {
                     onActivation: async notification => {
                         if (onActivation) {
-                            await onActivation(notification);
+                            await onActivation({ notification: notification });
                         }
 
                         return new Promise(resolve => {
@@ -71,12 +71,18 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 update: (prop, value, loader) => {
                     // Define expressions in order of specificity (most specific first)
                     const expressions = [
-                        `${prop}:${value}`,                                     // 1. MOST SPECIFIC: exact property:value match
-                        prop.includes('.') ? `${prop.substring(0, prop.lastIndexOf('.'))}:${value}` : null, // 2. parent:value
-                        `${prop.split('.').pop()}:${value}`,                   // 3. last segment with value
-                        prop,                                                   // 4. exact property name
-                        prop.includes('.') ? prop.substring(0, prop.lastIndexOf('.')) : null, // 5. parent property
-                        prop.split('.').pop(),                                  // 6. LEAST SPECIFIC: last segment only
+                        // 1. MOST SPECIFIC: exact property:value match
+                        `${prop}:${value}`,
+                        // 2. parent:value
+                        prop.includes('.') ? `${prop.substring(0, prop.lastIndexOf('.'))}:${value}` : null,
+                        // 3. last segment with value
+                        `${prop.split('.').pop()}:${value}`,
+                        // 4. exact property name
+                        prop,
+                        // 5. parent property
+                        prop.includes('.') ? prop.substring(0, prop.lastIndexOf('.')) : null,
+                        // 6. LEAST SPECIFIC: last segment only
+                        prop.split('.').pop(),
                     ].filter(expr => expr !== null);
 
                     // Find the first (most specific) matching expression

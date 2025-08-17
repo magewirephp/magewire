@@ -97,6 +97,12 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 }));
             });
         });
+
+        window.addEventListener('magewire:init', () => {
+            Magewire.addons.notifier.hook('stateChange', ({ state, previous, notification }) => {
+                console.log('State change', state, previous, notification)
+            });
+        });
     })();
 </script>
 <?php $script->end() ?>

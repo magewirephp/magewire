@@ -22,35 +22,79 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
     function magewireNotifier() {
         'use strict';
 
-        const notifier = Magewire.addons.notifier
+        const notifier = Magewire.addons.notifier;
 
         return {
             get notifications() {
                 return notifier.notifications;
             },
 
-            terminate: function() {
-                notifier.terminate(this.notification.id)
-            },
-            hold: function() {
-                notifier.hold(this.notification.id)
-            },
-            cleanup: function() {
-                notifier.cleanup(this.notification.id)
-            },
+            <?php /* START-END: Only add those methods that should become CSP compatible. */ ?>
 
             bindings: {
                 notification: {
-                    item: function() {
-                        return {
-                            'x-on:click'() {
-                                this.terminate()
-                            },
-                            'x-on:mouseenter'() {
-                                this.hold()
-                            },
-                            'x-on:mouseleave'() {
-                                this.cleanup()
+                    item: {
+                        root: function() {
+                            return {
+                                'x-on:click'() {
+                                    notifier.terminate(this.notification.id);
+                                },
+                                'x-on:mouseenter'() {
+                                    notifier.hold(this.notification.id);
+                                },
+                                'x-on:mouseleave'() {
+                                    <?php /* Maybe at some point this should become .resume() when implemented. */ ?>
+                                    notifier.cleanup(this.notification.id);
+                                }
+                            }
+                        },
+
+                        recover: function() {
+                            return {
+                                'x-bind:type'() {
+                                    return 'button';
+                                },
+                                'x-show'() {
+                                    return this.notification.recoverable === true;
+                                },
+                                async 'x-on:click'(event) {
+                                    event.stopPropagation();
+
+                                    this.notification.state = 'recovering';
+
+                                    try {
+                                       await new Promise(resolve => setTimeout(resolve, 2000)).then(() => {
+                                           this.notification.state = 'recovered'
+                                       });
+                                    } catch (error) {
+                                        console.log(error);
+                                    }
+                                },
+                                'x-html'() {
+                                    const recovering = '<?= $escaper->escapeJs(__('Recovering...')) ?>';
+                                    const recover = '<?= $escaper->escapeJs(__('Recover')) ?>';
+                                    const recovered = '<?= $escaper->escapeJs(__('Recovered')) ?>';
+                                    const unrecoverable = '<?= $escaper->escapeJs(__('Failure')) ?>';
+
+                                    return this.notification.state === 'recovering' ? recovering :
+                                               this.notification.state === 'recovered' ? recovered :
+                                                   this.notification.state === 'unrecoverable' ? unrecoverable :
+                                                       recover;
+                                },
+                                'x-bind:class'() {
+                                    return {
+                                        'btn': true,
+                                        'recovering': this.notification.state === 'recovering',
+                                        'recovered': this.notification.state === 'recovered',
+                                        'unrecoverable': this.notification.state === 'unrecoverable',
+                                        'recoverable': this.notification.state === 'recoverable'
+                                    };
+                                },
+                                'x-bind:disabled'() {
+                                    return this.notification.state === 'recovering'
+                                        || this.notification.state === 'recovered'
+                                        || this.notification.state === 'unrecoverable';
+                                }
                             }
                         }
                     }
