@@ -8,14 +8,11 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Symfony;
+namespace Magewirephp\Magewire\Mechanisms\ResolveComponents;
 
-use Symfony\Component\Console\Command\Command;
+use Magewirephp\Magento\App\Cache\MagewireCacheSection;
 
-class MagewireCommand extends Command
+class ResolversCache extends MagewireCacheSection
 {
-    public function setName($name)
-    {
-        return parent::setName('magewire:' . $name);
-    }
+    protected string $identifier = 'resolvers';
 }

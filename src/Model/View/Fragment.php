@@ -27,6 +27,8 @@ abstract class Fragment
     protected bool $render = true;
     // The current output buffer level, if any.
     protected int|null $level = null;
+    // Fragment alias for better identification.
+    protected string|null $alias = null;
 
     /** @var array<int, callable> $validators */
     private array $validators = [];
@@ -87,19 +89,25 @@ abstract class Fragment
     }
 
     /**
-     * Retrieves the raw output content.
-     */
-    protected function getRawOutput(): string
-    {
-        return $this->raw === false ? '' : $this->raw;
-    }
-
-    /**
      * Locks the fragment so that it cannot be modified.
      */
     public function lock(): static
     {
         $this->mutable = false;
+        return $this;
+    }
+
+    /**
+     * Flag the fragment with a alias for better identification.
+     */
+    public function withAlias(string $alias): static
+    {
+        // Silently avoid an alias is set on certain circumstances.
+        if (! $this->mutable || $this->buffering || is_string($this->alias) || is_string($this->raw)) {
+            return $this;
+        }
+
+        $this->alias = $alias;
         return $this;
     }
 
@@ -110,6 +118,22 @@ abstract class Fragment
     {
         $this->render = false;
         return $this;
+    }
+
+    /**
+     * Retrieve the raw output content.
+     */
+    protected function getRawOutput(): string
+    {
+        return $this->raw === false ? '' : $this->raw;
+    }
+
+    /**
+     * Retrieve the fragment alias (if set).
+     */
+    protected function getAlias(): string|null
+    {
+        return $this->alias;
     }
 
     /**

@@ -8,14 +8,11 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Symfony;
+namespace Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Exceptions;
 
-use Symfony\Component\Console\Command\Command;
+use Exception;
 
-class MagewireCommand extends Command
+class TooManyRequestsException extends Exception
 {
-    public function setName($name)
-    {
-        return parent::setName('magewire:' . $name);
-    }
+
 }

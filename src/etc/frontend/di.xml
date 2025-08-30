@@ -116,7 +116,8 @@
                     Magewire-specific features rely solely on whether a feature needs to load before or after another,
                     rather than a strict sort order.
                 -->
-                <item name="magento_exception_handling" xsi:type="string" sortOrder="900">Magewirephp\Magewire\Features\SupportMagentoExceptionHandling\SupportMagentoExceptionHandling</item>
+                <item name="magento_exception_handling" xsi:type="string" sortOrder="900">Magewirephp\Magewire\Features\SupportMagewireExceptionHandling\SupportMagewireExceptionHandling</item>
+                <item name="magewire_rate_limiting" xsi:type="string" sortOrder="900">Magewirephp\Magewire\Features\SupportMagewireRateLimiting\SupportMagewireRateLimiting</item>
                 <item name="nesting_components" xsi:type="string" sortOrder="1000">Magewirephp\Magewire\Features\SupportNestingComponents\SupportNestingComponents</item>
                 <item name="magewire_nesting_components" xsi:type="string" sortOrder="1100">Magewirephp\Magewire\Features\SupportMagewireNestingComponents\SupportMagewireNestingComponents</item>
                 <item name="attributes" xsi:type="string" sortOrder="1200">Magewirephp\Magewire\Features\SupportAttributes\SupportAttributes</item>
@@ -156,6 +157,21 @@
                 <item name="magento_observer_events" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagentoObserverEvents\SupportMagentoObserverEvents</item>
                     <item name="sort_order" xsi:type="number">99300</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!--
+        Feature: Magewire Rate Limiting
+    -->
+    <type name="Magewirephp\Magewire\Model\App\ExceptionManager">
+        <arguments>
+            <argument name="specificExceptionHandlerPool" xsi:type="array">
+                <item name="subsequent" xsi:type="array">
+                    <item name="Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Exceptions\TooManyRequestsException" xsi:type="object">
+                        Magewirephp\Magewire\Features\SupportMagewireRateLimiting\RateLimiterExceptionHandler
+                    </item>
                 </item>
             </argument>
         </arguments>

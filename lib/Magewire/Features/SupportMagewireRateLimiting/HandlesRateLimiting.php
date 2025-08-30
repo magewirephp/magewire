@@ -8,14 +8,9 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Symfony;
+namespace Magewirephp\Magewire\Features\SupportMagewireRateLimiting;
 
-use Symfony\Component\Console\Command\Command;
-
-class MagewireCommand extends Command
+trait HandlesRateLimiting
 {
-    public function setName($name)
-    {
-        return parent::setName('magewire:' . $name);
-    }
+
 }

@@ -52,9 +52,12 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                         }
 
                         return new Promise(resolve => {
-                            succeed(({ snapshot, effect }) => {
+                            succeed(() => {
                                 trySecondaryPart(parts);
                                 resolve(true);
+                            });
+                            fail(() => {
+                                resolve(false);
                             });
                         });
                     },

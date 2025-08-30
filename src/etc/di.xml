@@ -4,9 +4,19 @@
 >
     <!-- Global Preferences -->
     <preference for="Magewirephp\Magewire\Model\App\AbstractExceptionHandler"
-                type="Magewirephp\Magewire\Model\App\ExceptionHandler"/>
+                type="Magewirephp\Magewire\Model\App\ExceptionHandler"
+    />
     <preference for="Magewirephp\Magewire\Support\DataScope\Compiler"
-                type="Magewirephp\Magewire\Support\DataScope\Compiler\RecursiveArray"/>
+                type="Magewirephp\Magewire\Support\DataScope\Compiler\RecursiveArray"
+    />
+
+    <!-- Magewire Mechanisms -->
+
+    <!-- Magewire Features -->
+    <!-- Feature: Rate Limiting -->
+    <preference for="Magewirephp\Magewire\Features\SupportMagewireRateLimiting\RateLimiterStorageInterface"
+                type="Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Storage\RateLimiterCacheStorage"
+    />
 
     <!-- Global Non-Shareables -->
     <type name="Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\LayoutBlockArguments" shared="false"/>
@@ -17,6 +27,7 @@
     <!-- Global Plugins -->
     <type name="Magento\Framework\View\TemplateEngine\Php">
         <plugin name="Magewirephp_Magewire_Plugin_Magento_Framework_View_TemplateEngine_Php"
-                type="Magewirephp\Magewire\Plugin\Magento\Framework\View\TemplateEngine\Php"/>
+                type="Magewirephp\Magewire\Plugin\Magento\Framework\View\TemplateEngine\Php"
+        />
     </type>
 </config>

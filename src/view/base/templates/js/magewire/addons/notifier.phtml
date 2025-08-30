@@ -38,7 +38,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 notification: {
                     state: '<?= $escaper->escapeJs(NotificationStateEnum::IDLE->getState()) ?>',
                     level: <?= $escaper->escapeJs(NotificationStateEnum::IDLE->getLevel()) ?>,
-                    type: '<?= $escaper->escapeJs(NotificationTypeEnum::INFO->value) ?>',
+                    type: '<?= $escaper->escapeJs(NotificationTypeEnum::INFO->getType()) ?>',
                     duration: null,
                     recoverable: false,
 

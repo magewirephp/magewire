@@ -1,0 +1,41 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Model\Magewire\Notifier\NotificationTypeEnum;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment = $magewireViewModel->utils()->fragment();
+
+/** @internal Do not modify to ensure Magewire continues to function correctly. */
+?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    document.addEventListener('magewire:init', event => {
+        const { addons } = event.detail.magewire;
+
+        Magewire.hook('request', ({ fail }) => {
+            fail(({ status, preventDefault }) => {
+                if (status === 429) {
+                    if ('notifier' in addons) {
+                        addons.notifier.create(<?= $escaper->escapeJs(__('Too many requests! Please wait.')) ?>, {
+                            type: '<?= $escaper->escapeJs(NotificationTypeEnum::WARNING->getType()) ?>'
+                        });
+                    } else {
+                        alert('Too many requests... Slow it down!');
+                    }
+
+                    preventDefault();
+                }
+            });
+        });
+    });
+</script>
+<?php $script->end() ?>

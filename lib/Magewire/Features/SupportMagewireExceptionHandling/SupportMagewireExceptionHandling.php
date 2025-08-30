@@ -8,14 +8,14 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Magewire\Features\SupportMagentoExceptionHandling;
+namespace Magewirephp\Magewire\Features\SupportMagewireExceptionHandling;
 
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\ComponentHook;
 use Throwable;
 use function Magewirephp\Magewire\on;
 
-class SupportMagentoExceptionHandling extends ComponentHook
+class SupportMagewireExceptionHandling extends ComponentHook
 {
     function provide(): void
     {

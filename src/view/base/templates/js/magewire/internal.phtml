@@ -28,7 +28,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
         window.Magewire.utilities = window.Magewire.utilities || {};
         window.Magewire.addons = window.Magewire.addons || {};
 
-        function registerMagewireNamespace(namespace, name, callback, reactive = false) {
+        function magewireRegisterNamespace(namespace, name, callback, reactive = false) {
             let type = namespace.slice(0, -1);
             type = type.endsWith('ie') ? type.slice(0, -2) + 'y' : type;
 
@@ -59,10 +59,10 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
         }
 
         window.Magewire.utility = function(name, callback) {
-            return registerMagewireNamespace('utilities', name, callback, false);
+            return magewireRegisterNamespace('utilities', name, callback);
         };
         window.Magewire.addon = function(name, callback, reactive = false) {
-            return registerMagewireNamespace('addons', name, callback, reactive);
+            return magewireRegisterNamespace('addons', name, callback, reactive);
         };
 
         const EVENTS = [

@@ -134,6 +134,9 @@
                 <block name="magewire.features.support-magewire-loaders"
                        template="Magewirephp_Magewire::js/magewire/features/support-magewire-loaders/support-magewire-loaders.phtml"
                 />
+                <block name="magewire.features.support-magewire-rate-limiting"
+                       template="Magewirephp_Magewire::js/magewire/features/support-magewire-rate-limiting/support-magewire-rate-limiting.phtml"
+                />
             </container>
 
             <container name="magewire.after.internal" as="after.internal"/>

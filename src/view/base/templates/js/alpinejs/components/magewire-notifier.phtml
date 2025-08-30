@@ -29,7 +29,11 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 return notifier.notifications;
             },
 
-            <?php /* START-END: Only add those methods that should become CSP compatible. */ ?>
+            <?php /* START: Only add those methods that should become CSP compatible. */ ?>
+            terminate: function() {
+                notifier.terminate(this.notification.id)
+            },
+            <?php /* END */?>
 
             bindings: {
                 notification: {
