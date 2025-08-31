@@ -25,7 +25,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             fail(({ status, preventDefault }) => {
                 if (status === 429) {
                     if ('notifier' in addons) {
-                        addons.notifier.create(<?= $escaper->escapeJs(__('Too many requests! Please wait.')) ?>, {
+                        addons.notifier.create('<?= $escaper->escapeJs(__('Too many requests! Please wait.')) ?>', {
                             type: '<?= $escaper->escapeJs(NotificationTypeEnum::WARNING->getType()) ?>'
                         });
                     } else {

@@ -18,7 +18,7 @@ class UpdateRequestRateLimiter extends RateLimiter
     public function validateWithComponentRequestContext(ComponentRequestContext $componentRequestContext): bool
     {
         $key = $this->generateKeyByRequestContext($componentRequestContext);
-        $result = $this->validate($key, 2);
+        $result = $this->validate($key, 4, 5);
 
         if ($result) {
             $this->hit($key);
