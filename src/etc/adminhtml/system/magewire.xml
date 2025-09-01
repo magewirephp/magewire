@@ -1,0 +1,19 @@
+<?xml version="1.0" ?>
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd"
+>
+    <section id="magewire"
+             translate="label"
+             sortOrder="999"
+             showInDefault="1"
+             showInWebsite="1"
+             showInStore="1"
+    >
+        <label>Magewire</label>
+        <tab>advanced</tab>
+        <resource>Magewirephp_Magewire::magewire</resource>
+
+        <include path="Magewirephp_Magewire::system/magewire/debug.xml"/>
+        <include path="Magewirephp_Magewire::system/magewire/features.xml"/>
+    </section>
+</include>

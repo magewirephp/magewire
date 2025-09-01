@@ -10,17 +10,27 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireRateLimiting;
 
+use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Mechanisms\HandleRequests\ComponentRequestContext;
 
 class UpdateRequestRateLimiter extends RateLimiter
 {
+    public function __construct(
+        private readonly RateLimiterStorageInterface $storage,
+        private readonly DateTime $datetime,
+        private readonly RateLimiterConfig $rateLimiterConfig
+    ) {
+        parent::__construct($this->storage, $this->datetime);
+    }
+
     public function validateWithComponentRequestContext(ComponentRequestContext $componentRequestContext): bool
     {
         $key = $this->generateKeyByRequestContext($componentRequestContext);
-        $result = $this->validate($key, 4, 5);
+        $attempts = $this->rateLimiterConfig->getRequestsMaxAttempts();
+        $decay = $this->rateLimiterConfig->getRequestsDecaySeconds();
 
-        if ($result) {
+        if ($result = $this->validate($key, $attempts, $decay)) {
             $this->hit($key);
         }
 
@@ -33,6 +43,11 @@ class UpdateRequestRateLimiter extends RateLimiter
     }
 
     private function generateKeyByRequestContext(ComponentRequestContext $componentRequestContext): string
+    {
+        return 'blaaaaa';
+    }
+
+    private function generateKeyByComponent(Component $component): string
     {
         return 'blaaaaa';
     }

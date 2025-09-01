@@ -4,7 +4,7 @@
 >
     <group id="debug"
            translate="label"
-           sortOrder="999"
+           sortOrder="975"
            showInDefault="1"
            showInWebsite="1"
            showInStore="1"

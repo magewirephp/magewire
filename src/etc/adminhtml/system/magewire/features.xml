@@ -2,16 +2,15 @@
 <include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd"
 >
-    <group id="magewire"
+    <group id="features"
            translate="label"
-           sortOrder="999"
+           sortOrder="950"
            showInDefault="1"
            showInWebsite="1"
            showInStore="1"
     >
-        <label>Magewire</label>
+        <label>Features</label>
 
-        <include path="Magewirephp_Magewire::system/dev/magewire/debug.xml"/>
-        <include path="Magewirephp_Magewire::system/dev/magewire/loader.xml"/>
+        <include path="Magewirephp_Magewire::system/magewire/features/support-rate-limiter/support-rate-limiter.xml"/>
     </group>
 </include>

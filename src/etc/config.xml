@@ -3,17 +3,17 @@
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd"
 >
     <default>
-        <dev>
-            <magewire>
-                <loader>
-                    <enable>1</enable>
-                    <enable_notifications>1</enable_notifications>
+        <magewire>
+            <features>
+                <rate_limiter>
+                    <enabled>0</enabled>
 
-                    <notifications>
-                        <message_fadeout_timeout>3500</message_fadeout_timeout>
-                    </notifications>
-                </loader>
-            </magewire>
-        </dev>
+                    <requests>
+                        <max_attempts>4</max_attempts>
+                        <decay_seconds>5</decay_seconds>
+                    </requests>
+                </rate_limiter>
+            </features>
+        </magewire>
     </default>
 </config>

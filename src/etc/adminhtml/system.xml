@@ -2,8 +2,6 @@
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd"
 >
     <system>
-        <section id="dev">
-            <include path="Magewirephp_Magewire::system/dev/magewire.xml"/>
-        </section>
+        <include path="Magewirephp_Magewire::system/magewire.xml"/>
     </system>
 </config>

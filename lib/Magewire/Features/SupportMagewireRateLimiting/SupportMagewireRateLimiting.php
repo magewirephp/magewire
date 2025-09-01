@@ -19,31 +19,36 @@ use function Magewirephp\Magewire\on;
 class SupportMagewireRateLimiting extends ComponentHook
 {
     public function __construct(
-        private readonly UpdateRequestRateLimiter $rateLimiter
+        private readonly UpdateRequestRateLimiter $rateLimiter,
+        private readonly RateLimiterConfig $rateLimiterConfig
     ) {
         //
     }
 
     public function provide(): void
     {
-        on('request', function(array $payload) {
-            $context = $payload[0] ?? false;
+        if ($this->rateLimiterConfig->canRateLimitRequests()) {
+            on('request', function (array $payload) {
+                $context = $payload[0] ?? false;
 
-            // Global scope rate limiting validation.
-            if ($context && ! $this->rateLimiter->validateWithComponentRequestContext($context)) {
-                throw new TooManyRequestsException();
-            }
-        });
-
-        on('magewire:reconstruct', function($a) {
-            return function (Template $block) {
-                $component = $block->getData('magewire');
-
-                // Component scope rate limiting validation.
-                if ($component instanceof Component && ! $this->rateLimiter->validateWithComponent($component)) {
+                // Global scope rate limiting validation.
+                if ($context && ! $this->rateLimiter->validateWithComponentRequestContext($context)) {
                     throw new TooManyRequestsException();
                 }
-            };
-        });
+            });
+        }
+
+        if ($this->rateLimiterConfig->canRateLimitComponents()) {
+            on('magewire:reconstruct', function () {
+                return function (Template $block) {
+                    $component = $block->getData('magewire');
+
+                    // Component scope rate limiting validation.
+                    if ($component instanceof Component && ! $this->rateLimiter->validateWithComponent($component)) {
+                        throw new TooManyRequestsException();
+                    }
+                };
+            });
+        }
     }
 }

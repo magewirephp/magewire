@@ -29,7 +29,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                             type: '<?= $escaper->escapeJs(NotificationTypeEnum::WARNING->getType()) ?>'
                         });
                     } else {
-                        alert('Too many requests... Slow it down!');
+                        alert('<?= $escaper->escapeJs(__('Too many requests! Please wait.')) ?>');
                     }
 
                     preventDefault();
