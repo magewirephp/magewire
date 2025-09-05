@@ -12,13 +12,15 @@ namespace Magewirephp\Magewire\Features\SupportMagewireCompiling;
 
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\ActionManager;
+use Magewirephp\Magewire\Model\View\Utils;
 use Magewirephp\Magewire\Support\DataScope;
 
 class MagewireUnderscoreViewModel implements ArgumentInterface
 {
     public function __construct(
         private readonly ActionManager $actionManager,
-        private readonly DataScope $arguments
+        private readonly DataScope $arguments,
+        private readonly Utils $utils
     ) {
         //
     }
@@ -31,5 +33,10 @@ class MagewireUnderscoreViewModel implements ArgumentInterface
     public function arguments(): DataScope
     {
         return $this->arguments;
+    }
+
+    public function utils(): Utils
+    {
+        return $this->utils;
     }
 }

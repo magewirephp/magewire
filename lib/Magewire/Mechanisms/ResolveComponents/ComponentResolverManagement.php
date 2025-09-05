@@ -15,7 +15,6 @@ use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\Exception\RuntimeException;
 use Magento\Framework\View\Element\AbstractBlock;
-use Magewirephp\Magento\App\Cache\Type\Magewire as MagewireCache;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolver\ComponentResolver;
 use Psr\Log\LoggerInterface;
 
@@ -26,7 +25,7 @@ class ComponentResolverManagement
      */
     public function __construct(
         private readonly LoggerInterface $logger,
-        private readonly MagewireCache $magewireCache,
+        private readonly ResolversCache $resolversCache,
         private array $resolvers = []
     ) {
         $this->resolvers = array_filter($this->resolvers, fn ($resolver) => is_object($resolver) || is_string($resolver));
@@ -40,7 +39,7 @@ class ComponentResolverManagement
      */
     public function resolve(AbstractBlock $block): ComponentResolver
     {
-        $cache = $this->magewireCache->resolvers()->fetch();
+        $cache = $this->resolversCache->fetch();
 
         // BACKWARDS COMPATIBILITY START: Handling cases where resolver cache values were stored as strings and
         //                                the magewire cache not yet has been flushed.
@@ -56,6 +55,10 @@ class ComponentResolverManagement
          *    injected resolvers, each calling the `complies()` method.
          */
         $resolver ??= $block->getData('magewire:resolver') ?? null;
+
+        if ($resolver instanceof ComponentResolver) {
+            return $resolver;
+        }
 
         // Check the Magewire blocks cache to find the cached resolver accessor.
         $resolver ??= $cache['blocks'][$this->getBlockCacheKey($block)] ?? null;
@@ -97,25 +100,23 @@ class ComponentResolverManagement
      *
      * @throws NotFoundException
      */
-    public function createResolverByAccessor(string $resolver): ComponentResolver
+    public function createResolverByAccessor(string $resolver, array $data = []): ComponentResolver
     {
-        return $this->createResolverByType($this->getResolverClass($resolver), $resolver);
+        return $this->createResolverByType($this->getResolverClass($resolver), $data);
     }
 
     /**
      * @throws NotFoundException
      */
-    public function createResolverByType(string $class, string $accessor): ComponentResolver
+    public function createResolverByType(string $class, array $data = []): ComponentResolver
     {
-        $instance = ObjectManager::getInstance()->create($class, [
-            'accessor' => $accessor
-        ]);
+        $instance = ObjectManager::getInstance()->create($class, $data);
 
         if ($instance instanceof ComponentResolver) {
             return $instance;
         }
 
-        throw new NotFoundException(__('No block resolver found'));
+        throw new NotFoundException(__('Component resolver cannot be found.'));
     }
 
     /**
@@ -139,7 +140,7 @@ class ComponentResolverManagement
      */
     private function getResolverClass(string $resolver): string
     {
-        $cache = $this->magewireCache->resolvers()->fetch();
+        $cache = $this->resolversCache->fetch();
         $data  = $cache['resolvers'][$resolver] ?? null;
 
         if ($data) {
@@ -167,7 +168,7 @@ class ComponentResolverManagement
 
     private function cache(AbstractBlock $block, ComponentResolver $resolver): ComponentResolver
     {
-        $cache = $this->magewireCache->resolvers()->fetch();
+        $cache = $this->resolversCache->fetch();
         $cache['blocks'][$this->getBlockCacheKey($block)] = $resolver->getAccessor();
 
         $resolvers = $cache['resolvers'] ?? [$resolver->getAccessor() => []];
@@ -179,7 +180,7 @@ class ComponentResolverManagement
         $cache['resolvers'] = $resolvers;
 
         // Attempt to cache the resolvers, regardless of whether caching is enabled or disabled.
-        $this->magewireCache->resolvers()->save($cache);
+        $this->resolversCache->save($cache);
 
         return $resolver;
     }

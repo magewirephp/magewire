@@ -19,15 +19,17 @@ abstract class Fragment
 {
     // Unchanged raw buffer output, if any.
     protected string|bool $raw = false;
-    // Indicates whether the fragment is allowed to be modified.
-    protected bool $modifiable = true;
-
     // Flag to indicate whether the fragment is currently buffering output.
-    private bool $buffering = false;
+    protected bool $buffering = false;
+    // Indicates whether the fragment is allowed to be modified.
+    protected bool $mutable = true;
+    // Indicated whether the fragment should skip echoing.
+    protected bool $render = true;
     // The current output buffer level, if any.
-    private int|null $level = null;
+    protected int|null $level = null;
+    // Fragment alias for better identification.
+    protected string|null $alias = null;
 
-    // The fragment's validation callbacks.
     /** @var array<int, callable> $validators */
     private array $validators = [];
 
@@ -56,13 +58,13 @@ abstract class Fragment
         ob_start();
 
         $this->buffering = true;
-        $this->level = ob_get_level();
+        $this->level = $this->level ?? ob_get_level();
 
         return $this;
     }
 
     /**
-     * Ends output buffering and processes the captured content.
+     * Ends output buffering, processes and echos the captured content.
      *
      * Retrieves the buffered output as raw content, applies an optional transformation
      * to produce the final content, and triggers the inspection process.
@@ -80,26 +82,10 @@ abstract class Fragment
         try {
             $output = $this->render();
         } catch (EmptyFragmentException $exception) {
-            // Unreachable: fragment buffering state verified in method preconditions
+            // Unreachable: fragment buffering state verified in method preconditions.
         }
 
-        echo $output ?? '';
-    }
-
-    /**
-     * Retrieves the raw output content.
-     */
-    public function getRawOutput(): string
-    {
-        return $this->raw === false ? '' : $this->raw;
-    }
-
-    /**
-     * Determines whether the fragment is currently buffering output.
-     */
-    public function isBuffering(): bool
-    {
-        return $this->buffering;
+        echo $this->render ? ($output ?? '') : '';
     }
 
     /**
@@ -107,9 +93,47 @@ abstract class Fragment
      */
     public function lock(): static
     {
-        $this->modifiable = false;
-
+        $this->mutable = false;
         return $this;
+    }
+
+    /**
+     * Flag the fragment with a alias for better identification.
+     */
+    public function withAlias(string $alias): static
+    {
+        // Silently avoid an alias is set on certain circumstances.
+        if (! $this->mutable || $this->buffering || is_string($this->alias) || is_string($this->raw)) {
+            return $this;
+        }
+
+        $this->alias = $alias;
+        return $this;
+    }
+
+    /**
+     * Avoid output echoing.
+     */
+    public function mute(): static
+    {
+        $this->render = false;
+        return $this;
+    }
+
+    /**
+     * Retrieve the raw output content.
+     */
+    protected function getRawOutput(): string
+    {
+        return $this->raw === false ? '' : $this->raw;
+    }
+
+    /**
+     * Retrieve the fragment alias (if set).
+     */
+    protected function getAlias(): string|null
+    {
+        return $this->alias;
     }
 
     /**
@@ -117,7 +141,7 @@ abstract class Fragment
      */
     protected function validate(): bool
     {
-        if ($this->isBuffering()) {
+        if ($this->buffering) {
             return false;
         }
 
@@ -144,6 +168,9 @@ abstract class Fragment
         return $this;
     }
 
+    /**
+     * Set a fragment modifier.
+     */
     protected function withModifier(FragmentModifier|callable $modifier): static
     {
         $this->modifiers[] = $modifier;
@@ -168,42 +195,57 @@ abstract class Fragment
         $message = 'A validation exception occurred while processing the fragment.';
         $this->logger->critical($message, ['exception' => $exception]);
 
-        return $this->raw;
+        return $this->raw ?? '';
+    }
+
+    protected function handleRenderException(Throwable $exception): string
+    {
+        $message = 'A render exception occurred while processing the fragment.';
+        $this->logger->critical($message, ['exception' => $exception]);
+
+        return '';
     }
 
     /**
-     * @throws EmptyFragmentException
+     * Returns the final fragment output.
      */
     protected function render(): string
     {
-        $output = $this->raw;
+        try {
+            $output = $this->raw;
 
-        if ($output) {
-            try {
-                if ($this->validate()) {
-                    $this->modify();
+            if ($output) {
+                try {
+                    if ($this->validate()) {
+                        $this->modify();
+                    }
+                } catch (Throwable $exception) {
+                    $output = $this->handleValidationException($exception);
                 }
-            } catch (Throwable $exception) {
-                $output = $this->handleValidationException($exception);
+
+                return $output;
             }
 
-            return $output;
-        }
-
-        if ($this->isBuffering()) {
-            throw new EmptyFragmentException(
-                'Unclosed output buffer detected. Fragment buffering must be properly terminated.'
-            );
+            if ($this->buffering) {
+                throw new EmptyFragmentException(
+                    'Unclosed output buffer detected. Fragment buffering must be properly terminated.'
+                );
+            }
+        } catch (Throwable $exception) {
+            return $this->handleRenderException($exception);
         }
 
         return '';
     }
 
-    protected function modify(): static
+    /**
+     * Runs all injected fragment modifiers.
+     */
+    private function modify(): static
     {
         $output = $this->raw;
 
-        if ($this->modifiable && $output) {
+        if ($this->mutable && $output) {
             foreach ($this->modifiers as $modifier) {
                 try {
                     if (is_callable($modifier)) {

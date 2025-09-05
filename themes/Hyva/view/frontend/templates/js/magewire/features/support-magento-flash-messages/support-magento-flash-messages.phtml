@@ -9,9 +9,9 @@ use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
 /** @var MagewireViewModel $magewireViewModel */
 
 $magewireViewModel = $block->getData('view_model');
-$magewireTemplateFragment = $magewireViewModel->utils()->template()->fragment();
+$magewireFragment = $magewireViewModel->utils()->fragment();
 ?>
-<?php $script = $magewireTemplateFragment->script()->start() ?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
 <script>
     (() => {
         window.addEventListener('magewire:flash-messages:dispatch', event => dispatchMessages(event.detail));

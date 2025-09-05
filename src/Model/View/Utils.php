@@ -16,6 +16,7 @@ use Magewirephp\Magewire\Model\View\Utils\Alpine as AlpineViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Application as ApplicationViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Csp as CspViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Environment as EnvironmentViewUtil;
+use Magewirephp\Magewire\Model\View\Utils\Fragment as FragmentViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Layout as LayoutViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Magewire as MagewireViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Security as SecurityViewUtil;
@@ -32,6 +33,7 @@ class Utils
         private readonly AlpineViewUtil $alpine,
         private readonly ApplicationViewUtil $application,
         private readonly EnvironmentViewUtil $environment,
+        private readonly FragmentViewUtil $fragment,
         private readonly LayoutViewUtil $layout,
         private readonly MagewireViewUtil $magewire,
         private readonly SecurityViewUtil $security,
@@ -86,6 +88,11 @@ class Utils
     public function csp(): CspViewUtil
     {
         return $this->csp;
+    }
+
+    public function fragment(): FragmentViewUtil
+    {
+        return $this->fragment;
     }
 
     /**

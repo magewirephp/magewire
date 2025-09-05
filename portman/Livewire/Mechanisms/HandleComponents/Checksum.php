@@ -39,8 +39,8 @@ class Checksum
 
         trigger('checksum.verify', $checksum, $snapshot);
 
-        if ($checksum !== $comparitor = $this->generate($snapshot)) {
-            trigger('checksum.fail', $checksum, $comparitor, $snapshot);
+        if ($checksum !== $comparator = $this->generate($snapshot)) {
+            trigger('checksum.fail', $checksum, $comparator, $snapshot);
 
             throw new CorruptComponentPayloadException;
         }

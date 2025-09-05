@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View;
 
+use Magento\Framework\App\ObjectManager;
+
 /**
  * A directive area represents a technology-specific collection of directives grouped under a
  * shared prefix. These directives differ from global directives and only function when invoked
@@ -20,8 +22,10 @@ namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View;
  */
 class DirectiveArea
 {
+    private array $scopes = [];
+
     /**
-     * @param array<string, Directive> $directives
+     * @param array<string, Directive|class-string> $directives
      */
     public function __construct(
         private array $directives = []
@@ -63,6 +67,32 @@ class DirectiveArea
 
     public function get(string $directive): Directive|null
     {
-        return $this->directives[$directive] ?? null;
+        /*
+         * Reuse the most recent scoped directive instance if one exists.
+         *
+         * Chained and ending directives (like @endforeach, @else) must execute
+         * within the same class instance as their opening directive to maintain
+         * proper state and context.
+         */
+        if (is_array($this->scopes[$directive] ?? null) && count($this->scopes[$directive]) !== 0) {
+            return array_pop($this->scopes[$directive]);
+        }
+
+        $type = $this->directives[$directive] ?? null;
+        $standalone = is_string($type);
+
+        if ($standalone) {
+            $type = ObjectManager::getInstance()->create($type);
+        }
+
+        if ($type instanceof ScopeDirective) {
+            $type = $standalone ? $type : ObjectManager::getInstance()->create($type::class);
+
+            foreach ($type->getResponsibilitiesFor($directive) as $responsibility) {
+                $this->scopes[$responsibility][] = $type;
+            }
+        }
+
+        return $type;
     }
 }

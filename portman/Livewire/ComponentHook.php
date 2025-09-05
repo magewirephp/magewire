@@ -12,12 +12,13 @@ namespace Magewirephp\Magewire;
 
 abstract class ComponentHook extends \Livewire\ComponentHook
 {
-    function getComponent()
+    public function getComponent()
     {
         return $this->component;
     }
 
-    function callMagewireConstruct(...$params) {
+    public function callMagewireConstruct(...$params): void
+    {
         if (method_exists($this, 'magewireConstruct')) {
             $this->magewireConstruct(...$params);
         }

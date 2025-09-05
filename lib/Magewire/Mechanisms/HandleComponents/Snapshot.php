@@ -17,6 +17,8 @@ use Magewirephp\Magewire\Mechanisms\HandleComponents\Checksum as ChecksumHandler
 
 class Snapshot
 {
+    private array $secureMemoValueCache = [];
+
     /**
      * @param JsonSerializer $serializer
      * @param ChecksumHandler $checksumHandler

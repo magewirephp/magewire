@@ -10,17 +10,22 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Model\View;
 
+use InvalidArgumentException;
+use LogicException;
 use Magento\Framework\ObjectManagerInterface;
 use Magewirephp\Magewire\Model\View\Fragment\Html;
 use Magewirephp\Magewire\Model\View\Fragment\Javascript;
 use Magewirephp\Magewire\Model\View\Fragment\Script;
 use Magewirephp\Magewire\Model\View\Fragment\Style;
-use RuntimeException;
 
 class FragmentFactory
 {
+    /**
+     * @param array<string, class-string<Fragment> $types
+     */
     public function __construct(
-        private readonly ObjectManagerInterface $objectManager
+        private readonly ObjectManagerInterface $objectManager,
+        private readonly array $types = []
     ) {
         //
     }
@@ -47,8 +52,28 @@ class FragmentFactory
 
     /**
      * @template T of Fragment
+     * @param string $name
+     * @return T
+     * @throws InvalidArgumentException
+     * @phpstan-return T
+     */
+    public function custom(string $name): Fragment
+    {
+        if (array_key_exists($name, $this->types)) {
+            return $this->create($this->types[$name]);
+        }
+        if (class_exists($name)) {
+            return $this->create($name);
+        }
+
+        throw new InvalidArgumentException(sprintf('Unknown fragment type "%s".', $name));
+    }
+
+    /**
+     * @template T of Fragment
      * @param class-string<T> $type
      * @return T
+     * @throws LogicException
      */
     private function create(string $type): Fragment
     {
@@ -58,6 +83,8 @@ class FragmentFactory
             return $fragment;
         }
 
-        throw new RuntimeException('Invalid fragment type.');
+        throw new LogicException(sprintf(
+            'Class "%s" does not implement Fragment interface. Expected Fragment, got %s.', $type, get_debug_type($fragment)
+        ));
     }
 }

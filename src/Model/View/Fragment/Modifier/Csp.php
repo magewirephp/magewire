@@ -41,7 +41,7 @@ class Csp extends FragmentModifier
         if ($this->useCspHeader()) {
             $this->includeCspHeader($fragment);
         } else {
-            $fragment->setAttribute('nonce', $this->csp->getMagentoCspNonceProvider()->generateNonce());
+            $fragment->withAttribute('nonce', $this->csp->getMagentoCspNonceProvider()->generateNonce());
         }
 
         return $fragment;

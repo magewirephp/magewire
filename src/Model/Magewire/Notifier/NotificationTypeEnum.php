@@ -17,6 +17,11 @@ enum NotificationTypeEnum: string
     case WARNING = 'warning';
     case ERROR = 'error';
 
+    public function getType(): string
+    {
+        return $this->value;
+    }
+
     public function getCssClass(): string
     {
         return 'notification-' . $this->value;

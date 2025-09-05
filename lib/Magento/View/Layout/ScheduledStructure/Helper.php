@@ -10,13 +10,12 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magento\View\Layout\ScheduledStructure;
 
-use Magento\Framework\App\State;
 use Magento\Framework\View\Layout\ScheduledStructure;
 use Magento\Framework\View\Layout\Data\Structure;
 
 class Helper extends ScheduledStructure\Helper
 {
-    function scheduleElement(ScheduledStructure $scheduledStructure, Structure $structure, $key)
+    public function scheduleElement(ScheduledStructure $scheduledStructure, Structure $structure, $key)
     {
         $row  = $scheduledStructure->getStructureElement($key);
         $data = $scheduledStructure->getStructureElementData($key);

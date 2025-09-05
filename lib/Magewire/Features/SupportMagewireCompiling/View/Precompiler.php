@@ -12,5 +12,5 @@ namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View;
 
 abstract class Precompiler
 {
-    // WIP: precompilers are not yet implemented.
+    abstract public function precompile(string $value): string;
 }

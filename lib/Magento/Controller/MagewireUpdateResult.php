@@ -14,12 +14,14 @@ use Closure;
 use Magento\Framework\App\Response\HttpInterface as HttpResponseInterface;
 use Magento\Framework\Controller\AbstractResult;
 use Magento\Framework\Serialize\Serializer\Json as JsonSerializer;
+use function Magewirephp\Magewire\trigger;
 
 class MagewireUpdateResult extends AbstractResult
 {
-    private ?Closure $renderer = null;
+    private Closure|null $renderer = null;
+    private bool $rendered = false;
 
-    function __construct(
+    public function __construct(
         private readonly JsonSerializer $jsonSerializer,
         private readonly array $components = [],
         private readonly array $assets = []
@@ -27,24 +29,28 @@ class MagewireUpdateResult extends AbstractResult
         //
     }
 
-    function renderWith(Closure $renderer): self
+    public function renderWith(Closure $renderer): self
     {
+        if ($this->rendered) {
+            return $this;
+        }
+
         $this->renderer = $renderer;
 
         return $this;
     }
 
-    function getComponents(): array
+    public function getComponents(): array
     {
         return $this->components;
     }
 
-    function getAssets(): array
+    public function getAssets(): array
     {
         return $this->assets;
     }
 
-    function render(HttpResponseInterface $response): self
+    public function render(HttpResponseInterface $response): self
     {
         $this->renderer ??= function (HttpResponseInterface $response, MagewireUpdateResult $result): HttpResponseInterface {
             return $response->setBody(
@@ -56,6 +62,9 @@ class MagewireUpdateResult extends AbstractResult
         };
 
         call_user_func($this->renderer, $response, $this);
+        $this->rendered = true;
+
+        trigger('magewire:response.render', $response);
 
         $response->setHeader('Content-Type', 'application/json', true);
         $response->setHeader('X-Built-With', 'Magewire', true);

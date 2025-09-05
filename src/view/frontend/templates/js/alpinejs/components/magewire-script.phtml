@@ -2,22 +2,54 @@
 
 declare(strict_types=1);
 
+use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
 
 /** @var Template $block */
+/** @var Escaper $escaper */
 /** @var MagewireViewModel $magewireViewModel */
 
-/**
- * AlpineJS - Global
- *
- * @internal Do not modify to ensure Magewire continues to function correctly.
- */
 $magewireViewModel = $block->getData('view_model');
-$magewireViewUtilities = $magewireViewModel->utils();
-
-$templateUtilities = $magewireViewUtilities->template();
-$layoutUtilities = $magewireViewUtilities->layout();
+$magewireUtility = $magewireViewModel->utils()->magewire();
+$magewireFragment = $magewireViewModel->utils()->fragment();
 ?>
-<?= $templateUtilities->echoCodeComment('script', false, 'AlpineJS') ?>
-<?= $layoutUtilities->renderBlockAsContainer($block) ?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    function magewireScript() {
+        return {
+
+        }
+    }
+
+    function magewireScriptBindings(options) {
+        options = { ...{
+                csrfToken: null,
+                updateUri: '<?= $escaper->escapeJs($magewireUtility->getUpdateUri()) ?>',
+            }, ...options }
+
+        Object.keys(options).forEach(option => {
+            if (options[option] === null) {
+                console.error(`Magewire script option "${ option }" can not be null.`);
+            }
+            if (option[option] === '') {
+                console.error(`Magewire script option "${ option }" can not be empty.`);
+            }
+        });
+
+        return {
+            ':data-csrf'() {
+                return options.csrfToken
+            },
+            ':data-update-uri'() {
+                return options.updateUri
+            }
+        };
+    }
+
+    <?php /* Register as Alpine component. */ ?>
+    document.addEventListener('alpine:init', () => Alpine.data('magewireScript', magewireScript), { once: true })
+    <?php /* Register Alpine component bindings (for optional usage). */ ?>
+    document.addEventListener('alpine:init', () => Alpine.bind('magewireScriptBindings', magewireScriptBindings), { once: true });
+</script>
+<?php $script->end() ?>

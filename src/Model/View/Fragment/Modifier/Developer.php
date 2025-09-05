@@ -25,7 +25,7 @@ class Developer extends FragmentModifier
     public function modify(Fragment $fragment): Fragment
     {
         if ($fragment instanceof Fragment\Html && $this->applicationState->getMode() === ApplicationState::MODE_DEVELOPER) {
-            $fragment->setAttribute('wire:fragment');
+            $fragment->withAttribute('magewire-fragment');
         }
 
         return $fragment;

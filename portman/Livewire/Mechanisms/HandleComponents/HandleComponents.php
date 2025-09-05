@@ -51,15 +51,6 @@ class HandleComponents extends \Livewire\Mechanisms\HandleComponents\HandleCompo
         });
     }
 
-    public function boot()
-    {
-        on('snapshot-verified', function (array $snapshot, Component $component) {
-            if ($component->getId() !== $snapshot['memo']['id'] || $component->getName() !== $snapshot['memo']['name']) {
-                throw new CorruptComponentPayloadException();
-            }
-        });
-    }
-
     public function mount($name, $params = [], $key = null, AbstractBlock $block = null, Component $component = null)
     {
         $parent = last(self::$componentStack);
@@ -250,7 +241,7 @@ class HandleComponents extends \Livewire\Mechanisms\HandleComponents\HandleCompo
 
         // If we have meta data already for this property, let's use that to get a synth...
         if ($meta) {
-            return $this->hydrate([$value, $meta], $context, $path);
+            return $this->hydratePropertyUpdate([$value, $meta], $context, $path, $raw);
         }
 
         // If we don't, let's check to see if it's a typed property and fetch the synth that way...
@@ -258,7 +249,7 @@ class HandleComponents extends \Livewire\Mechanisms\HandleComponents\HandleCompo
             ? data_get($context->component, str($path)->beforeLast('.')->toString())
             : $context->component;
 
-        $childKey = str($path)->afterLast('.')->toString();
+        $childKey = str($path)->afterLast('.');
 
         if ($parent && is_object($parent) && property_exists($parent, $childKey) && Utils::propertyIsTyped($parent, $childKey)) {
             $type = Utils::getProperty($parent, $childKey)->getType();
@@ -268,9 +259,7 @@ class HandleComponents extends \Livewire\Mechanisms\HandleComponents\HandleCompo
             foreach ($types as $type) {
                 $synth = $this->getSynthesizerByType($type->getName(), $context, $path);
 
-                if ($synth) {
-                    return $synth->hydrateFromType($type->getName(), $value);
-                }
+                if ($synth) return $synth->hydrateFromType($type->getName(), $value);
             }
         }
 
@@ -328,11 +317,6 @@ class HandleComponents extends \Livewire\Mechanisms\HandleComponents\HandleCompo
                 sprintf('Unable to find component: [%s]', $block->getNameInLayout())
             );
         }
-
-        $component = $block->getData('magewire');
-        $this->checksum->verify($snapshot);
-
-        trigger('snapshot-verified', $snapshot, $component);
 
         /** @var Component $component */
         $component = $block->getData('magewire');

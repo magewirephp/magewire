@@ -10,15 +10,15 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View;
 
-use Magento\Framework\App\ObjectManager;
-use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Parser\FunctionArgumentsParser;
-use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Parser\ParserType;
-use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\DirectiveManager;
-use Magewirephp\Magewire\Support\Parser;
+use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Parser\ExpressionParser;
+use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Parser\ExpressionParserType;
+use ReflectionClass;
+use ReflectionMethod;
 
 abstract class Directive
 {
-    private DirectiveUtils|null $utils = null;
+    private array $expressionParsers = [];
+    private array $variables = [];
 
     /**
      * Compiles a string-based directive into executable code.
@@ -31,32 +31,44 @@ abstract class Directive
      * @param string $expression The expression associated with the directive.
      * @param string $directive The name of the directive to compile.
      */
-    public function compile(string $expression, string $directive): string
+    public function compile(string $expression, string $directive)
     {
-        /** @var FunctionArgumentsParser $parsed */
-        $parsed = $this->parser(ParserType::FUNCTION_ARGUMENTS)->parse($expression);
+        if (method_exists($this, $directive) && $type = $this->getExpressionParserFor($directive)) {
+            $parser = $this->parser($type)->parse($expression);
 
-        // TODO: should handle exceptions, logging them and return an empty string when so.
-        return method_exists($this, $directive) ? $this->$directive(...$parsed->arguments()->all()) : '';
+            return $this->{$directive}(...$parser->arguments()->all());
+        }
+
+        return $this->{$directive}();
     }
 
-    protected function utils(): DirectiveUtils
-    {
-        return $this->utils ??= ObjectManager::getInstance()->get(DirectiveUtils::class);
-    }
-
-    protected function manager(): DirectiveManager
-    {
-        return $this->manager ??= ObjectManager::getInstance()->get(DirectiveManager::class);
-    }
-
-    protected function parser(ParserType $parser, array $arguments = []): Parser
+    protected function parser(ExpressionParserType $parser, array $arguments = []): ExpressionParser
     {
         return $parser->create($arguments);
     }
 
-    protected function functionArgumentsParser(): FunctionArgumentsParser
+    protected function getExpressionParserFor(string $directive): ExpressionParserType|null
     {
-        return ParserType::FUNCTION_ARGUMENTS->create();
+        $directive = implode('::', [static::class, $directive]);
+
+        if (! ($this->expressionParsers[$directive] ?? null)) {
+            $reflection = new ReflectionClass($this);
+
+            foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
+                $attributes = $method->getAttributes(ScopeDirectiveParser::class);
+                $attribute  = ($attributes[0] ?? null) ? $attributes[0]->newInstance() : null;
+
+                if ($attribute) {
+                    $this->expressionParsers[implode('::', [static::class, $method->getName()])] = $attribute->expressionParserType;
+                }
+            }
+        }
+
+        return $this->expressionParsers[$directive] ?? null;
+    }
+
+    protected function var(string $name): string
+    {
+        return $this->variables[$name] ?? ($this->variables[$name] = uniqid('var'));
     }
 }

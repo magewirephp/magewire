@@ -11,26 +11,29 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento;
 
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope;
+use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ScopeDirectiveChain;
 
 class Auth extends Scope
 {
-    public function auth(string $expression): string
+    #[ScopeDirectiveChain(methods: ['endauth'])]
+    public function auth(): string
     {
         return "<?php if(\$__magewire->action('magento.auth')->execute('is_customer')): ?>";
     }
 
     public function endauth(): string
     {
-        return "<?php endif ?>";
+        return parent::endif();
     }
 
-    public function guest(string $expression): string
+    #[ScopeDirectiveChain(methods: ['endguest'])]
+    public function guest(): string
     {
         return "<?php if(\$__magewire->action('magento.auth')->execute('is_guest')): ?>";
     }
 
     public function endguest(): string
     {
-        return "<?php endif ?>";
+        return parent::endif();
     }
 }

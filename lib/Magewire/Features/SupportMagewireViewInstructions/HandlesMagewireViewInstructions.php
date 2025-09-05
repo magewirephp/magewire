@@ -14,7 +14,7 @@ use Magento\Framework\App\ObjectManager;
 
 trait HandlesMagewireViewInstructions
 {
-    protected ?ViewInstructions $viewInstructions = null;
+    protected ViewInstructions|null $viewInstructions = null;
 
     public function viewInstructions()
     {

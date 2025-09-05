@@ -17,7 +17,7 @@ $blockLoaderIcon = $block->getChildBlock('loader')
             <?php /* Stack items vertically to prevent layout shifting when hiding or disappearing, ensuring consistent visual layout. */ ?>
             <?php if ($blockLoaderIcon): ?>
             <div class="absolute"
-                 x-show="notification.state === '<?= NotificationStateEnum::RUNNING->value ?>'"
+                 x-show="notification.state === '<?= NotificationStateEnum::RUNNING->getState() ?>'"
             >
                 <?= $blockLoaderIcon->toHtml() ?>
             </div>

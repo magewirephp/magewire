@@ -10,10 +10,13 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive;
 
-use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive;
+use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Parser\ExpressionParserType;
+use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\FunctionDirective;
+use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ScopeDirectiveParser;
 
-class Base extends Directive
+class Base extends FunctionDirective
 {
+    #[ScopeDirectiveParser(ExpressionParserType::FUNCTION_ARGUMENTS)]
     public function translate(string $value, bool $escape = true): string
     {
         if ($escape) {

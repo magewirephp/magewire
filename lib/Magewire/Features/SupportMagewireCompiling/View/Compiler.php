@@ -14,6 +14,7 @@ use Magento\Framework\Filesystem\DirectoryList;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\CompileManager;
 use Magewirephp\Magewire\Support\Pipeline;
 use Magewirephp\Magewire\Support\PipelineFactory;
+use Throwable;
 
 abstract class Compiler
 {
@@ -35,7 +36,9 @@ abstract class Compiler
         private readonly DirectoryList $directoryList,
         private readonly CompileManager $manager,
         private readonly CompilerUtils $utils,
-        private readonly PipelineFactory $pipelineFactory
+        private readonly PipelineFactory $pipelineFactory,
+        private readonly array $precompilers = [],
+        private readonly array $optimizers = []
     ) {
         $this->resourcePath = $this->directoryList->getPath(\Magento\Framework\App\Filesystem\DirectoryList::GENERATED)
             . DIRECTORY_SEPARATOR
@@ -76,16 +79,6 @@ abstract class Compiler
         return $this->filesystem;
     }
 
-    public function precompiler(): Pipeline
-    {
-        return $this->precompiler ??= $this->pipelineFactory->create();
-    }
-
-    public function optimizer(): Pipeline
-    {
-        return $this->optimizer ??= $this->pipelineFactory->create();
-    }
-
     /**
      * Get the path to the compiled version of a view.
      */
@@ -124,12 +117,13 @@ abstract class Compiler
 
     /**
      * Compile the given template contents.
+     * @throws Throwable
      */
     protected function compileString(string $value): string
     {
         $result = '';
 
-        // Try to run the precompile pipeline.
+        // Try to run the precompiler pipeline.
         $value = $this->precompiler()->run($value);
 
         /*
@@ -160,5 +154,27 @@ abstract class Compiler
         }
 
         return $content;
+    }
+
+    protected function precompiler(): Pipeline
+    {
+        $pipeline = $this->precompiler ??= $this->pipelineFactory->create();
+
+        foreach ($this->precompilers as $precompiler) {
+            $pipeline->pipe(fn ($throughput, callable $next) => $next($precompiler->precompile($throughput)));
+        }
+
+        return $pipeline;
+    }
+
+    protected function optimizer(): Pipeline
+    {
+        $pipeline = $this->optimizer ??= $this->pipelineFactory->create();
+
+        foreach ($this->optimizers as $optimizer) {
+            $pipeline->pipe(fn ($throughput, callable $next) => $next($optimizer->optimize($throughput)));
+        }
+
+        return $pipeline;
     }
 }

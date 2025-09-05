@@ -287,7 +287,7 @@
             </argument>
 
             <argument name="namespaces" xsi:type="array">
-                <item name="magento.auth" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Action\Auth\Proxy</item>
+                <item name="magento.auth" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Action\Magento\Auth\Proxy</item>
             </argument>
         </arguments>
     </type>
@@ -339,6 +339,8 @@
     <type name="Magewirephp\Magewire\Model\View\Fragment\Script">
         <arguments>
             <argument name="modifiers" xsi:type="array">
+                <item name="developer" sortOrder="500" xsi:type="object">Magewirephp\Magewire\Model\View\Fragment\Modifier\Developer</item>
+
                 <!-- CSP support for inline scripts. -->
                 <!-- Maximum sort order to make sure this modifier is run last. -->
                 <item name="csp" sortOrder="9900" xsi:type="object">Magewirephp\Magewire\Model\View\Fragment\Modifier\Csp</item>

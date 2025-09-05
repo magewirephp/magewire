@@ -36,7 +36,7 @@ $layoutUtil = $magewireViewModel->utils()->layout();
             role="status"
             x-show="notification.active"
             x-transition.duration.500ms
-            x-bind="bindings.notification.item"
+            x-bind="bindings.notification.item.root"
         >
             <div class="magewire-notifier__notification-content">
                 <?php if ($layoutUtil->canContainerizeBlock($notificationsBeforeBlock)): ?>

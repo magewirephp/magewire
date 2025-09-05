@@ -10,12 +10,11 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolver;
 
-use Livewire\Exceptions\ComponentNotFoundException;
 use Magento\Framework\Exception\RuntimeException;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Mechanisms\HandleRequests\ComponentRequestContext;
-use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\AbstractArguments;
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\MagewireArguments;
 use Magewirephp\Magewire\Support\Conditions;
 
 /**
@@ -26,22 +25,27 @@ use Magewirephp\Magewire\Support\Conditions;
  */
 abstract class ComponentResolver
 {
-    /*
+    public const RESOLVER = 'magewire:resolver';
+
+    /**
      * A unique accessor name that describes your resolver in a single word.
      *
      * This name is publicly visible and used during subsequent (XHR) requests
      * to retrieve the correct resolver and reconstruct the Magewire component.
+     *
+     * IMPORTANT: When extending this class (either directly or from a subclass),
+     * ensure your resolver has a unique accessor name. The accessor name must
+     * match the identifier used in the corresponding di.xml.
      */
-    protected string $accessor;
+    protected string $accessor = '';
 
     protected string|null $key = null;
-    protected AbstractArguments|null $arguments = null;
+    protected MagewireArguments|null $arguments = null;
 
     /** @var array<int|string, callable|array<int, callable>> $complyChecks */
     protected array $complyChecks = [];
 
     public function __construct(
-        string $accessor,
         private readonly Conditions $conditions
     ) {
         //
@@ -59,13 +63,16 @@ abstract class ComponentResolver
     public function complies(AbstractBlock $block, mixed $magewire = null): bool
     {
         if ($magewire) {
-            $this->conditions()->if(fn () => $magewire instanceof Component, 'instanceof');
+            $this->conditions()->if(fn () => $magewire instanceof Component, 'instanceof-component');
         }
+
+        // Accept this as the resolver if the blocks data key is equal to the resolver accessor.
+        $this->conditions()->or(fn () => $block->getData(self::RESOLVER) === $this->accessor, 'block-resolver-data-key');
 
         return $this->conditions()->evaluate($block, $magewire);
     }
 
-    abstract public function arguments(): AbstractArguments;
+    abstract public function arguments(): MagewireArguments;
 
     /**
      * After a block meets specific requirements, as verified by the compile method,
@@ -75,7 +82,7 @@ abstract class ComponentResolver
      *   1. An instance of \Magewirephp\Magewire\Component bound to the "magewire" block data key
      *   2. The component has bound "name" and "id"
      *
-     * @throws ComponentNotFoundException
+     * @throws \Magewirephp\Magewire\Exceptions\ComponentNotFoundException
      */
     abstract public function construct(AbstractBlock $block): AbstractBlock;
 

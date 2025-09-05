@@ -21,8 +21,8 @@ class ComponentRequestContext
      */
     function __construct(
         private Snapshot $snapshot,
-        private mixed $calls,
-        private mixed $updates
+        private mixed $calls = [],
+        private mixed $updates = []
     ) {
         //
     }

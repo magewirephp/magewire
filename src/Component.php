@@ -22,14 +22,16 @@ use Magewirephp\Magewire\Concerns\InteractsWithProperties;
 use Magewirephp\Magewire\Exceptions\PropertyNotFoundException;
 use Magewirephp\Magewire\Features\SupportEvents\HandlesEvents;
 use Magewirephp\Magewire\Features\SupportMagewireViewInstructions\HandlesMagewireViewInstructions;
+use Magewirephp\Magewire\Features\SupportMagewireViewModel\HandlesMagewireViewModel;
 use Magewirephp\Magewire\Features\SupportRedirects\HandlesRedirects;
+use Magewirephp\Magewire\Features\SupportStreaming\HandlesStreaming;
 
 abstract class Component implements ArgumentInterface
 {
     use InteractsWithProperties;
     use HandlesEvents;
     use HandlesRedirects;
-    //    use HandlesStreaming;
+    use HandlesStreaming;
     use HandlesAttributes;
     //    use HandlesValidation;
     //    use HandlesFormObjects;
@@ -41,11 +43,14 @@ abstract class Component implements ArgumentInterface
     use HandlesMagewireFlashMessages;
     use HandlesMagewireLoaders;
     use HandlesMagewireViewInstructions;
+    use HandlesMagewireViewModel;
     use HandlesComponentBackwardsCompatibility;
     use HandlesMagewireCompiling;
 
     protected $__id;
     protected $__name;
+
+    protected string|null $__alias = null;
 
     function id()
     {
@@ -70,27 +75,42 @@ abstract class Component implements ArgumentInterface
         $this->__name = $name;
     }
 
-    function getName()
+    public function getName()
     {
         return $this->__name;
     }
 
-    function skipRender($html = null)
+    public function setAlias(string|null$alias): void
+    {
+        $this->__alias = $alias;
+    }
+
+    public function getAlias(): string|null
+    {
+        return $this->__alias;
+    }
+
+    public function hasAlias(): bool
+    {
+        return $this->__alias !== null;
+    }
+
+    public function skipRender($html = null): void
     {
         store($this)->set('skipRender', $html ?: true);
     }
 
-    function skipMount()
+    public function skipMount(): void
     {
         store($this)->set('skipMount', true);
     }
 
-    function skipHydrate()
+    public function skipHydrate(): void
     {
         store($this)->set('skipHydrate', true);
     }
 
-    function __isset($property)
+    public function __isset($property)
     {
         try {
             $value = $this->__get($property);
@@ -106,7 +126,7 @@ abstract class Component implements ArgumentInterface
     /**
      * @throws PropertyNotFoundException
      */
-    function __get($property)
+    public function __get($property)
     {
         $value = 'noneset';
 
@@ -125,12 +145,12 @@ abstract class Component implements ArgumentInterface
         return $value;
     }
 
-    function __unset($property)
+    public function __unset($property)
     {
         trigger('__unset', $this, $property);
     }
 
-    function __call($method, $params)
+    public function __call($method, $params)
     {
         $value = 'noneset';
 
@@ -151,7 +171,7 @@ abstract class Component implements ArgumentInterface
         ));
     }
 
-    function tap($callback)
+    public function tap($callback): static
     {
         $callback($this);
 

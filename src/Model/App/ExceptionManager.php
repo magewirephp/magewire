@@ -40,19 +40,20 @@ class ExceptionManager
     /**
      * @throws Exception
      */
-    function handle(Exception $exception, bool $log = true): void
+    function handle(Exception $exception, bool $log = true): callable|null
     {
         $subsequent = $this->request->getParam(MagewireUpdateRoute::PARAM_IS_SUBSEQUENT, false);
 
         try {
-            $exception = $this->resolveExceptionHandler($exception, $subsequent)
-                ->handle($exception, $subsequent);
+            $exception = $this->resolveExceptionHandler($exception, $subsequent)->handle($exception, $subsequent);
         } catch (Exception $parent) {
             $exception = $parent;
         }
 
         if ($exception instanceof SilentException) {
-            return;
+            return null;
+        } elseif (is_callable($exception)) {
+            return $exception;
         }
 
         if ($log) {

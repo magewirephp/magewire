@@ -28,14 +28,14 @@ class MagewireServiceProvider
         //
     }
 
-    function setup(): void
+    public function setup(): void
     {
         if ($this->boot) {
             $this->boot();
         }
     }
 
-    function boot(): void
+    public function boot(): void
     {
         if ($this->booted) {
             return;
@@ -49,7 +49,7 @@ class MagewireServiceProvider
         $this->booted = true;
     }
 
-    function __call($name, $arguments)
+    public function __call($name, $arguments)
     {
         $matches = preg_match_all('/[A-Z][a-z]*/', $name, $matches) ? $matches[0] : [];
 

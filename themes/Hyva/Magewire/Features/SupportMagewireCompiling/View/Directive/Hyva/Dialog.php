@@ -14,5 +14,8 @@ use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive;
 
 class Dialog extends Directive
 {
-    //
+    public function compile(string $expression, string $directive): string
+    {
+        return 'hyva-dialog';
+    }
 }

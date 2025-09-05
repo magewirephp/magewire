@@ -19,28 +19,13 @@ class MagewireCompiler extends Compiler
         'Directives'
     ];
 
-    /**
-     * Append the file path to the compiled string.
-     */
-    protected function appendFilePath(string $path, string $contents): string
+    protected function compileString(string $value): string
     {
-        $tokens = $this->utils()->getOpenAndClosingPhpTokens($contents);
+        $this->optimizer()->pipe(function (string $throughput) {
+            return $throughput . "<?php /**DATETIME " . date('Y-m-d H:i:s') . " ENDDATETIME*/ ?> \n";
+        });
 
-        if (! empty($tokens) && end($tokens) !== T_CLOSE_TAG) {
-            $contents .= ' ?>';
-        }
-
-        return $contents . "<?php /**PATH {$path} ENDPATH**/ ?> \n";
-    }
-
-    /**
-     * Append the compile date and time to the compiled string.
-     */
-    protected function appendCompileDate(string $contents): string
-    {
-        $datetime = date('Y-m-d H:i:s');
-
-        return $contents . "<?php /**DATETIME {$datetime} ENDDATETIME*/ ?> \n";
+        return parent::compileString($value);
     }
 
     /**
