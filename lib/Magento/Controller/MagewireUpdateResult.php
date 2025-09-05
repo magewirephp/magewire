@@ -19,6 +19,7 @@ use function Magewirephp\Magewire\trigger;
 class MagewireUpdateResult extends AbstractResult
 {
     private Closure|null $renderer = null;
+    private bool $rendered = false;
 
     public function __construct(
         private readonly JsonSerializer $jsonSerializer,
@@ -30,6 +31,10 @@ class MagewireUpdateResult extends AbstractResult
 
     public function renderWith(Closure $renderer): self
     {
+        if ($this->rendered) {
+            return $this;
+        }
+
         $this->renderer = $renderer;
 
         return $this;
@@ -57,6 +62,9 @@ class MagewireUpdateResult extends AbstractResult
         };
 
         call_user_func($this->renderer, $response, $this);
+        $this->rendered = true;
+
+        trigger('magewire:response.render', $response);
 
         $response->setHeader('Content-Type', 'application/json', true);
         $response->setHeader('X-Built-With', 'Magewire', true);

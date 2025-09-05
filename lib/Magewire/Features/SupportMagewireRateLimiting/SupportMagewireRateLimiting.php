@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireRateLimiting;
 
+use Magento\Framework\App\Response\HttpInterface as HttpResponseInterface;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\ComponentHook;
