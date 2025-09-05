@@ -118,11 +118,11 @@ abstract class ComponentHook
     {
         return store($this->component)->has($key);
     }
-    function getComponent()
+    public function getComponent()
     {
         return $this->component;
     }
-    function callMagewireConstruct(...$params)
+    public function callMagewireConstruct(...$params): void
     {
         if (method_exists($this, 'magewireConstruct')) {
             $this->magewireConstruct(...$params);

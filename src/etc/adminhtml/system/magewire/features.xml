@@ -11,6 +11,6 @@
     >
         <label>Features</label>
 
-        <include path="Magewirephp_Magewire::system/magewire/features/support-rate-limiter/support-rate-limiter.xml"/>
+        <include path="Magewirephp_Magewire::system/magewire/features/support-rate-limiting/support-rate-limiting.xml"/>
     </group>
 </include>

@@ -39,16 +39,30 @@ class UpdateRequestRateLimiter extends RateLimiter
 
     public function validateWithComponent(Component $component): bool
     {
-        return true;
+        $key = $this->generateKeyByComponent($component);
+
+        $component->tap();
+
+        if ($result = $this->validate($key, 4, 5)) {
+            $this->hit($key);
+        }
+
+        return $result;
     }
 
     private function generateKeyByRequestContext(ComponentRequestContext $componentRequestContext): string
     {
-        return 'blaaaaa';
+        $key = '123@RL';
+
+        if ($this->rateLimiterConfig->isIsolatedScope()) {
+            $key .= $componentRequestContext->getSnapshot()->getMemoValue('id');
+        }
+
+        return $key;
     }
 
     private function generateKeyByComponent(Component $component): string
     {
-        return 'blaaaaa';
+        return '123@RLC' . $component->id();
     }
 }

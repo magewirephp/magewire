@@ -12,18 +12,16 @@ namespace Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Config\Sourc
 
 use Magento\Framework\Data\OptionSourceInterface;
 
-class Enabled implements OptionSourceInterface
+class RequestsScope implements OptionSourceInterface
 {
-    public const COMPONENTS_ONLY = '2';
-    public const REQUESTS_ONLY = '1';
-    public const NONE = '0';
+    public const ISOLATED = '1';
+    public const SHARED = '0';
 
     public function toOptionArray(): array
     {
         return [
-            ['value' => self::COMPONENTS_ONLY, 'label' => 'Components only'],
-            ['value' => self::REQUESTS_ONLY, 'label' => 'Requests only'],
-            ['value' => self::NONE, 'label' => 'None']
+            ['value' => self::ISOLATED, 'label' => 'Isolated'],
+            ['value' => self::SHARED, 'label' => 'Shared']
         ];
     }
 }

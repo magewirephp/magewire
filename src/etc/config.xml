@@ -5,14 +5,15 @@
     <default>
         <magewire>
             <features>
-                <rate_limiter>
+                <rate_limiting>
                     <enabled>0</enabled>
 
                     <requests>
+                        <scope>0</scope>
                         <max_attempts>4</max_attempts>
                         <decay_seconds>5</decay_seconds>
                     </requests>
-                </rate_limiter>
+                </rate_limiting>
             </features>
         </magewire>
     </default>

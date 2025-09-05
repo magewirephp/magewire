@@ -18,7 +18,7 @@ return [
                     'Drawer/{ImplicitRouteBinding,Regexes}*',
                     'Exceptions/{Event,Livewire,Root}*',
                     'Features/**/*',
-                    '!Features/Support{Attributes,Events,LifecycleHooks,Locales,NestingComponents,Redirects,FormObjects,Validation,LockedProperties}/**/*',
+                    '!Features/Support{Attributes,Events,LifecycleHooks,Locales,NestingComponents,Redirects,FormObjects,Validation,LockedProperties,Streaming}/**/*',
                     'Features/SupportEvents/TestsEvents.php',
                     'Features/SupportRedirects/TestsRedirects.php',
                     'Mechanisms/CompileLivewireTags/**/*',

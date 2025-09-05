@@ -122,10 +122,11 @@
                 <item name="magewire_nesting_components" xsi:type="string" sortOrder="1100">Magewirephp\Magewire\Features\SupportMagewireNestingComponents\SupportMagewireNestingComponents</item>
                 <item name="attributes" xsi:type="string" sortOrder="1200">Magewirephp\Magewire\Features\SupportAttributes\SupportAttributes</item>
                 <item name="redirects" xsi:type="string" sortOrder="1300">Magewirephp\Magewire\Features\SupportRedirects\SupportRedirects</item>
-                <item name="locales" xsi:type="string" sortOrder="1400">Magewirephp\Magewire\Features\SupportLocales\SupportLocales</item>
+                <item name="streaming" xsi:type="string" sortOrder="1400">Magewirephp\Magewire\Features\SupportStreaming\SupportStreaming</item>
+                <item name="locales" xsi:type="string" sortOrder="1500">Magewirephp\Magewire\Features\SupportLocales\SupportLocales</item>
                 <item name="events" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportEvents\SupportEvents</item>
-                    <item name="sort_order" xsi:type="number">1500</item>
+                    <item name="sort_order" xsi:type="number">1600</item>
                 </item>
 
                 <item name="magento_layouts" xsi:type="string" sortOrder="5000">Magewirephp\Magewire\Features\SupportMagentoLayouts\SupportMagentoLayouts</item>

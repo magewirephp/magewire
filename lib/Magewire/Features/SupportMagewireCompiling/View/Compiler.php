@@ -14,6 +14,7 @@ use Magento\Framework\Filesystem\DirectoryList;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\CompileManager;
 use Magewirephp\Magewire\Support\Pipeline;
 use Magewirephp\Magewire\Support\PipelineFactory;
+use Throwable;
 
 abstract class Compiler
 {
@@ -116,6 +117,7 @@ abstract class Compiler
 
     /**
      * Compile the given template contents.
+     * @throws Throwable
      */
     protected function compileString(string $value): string
     {

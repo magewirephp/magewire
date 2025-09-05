@@ -24,13 +24,14 @@ use Magewirephp\Magewire\Features\SupportEvents\HandlesEvents;
 use Magewirephp\Magewire\Features\SupportMagewireViewInstructions\HandlesMagewireViewInstructions;
 use Magewirephp\Magewire\Features\SupportMagewireViewModel\HandlesMagewireViewModel;
 use Magewirephp\Magewire\Features\SupportRedirects\HandlesRedirects;
+use Magewirephp\Magewire\Features\SupportStreaming\HandlesStreaming;
 
 abstract class Component implements ArgumentInterface
 {
     use InteractsWithProperties;
     use HandlesEvents;
     use HandlesRedirects;
-    //    use HandlesStreaming;
+    use HandlesStreaming;
     use HandlesAttributes;
     //    use HandlesValidation;
     //    use HandlesFormObjects;

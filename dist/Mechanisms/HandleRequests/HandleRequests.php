@@ -79,7 +79,6 @@ class HandleRequests extends Mechanism
     {
         /** @var ComponentRequestContext[] $updates */
         $requestPayload = $this->request->getParam('components');
-
         $finish = trigger('request', $requestPayload);
         $requestPayload = $finish($requestPayload);
         $componentResponses = [];

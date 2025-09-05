@@ -14,10 +14,11 @@ use Closure;
 use Magento\Framework\App\Response\HttpInterface as HttpResponseInterface;
 use Magento\Framework\Controller\AbstractResult;
 use Magento\Framework\Serialize\Serializer\Json as JsonSerializer;
+use function Magewirephp\Magewire\trigger;
 
 class MagewireUpdateResult extends AbstractResult
 {
-    private ?Closure $renderer = null;
+    private Closure|null $renderer = null;
 
     public function __construct(
         private readonly JsonSerializer $jsonSerializer,
