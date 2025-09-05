@@ -14,20 +14,7 @@
                 <!-- Magewire Script -->
                 <block name="magewire.alpinejs.components.magewire-script"
                        template="Magewirephp_Magewire::js/alpinejs/components/magewire-script.phtml"
-                >
-                    <block name="magewire.alpinejs.components.magewire-script.script-data"
-                           template="Magewirephp_Magewire::js/alpinejs/components/magewire-script/script-data.phtml"
-                           as="script.data"
-                    />
-                    <block name="magewire.alpinejs.components.magewire-script.script-bind"
-                           template="Magewirephp_Magewire::js/alpinejs/components/magewire-script/script-bind.phtml"
-                           as="script.bind"
-                    />
-
-                    <container name="magewire.alpinejs.components.magewire-script.after"
-                               as="after"
-                    />
-                </block>
+                />
             </referenceContainer>
         </referenceContainer>
 

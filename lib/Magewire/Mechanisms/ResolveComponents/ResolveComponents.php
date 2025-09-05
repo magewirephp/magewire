@@ -26,7 +26,7 @@ class ResolveComponents
         //
     }
 
-    public function boot()
+    public function boot(): void
     {
         on('magewire:construct', function (AbstractBlock $block) {
             return $this->build(function () use ($block): array {
@@ -56,6 +56,9 @@ class ResolveComponents
         });
     }
 
+    /**
+     * @throws ComponentNotFoundException
+     */
     protected function build(callable $builder): callable
     {
         [$resolver, $block] = $builder();

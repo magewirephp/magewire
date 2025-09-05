@@ -28,9 +28,7 @@ class SupportMagewireCompiling extends ComponentHook
     public function provide(): void
     {
         on('magewire:precompile', function (AbstractBlock $block, string $filename, array $dictionary, Component $magewire) {
-            // Create a new compiler instance and bind it onto the Magewire component.
-            $compiler = $this->compilerFactory->create();
-            $magewire->compiler($compiler);
+            $compiler = $magewire->compiler() ?? $magewire->compiler($this->compilerFactory->create());
 
             return function (array $result) use ($magewire, $compiler) {
                 // Although named "filename", this actually represents the full file path,

@@ -10,39 +10,33 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolver;
 
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\RuntimeException;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magento\Framework\View\Element\Template;
-use Magento\Framework\View\Layout;
-use Magewirephp\Magento\View\Layout\GeneratorPool;
+use Magento\Framework\View\LayoutInterface;
+use Magewirephp\Magento\View\LayoutBuilder;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
+use Magewirephp\Magewire\Mechanisms\HandleComponents\Snapshot;
 use Magewirephp\Magewire\Mechanisms\HandleRequests\ComponentRequestContext;
-use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\AbstractArguments;
-use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\LayoutArgumentsFactory;
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\MagewireArguments;
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\LayoutBlockArgumentsFactory;
 use Magewirephp\Magewire\Support\Conditions;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use function Magewirephp\Magewire\on;
 
 class LayoutResolver extends ComponentResolver
 {
-    private array $handlesToInclude = [];
-
     protected string $accessor = 'layout';
 
-    /**
-     * @param array<string, bool> $handlesToExclude
-     */
     public function __construct(
-        private readonly Layout $layout,
-        private readonly LayoutArgumentsFactory $argumentsFactory,
-        private readonly Conditions $conditions,
-        private readonly array $handlesToExclude
+        protected readonly Conditions $conditions,
+        protected readonly LayoutBlockArgumentsFactory $layoutBlockArgumentsFactory,
+        protected readonly LayoutBuilder $layoutBuilder
     ) {
-        parent::__construct($this->accessor, $this->conditions);
+        parent::__construct($this->conditions);
     }
 
     /**
@@ -97,13 +91,14 @@ class LayoutResolver extends ComponentResolver
         $block->setData('magewire', $component);
 
         // Register a dehydrate listener to attach necessary layout handles to the server memo.
-        on('dehydrate', function ($component, ComponentContext $context) {
-            $handles = array_diff(
-                $context->getBlock()->getLayout()->getUpdate()->getHandles(),
-                array_keys(array_filter($this->handlesToExclude))
-            );
+        on('dehydrate', function (Component $component, ComponentContext $context) {
+            if ($component->resolver()->getAccessor() === $this->getAccessor()) {
+                $this->memorizeLayoutHandles($context);
 
-            $context->addMemo('handles', array_values($handles));
+                if ($alias = $component->block()->getData('magewire:alias')) {
+                    $context->addMemo('alias', $alias);
+                }
+            }
         });
 
         return $block;
@@ -125,24 +120,36 @@ class LayoutResolver extends ComponentResolver
     {
         $snapshot = $request->getSnapshot();
 
-        $layout = $this->generateBlocks($snapshot->getMemoValue('handles', []));
+        $alias = $snapshot->getMemoValue('alias');
+        $name = $snapshot->getMemoValue('name');
+
+        // Retrieve the layout handles that were stored on the context snapshot.
+        $handles = $this->recoverLayoutHandles($snapshot);
+        // Build the complete layout structure by processing the recovered handles into renderable blocks.
+        $layout = $this->generateBlocks($handles);
+
         /** @var Template|false $block */
-        $block = $layout->getBlock($snapshot->getMemoValue('name'));
+        $block = $layout->getBlock($alias ?? $name);
 
         if ($block === false) {
             throw new HttpException(
                 404,
-                sprintf('Magewire component "%s" could not be found', $snapshot->getMemoValue('name'))
+                sprintf('Magewire component "%s" could not be found', $alias ?? $name)
             );
+        }
+
+        if ($alias) {
+            $block->setData('magewire:alias', $alias);
+            $block->setNameInLayout($name);
         }
 
         // Now everything is prepared, we can simply re-call the construct method like during preceding requests.
         return $this->construct($block);
     }
 
-    public function arguments(): AbstractArguments
+    public function arguments(): MagewireArguments
     {
-        return $this->arguments ??= $this->argumentsFactory->create();
+        return $this->arguments ??= $this->layoutBlockArgumentsFactory->create();
     }
 
     /**
@@ -157,6 +164,7 @@ class LayoutResolver extends ComponentResolver
          */
         $component->setName($block->getNameInLayout());
         $component->setId($block->getNameInLayout());
+        $component->setAlias($component->getAlias() ?? $block->getData('magewire:alias'));
 
         return parent::assemble($block, $component);
     }
@@ -164,30 +172,34 @@ class LayoutResolver extends ComponentResolver
     /**
      * @throws LocalizedException
      */
-    protected function generateBlocks(array $handles): Layout
+    protected function generateBlocks(array $handles): LayoutInterface
     {
-        $this->layout->setGeneratorPool(ObjectManager::getInstance()->get(GeneratorPool::class));
-        $this->layout->getUpdate()->load($this->handlesToInclude + $handles);
-
-        $this->layout->generateXml();
-        $this->layout->generateElements();
-
-        return $this->layout;
-    }
-
-    /**
-     * Utility method: Allows classes extending Layout to set additional layout handles.
-     * This method is typically used inside the reconstruct method.
-     */
-    protected function useLayoutHandle(string $handle): static
-    {
-        $this->handlesToInclude[] = $handle;
-
-        return $this;
+        return $this->layoutBuilder->withHandles($handles)->build();
     }
 
     protected function isBlock(mixed $block): bool
     {
         return $block instanceof AbstractBlock;
+    }
+
+    protected function recoverLayoutHandles(Snapshot $snapshot): array
+    {
+        return $snapshot->getMemoValue('handles') ?? [];
+    }
+
+    /**
+     * @throws LocalizedException
+     */
+    protected function memorizeLayoutHandles(ComponentContext $context): ComponentContext
+    {
+        $handles = $context->getBlock()->getLayout()->getUpdate()->getHandles();
+        $context->addMemo('handles', array_values($handles));
+
+        return $context;
+    }
+
+    protected function canShareHandles(): bool
+    {
+        return true;
     }
 }

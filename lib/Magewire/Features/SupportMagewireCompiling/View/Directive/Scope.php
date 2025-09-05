@@ -10,48 +10,44 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive;
 
+use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Parser\ExpressionParserType;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ScopeDirective;
+use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ScopeDirectiveChain;
+use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ScopeDirectiveParser;
 
 class Scope extends ScopeDirective
 {
-    public function start(string $expression, string $directive): string
+    #[ScopeDirectiveChain(methods: ['elseif', 'else', 'endif'], strict: true)]
+    #[ScopeDirectiveParser(ExpressionParserType::CONDITION)]
+    public function if(string $condition): string
     {
-        if (method_exists($this, $directive)) {
-            return $this->$directive($expression);
-        }
-
-        // By default, we assume that the statement can be started with "if",
-        // similar to how it ends with "endif".
-        return "<?php if ($expression): ?>";
+        return "<?php if ($condition): ?>";
     }
 
-    public function end(string $directive): string
+    #[ScopeDirectiveParser(ExpressionParserType::CONDITION)]
+    public function elseif(string $condition): string
     {
-        if (method_exists($this, $directive)) {
-            return $this->$directive();
-        }
-
-        // By default, we assume that the statement can be closed with "endif",
-        // similar to how it starts with "if".
-        return "<?php endif ?>";
+        return "<?php elseif ($condition): ?>";
     }
 
-    protected function else(string $expression): string
+    public function else(): string
     {
         return "<?php else: ?>";
     }
 
-    protected function elseif(string $expression): string
+    public function endif(): string
     {
-        return "<?php elseif ($expression): ?>";
+        return "<?php endif ?>";
     }
 
-    protected function foreach(string $expression): string
+    #[ScopeDirectiveChain(methods: ['endforeach'])]
+    #[ScopeDirectiveParser(ExpressionParserType::ITERATION_CLAUSE)]
+    public function foreach(string $iterationClause): string
     {
-        return "<?php foreach ($expression): ?>";
+        return "<?php foreach ($iterationClause): ?>";
     }
 
-    protected function endforeach(): string
+    public function endforeach(): string
     {
         return "<?php endforeach ?>";
     }

@@ -16,8 +16,8 @@ use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolver\Componen
 
 trait HandlesMagentoLayout
 {
-    protected ?AbstractBlock $block = null;
-    protected ?ComponentResolver $resolver = null;
+    private AbstractBlock|null $block = null;
+    private ComponentResolver|null $resolver = null;
 
     function resolver(ComponentResolver|null $resolver = null): ComponentResolver|null
     {
@@ -41,7 +41,7 @@ trait HandlesMagentoLayout
      * @deprecated has been replaced with block()
      * @see static::block()
      */
-    function setParent(?Template $parent): static
+    function setParent(Template|null $parent): static
     {
         $this->block($parent);
 
@@ -52,7 +52,7 @@ trait HandlesMagentoLayout
      * @deprecated has been replaced with block()
      * @see static::block()
      */
-    function getParent(): ?AbstractBlock
+    function getParent(): AbstractBlock|null
     {
         return $this->block();
     }

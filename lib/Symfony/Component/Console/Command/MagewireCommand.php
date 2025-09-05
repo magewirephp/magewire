@@ -14,7 +14,7 @@ use Symfony\Component\Console\Command\Command;
 
 class MagewireCommand extends Command
 {
-    public function setName(string $name)
+    public function setName($name)
     {
         return parent::setName('magewire:' . $name);
     }

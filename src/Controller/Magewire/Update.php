@@ -64,7 +64,17 @@ class Update implements HttpPostActionInterface, CsrfAwareActionInterface
             );
         } catch (Exception $exception) {
             try {
-                $this->exceptionManager->handle($exception);
+                $handler = $this->exceptionManager->handle($exception);
+
+                // Set a default exception render handler.
+                $handler ??= static function (HttpResponseInterface $response) use ($exception) {
+                    $response->setBody('An unexpected error occurred while processing your request.');
+                    $response->setHttpResponseCode(500);
+
+                    return $response;
+                };
+
+                return $this->magewireUpdateResultFactory->create()->renderWith($handler);
             } catch (Exception $exception) {
                 if ($this->applicationState->getMode() === ApplicationState::MODE_PRODUCTION) {
                     throw $exception;
@@ -79,22 +89,13 @@ class Update implements HttpPostActionInterface, CsrfAwareActionInterface
                     }
                 );
             }
-
-            return $this->magewireUpdateResultFactory->create()->renderWith(
-                static function (HttpResponseInterface $response) use ($exception) {
-                    $response->setBody('An unexpected error occurred while processing your request.');
-                    $response->setHttpResponseCode(500);
-
-                    return $response;
-                }
-            );
         }
     }
 
     /**
      * @throws LocalizedException
      */
-    public function validateForCsrf(RequestInterface $request): ?bool
+    public function validateForCsrf(RequestInterface $request): bool|null
     {
         return Security::compareStrings($request->getParam('token'), $this->formKey->getFormKey());
     }

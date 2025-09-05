@@ -11,10 +11,8 @@ declare(strict_types=1);
 namespace Magewirephp\Magento\App\Cache\Type;
 
 use Magento\Framework\App\Cache\Type\FrontendPool;
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Cache\Frontend\Decorator\TagScope;
 use Magento\Framework\Serialize\SerializerInterface;
-use Magewirephp\Magento\App\Cache\Type\Magewire\ResolverCacheSection;
 
 class Magewire extends TagScope
 {
@@ -33,10 +31,5 @@ class Magewire extends TagScope
         $data = parent::load($identifier);
 
         return is_string($data) ? $this->serializer->unserialize($data) : $data;
-    }
-
-    public function resolvers()
-    {
-        return ObjectManager::getInstance()->get(ResolverCacheSection::class);
     }
 }

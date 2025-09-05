@@ -1,0 +1,79 @@
+<?xml version="1.0" ?>
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd"
+>
+    <group id="rate_limiting"
+           translate="label"
+           showInDefault="1"
+           showInWebsite="1"
+           showInStore="1"
+    >
+        <label>Rate Limiting</label>
+        <comment>Rate limiting can be applied globally to all Magewire requests, and/or individually per component. Global settings take precedence over component-specific limits when both are configured.</comment>
+
+        <field id="variant"
+               translate="label"
+               type="select"
+               sortOrder="10"
+               showInDefault="1"
+               showInWebsite="1"
+               showInStore="1"
+        >
+            <label>Variant</label>
+            <source_model>Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Config\Source\RateLimitingVariant</source_model>
+        </field>
+
+        <group id="requests"
+               translate="label"
+               sortOrder="20"
+               showInDefault="1"
+               showInWebsite="1"
+               showInStore="1"
+        >
+            <label>Requests</label>
+            <comment>Note: These settings only take effect when "requests" rate limiting is enabled.</comment>
+
+            <field id="scope"
+                   translate="label"
+                   type="select"
+                   sortOrder="10"
+                   showInDefault="1"
+                   showInWebsite="1"
+                   showInStore="1"
+            >
+                <label>Scope</label>
+                <comment>Determine whether rate limiting applies across all components (shared) or individually per component (isolated).</comment>
+
+                <source_model>Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Config\Source\RequestsScope</source_model>
+            </field>
+
+            <field id="max_attempts"
+                   translate="label"
+                   type="text"
+                   sortOrder="20"
+                   showInDefault="1"
+                   showInWebsite="1"
+                   showInStore="1"
+            >
+                <label>Max Attempts</label>
+                <comment>Maximum number of requests allowed globally within the decay seconds period configured below.</comment>
+
+                <validate>required-entry integer</validate>
+            </field>
+
+            <field id="decay_seconds"
+                   translate="label"
+                   type="text"
+                   sortOrder="30"
+                   showInDefault="1"
+                   showInWebsite="1"
+                   showInStore="1"
+            >
+                <label>Decay Seconds</label>
+                <comment>Time window in seconds for the max attempts limit above. After this period, the attempt counter resets.</comment>
+
+                <validate>required-entry integer</validate>
+            </field>
+        </group>
+    </group>
+</include>

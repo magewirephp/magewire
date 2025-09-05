@@ -48,7 +48,7 @@
                             <block name="magewire.ui-components.notifier.activity-state"
                                    template="Magewirephp_Magewire::magewire/ui-components/notifier/activity-state.phtml"
                             >
-                                <!-- Inject loading icon (e.g. spinner). -->
+                                <!-- Inject loading icon (e.g., spinner). -->
                                 <block name="magewire.ui-components.notifier.activity-state.loader-icon"
                                        as="loader"
                                        template="Magewirephp_Magewire::magewire/utils/icons/loading.phtml"
@@ -133,6 +133,9 @@
             <container name="magewire.features" as="features">
                 <block name="magewire.features.support-magewire-loaders"
                        template="Magewirephp_Magewire::js/magewire/features/support-magewire-loaders/support-magewire-loaders.phtml"
+                />
+                <block name="magewire.features.support-magewire-rate-limiting"
+                       template="Magewirephp_Magewire::js/magewire/features/support-magewire-rate-limiting/support-magewire-rate-limiting.phtml"
                 />
             </container>
 

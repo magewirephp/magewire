@@ -14,6 +14,7 @@ use Magento\Framework\DataObject;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magento\Framework\View\Element\BlockInterface;
 use Magento\Framework\View\TemplateEngine\Php as Subject;
+use Magewirephp\Magento\Framework\View\BlockRenderingRegistry;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
 use function Magewirephp\Magewire\trigger;
@@ -24,7 +25,8 @@ class Php
     private array $magewireBlocks = [];
 
     public function __construct(
-        private readonly MagewireViewModel $magewireViewModel
+        private readonly MagewireViewModel      $magewireViewModel,
+        private readonly BlockRenderingRegistry $renderRegistry,
     ) {
         //
     }
@@ -35,6 +37,8 @@ class Php
         string $filename,
         array $dictionary = []
     ): array {
+        $this->renderRegistry->push($block);
+
         [$block, $filename, $dictionary] = $this->registerMagewireVariableBefore($subject, $block, $filename, $dictionary);
         [$block, $filename, $dictionary] = $this->registerMagewireViewModelVariableBefore($subject, $block, $filename, $dictionary);
 
@@ -43,7 +47,11 @@ class Php
 
     function afterRender(Subject $subject, string $html): string
     {
-        return $this->registerMagewireViewModelVariableAfter($subject, $this->registerMagewireVariableAfter($subject, $html));
+        $html = $this->registerMagewireVariableAfter($subject, $html);
+        $html = $this->registerMagewireViewModelVariableAfter($subject, $html);
+
+        $this->renderRegistry->pop();
+        return $html;
     }
 
     /**

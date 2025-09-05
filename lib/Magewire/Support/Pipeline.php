@@ -10,16 +10,19 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Support;
 
-use Exception;
 use Magewirephp\Magewire\Support\Concerns\WithFactory;
 use Psr\Log\LoggerInterface;
+use RuntimeException;
+use Throwable;
 
 class Pipeline
 {
     use WithFactory;
 
     /** @var array<int, callable> $pipes */
-    protected array $pipes = [];
+    private array $pipes = [];
+
+    private int $limit = 1;
 
     public function __construct(
         private readonly LoggerInterface $logger
@@ -29,6 +32,8 @@ class Pipeline
 
     /**
      * Extend the current pipeline with an additional callback.
+     *
+     * @example $pipeline->pipe(fn ($throughput, callable $next) => $next($throughput));
      */
     public function pipe(callable $callback): static
     {
@@ -38,23 +43,38 @@ class Pipeline
     }
 
     /**
-     * Try to run the pipeline using a mixed type throughput.
+     * Try to run the pipeline using mixed type throughput.
+     *
+     * @throws RuntimeException
+     * @throws Throwable
      */
-    public function run($throughput)
+    public function run(mixed $throughput): mixed
     {
+        if ($this->limit === 0) {
+            throw new RuntimeException('Pipeline limit reached.');
+        }
+
+        $this->limit--;
+
         // Wraps each pipe around the existing pipeline.
-        $piper = fn ($next, $pipe) => fn ($throughput) => $pipe($throughput, $next);
+        $decorator = fn ($next, $pipe) => fn ($throughput) => $pipe($throughput, $next);
         // Acts as the final "next" callable in the pipeline
-        $actor = fn ($throughput) => $throughput;
+        $passthrough = fn ($throughput) => $throughput;
         // Construct the final pipeline.
-        $pipeline = array_reduce(array_reverse($this->pipes), $piper, $actor);
+        $pipeline = array_reduce(array_reverse($this->pipes), $decorator, $passthrough);
 
         try {
             return $pipeline($throughput);
-        } catch (Exception $exception) {
+        } catch (Throwable $exception) {
             $this->logger->critical('Pipeline failure', ['exception' => $exception]);
         }
 
         return $throughput;
+    }
+
+    public function limit(int $limit): static
+    {
+        $this->limit !== 0 && $this->limit = $limit;
+        return $this;
     }
 }

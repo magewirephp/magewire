@@ -116,14 +116,17 @@
                     Magewire-specific features rely solely on whether a feature needs to load before or after another,
                     rather than a strict sort order.
                 -->
+                <item name="magento_exception_handling" xsi:type="string" sortOrder="900">Magewirephp\Magewire\Features\SupportMagewireExceptionHandling\SupportMagewireExceptionHandling</item>
+                <item name="magewire_rate_limiting" xsi:type="string" sortOrder="900">Magewirephp\Magewire\Features\SupportMagewireRateLimiting\SupportMagewireRateLimiting</item>
                 <item name="nesting_components" xsi:type="string" sortOrder="1000">Magewirephp\Magewire\Features\SupportNestingComponents\SupportNestingComponents</item>
                 <item name="magewire_nesting_components" xsi:type="string" sortOrder="1100">Magewirephp\Magewire\Features\SupportMagewireNestingComponents\SupportMagewireNestingComponents</item>
                 <item name="attributes" xsi:type="string" sortOrder="1200">Magewirephp\Magewire\Features\SupportAttributes\SupportAttributes</item>
                 <item name="redirects" xsi:type="string" sortOrder="1300">Magewirephp\Magewire\Features\SupportRedirects\SupportRedirects</item>
-                <item name="locales" xsi:type="string" sortOrder="1400">Magewirephp\Magewire\Features\SupportLocales\SupportLocales</item>
+                <item name="streaming" xsi:type="string" sortOrder="1400">Magewirephp\Magewire\Features\SupportStreaming\SupportStreaming</item>
+                <item name="locales" xsi:type="string" sortOrder="1500">Magewirephp\Magewire\Features\SupportLocales\SupportLocales</item>
                 <item name="events" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportEvents\SupportEvents</item>
-                    <item name="sort_order" xsi:type="number">1500</item>
+                    <item name="sort_order" xsi:type="number">1600</item>
                 </item>
 
                 <item name="magento_layouts" xsi:type="string" sortOrder="5000">Magewirephp\Magewire\Features\SupportMagentoLayouts\SupportMagentoLayouts</item>
@@ -142,9 +145,34 @@
                 <item name="lifecycle_hooks" xsi:type="string" sortOrder="99000">Magewirephp\Magewire\Features\SupportLifecycleHooks\SupportLifecycleHooks</item>
                 <item name="magewire_backwards_compatibility" xsi:type="string" sortOrder="99050">Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\SupportMagewireBackwardsCompatibility</item>
 
+                <item name="magewire_flakes" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireFlakes\SupportMagewireFlakes</item>
+                    <item name="sort_order" xsi:type="number">99100</item>
+                </item>
+
                 <item name="magewire_compiling" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireCompiling\SupportMagewireCompiling</item>
-                    <item name="sort_order" xsi:type="number">99100</item>
+                    <item name="sort_order" xsi:type="number">99200</item>
+                </item>
+
+                <item name="magento_observer_events" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagentoObserverEvents\SupportMagentoObserverEvents</item>
+                    <item name="sort_order" xsi:type="number">99300</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!--
+        Feature: Magewire Rate Limiting
+    -->
+    <type name="Magewirephp\Magewire\Model\App\ExceptionManager">
+        <arguments>
+            <argument name="specificExceptionHandlerPool" xsi:type="array">
+                <item name="subsequent" xsi:type="array">
+                    <item name="Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Exceptions\TooManyRequestsException" xsi:type="object">
+                        Magewirephp\Magewire\Features\SupportMagewireRateLimiting\RateLimiterExceptionHandler
+                    </item>
                 </item>
             </argument>
         </arguments>
@@ -165,6 +193,14 @@
         </arguments>
     </type>
 
+    <type name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\MagewireCompiler">
+        <arguments>
+            <argument name="precompilers" xsi:type="array">
+                <item name="flakes" sortOrder="1000" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Precompiler\FlakePrecompiler</item>
+            </argument>
+        </arguments>
+    </type>
+
     <!-- Directive area: Global (no prefix) -->
     <virtualType name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\BaseDirectiveArea"
                  type="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\DirectiveArea"
@@ -175,12 +211,16 @@
                 <item name="json" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Json</item>
 
                 <!-- Basic PHP loops. -->
-                <item name="if" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope\Proxy</item>
-                <item name="else" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope\Proxy</item>
-                <item name="elseif" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope\Proxy</item>
-                <item name="endif" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope\Proxy</item>
-                <item name="foreach" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope\Proxy</item>
-                <item name="endforeach" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope\Proxy</item>
+                <item name="if" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope</item>
+                <item name="foreach" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope</item>
+
+                <!-- Magewire methods (area independent). -->
+                <item name="script" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Script</item>
+                <item name="fragment" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Fragment</item>
+
+                <item name="flake" xsi:type="object">
+                    Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Directive\FlakeDirective
+                </item>
 
                 <!-- Basic PHP methods. -->
                 <!-- WIP... -->
@@ -190,9 +230,7 @@
 
                 <!-- Magento authentication methods. -->
                 <item name="auth" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Auth\Proxy</item>
-                <item name="endauth" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Auth\Proxy</item>
                 <item name="guest" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Auth\Proxy</item>
-                <item name="endguest" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Auth\Proxy</item>
             </argument>
         </arguments>
     </virtualType>
@@ -283,7 +321,9 @@
             <argument name="action" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Action\Magewire\Proxy</argument>
 
             <argument name="namespaces" xsi:type="array">
-                <item name="magento.auth" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Action\Auth\Proxy</item>
+                <item name="magento.auth" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Action\Magento\Auth\Proxy</item>
+                <item name="magewire" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Action\Magewire\Proxy</item>
+                <item name="magewire.flake" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Action\Magewire\FlakeViewAction\Proxy</item>
             </argument>
         </arguments>
     </type>
@@ -344,6 +384,16 @@
         </arguments>
     </type>
 
+    <type name="Magewirephp\Magewire\Model\View\FragmentFactory">
+        <arguments>
+            <argument name="types" xsi:type="array">
+                <item name="flake" xsi:type="string">
+                    Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Fragment\FlakeFragment
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
     <!--
         Mechanism: Component Resolving
 
@@ -355,6 +405,7 @@
         <arguments>
             <!-- Component resolver registration. -->
             <argument name="resolvers" xsi:type="array">
+                <item name="flake" xsi:type="object" sortOrder="98900">Magewirephp\Magewire\Features\SupportMagewireFlakes\Mechanisms\ResolveComponent\ComponentResolver\FlakeResolver</item>
                 <item name="layout" xsi:type="object" sortOrder="99900">Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolver\LayoutResolver</item>
             </argument>
         </arguments>
