@@ -46,7 +46,7 @@ class PersistentMiddleware extends \Livewire\Mechanisms\PersistentMiddleware\Per
             $context->addMemo('method', 'GET');
         });
 
-        on('flush-state', function() {
+        on('flush-state', function () {
             // Only flush these at the end of a full request, so that child components have access to this data.
             $this->path = null;
             $this->method = null;

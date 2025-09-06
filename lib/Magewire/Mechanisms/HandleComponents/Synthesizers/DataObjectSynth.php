@@ -16,7 +16,7 @@ use Magewirephp\Magewire\Mechanisms\HandleComponents\Synthesizers\Synth;
 
 class DataObjectSynth extends Synth
 {
-    static string $key = 'mdo';
+    public static string $key = 'mdo';
 
     function __construct(
         private readonly DataObjectFactory $dataObjectFactory,
