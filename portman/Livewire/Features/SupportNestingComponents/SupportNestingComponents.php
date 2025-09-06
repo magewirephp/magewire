@@ -36,13 +36,17 @@ class SupportNestingComponents extends \Livewire\Features\SupportNestingComponen
 
         on('mount', function ($component, $params, $key, $parent) {
             $start = null;
-            if ($parent && config('app.debug')) $start = microtime(true);
+            if ($parent && config('app.debug')) {
+                $start = microtime(true);
+            }
 
             static::setParametersToMatchingProperties($component, $params);
 
             return function ($html) use ($component, $key, $parent, $start) {
                 if ($parent) {
-                    if (config('app.debug')) trigger('profile', 'child:'.$component->getId(), $parent->getId(), [$start, microtime(true)]);
+                    if (config('app.debug')) {
+                        trigger('profile', 'child:'.$component->getId(), $parent->getId(), [$start, microtime(true)]);
+                    }
 
                     preg_match('/<([a-zA-Z0-9\-]*)/', $html, $matches, PREG_OFFSET_CAPTURE);
                     $tag = $matches[1][0];

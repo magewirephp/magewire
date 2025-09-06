@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire;
 
 use Magento\Framework\Reflection\MethodsMap;
-use function Magewirephp\Magewire\{ trigger };
+use function Magewirephp\Magewire\trigger;
 
 class Wrapped extends \Livewire\Wrapped
 {

@@ -12,7 +12,8 @@ namespace Magewirephp\Magewire\Drawer;
 
 class BaseUtils extends \Livewire\Drawer\BaseUtils
 {
-    static function getPublicPropertiesDefinedOnSubclass($target) {
+    static function getPublicPropertiesDefinedOnSubclass($target)
+    {
         return static::getPublicProperties($target, function ($property) {
             // Filter out any properties from the first-party Component class...
             return $property->getDeclaringClass()->getName() !== \Magewirephp\Magewire\Component::class;

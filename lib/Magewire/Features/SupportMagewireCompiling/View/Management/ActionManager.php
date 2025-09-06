@@ -52,7 +52,7 @@ class ActionManager
             return $this->actionManagerFactory->create([
                 'action' => $namespace
             ]);
-        } else if (array_key_exists($namespace, $this->namespaces)) {
+        } elseif (array_key_exists($namespace, $this->namespaces)) {
             if (is_object($this->namespaces[$namespace])) {
                 return $this->actionManagerFactory->create([
                     'action' => $this->namespaces[$namespace]

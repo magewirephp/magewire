@@ -113,7 +113,7 @@ abstract class MagewireArguments extends DataObject
         }, ARRAY_FILTER_USE_KEY);
 
         // Remove the "magewire." prefix and convert kebab-case to camelCase
-        return array_combine(array_map(function($key) {
+        return array_combine(array_map(function ($key) {
             return Str::camel(substr($key, 9));
         }, array_keys($arguments)), array_values($arguments));
     }

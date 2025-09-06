@@ -37,7 +37,7 @@ class SupportMagewireRateLimiting extends ComponentHook
                     throw new TooManyRequestsException();
                 }
             });
-        } else if ($this->rateLimiterConfig->canRateLimitComponents()) {
+        } elseif ($this->rateLimiterConfig->canRateLimitComponents()) {
             on('magewire:reconstruct', function () {
                 return function (Template $block) {
                     $component = $block->getData('magewire');
