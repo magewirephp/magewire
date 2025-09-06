@@ -116,7 +116,8 @@ class FlakePrecompiler extends Precompiler
 
             'metadata' => [
                 'attributes' => array_combine(
-                    array_map(fn ($key) => substr($key, 5), array_keys($attributes)), $attributes
+                    array_map(fn ($key) => substr($key, 5), array_keys($attributes)),
+                    $attributes
                 )
             ]
         ];
