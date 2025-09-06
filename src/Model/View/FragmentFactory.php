@@ -84,7 +84,9 @@ class FragmentFactory
         }
 
         throw new LogicException(sprintf(
-            'Class "%s" does not implement Fragment interface. Expected Fragment, got %s.', $type, get_debug_type($fragment)
+            'Class "%s" does not implement Fragment interface. Expected Fragment, got %s.',
+            $type,
+            get_debug_type($fragment)
         ));
     }
 }

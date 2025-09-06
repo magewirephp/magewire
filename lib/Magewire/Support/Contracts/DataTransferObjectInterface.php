@@ -12,5 +12,4 @@ namespace Magewirephp\Magewire\Support\Contracts;
 
 interface DataTransferObjectInterface
 {
-
 }
