@@ -18,7 +18,7 @@ class DataObjectSynth extends Synth
 {
     static string $key = 'mdo';
 
-    function __construct(
+    public function __construct(
         private readonly DataObjectFactory $dataObjectFactory,
         $context,
         $path
@@ -26,12 +26,12 @@ class DataObjectSynth extends Synth
         parent::__construct($context, $path);
     }
 
-    static function match($target)
+    public static function match($target)
     {
         return $target instanceof DataObject;
     }
 
-    function dehydrate($target, $dehydrateChild)
+    public function dehydrate($target, $dehydrateChild)
     {
         $data = (array) $target;
 
@@ -42,7 +42,7 @@ class DataObjectSynth extends Synth
         return [$data, []];
     }
 
-    function hydrate($value, $meta, $hydrateChild)
+    public function hydrate($value, $meta, $hydrateChild)
     {
         $obj = $this->dataObjectFactory->create();
 
@@ -53,7 +53,7 @@ class DataObjectSynth extends Synth
         return $obj;
     }
 
-    function set(DataObject $target, $key, $value)
+    public function set(DataObject $target, $key, $value)
     {
         return $target->setData($key, $value);
     }

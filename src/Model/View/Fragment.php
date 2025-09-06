@@ -250,7 +250,7 @@ abstract class Fragment
                 try {
                     if (is_callable($modifier)) {
                         $modifier($this);
-                    } else if ($modifier instanceof FragmentModifier) {
+                    } elseif ($modifier instanceof FragmentModifier) {
                         $modifier->modify($this);
                     }
                 } catch (Throwable $exception) {

@@ -19,8 +19,7 @@ class ViewInstructionFactory
      */
     public function __construct(
         private readonly array $instructions = []
-    )
-    {
+    ) {
         //
     }
 
