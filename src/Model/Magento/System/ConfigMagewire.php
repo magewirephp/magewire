@@ -31,7 +31,7 @@ class ConfigMagewire
         string $path,
         string $group = null,
         string $scopeType = ScopeInterface::SCOPE_STORE,
-               $scopeCode = null
+        $scopeCode = null
     ): mixed {
         return $this->scopeConfig->getValue($this->createPath($path, $group), $scopeType, $scopeCode);
     }
@@ -43,7 +43,7 @@ class ConfigMagewire
         string $path,
         string $group = null,
         string $scopeType = ScopeInterface::SCOPE_STORE,
-               $scopeCode = null
+        $scopeCode = null
     ): bool {
         return $this->scopeConfig->isSetFlag($this->createPath($path, $group), $scopeType, $scopeCode);
     }
@@ -54,7 +54,7 @@ class ConfigMagewire
     public function getFeaturesGroupValue(
         string $path,
         string $scopeType = ScopeInterface::SCOPE_STORE,
-               $scopeCode = null
+        $scopeCode = null
     ): mixed {
         return $this->getGroupValue($path, self::GROUP_FEATURES, $scopeType, $scopeCode);
     }
@@ -65,7 +65,7 @@ class ConfigMagewire
     public function isFeatureGroupFlag(
         string $path,
         string $scopeType = ScopeInterface::SCOPE_STORE,
-               $scopeCode = null
+        $scopeCode = null
     ): bool {
         return $this->scopeConfig->isSetFlag($this->createPath($path, self::GROUP_FEATURES), $scopeType, $scopeCode);
     }
@@ -76,7 +76,7 @@ class ConfigMagewire
     public function getDebugGroupValue(
         string $path,
         string $scopeType = ScopeInterface::SCOPE_STORE,
-               $scopeCode = null
+        $scopeCode = null
     ): mixed {
         return $this->getGroupValue($path, self::GROUP_DEBUG, $scopeType, $scopeCode);
     }
@@ -87,7 +87,7 @@ class ConfigMagewire
     public function isDebugGroupFlag(
         string $path,
         string $scopeType = ScopeInterface::SCOPE_STORE,
-               $scopeCode = null
+        $scopeCode = null
     ): bool {
         return $this->scopeConfig->isSetFlag($this->createPath($path, self::GROUP_DEBUG), $scopeType, $scopeCode);
     }

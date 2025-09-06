@@ -14,5 +14,4 @@ use Exception;
 
 class InvalidDataScopeException extends Exception
 {
-
 }

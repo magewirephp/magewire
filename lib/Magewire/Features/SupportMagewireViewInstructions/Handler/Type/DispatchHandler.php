@@ -14,5 +14,4 @@ use Magewirephp\Magewire\Features\SupportMagewireViewInstructions\Handler\Handle
 
 class DispatchHandler extends HandlerType
 {
-
 }

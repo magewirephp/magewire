@@ -118,7 +118,8 @@ abstract class Component implements ArgumentInterface
             if (isset($value)) {
                 return true;
             }
-        } catch(\Magewirephp\Magewire\Exceptions\PropertyNotFoundException $exception) {}
+        } catch(\Magewirephp\Magewire\Exceptions\PropertyNotFoundException $exception) {
+        }
 
         return false;
     }
@@ -167,7 +168,9 @@ abstract class Component implements ArgumentInterface
         }
 
         throw new BadMethodCallException(sprintf(
-            'Method %s::%s does not exist.', static::class, $method
+            'Method %s::%s does not exist.',
+            static::class,
+            $method
         ));
     }
 

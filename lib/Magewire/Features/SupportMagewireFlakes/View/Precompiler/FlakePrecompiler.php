@@ -85,7 +85,7 @@ class FlakePrecompiler extends Precompiler
             ->default('magewire:alias', $component)
 
             // 1. Take care of all data groups (e.g., mount, prop)
-            ->each(function(DataArray $array, $value, $key) {
+            ->each(function (DataArray $array, $value, $key) {
                 if ($to = $this->renameToMagewireAttributeMeta($key)) {
                     $array->isset($to) ? $array->put($to, $value) : $array->rename($key, $to);
                 }
@@ -104,7 +104,7 @@ class FlakePrecompiler extends Precompiler
             });
 
         // Fetch and transform DOM attributes.
-        $attributes = $parse->fetch(fn($value, $key) => str_starts_with($key, 'attr:'));
+        $attributes = $parse->fetch(fn ($value, $key) => str_starts_with($key, 'attr:'));
 
         $arguments = [
             'flake' => $component,
@@ -116,7 +116,8 @@ class FlakePrecompiler extends Precompiler
 
             'metadata' => [
                 'attributes' => array_combine(
-                    array_map(fn($key) => substr($key, 5), array_keys($attributes)), $attributes
+                    array_map(fn ($key) => substr($key, 5), array_keys($attributes)),
+                    $attributes
                 )
             ]
         ];

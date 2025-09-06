@@ -12,5 +12,4 @@ namespace Magewirephp\Magewire\Features\SupportMagewireRateLimiting;
 
 trait HandlesRateLimiting
 {
-
 }

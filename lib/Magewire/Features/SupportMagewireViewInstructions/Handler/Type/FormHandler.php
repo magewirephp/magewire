@@ -12,5 +12,4 @@ namespace Magewirephp\Magewire\Features\SupportMagewireViewInstructions\Handler\
 
 class FormHandler extends DomNodeHandler
 {
-
 }

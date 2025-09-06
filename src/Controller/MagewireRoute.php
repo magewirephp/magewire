@@ -54,7 +54,8 @@ abstract class MagewireRoute
                 }
             } catch (Exception $exception) {
                 $this->log()->debug(
-                    sprintf('Route match condition "%s" threw an exception', $name), ['exception' => $exception]
+                    sprintf('Route match condition "%s" threw an exception', $name),
+                    ['exception' => $exception]
                 );
 
                 return null;

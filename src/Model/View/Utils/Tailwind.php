@@ -14,5 +14,4 @@ use Magewirephp\Magewire\Model\View\UtilsInterface;
 
 class Tailwind implements UtilsInterface
 {
-
 }

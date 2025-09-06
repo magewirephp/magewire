@@ -18,7 +18,7 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Model\App\ExceptionManager;
 use Magewirephp\Magewire\MagewireManager;
-use function Magewirephp\Magewire\{store};
+use function Magewirephp\Magewire\store;
 
 class ViewBlockAbstractToHtmlAfter implements ObserverInterface
 {

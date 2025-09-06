@@ -21,5 +21,4 @@ use Magewirephp\Magewire\MagewireManager;
  */
 class Livewire extends MagewireManager
 {
-
 }

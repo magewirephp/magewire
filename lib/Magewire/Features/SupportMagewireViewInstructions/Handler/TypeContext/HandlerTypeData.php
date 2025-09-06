@@ -35,7 +35,9 @@ class HandlerTypeData extends HandlerTypeContext
         }
 
         throw new BadMethodCallException(sprintf(
-            'Method %s::%s does not exist.', DataScope::class, $method
+            'Method %s::%s does not exist.',
+            DataScope::class,
+            $method
         ));
     }
 }

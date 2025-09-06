@@ -14,5 +14,4 @@ use Magewirephp\Magewire\Component;
 
 class Render extends Component
 {
-    //
 }

@@ -75,7 +75,7 @@ class SupportMagentoObserverEvents extends ComponentHook
         ];
 
         foreach ($events as $event) {
-            on($event, fn(...$args) => $this->dispatch('magewire_on_' . preg_replace('/[^a-zA-Z0-9_]/', '_', $event), ...$args));
+            on($event, fn (...$args) => $this->dispatch('magewire_on_' . preg_replace('/[^a-zA-Z0-9_]/', '_', $event), ...$args));
         }
     }
 

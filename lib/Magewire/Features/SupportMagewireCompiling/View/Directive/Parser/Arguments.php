@@ -16,7 +16,7 @@ class Arguments extends DataArray
 {
     public function render(string $format = '$value'): string
     {
-        $values = array_map(function($value) {
+        $values = array_map(function ($value) {
             // Check if the value is a string and if it's wrapped in single quotes
             if (is_string($value) && $value[0] === "'" && $value[strlen($value) - 1] === "'") {
                 // Remove the quotes from the string
@@ -25,7 +25,7 @@ class Arguments extends DataArray
             return $value;
         }, $this->values());
 
-        return implode(', ', array_map(fn($k, $v) => str_replace(['$key', '$value'], [$k, var_export($v, true)], $format), $this->keys(), $values));
+        return implode(', ', array_map(fn ($k, $v) => str_replace(['$key', '$value'], [$k, var_export($v, true)], $format), $this->keys(), $values));
     }
 
     public function renderAsNamed(): string
