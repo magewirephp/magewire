@@ -27,7 +27,9 @@ class ComponentHookRegistry extends \Livewire\ComponentHookRegistry
             $hook->provide();
         }
 
-        if (in_array($hook, static::$componentHooks)) return;
+        if (in_array($hook, static::$componentHooks)) {
+            return;
+        }
 
         static::$componentHooks[] = $hook;
     }

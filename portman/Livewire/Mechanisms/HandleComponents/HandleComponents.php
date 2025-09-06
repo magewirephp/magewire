@@ -259,7 +259,9 @@ class HandleComponents extends \Livewire\Mechanisms\HandleComponents\HandleCompo
             foreach ($types as $type) {
                 $synth = $this->getSynthesizerByType($type->getName(), $context, $path);
 
-                if ($synth) return $synth->hydrateFromType($type->getName(), $value);
+                if ($synth) {
+                    return $synth->hydrateFromType($type->getName(), $value);
+                }
             }
         }
 
