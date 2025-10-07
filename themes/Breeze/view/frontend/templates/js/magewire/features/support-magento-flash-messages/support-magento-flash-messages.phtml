@@ -1,0 +1,28 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment = $magewireViewModel->utils()->fragment();
+?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    (() => {
+        window.addEventListener('magewire:flash-messages:dispatch', event => {
+            require(['Magento_Customer/js/customer-data'], customerData => {
+                var data = customerData.get('messages')();
+
+                data.messages = event.detail;
+
+                customerData.set('messages', data);
+            });
+        });
+    })();
+</script>
+<?php $script->end() ?>

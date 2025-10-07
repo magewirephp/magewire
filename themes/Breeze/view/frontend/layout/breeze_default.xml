@@ -7,5 +7,12 @@
         <referenceBlock name="magewire.script"
                         template="Magewirephp_MagewireCompatibilityWithBreeze::js/magewire/script.phtml"
         />
+
+        <referenceContainer name="magewire.features">
+            <!-- Make the flash messages feature compatible with the Breeze theme. -->
+            <block name="magewire.features.support-magento-flash-messages"
+                   template="Magewirephp_MagewireCompatibilityWithBreeze::js/magewire/features/support-magento-flash-messages/support-magento-flash-messages.phtml"
+            />
+        </referenceContainer>
     </body>
 </page>
