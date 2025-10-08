@@ -14,5 +14,11 @@
                    template="Magewirephp_MagewireCompatibilityWithBreeze::js/magewire/features/support-magento-flash-messages/support-magento-flash-messages.phtml"
             />
         </referenceContainer>
+
+        <referenceBlock name="breeze.scrollReveal">
+            <block name="magewire.features.support-scroll-reveal"
+                   template="Magewirephp_MagewireCompatibilityWithBreeze::js/magewire/features/support-scroll-reveal/scroll-reveal.phtml"
+            />
+        </referenceBlock>
     </body>
 </page>
