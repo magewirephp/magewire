@@ -125,7 +125,7 @@ class Layout implements ResolverInterface
 
         $module = array_filter(
             explode('\\', get_class($component)), 
-            fn(string $part) => $part !== 'Interceptor'
+            fn (string $part) => $part !== 'Interceptor'
         );
 
         $prefix = $module[0] . '_' . $module[1];
