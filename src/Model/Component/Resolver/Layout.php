@@ -124,7 +124,7 @@ class Layout implements ResolverInterface
         }
 
         $module = array_filter(
-            explode('\\', get_class($component)), 
+            explode('\\', get_class($component)),
             fn (string $part) => $part !== 'Interceptor'
         );
 
