@@ -123,7 +123,10 @@ class Layout implements ResolverInterface
             return $block;
         }
 
-        $module = explode('\\', get_class($component));
+        $module = array_filter(
+            explode('\\', get_class($component)), 
+            fn(string $part) => $part !== 'Interceptor'
+        );
 
         $prefix = $module[0] . '_' . $module[1];
         $affix  = strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', end($module)));
