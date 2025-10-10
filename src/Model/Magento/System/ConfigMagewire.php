@@ -29,7 +29,7 @@ class ConfigMagewire
      */
     public function getGroupValue(
         string $path,
-        string $group = null,
+        string|null $group = null,
         string $scopeType = ScopeInterface::SCOPE_STORE,
         $scopeCode = null
     ): mixed {
@@ -41,7 +41,7 @@ class ConfigMagewire
      */
     public function isGroupFlag(
         string $path,
-        string $group = null,
+        string|null $group = null,
         string $scopeType = ScopeInterface::SCOPE_STORE,
         $scopeCode = null
     ): bool {
@@ -95,7 +95,7 @@ class ConfigMagewire
     /**
      * Returns a formatted path based on the provided path and optional group.
      */
-    private function createPath(string $path, string $group = null): string
+    private function createPath(string $path, string|null $group = null)
     {
         return $group
             ? sprintf('magewire/%s/%s', $group, trim($path))
