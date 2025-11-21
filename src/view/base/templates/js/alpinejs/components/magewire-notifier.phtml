@@ -56,7 +56,13 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                                 'x-on:mouseleave'() {
                                     <?php /* Maybe at some point this should become .resume() when implemented. */ ?>
                                     notifier.cleanup(this.notification.id);
-                                }
+                                },
+                                'x-bind:class'() {
+                                    return [
+                                        'magewire-notifier__notification',
+                                        `magewire-notifier__notification--${this.notification.type}`
+                                    ];
+                                },
                             }
                         },
 
