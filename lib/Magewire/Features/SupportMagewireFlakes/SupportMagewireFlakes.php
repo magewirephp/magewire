@@ -16,7 +16,6 @@ use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler;
 use Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Compiler\FlakeCompiler;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
 use Magewirephp\Magewire\Support\Concerns\AsDataObject;
-use Magewirephp\Magewire\Support\Pipeline;
 use function Magewirephp\Magewire\on;
 
 class SupportMagewireFlakes extends ComponentHook
