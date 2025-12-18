@@ -19,7 +19,7 @@ class Features extends ServiceType
         parent::__construct($items);
     }
 
-    function boot() : ServiceType
+    function boot(): static
     {
         parent::boot();
 

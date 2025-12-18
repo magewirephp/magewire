@@ -19,11 +19,11 @@ class MagewireServiceProvider
     private State|null $state = null;
 
     public function __construct(
+        private readonly LoggerInterface $logger,
+        private readonly StateFactory $stateFactory,
         private readonly Containers $containers,
         private readonly Mechanisms $mechanisms,
         private readonly Features $features,
-        private readonly LoggerInterface $logger,
-        private readonly StateFactory $stateFactory,
         private readonly bool $boot = false
     ) {
         //
@@ -83,7 +83,7 @@ class MagewireServiceProvider
             try {
                 return match ($item) {
                     'container', 'feature', 'mechanism' => $operation->item($argument),
-                    'facade' => $operation->facade($argument),
+                    'facade' => $operation->facade($argument)
                 };
             } catch (Exception $exception) {
                 $this->logger->critical($exception->getMessage(), ['exception' => $exception]);

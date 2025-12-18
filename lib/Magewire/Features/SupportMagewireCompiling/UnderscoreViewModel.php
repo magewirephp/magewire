@@ -15,7 +15,7 @@ use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\Actio
 use Magewirephp\Magewire\Model\View\Utils;
 use Magewirephp\Magewire\Support\DataScope;
 
-class MagewireUnderscoreViewModel implements ArgumentInterface
+class UnderscoreViewModel implements ArgumentInterface
 {
     public function __construct(
         private readonly ActionManager $actionManager,

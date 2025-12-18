@@ -14,22 +14,25 @@ use Magento\Framework\View\Element\AbstractBlock;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\ComponentHook;
-use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\MagewireCompilerFactory;
+use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\CompilerManager;
 use function Magewirephp\Magewire\on;
+use function Magewirephp\Magewire\trigger;
 
 class SupportMagewireCompiling extends ComponentHook
 {
     public function __construct(
-        private readonly MagewireCompilerFactory $compilerFactory,
-        private readonly MagewireUnderscoreViewModelFactory $underscoreViewModelFactory
+        private MagewireUnderscoreViewModelFactory $underscoreViewModelFactory,
+        private CompilerManager $compilerManager
     ) {
         //
     }
 
     public function provide(): void
     {
-        on('magewire:view:precompile', function (AbstractBlock $block, string $filename, array $dictionary, Component $magewire) {
-            $compiler = $magewire->compiler() ?? $magewire->compiler($this->compilerFactory->create());
+        on('magento:template:render', function (AbstractBlock $block, string $filename, array $dictionary, Component $magewire) {
+            $compiler = $magewire->compiler() ?? $magewire->compiler(
+                $this->compilerManager->factory()->newCompilerInstance()
+            );
 
             return function (array $result) use ($magewire, $compiler, $block) {
                 // Although named "filename", this actually represents the full file path,
@@ -37,8 +40,12 @@ class SupportMagewireCompiling extends ComponentHook
                 $path = $result['filename'];
 
                 if ($magewire->compiler()->canCompile()) {
-                    // Compiles the final HTML, puts it into a resource, and returns its new file path.
-                    $result['filename'] = $compiler->requiresCompilation($path) ? $compiler->compile($path) : $compiler->generateFilePath($path);
+                    $result['filename'] = $compiler->management()->file()->generateFilePath($path);
+
+                    if ($compiler->requiresRecompile($path)) {
+                        trigger('magewire:view:compile', $compiler, $magewire, $block);
+                        $compiler->compile($path, $result['filename']);
+                    }
                 }
 
                 // Include the Magewire underscore object optionally required by compiled views.

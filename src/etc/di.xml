@@ -2,6 +2,10 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd"
 >
+    <!-- IMPORTANT: Mechanisms and Features require separate injection in each area (frontend and adminhtml).
+         This is due to Magento's area-based dependency injection system. To use the same instance in
+         multiple areas, you must define it in each area's di.xml file. -->
+
     <!-- Global Preferences -->
     <preference for="Magewirephp\Magewire\Model\App\AbstractExceptionHandler"
                 type="Magewirephp\Magewire\Model\App\ExceptionHandler"
@@ -12,11 +16,13 @@
     <preference for="Magewirephp\Magewire\Mechanisms\ResolveComponents\Layout\LayoutDecorator"
                 type="Magewirephp\Magewire\Mechanisms\ResolveComponents\Layout\MagewireLayoutDecorator"
     />
+    <preference for="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler"
+                type="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\MagewireCompiler"
+    />
 
-    <!-- Magewire Mechanisms -->
-
-    <!-- Magewire Features -->
-    <!-- Feature: Rate Limiting -->
+    <!--
+        Feature: Magewire Rate Limiting
+    -->
     <preference for="Magewirephp\Magewire\Features\SupportMagewireRateLimiting\RateLimiterStorageInterface"
                 type="Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Storage\RateLimiterCacheStorage"
     />

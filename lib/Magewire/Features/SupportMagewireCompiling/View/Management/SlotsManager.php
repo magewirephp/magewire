@@ -10,16 +10,7 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management;
 
-class CompileManager
+class SlotsManager
 {
-    public function __construct(
-        private readonly DirectiveManager $directiveManager
-    ) {
-        //
-    }
-
-    public function directives(): DirectiveManager
-    {
-        return $this->directiveManager;
-    }
+    private array $slots = [];
 }

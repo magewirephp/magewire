@@ -33,8 +33,9 @@
                     <item name="view_model" xsi:type="object">Magewirephp\Magewire\Mechanisms\ResolveComponents\ResolveComponentsViewModel</item>
                 </item>
 
-                <item name="persist_middleware" xsi:type="string" sortOrder="1050">
-                    Magewirephp\Magewire\Mechanisms\PersistentMiddleware\PersistentMiddleware
+                <item name="persist_middleware" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Mechanisms\PersistentMiddleware\PersistentMiddleware</item>
+                    <item name="sort_order" xsi:type="number">1050</item>
                 </item>
 
                 <item name="handle_components" xsi:type="array">
@@ -74,8 +75,9 @@
                     </item>
                 </item>
 
-                <item name="data_store" xsi:type="string" sortOrder="1250">
-                    Magewirephp\Magewire\Mechanisms\DataStore
+                <item name="data_store" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Mechanisms\DataStore</item>
+                    <item name="sort_order" xsi:type="number">1250</item>
                 </item>
             </argument>
         </arguments>
@@ -138,6 +140,7 @@
                 <item name="attributes" xsi:type="string" sortOrder="1100">Magewirephp\Magewire\Features\SupportAttributes\SupportAttributes</item>
                 <item name="redirects" xsi:type="string" sortOrder="1200">Magewirephp\Magewire\Features\SupportRedirects\SupportRedirects</item>
                 <item name="locales" xsi:type="string" sortOrder="1300">Magewirephp\Magewire\Features\SupportLocales\SupportLocales</item>
+
                 <item name="events" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportEvents\SupportEvents</item>
                     <item name="sort_order" xsi:type="number">1400</item>
@@ -314,23 +317,6 @@
     </type>
 
     <!--
-        Concept: Service Provider
-
-        The ServerProvider in Magewire is responsible for setting up server-related configurations.
-        It ensures that necessary services are registered and available for the application.
-
-        This provider is crucial for managing server-specific dependencies efficiently
-        during the application's lifecycle.
-    -->
-    <type name="Magewirephp\Magewire\MagewireServerProvider">
-        <arguments>
-            <argument name="containers" xsi:type="object">Magewirephp\Magewire\Containers\Proxy</argument>
-            <argument name="mechanisms" xsi:type="object">Magewirephp\Magewire\Mechanisms\Proxy</argument>
-            <argument name="features" xsi:type="object">Magewirephp\Magewire\Features\Proxy</argument>
-        </arguments>
-    </type>
-
-    <!--
         Concept: View Fragments
 
         View Fragments are self-contained sections of code, typically HTML,
@@ -339,11 +325,11 @@
     <type name="Magewirephp\Magewire\Model\View\Fragment\Script">
         <arguments>
             <argument name="modifiers" xsi:type="array">
-                <item name="developer" sortOrder="500" xsi:type="object">Magewirephp\Magewire\Model\View\Fragment\Modifier\Developer</item>
+                <item name="developer" xsi:type="object" sortOrder="500">Magewirephp\Magewire\Model\View\Fragment\Modifier\Developer</item>
 
                 <!-- CSP support for inline scripts. -->
                 <!-- Maximum sort order to make sure this modifier is run last. -->
-                <item name="csp" sortOrder="9900" xsi:type="object">Magewirephp\Magewire\Model\View\Fragment\Modifier\Csp</item>
+                <item name="csp" xsi:type="object" sortOrder="9900">Magewirephp\Magewire\Model\View\Fragment\Modifier\Csp</item>
             </argument>
         </arguments>
     </type>

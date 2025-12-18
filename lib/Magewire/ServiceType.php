@@ -12,6 +12,7 @@ namespace Magewirephp\Magewire;
 
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\NotFoundException;
+use Magento\Framework\View\Element\Block\ArgumentInterface;
 
 /**
  * The ServiceType class provides a structured way to manage and organize different operation types
@@ -33,7 +34,7 @@ abstract class ServiceType
         //
     }
 
-    public function boot(): self
+    public function boot(): static
     {
         if ($this->booted) {
             return $this;
@@ -87,7 +88,7 @@ abstract class ServiceType
     /**
      * @throws NotFoundException
      */
-    public function viewModel(string $name): object
+    public function viewModel(string $name): ArgumentInterface
     {
         $name = preg_replace('/(?<!^)[A-Z]/', '_$0', $name);
 
@@ -101,7 +102,7 @@ abstract class ServiceType
         );
     }
 
-    private function assemble(): self
+    private function assemble(): static
     {
         $this->items = array_map(function (string|array $item) {
             if (is_string($item)) {
@@ -111,7 +112,7 @@ abstract class ServiceType
                 return $item;
             }
 
-            $item['type'] = ObjectManager::getInstance()->get($item['type']);
+            $item['type'] = ObjectManager::getInstance()->create($item['type']);
 
             // Injects data if a `setData()` method is present in the operation type item class.
             if (method_exists($item['type'], 'setData')) {
@@ -133,6 +134,8 @@ abstract class ServiceType
             $item['sequence'] = array_filter($item['sequence'] ?? [], fn ($item) => $item === true);
             // Ensure the view model key exists, defaulting to null if not set.
             $item['view_model'] ??= null;
+            // Ensure the config key exists, defaulting to null if not set.
+            $item['config'] ??= null;
 
             return $item;
         }, array_filter($this->items, fn ($value) => is_string($value) || is_array($value)));
@@ -140,7 +143,7 @@ abstract class ServiceType
         return $this;
     }
 
-    private function sort(): self
+    private function sort(): static
     {
         uasort($this->items, function ($a, $b) {
             if ($a['sort_order'] == $b['sort_order']) {

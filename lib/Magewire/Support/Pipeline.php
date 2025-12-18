@@ -10,71 +10,173 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Support;
 
+use Magewirephp\Magewire\Support\Concerns\WithDiagnostics;
 use Magewirephp\Magewire\Support\Concerns\WithFactory;
 use Psr\Log\LoggerInterface;
-use RuntimeException;
 use Throwable;
 
+/**
+ * A flexible pipeline implementation for chaining operations.
+ */
 class Pipeline
 {
     use WithFactory;
+    use WithDiagnostics;
 
     /** @var array<int, callable> $pipes */
-    private array $pipes = [];
-
-    private int $limit = 1;
+    protected array $pipes = [];
+    /** @var Middleware|null $middleware */
+    protected Middleware|null $middleware = null;
+    /** @var array<string, array<int, callable>> */
+    protected array $stashes = [];
+    /** @var array<string, array<int, callable> $handlers */
+    protected array $handlers = [];
 
     public function __construct(
-        private readonly LoggerInterface $logger
+        private LoggerInterface $logger
     ) {
         //
     }
 
     /**
-     * Extend the current pipeline with an additional callback.
+     * @throws Throwable
+     */
+    public function run(mixed $throughput): mixed
+    {
+        return $this->processPipes($throughput, $this->pipes);
+    }
+
+    /**
+     * Register a pipeline section.
      *
      * @example $pipeline->pipe(fn ($throughput, callable $next) => $next($throughput));
      */
-    public function pipe(callable $callback): static
+    public function pipe(callable $callback, string|null $name = null, bool $force = false): static
     {
-        $this->pipes[] = $callback;
+        $name ??= Random::alphabetical(20);
+
+        if (! $force && isset($this->pipes[$name])) {
+            return $this;
+        }
+
+        $this->pipes[$name] = $callback;
+        return $this;
+    }
+
+    public function middleware(): Middleware
+    {
+        return $this->middleware ??= $this->newInstance([], Middleware::class);
+    }
+
+    /**
+     * Remove all pipes.
+     */
+    public function clear(): static
+    {
+        $this->pipes = [];
 
         return $this;
     }
 
     /**
-     * Try to run the pipeline using mixed type throughput.
-     *
-     * @throws RuntimeException
-     * @throws Throwable
+     * Returns the number of pipes.
      */
-    public function run(mixed $throughput): mixed
+    public function count(): int
     {
-        if ($this->limit === 0) {
-            throw new RuntimeException('Pipeline limit reached.');
+        return count($this->pipes);
+    }
+
+    /**
+     * Temporarily stash current pipes.
+     */
+    public function stash(string $name): static
+    {
+        $this->stashes[$name] = $this->pipes;
+
+        return $this->clear();
+    }
+
+    /**
+     * Unstash a stashed set of pipes at the end of the current pipeline.
+     */
+    public function unstash(string $name): static
+    {
+        if (isset($this->stashes[$name])) {
+            foreach ($this->stashes[$name] as $callback) {
+                $this->pipe($callback);
+            }
+
+            unset($this->stashes[$name]);
         }
 
-        $this->limit--;
+        return $this;
+    }
 
-        // Wraps each pipe around the existing pipeline.
-        $decorator = fn ($next, $pipe) => fn ($throughput) => $pipe($throughput, $next);
-        // Acts as the final "next" callable in the pipeline
-        $passthrough = fn ($throughput) => $throughput;
-        // Construct the final pipeline.
-        $pipeline = array_reduce(array_reverse($this->pipes), $decorator, $passthrough);
+    public function onCatch(callable $handler): static
+    {
+        $this->handlers['catch'][] = $handler;
+        return $this;
+    }
+
+    public function onFinally(callable $handler): static
+    {
+        $this->handlers['finally'][] = $handler;
+        return $this;
+    }
+
+    protected function processHandlers(string $handler, mixed ...$args): static
+    {
+        $this->diagnostics()->increment('handle_' . $handler);
+
+        foreach ($this->handlers[$handler] ?? [] as $callback) {
+            try {
+                $callback(...$args);
+            } catch (Throwable $exception) {
+                $this->logger->error('Pipeline handler failed: ' . $exception->getMessage(), [
+                    'handler' => $handler,
+                    'exception' => $exception,
+                ]);
+
+                $this->diagnostics()->log($exception);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @throws Throwable
+     */
+    protected function processPipes(mixed $throughput): mixed
+    {
+        if ($this->count() === 0) {
+            return $throughput;
+        }
+
+        // Build the final pipeline.
+        $pipeline = $this->couple($this->pipes);
 
         try {
-            return $pipeline($throughput);
+            $throughput = $this->middleware()->run($throughput, fn ($throughput) => $pipeline($throughput));
         } catch (Throwable $exception) {
-            $this->logger->critical('Pipeline failure', ['exception' => $exception]);
+            $this->processHandlers('catch', $exception, $throughput);
+        } finally {
+            $this->processHandlers('finally', $throughput);
         }
 
         return $throughput;
     }
 
-    public function limit(int $limit): static
+    /**
+     * @param array<mixed, callable> $pipes
+     */
+    private function couple(array $pipes): callable
     {
-        $this->limit !== 0 && $this->limit = $limit;
-        return $this;
+        // Acts as the final "next" callable in the pipeline.
+        $passthrough = fn ($throughput) => $throughput;
+        // Wraps each pipe around the existing pipeline.
+        $decorator = fn ($next, $pipe) => fn ($throughput) => $pipe($throughput, $next);
+        // Construct the final pipeline.
+        return array_reduce(array_reverse($pipes), $decorator, $passthrough);
     }
 }

@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Magewire\Concerns;
+namespace Magewirephp\Magewire\Support\Concerns;
 
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;

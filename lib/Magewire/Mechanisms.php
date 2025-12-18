@@ -12,7 +12,7 @@ namespace Magewirephp\Magewire;
 
 class Mechanisms extends ServiceType
 {
-    function boot(): ServiceType
+    function boot(): static
     {
         parent::boot();
 

@@ -11,7 +11,7 @@ namespace Magewirephp\Magewire\Mechanisms\FrontendAssets;
 
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\View\Asset\Repository as AssetsRepository;
-use Magewirephp\Magewire\Concerns\AsDataObject;
+use Magewirephp\Magewire\Support\Concerns\AsDataObject;
 use function Magewirephp\Magewire\on;
 use Magewirephp\Magewire\Drawer\Utils;
 use Illuminate\Support\Facades\Route;

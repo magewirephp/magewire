@@ -14,18 +14,18 @@ use Magewirephp\Magewire\Mechanisms\FrontendAssets\FrontendAssets as FrontendAss
 
 class FrontendAssetsFacade
 {
-    function __construct(
+    public function __construct(
         private readonly FrontendAssetsMechanism $mechanism
     ) {
         //
     }
 
-    function getMagewireScriptPath()
+    public function getMagewireScriptPath()
     {
         return $this->mechanism->returnJavaScriptAsFile();
     }
 
-    function getMagewireScriptAttributes(): array
+    public function getMagewireScriptAttributes(): array
     {
         return $this->mechanism->getDataByPath('script.html_attributes', []);
     }

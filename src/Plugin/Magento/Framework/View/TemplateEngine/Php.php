@@ -74,10 +74,10 @@ class Php
                     // The developer hooking into this event is responsible for pre-compilation.
                     // They must ensure that the callback they return provides an array containing
                     // $block, $filename, and $dictionary, as required by this plugin.
-                    $precompile = trigger('magewire:view:precompile', $block, $filename, $dictionary, $magewire);
+                    $render = trigger('magento:template:render', $block, $filename, $dictionary, $magewire);
 
                     $return = ['block' => $block, 'filename' => $filename, 'dictionary' => $dictionary];
-                    $result = $precompile($return);
+                    $result = $render($return);
 
                     // Ensure that the component remains an instance of the Component class.
                     if (! ($result['component'] ?? null) instanceof Component) {
@@ -107,7 +107,7 @@ class Php
             // The developer hooking into this event is responsible for compilation.
             // They must ensure that the callback returns a string containing the final HTML,
             // which is represented by the $html variable.
-            $finish = trigger('magewire:view:compiled', $latest);
+            $finish = trigger('magento:template:rendered', $latest);
 
             return $finish($html);
         }

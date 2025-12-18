@@ -118,14 +118,34 @@ abstract class ComponentHook
     {
         return store($this->component)->has($key);
     }
-    public function getComponent()
+    public function component()
     {
         return $this->component;
     }
-    public function callMagewireConstruct(...$params): void
+    /**
+     * @deprecated Still undecided if this should be something that needs to go into the framework.
+     */
+    public function callMagewireComponentConstruct(...$params): void
     {
-        if (method_exists($this, 'magewireConstruct')) {
-            $this->magewireConstruct(...$params);
+        if (method_exists($this, 'magewireComponentConstruct')) {
+            $this->magewireComponentConstruct(...$params);
         }
+    }
+    /**
+     * @deprecated Still undecided if this should be something that needs to go into the framework.
+     */
+    public function callMagewireComponentReconstruct(...$params): void
+    {
+        if (method_exists($this, 'magewireComponentReconstruct')) {
+            $this->magewireComponentReconstruct(...$params);
+        }
+    }
+    /**
+     * @deprecated Has been replaced with the component method eliminating the get prefix.
+     * @see self::$component()
+     */
+    public function getComponent()
+    {
+        return $this->component;
     }
 }

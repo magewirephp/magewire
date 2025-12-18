@@ -25,13 +25,13 @@ class SupportMagewireViewInstructions extends ComponentHook
 
     function dehydrate(ComponentContext $context): void
     {
-        if ($this->getComponent()->viewInstructions()->isEmpty()) {
+        if ($this->component()->viewInstructions()->isEmpty()) {
             return;
         }
 
         $context->pushEffect('magewire', array_map(function (ViewInstruction $instruction) {
             return $this->compiler
-                ->use('component', $this->getComponent())
+                ->use('component', $this->component())
                 ->use('instruction', $instruction)
 
                 ->compile(
@@ -40,6 +40,6 @@ class SupportMagewireViewInstructions extends ComponentHook
                         ->set('type', $instruction->getType())
                         ->set('action', Str::camel($instruction->getAction()))
                 );
-        }, $this->getComponent()->viewInstructions()->fetch()), 'view-instructions');
+        }, $this->component()->viewInstructions()->fetch()), 'view-instructions');
     }
 }

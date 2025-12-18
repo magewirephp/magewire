@@ -16,6 +16,7 @@ use Countable;
 use IteratorAggregate;
 use Magento\Framework\App\ObjectManager;
 use Magewirephp\Magewire\Support\Concerns\WithFactory;
+use Magewirephp\Magewire\Support\DataArray\Filter;
 use Traversable;
 
 class DataArray implements ArrayAccess, Countable, IteratorAggregate
@@ -46,21 +47,6 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
     }
 
     /**
-     * Replaces the value of an existing key in the collection.
-     *
-     * Only updates the value if the key already exists in the collection.
-     * If the key doesn't exist, no action is taken and the collection remains unchanged.
-     */
-    public function replace(string|int $key, $value): static
-    {
-        if ($this->isset($key)) {
-            $this->items[$key] = $value;
-        }
-
-        return $this;
-    }
-
-    /**
      * Rename an argument if it exists.
      */
     public function rename(string|int $from, string|int $to): static
@@ -75,9 +61,9 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
      * the item's value, and the item's key. This method is useful for performing side effects
      * or operations that don't need to modify the collection structure.
      */
-    public function each(callable $callback): static
+    public function each(callable $callback, callable|Filter $filter = Filter::ALL): static
     {
-        foreach ($this->items as $key => $value) {
+        foreach ($this->fetch($filter) as $key => $value) {
             $callback($this, $value, $key);
         }
 
@@ -115,7 +101,7 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
         return $this;
     }
 
-    public function set(string|int|array $name, $value): static
+    public function set(string|int $name, $value): static
     {
         if ($this->isset($name)) {
             return $this;
@@ -130,7 +116,13 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
         return $this;
     }
 
-    public function put(string|int|array $name, $value): static
+    /**
+     * Replaces the value of an existing key in the collection.
+     *
+     * Only updates the value if the key already exists in the collection.
+     * If the key doesn't exist, no action is taken and the collection remains unchanged.
+     */
+    public function put(string|int $name, $value): static
     {
         if ($this->isset($name)) {
             $this->items[$name] = $value;
@@ -170,36 +162,54 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
     }
 
     /**
-     * Returns all collection items.
+     * Returns all collection items as an array.
      *
      * @return array<string|int, mixed>
      */
     public function all(): array
     {
-        return $this->items;
+        $result = [];
+
+        foreach ($this->items as $key => $value) {
+            if ($value instanceof DataArray) {
+                $value = $value->all();
+            }
+
+            $result[$key] = $value;
+        }
+
+        return $result;
     }
 
     /**
      * Returns collection items as json.
-     *
-     * @param callable|null $filter
-     * @return string
      */
     public function json(callable|null $filter = null): string
     {
+        $items = $this->fetch(Filter::JSON_ENCODABLE);
+
         if ($filter) {
-            return json_encode($this->fetch($filter));
+            return json_encode($this->filter($items, $filter));
         }
 
-        return json_encode($this->items);
+        return json_encode($items);
     }
 
     /**
      * Returns a filtered items collection.
      */
-    public function fetch(callable $filter): array
+    public function fetch(callable|Filter $filter): array
     {
-        return $this->filter($filter, false);
+        return $this->filter($this->items, $filter);
+    }
+
+    public function filter(array $items, callable|Filter $filter): array
+    {
+        if ($filter instanceof Filter) {
+            $filter = $filter->get();
+        }
+
+        return array_filter($items, $filter, ARRAY_FILTER_USE_BOTH);
     }
 
     /**
@@ -242,20 +252,6 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
     }
 
     /**
-     * Returns a filtered array and optionally apply it as the latest state.
-     */
-    public function filter(callable $filter, bool $apply = true): array
-    {
-        $items = array_filter($this->items, $filter, ARRAY_FILTER_USE_BOTH);
-
-        if ($apply) {
-            $this->fill($items);
-        }
-
-        return $items;
-    }
-
-    /**
      * Retrieves the value for the given name, returning the default if it doesn't exist,
      * with an option to set the default before returning.
      */
@@ -292,11 +288,26 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
     }
 
     /**
+     * Ensure the default values are set for the given keys, guaranteeing its presence
+     * regardless of whether it previously existed.
+     */
+    public function defaults(array $defaults): static
+    {
+        foreach ($defaults as $key => $value) {
+            if (is_string($key) || is_int($key)) {
+                $this->default($key, $value);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
      * Clears the collection.
      */
-    public function clear(callable|null $filter = null): static
+    public function clear(callable|Filter $filter = Filter::NONE): static
     {
-        $this->items = $filter ? array_filter($this->items, $filter, ARRAY_FILTER_USE_BOTH) : [];
+        $this->items = $this->fetch($filter);
 
         return $this;
     }

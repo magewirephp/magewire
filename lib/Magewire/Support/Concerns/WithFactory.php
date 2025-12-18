@@ -11,19 +11,36 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Support\Concerns;
 
 use InvalidArgumentException;
-use Magento\Framework\App\ObjectManager;
+use Magewirephp\Magewire\Support\Factory;
 
 trait WithFactory
 {
-    /**
-     * Returns a new instance of the current object.
-     */
-    public function newInstance(array $arguments = [], string|null $type = null): static
+    public function newInstance(array $arguments = [], string|null $type = null)
     {
-        if ($type && ! class_exists($type)) {
-            throw new InvalidArgumentException(sprintf('Class %s does not exist', $type));
+        if ($type && ! is_a($type, static::class, true)) {
+            throw new InvalidArgumentException(
+                sprintf('Class "%s" must be an instance of or extend "%s".', $type, static::class)
+            );
         }
 
-        return ObjectManager::getInstance()->create($type ?? static::class, $arguments);
+        return $this->newTypeInstance($type ?? static::class, $arguments);
+    }
+
+    /**
+     * @template T
+     * @param class-string<T> $type
+     * @return T
+     */
+    public function newTypeInstance(string $type, array $arguments = [])
+    {
+        if (! class_exists($type)) {
+            throw new InvalidArgumentException(sprintf('Class %s does not exist', $type));
+        }
+        if (str_ends_with($type, 'Factory')) {
+            $type = substr($type, 0, -strlen('Factory'));
+        }
+
+        $factory = Factory::get(trim($type) . 'Factory');
+        return $factory->create($arguments);
     }
 }

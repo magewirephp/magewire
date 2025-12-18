@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View;
 
-use Magento\Framework\App\ObjectManager;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Parser\ExpressionParser;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Parser\ExpressionParserType;
 use ReflectionClass;
@@ -20,12 +19,6 @@ abstract class Directive
 {
     private array $expressionParsers = [];
     private array $variables = [];
-
-    public function __construct(
-        private DirectiveHandover|null $directiveHandover
-    ) {
-        $this->directiveHandover ??= ObjectManager::getInstance()->get(DirectiveHandover::class);
-    }
 
     /**
      * Compiles a string-based directive into executable code.

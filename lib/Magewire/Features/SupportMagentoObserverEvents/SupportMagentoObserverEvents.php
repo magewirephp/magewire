@@ -34,13 +34,22 @@ class SupportMagentoObserverEvents extends ComponentHook
          *       observable pattern implementation for better extensibility, and cleaner separation of concerns between
          *       event definition and handling. This would allow developers to register custom lifecycle events without
          *       modifying core files, improving modularity and testability.
+         *
+         *      One other idea is to trigger a wildcard event with the params, including the actual event name
+         *      when the trigger method is called. This way, no matter what event gets triggered, it will always
+         *      become observable. This second option maybe feels better, so others don't have to map events which
+         *      they can forget, making it not observable.
          */
         $events = [
-            // Lifecycle events.
+            /** Lifecycle events. */
+            // Magewire specific.
             'magewire:component:construct',
-            'magewire:view:precompile',
-            'magewire:view:compiled',
             'magewire:component:reconstruct',
+            'magewire:view:compile',
+
+            // Magento specific.
+            'magento:template:render',
+            'magento:template:rendered',
 
             'pre-mount',
             'mount.stub',
@@ -53,22 +62,22 @@ class SupportMagentoObserverEvents extends ComponentHook
             'dehydrate',
             'destroy',
 
-            // Request/Response cycle.
+            /** Request/Response cycle. */
             'request',
             'response',
 
-            // Checksum operations.
+            /** Checksum operations. */
             'checksum.generate',
             'checksum.verify',
             'checksum.fail',
             'snapshot-verified',
 
-            // Magic methods.
+            /** Magic methods. */
             '__get',
             '__unset',
             '__call',
 
-            // Utility events.
+            /** Utility events. */
             'exception',
             'flush-state',
             'profile',
