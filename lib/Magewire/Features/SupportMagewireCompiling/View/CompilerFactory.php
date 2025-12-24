@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View;
 
-use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\MagewireCompiler;
+use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\MagentoTemplateCompiler;
 use Magewirephp\Magewire\Support\Concerns\AsFactory;
 
 class CompilerFactory
@@ -30,6 +30,6 @@ class CompilerFactory
 
     private function newInstanceType(): string
     {
-        return MagewireCompiler::class;
+        return MagentoTemplateCompiler::class;
     }
 }

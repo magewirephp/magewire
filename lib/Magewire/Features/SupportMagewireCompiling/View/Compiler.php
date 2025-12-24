@@ -13,24 +13,22 @@ namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View;
 use Magento\Framework\Exception\FileSystemException;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\CompilerManager;
 use Magewirephp\Magewire\Support\Pipeline;
-use Magewirephp\Magewire\Support\PipelineFactory;
 use Throwable;
-use function Magewirephp\Magewire\trigger;
 
 abstract class Compiler
 {
-    protected array $compilers = [
-        'Directives'
-    ];
-
     private bool $compile = true;
 
+    private string|null $basePath = null;
+    private string|null $targetPath = null;
+    private float $compileStartTime = 0;
+
     // Fabricates (Lazy Initialization pattern).
-    protected Pipeline|null $compilerPipeline = null;
+    protected CompilerPipelines|null $compilerPipelines = null;
 
     public function __construct(
         private CompilerManager $manager,
-        private PipelineFactory $compilerPipelineFactory
+        private CompilerPipelinesFactory $compilerPipelinesFactory
     ) {
         //
     }
@@ -38,15 +36,34 @@ abstract class Compiler
     /**
      * @throws FileSystemException|Throwable
      */
-    public function compile(string $basepath, string $target): bool
+    public function compile(string $basePath, string $targetPath): bool
     {
+        $this->basePath = $basePath;
+        $this->targetPath = $targetPath;
+        $this->compileStartTime = microtime(true);
+
         $filesystem = $this->management()->file()->system();
-        $content = $this->pipeline()->run($filesystem->read($basepath));
+        $content = $this->compiler()->run($filesystem->read($basePath));
 
-        $filesystem->ensureDirectoryExists($target);
-        $filesystem->write($content, $target);
+        $filesystem->ensureDirectoryExists($targetPath);
+        $filesystem->write($content, $targetPath);
 
-        return $filesystem->exists($target);
+        return $filesystem->exists($targetPath);
+    }
+
+    public function basePath(): string
+    {
+        return $this->basePath;
+    }
+
+    public function targetPath(): string
+    {
+        return $this->targetPath;
+    }
+
+    public function compileStartTime(): float
+    {
+        return $this->compileStartTime;
     }
 
     /**
@@ -58,11 +75,11 @@ abstract class Compiler
     }
 
     /**
-     * Returns the compiler pipeline instance.
+     * @return CompilerPipelines
      */
-    public function pipeline(): Pipeline
+    public function pipelines(): CompilerPipelines
     {
-        return $this->compilerPipeline ??= $this->newCompilerPipelineInstance();
+        return $this->compilerPipelines ??= $this->newCompilerPipelineDistributorInstance();
     }
 
     /**
@@ -100,7 +117,16 @@ abstract class Compiler
     }
 
     /**
+     * Returns the template pipeline.
+     */
+    protected function compiler(): Pipeline
+    {
+        return $this->pipelines()->template();
+    }
+
+    /**
      * Compiles a PHP template string by iterating through its tokens.
+     * @throws Throwable
      */
     protected function compileTokens(string $input): string
     {
@@ -115,17 +141,14 @@ abstract class Compiler
 
     /**
      * Parses and compiles a single token from the tokenized template.
+     * @throws Throwable
      */
     protected function parseToken(array $token): string
     {
         [$id, $content] = $token;
 
         if ($id == T_INLINE_HTML) {
-            foreach ($this->compilers as $type) {
-                if (is_string($type) && method_exists($this, 'compile' . $type)) {
-                    $content = $this->{"compile{$type}"}($content);
-                }
-            }
+            return $this->pipelines()->html()->run($content);
         }
 
         return $content;
@@ -231,14 +254,33 @@ abstract class Compiler
         return [$subject, 0];
     }
 
-    protected function newCompilerPipelineInstance(): Pipeline
+    protected function newCompilerPipelineDistributorInstance(): CompilerPipelines
     {
-        $pipeline = $this->compilerPipelineFactory->create();
+        $distributor = $this->compilerPipelinesFactory->create(['type' => Pipeline::class]);
 
-        $finish = trigger('magewire:compiler:pipeline:create', $this, $pipeline);
-        // Content compilation runs as the final step.
-        $pipeline->pipe(fn (string $throughput, callable $next) => $next($this->compileTokens($throughput)));
+        // Template compiler.
+        $tokens = fn (string $throughput, callable $next) => $next($this->compileTokens($throughput));
 
-        return $finish($pipeline);
+        /*
+         * Templates compiler pipeline.
+         */
+        $distributor->template()
+            ->pipe($tokens, 'tokens', true)->persist('tokens');
+
+        // Define core middleware groups.
+        $distributor->template()->middleware()->group('first', 100);
+        $distributor->template()->middleware()->group('last', 900);
+
+        // @-directives compiler (native Magewire feature).
+        $directives = fn ($throughput, callable $next) => $this->compileDirectives($throughput);
+
+        /*
+         * Inline HTML (318) compiler pipeline.
+         */
+        $distributor->html()
+            ->pipe($directives, 'directives', true)
+            ->persist('directives');
+
+        return $distributor;
     }
 }

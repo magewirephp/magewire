@@ -31,6 +31,8 @@ class Pipeline
     protected array $stashes = [];
     /** @var array<string, array<int, callable> $handlers */
     protected array $handlers = [];
+    /** @var array<int, string> $persists */
+    protected array $persists = [];
 
     public function __construct(
         private LoggerInterface $logger
@@ -43,23 +45,33 @@ class Pipeline
      */
     public function run(mixed $throughput): mixed
     {
-        return $this->processPipes($throughput, $this->pipes);
+        return $this->processPipes($throughput);
     }
 
     /**
-     * Register a pipeline section.
+     * Register a (aliased) pipeline section.
      *
      * @example $pipeline->pipe(fn ($throughput, callable $next) => $next($throughput));
      */
-    public function pipe(callable $callback, string|null $name = null, bool $force = false): static
+    public function pipe(callable $callback, string|null $alias = null, bool $force = false): static
     {
-        $name ??= Random::alphabetical(20);
+        $alias ??= Random::alphabetical(20);
 
-        if (! $force && isset($this->pipes[$name])) {
+        // Validate conditions for when not to add the given pipe.
+        if (in_array($alias, $this->persists) || (! $force && isset($this->pipes[$alias]))) {
             return $this;
         }
 
-        $this->pipes[$name] = $callback;
+        $this->pipes[$alias] = $callback;
+        return $this;
+    }
+
+    /**
+     * Persists the given pipe.
+     */
+    public function persist(string $alias): static
+    {
+        $this->persists[] = $alias;
         return $this;
     }
 

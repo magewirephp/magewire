@@ -59,7 +59,7 @@ class Middleware extends Pipeline
             });
         }
 
-        // Remember the desired position.
+        // A position can only be set once, and cannot be altered.
         $this->positions[$name] ??= $position;
 
         return $this->groups[$name] ??= $this->newTypeInstance(Pipeline::class);

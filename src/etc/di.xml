@@ -17,7 +17,7 @@
                 type="Magewirephp\Magewire\Mechanisms\ResolveComponents\Layout\MagewireLayoutDecorator"
     />
     <preference for="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler"
-                type="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\MagewireCompiler"
+                type="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\MagentoTemplateCompiler"
     />
 
     <!--

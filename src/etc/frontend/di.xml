@@ -245,7 +245,7 @@
     -->
     <type name="Magewirephp\Magewire\Features\SupportMagewireCompiling\SupportMagewireCompiling">
         <arguments>
-            <argument name="compiler" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\MagewireCompiler</argument>
+            <argument name="compiler" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\MagentoTemplateCompiler</argument>
         </arguments>
     </type>
 
@@ -275,6 +275,7 @@
 
                 <!-- Magento basic methods. -->
                 <item name="translate" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Base\Proxy</item>
+                <item name="child" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Base\Proxy</item>
 
                 <!-- Magento authentication methods. -->
                 <item name="auth" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Auth\Proxy</item>

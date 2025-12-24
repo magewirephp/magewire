@@ -14,6 +14,7 @@ use Magento\Framework\View\Element\AbstractBlock;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\ComponentHook;
+use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\CompilerManager;
 use function Magewirephp\Magewire\on;
 use function Magewirephp\Magewire\trigger;
@@ -29,30 +30,49 @@ class SupportMagewireCompiling extends ComponentHook
 
     public function provide(): void
     {
-        on('magento:template:render', function (AbstractBlock $block, string $filename, array $dictionary, Component $magewire) {
-            $compiler = $magewire->compiler() ?? $magewire->compiler(
+        on('magento:template:render', function (AbstractBlock $block, string $filename, array $dictionary, Component $component) {
+            $compiler = $component->magewireCompiler() ?? $component->magewireCompiler(
                 $this->compilerManager->factory()->newCompilerInstance()
             );
 
-            return function (array $result) use ($magewire, $compiler, $block) {
+            return function (array $result) use ($component, $compiler, $block) {
                 // Although named "filename", this actually represents the full file path,
                 // including the filename and its extension.
                 $path = $result['filename'];
 
-                if ($magewire->compiler()->canCompile()) {
+                if ($component->magewireCompiler()->canCompile()) {
                     $result['filename'] = $compiler->management()->file()->generateFilePath($path);
 
                     if ($compiler->requiresRecompile($path)) {
-                        trigger('magewire:view:compile', $compiler, $magewire, $block);
+                        trigger('magewire:view:compile', $compiler, $component, $block);
                         $compiler->compile($path, $result['filename']);
                     }
                 }
 
                 // Include the Magewire underscore object optionally required by compiled views.
-                $result['dictionary']['__magewire'] = $this->underscoreViewModelFactory->create();
+                $result['dictionary']['__magewire'] ??= $this->underscoreViewModelFactory->create();
 
                 return $result;
             };
+        });
+
+        on('magewire:view:compile', function (Compiler $compiler) {
+            $middleware = $compiler->pipelines()->template()->middleware();
+
+            // Appends a basepath comment to compiled template output.
+            $middleware->group('last')->pipe(
+                function (string $throughput) use ($compiler) {
+                    return $throughput . '<?php /** Template Basepath: ' . $compiler->basePath() . ' **/ ?>' . PHP_EOL;
+                }
+            );
+
+            // Appends a compilation duration comment to the compiled template output.
+            $middleware->group('shutdown')->pipe(
+                function (string $throughput) use ($compiler) {
+                    $duration = round((microtime(true) - $compiler->compileStartTime()) * 1000, 2) . 'ms';
+                    return $throughput . '<?php /** Compile Duration: ' . $duration . ' **/ ?>' . PHP_EOL;
+                }
+            );
         });
     }
 

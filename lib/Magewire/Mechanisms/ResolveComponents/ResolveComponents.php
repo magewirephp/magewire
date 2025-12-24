@@ -96,8 +96,8 @@ class ResolveComponents
             /** @var Component $component */
             $component = $block->getData('magewire');
 
-            $component->block($block);
-            $component->resolver($resolver);
+            $component->magewireBlock($block);
+            $component->magewireResolver($resolver);
 
             return $resolver->assemble($block, $component);
         };

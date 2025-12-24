@@ -92,7 +92,7 @@ class LayoutResolver extends ComponentResolver
 
         // Register a dehydrate listener to attach necessary layout handles to the server memo.
         on('dehydrate', function (Component $component, ComponentContext $context) {
-            $resolver = $component->resolver();
+            $resolver = $component->magewireResolver();
 
             if ($resolver->getAccessor() === $this->getAccessor()) {
                 if ($this->canMemorizeLayoutHandles()) {
@@ -100,7 +100,7 @@ class LayoutResolver extends ComponentResolver
                     $context->addMemo('handles', array_values($handles));
                 }
 
-                if ($alias = $component->block()->getData('magewire:alias')) {
+                if ($alias = $component->magewireBlock()->getData('magewire:alias')) {
                     $context->addMemo('alias', $alias);
                 }
             }

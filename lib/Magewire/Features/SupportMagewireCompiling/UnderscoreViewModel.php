@@ -18,9 +18,9 @@ use Magewirephp\Magewire\Support\DataScope;
 class UnderscoreViewModel implements ArgumentInterface
 {
     public function __construct(
-        private readonly ActionManager $actionManager,
-        private readonly DataScope $arguments,
-        private readonly Utils $utils
+        private ActionManager $actionManager,
+        private DataScope $arguments,
+        private Utils $utils
     ) {
         //
     }

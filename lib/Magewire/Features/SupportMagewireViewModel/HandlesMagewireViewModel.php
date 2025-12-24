@@ -10,15 +10,15 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireViewModel;
 
-use Magento\Framework\App\ObjectManager;
+use Magewirephp\Magewire\Support\Factory;
 use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
 
 trait HandlesMagewireViewModel
 {
-    protected MagewireViewModel|null $viewModel = null;
+    protected MagewireViewModel|null $magewireViewModel = null;
 
-    public function viewModel()
+    public function magewireViewModel(): MagewireViewModel
     {
-        return $this->viewModel ??= ObjectManager::getInstance()->get(MagewireViewModel::class);
+        return $this->magewireViewModel ??= Factory::get(MagewireViewModel::class);
     }
 }

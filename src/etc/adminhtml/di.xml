@@ -176,7 +176,7 @@
     <type name="Magewirephp\Magewire\Features\SupportMagewireCompiling\SupportMagewireCompiling">
         <arguments>
             <argument name="compiler" xsi:type="object">
-                Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\MagewireCompiler
+                Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\MagentoTemplateCompiler
             </argument>
         </arguments>
     </type>

@@ -25,8 +25,8 @@ class Php
     private array $magewireBlocks = [];
 
     public function __construct(
-        private readonly MagewireViewModel      $magewireViewModel,
-        private readonly BlockRenderingRegistry $renderRegistry,
+        private MagewireViewModel $magewireViewModel,
+        private BlockRenderingRegistry $renderRegistry,
     ) {
         //
     }

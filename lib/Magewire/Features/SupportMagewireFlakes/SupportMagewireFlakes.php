@@ -22,14 +22,16 @@ class SupportMagewireFlakes extends ComponentHook
 {
     use AsDataObject;
 
-    public function __construct(private FlakeCompiler $flakeCompiler)
-    {
+    public function __construct(
+        private FlakeCompiler $flakeCompiler
+    ) {
+        //
     }
 
     public function provide(): void
     {
         on('hydrate', function (Component $component, array $memo) {
-            $block = $component->block();
+            $block = $component->magewireBlock();
 
             if (is_array($memo['flake'] ?? null)) {
                 $block->setData('magewire:flake', $memo['flake']);
@@ -37,7 +39,7 @@ class SupportMagewireFlakes extends ComponentHook
         });
 
         on('dehydrate', function (Component $component, ComponentContext $context) {
-            $metadata = $component->block()->getData('magewire:flake');
+            $metadata = $component->magewireBlock()->getData('magewire:flake');
 
             if (is_array($metadata) && is_array($metadata['element'] ?? null)) {
                 $context->pushMemo('flake', $metadata['element'], 'element');
@@ -45,11 +47,17 @@ class SupportMagewireFlakes extends ComponentHook
         });
 
         on('magewire:view:compile', function (Compiler $compiler) {
-            if ($compiler instanceof Compiler\MagewireCompiler) {
-                $compiler->pipeline()->middleware()->group('components')->pipe(
-                    fn (string $throughput, callable $next) => $next($this->flakeCompiler->compile($throughput))
-                );
-            }
+            /*
+             * Register a middleware in the 'components' group that processes template output
+             * through the <flake: compiler. This middleware intercepts the template rendering
+             * pipeline, compiles any Flake syntax in the throughput, and passes the compiled
+             * result to the next middleware in the chain.
+             */
+            $compiler->pipelines()->template()->middleware()->group('components')->pipe(
+                function (string $throughput, callable $next) {
+                    return $next($this->flakeCompiler->compile($throughput));
+                }
+            );
         });
     }
 }

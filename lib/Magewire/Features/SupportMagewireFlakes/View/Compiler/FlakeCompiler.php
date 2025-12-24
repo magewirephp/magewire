@@ -38,7 +38,7 @@ class FlakeCompiler
         $length = strlen($value);
 
         while ($pos < $length) {
-            // Try to match self-closing tag: <magewire:component ... />.
+            // Try to match self-closing tag: <flake:component ... />.
             if (preg_match('/<flake:([a-zA-Z0-9\-_.]+)((?:[^>\/]|\/(?!>))*)\s*\/\s*>/', $value, $match, 0, $pos)) {
                 $tagStart = strpos($value, $match[0], $pos);
 
@@ -74,7 +74,7 @@ class FlakeCompiler
                 }
             }
 
-            // Try to match opening tag: <magewire:component ...>.
+            // Try to match opening tag: <flake:component ...>.
             if (preg_match('/<flake:([a-zA-Z0-9\-_.]+)((?:[^>\/]|\/(?!>))*)\s*>/', $value, $match, 0, $pos)) {
                 $tagStart = strpos($value, $match[0], $pos);
                 $component = $match[1];

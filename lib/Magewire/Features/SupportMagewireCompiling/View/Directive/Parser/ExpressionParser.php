@@ -17,7 +17,7 @@ abstract class ExpressionParser extends Parser
     private Arguments|null $arguments = null;
 
     public function __construct(
-        private readonly ArgumentsFactory $argumentsFactory
+        private ArgumentsFactory $argumentsFactory
     ) {
         //
     }

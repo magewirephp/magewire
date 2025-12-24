@@ -14,15 +14,14 @@ use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler;
 
 trait HandlesMagewireCompiling
 {
-    private Compiler|null $compiler = null;
-    private bool $compile = true;
+    private Compiler|null $magewireCompiler = null;
 
-    public function compiler(Compiler|null $compiler = null): Compiler|null
+    public function magewireCompiler(Compiler|null $compiler = null): Compiler|null
     {
         if ($compiler) {
-            $this->compiler = $compiler;
+            $this->magewireCompiler = $compiler;
         }
 
-        return $this->compiler;
+        return $this->magewireCompiler;
     }
 }
