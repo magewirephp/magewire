@@ -10,9 +10,11 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Model\View;
 
+use Magento\Framework\Escaper;
 use Magewirephp\Magewire\Concerns\WithTagging;
 use Magewirephp\Magewire\Model\View\Fragment\Exceptions\EmptyFragmentException;
 use Magewirephp\Magewire\Model\View\Fragment\Exceptions\FragmentValidationException;
+use Magewirephp\Magewire\Support\Random;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
@@ -22,14 +24,17 @@ abstract class Fragment
         withTag as private withTagOrigin;
     }
 
+    protected string $id;
     // Unchanged raw buffer output, if any.
     protected string|bool $raw = false;
+    // The final rendered buffer output.
+    protected string $output = '';
     // Flag to indicate whether the fragment is currently buffering output.
     protected bool $buffering = false;
     // Indicates whether the fragment is allowed to be modified.
     protected bool $mutable = true;
     // Indicated whether the fragment should skip echoing.
-    protected bool $render = true;
+    protected bool $echo = true;
     // The current output buffer level, if any.
     protected int|null $level = null;
 
@@ -40,10 +45,11 @@ abstract class Fragment
      * @param array<int|string, FragmentModifier|callable> $modifiers
      */
     public function __construct(
-        private readonly LoggerInterface $logger,
+        protected LoggerInterface $logger,
+        protected Escaper $escaper,
         private array $modifiers = []
     ) {
-        //
+        $this->id = Random::alphabetical(10);
     }
 
     /**
@@ -83,12 +89,13 @@ abstract class Fragment
         $this->buffering = false;
 
         try {
-            $output = $this->render();
+            $this->output = $this->render();
         } catch (EmptyFragmentException $exception) {
             // Unreachable: fragment buffering state verified in method preconditions.
         }
 
-        echo $this->render ? ($output ?? '') : '';
+        // Echo result.
+        echo $this->echo ? $this->output : '';
     }
 
     /**
@@ -105,7 +112,7 @@ abstract class Fragment
      */
     public function mute(): static
     {
-        $this->render = false;
+        $this->echo = false;
         return $this;
     }
 

@@ -10,18 +10,12 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolver;
 
-use Magento\Framework\ObjectManagerInterface;
+use Magewirephp\Magewire\Support\Factory;
 
 class ComponentResolverFactory
 {
-    public function __construct(
-        private readonly ObjectManagerInterface $objectManager
-    ) {
-
-    }
-
     public function create(string $type, array $arguments = [])
     {
-        return $this->objectManager->create($type, $arguments);
+        return Factory::create($type, $arguments);
     }
 }

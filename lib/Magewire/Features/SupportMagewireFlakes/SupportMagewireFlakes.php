@@ -12,8 +12,6 @@ namespace Magewirephp\Magewire\Features\SupportMagewireFlakes;
 
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\ComponentHook;
-use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler;
-use Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Compiler\FlakeCompiler;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
 use Magewirephp\Magewire\Support\Concerns\AsDataObject;
 use function Magewirephp\Magewire\on;
@@ -21,12 +19,6 @@ use function Magewirephp\Magewire\on;
 class SupportMagewireFlakes extends ComponentHook
 {
     use AsDataObject;
-
-    public function __construct(
-        private FlakeCompiler $flakeCompiler
-    ) {
-        //
-    }
 
     public function provide(): void
     {
@@ -44,20 +36,6 @@ class SupportMagewireFlakes extends ComponentHook
             if (is_array($metadata) && is_array($metadata['element'] ?? null)) {
                 $context->pushMemo('flake', $metadata['element'], 'element');
             }
-        });
-
-        on('magewire:view:compile', function (Compiler $compiler) {
-            /*
-             * Register a middleware in the 'components' group that processes template output
-             * through the <flake: compiler. This middleware intercepts the template rendering
-             * pipeline, compiles any Flake syntax in the throughput, and passes the compiled
-             * result to the next middleware in the chain.
-             */
-            $compiler->pipelines()->template()->middleware()->group('components')->pipe(
-                function (string $throughput, callable $next) {
-                    return $next($this->flakeCompiler->compile($throughput));
-                }
-            );
         });
     }
 }

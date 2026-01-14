@@ -11,11 +11,13 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Action\Magewire;
 
 use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ViewAction as ViewAction;
 use Magewirephp\Magewire\Features\SupportMagewireFlakes\Component\FlakeFactory;
 use Magewirephp\Magewire\Features\SupportMagewireFlakes\Mechanisms\ResolveComponent\ComponentResolver\FlakeResolver;
 use Magewirephp\Magewire\Support\DataArray;
 use Magewirephp\Magewire\Support\DataArrayFactory;
+use RuntimeException;
 
 class FlakeViewAction extends ViewAction
 {
@@ -26,12 +28,15 @@ class FlakeViewAction extends ViewAction
         //
     }
 
+    /**
+     * @throws RuntimeException
+     */
     public function create(
         string $flake,
         array $data = [],
         array $metadata = [],
         array $variables = []
-    ): string {
+    ): AbstractBlock {
         $data = $this->attributesFactory->create()->fill($data);
 
         $data->each(function (DataArray $array, $value, $key) use ($variables) {
@@ -48,12 +53,12 @@ class FlakeViewAction extends ViewAction
         $block = $this->flakeFactory->createByName($flake, $data);
 
         if (! $block) {
-            return '';
+            throw new RuntimeException('Flake block can not be found.'); // @todo
         }
 
         $block->setData('magewire:alias', $flake);
 
         $block->setNameInLayout($data['magewire:name']);
-        return $block->toHtml();
+        return $block;
     }
 }

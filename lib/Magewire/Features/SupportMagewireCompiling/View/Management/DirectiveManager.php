@@ -45,6 +45,12 @@ class DirectiveManager
             }
         }
 
+        $object = $this->directives->responsibilities()->has($subject);
+
+        if ($object) {
+            return [$this->directives, $subject];
+        }
+
         return [null, $subject];
     }
 }

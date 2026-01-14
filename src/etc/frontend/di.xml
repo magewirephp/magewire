@@ -265,10 +265,7 @@
                 <!-- Magewire methods (area independent). -->
                 <item name="script" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Script</item>
                 <item name="fragment" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Fragment</item>
-
-                <item name="flake" xsi:type="object">
-                    Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Directive\FlakeDirective
-                </item>
+                <item name="slot" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Base\Proxy</item>
 
                 <!-- Basic PHP methods. -->
                 <!-- WIP... -->
@@ -332,7 +329,8 @@
         <arguments>
             <!-- All Magewire-specific directives without the prefix. -->
             <argument name="directives" xsi:type="array">
-                <!-- WIP... -->
+                <item name="slot" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magewire\Slot\Proxy</item>
+                <item name="component" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magewire\Component\Proxy</item>
             </argument>
         </arguments>
     </virtualType>
@@ -419,9 +417,21 @@
     <type name="Magewirephp\Magewire\Model\View\FragmentFactory">
         <arguments>
             <argument name="types" xsi:type="array">
+                <!-- <?php $random = $__magewire->utils()->fragment()->make('flake')->start()... -->
                 <item name="flake" xsi:type="string">
                     Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Fragment\FlakeFragment
                 </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magewirephp\Magewire\Model\View\FragmentElementFactory">
+        <arguments>
+            <argument name="elements" xsi:type="array">
+                <!-- <magewire-slot:{name}... -->
+                <item name="slot" xsi:type="string">Magewirephp\Magewire\Model\View\Fragment\Element\Slot</item>
+                <!-- <magewire-flake:{variant}... -->
+                <item name="flake" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Fragment\Element\Flake</item>
             </argument>
         </arguments>
     </type>

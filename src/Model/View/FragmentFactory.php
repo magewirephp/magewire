@@ -12,11 +12,13 @@ namespace Magewirephp\Magewire\Model\View;
 
 use InvalidArgumentException;
 use LogicException;
-use Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\View\Element\AbstractBlock;
+use Magewirephp\Magewire\Model\View\Fragment\Element;
 use Magewirephp\Magewire\Model\View\Fragment\Html;
 use Magewirephp\Magewire\Model\View\Fragment\Javascript;
 use Magewirephp\Magewire\Model\View\Fragment\Script;
 use Magewirephp\Magewire\Model\View\Fragment\Style;
+use Magewirephp\Magewire\Support\Factory;
 
 class FragmentFactory
 {
@@ -24,8 +26,8 @@ class FragmentFactory
      * @param array<string, class-string<Fragment> $types
      */
     public function __construct(
-        private readonly ObjectManagerInterface $objectManager,
-        private readonly array $types = []
+        private FragmentElementFactory $elementFactory,
+        private array $types = []
     ) {
         //
     }
@@ -50,6 +52,21 @@ class FragmentFactory
         return $this->create(Style::class);
     }
 
+    public function slot(string $target, AbstractBlock $block): Element\Slot
+    {
+        return $this->elementFactory->slot($target, $block);
+    }
+
+    public function element(string $type, string $variant, AbstractBlock $block)
+    {
+        return $this->elementFactory->element($type, $variant, $block);
+    }
+
+    public function elements(): FragmentElementFactory
+    {
+        return $this->elementFactory;
+    }
+
     /**
      * @template T of Fragment
      * @param string $name
@@ -57,13 +74,13 @@ class FragmentFactory
      * @throws InvalidArgumentException
      * @phpstan-return T
      */
-    public function custom(string $name): Fragment
+    public function custom(string $name, array $arguments = []): Fragment
     {
         if (array_key_exists($name, $this->types)) {
-            return $this->create($this->types[$name]);
+            return $this->create($this->types[$name], $arguments);
         }
         if (class_exists($name)) {
-            return $this->create($name);
+            return $this->create($name, $arguments);
         }
 
         throw new InvalidArgumentException(sprintf('Unknown fragment type "%s".', $name));
@@ -75,9 +92,9 @@ class FragmentFactory
      * @return T
      * @throws LogicException
      */
-    private function create(string $type): Fragment
+    private function create(string $type, array $arguments = []): Fragment
     {
-        $fragment = $this->objectManager->create($type);
+        $fragment = Factory::create($type, $arguments);
 
         if ($fragment instanceof Fragment) {
             return $fragment;

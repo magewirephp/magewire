@@ -33,7 +33,8 @@ class Diagnostics extends Metadata
 
     public function log(string|Throwable $message): static
     {
-        $this->metadata()->push('logs', $message instanceof Throwable ? $message->getMessage() : $message);
+        $message = $message instanceof Throwable ? $message->getMessage() : $message;
+        $this->metadata()->push('logs', $message);
 
         return $this;
     }

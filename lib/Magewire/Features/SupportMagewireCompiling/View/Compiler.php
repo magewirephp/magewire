@@ -222,8 +222,12 @@ abstract class Compiler
 
         if (str_contains($match[1], '@')) {
             $match[0] = isset($match[3]) ? $match[1] . $match[3] : $match[1];
-        } elseif ($area instanceof DirectiveArea && is_string($directive) && $area->has($directive)) {
-            $match[0] = $area->get($directive)->compile($match[4] ?? '', $directive);
+        } elseif ($area instanceof DirectiveArea && is_string($directive)) {
+            if ($area->responsibilities()->has($directive)) {
+                $match[0] = $area->responsibilities()->pop($directive)->compile($match[4] ?? '', $directive);
+            } elseif ($area->has($directive)){
+                $match[0] = $area->get($directive)->compile($match[4] ?? '', $directive);
+            }
         } elseif ($directive = $this->management()->directives()->area()->get($directive)) {
             $match[0] = $directive->compile($match[4] ?? '', $match[1]);
         } else {

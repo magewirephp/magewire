@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Support;
 
-use Magewirephp\Magewire\Support\Concerns\WithDiagnostics;
 use Magewirephp\Magewire\Support\Concerns\WithFactory;
 use Psr\Log\LoggerInterface;
 use Throwable;
@@ -21,7 +20,6 @@ use Throwable;
 class Pipeline
 {
     use WithFactory;
-    use WithDiagnostics;
 
     /** @var array<int, callable> $pipes */
     protected array $pipes = [];
@@ -136,9 +134,12 @@ class Pipeline
         return $this;
     }
 
-    protected function processHandlers(string $handler, mixed ...$args): static
+    protected function processHandler(string $handler, mixed ...$args): static
     {
-        $this->diagnostics()->increment('handle_' . $handler);
+        // Always log any Pipeline exception no matter what.
+        if ($handler === 'catch' && $args[0] ?? null instanceof Throwable) {
+            $this->logger->critical('Pipeline', ['exception' => $args[0]]);
+        }
 
         foreach ($this->handlers[$handler] ?? [] as $callback) {
             try {
@@ -148,8 +149,6 @@ class Pipeline
                     'handler' => $handler,
                     'exception' => $exception,
                 ]);
-
-                $this->diagnostics()->log($exception);
             }
         }
 
@@ -169,11 +168,13 @@ class Pipeline
         $pipeline = $this->couple($this->pipes);
 
         try {
-            $throughput = $this->middleware()->run($throughput, fn ($throughput) => $pipeline($throughput));
+            $throughput = $this->middleware
+                ? $this->middleware()->run($throughput, fn ($throughput) => $pipeline($throughput))
+                : $pipeline($throughput);
         } catch (Throwable $exception) {
-            $this->processHandlers('catch', $exception, $throughput);
+            $this->processHandler('catch', $exception, $this->logger);
         } finally {
-            $this->processHandlers('finally', $throughput);
+            $this->processHandler('finally', $throughput);
         }
 
         return $throughput;

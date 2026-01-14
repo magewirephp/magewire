@@ -11,7 +11,6 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Model\View;
 
 use BadMethodCallException;
-use Magento\Framework\App\ObjectManager;
 use Magewirephp\Magewire\Model\View\Utils\Alpine as AlpineViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Application as ApplicationViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Csp as CspViewUtil;
@@ -20,8 +19,10 @@ use Magewirephp\Magewire\Model\View\Utils\Fragment as FragmentViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Layout as LayoutViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Magewire as MagewireViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Security as SecurityViewUtil;
+use Magewirephp\Magewire\Model\View\Utils\Slots as SlotsViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Tailwind as TailwindViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Template as TemplateViewUtil;
+use Magewirephp\Magewire\Support\Factory;
 
 class Utils
 {
@@ -30,17 +31,18 @@ class Utils
      * @param array<string, T> $utilities
      */
     public function __construct(
-        private readonly AlpineViewUtil $alpine,
-        private readonly ApplicationViewUtil $application,
-        private readonly EnvironmentViewUtil $environment,
-        private readonly FragmentViewUtil $fragment,
-        private readonly LayoutViewUtil $layout,
-        private readonly MagewireViewUtil $magewire,
-        private readonly SecurityViewUtil $security,
-        private readonly TailwindViewUtil $tailwind,
-        private readonly TemplateViewUtil $template,
-        private readonly CspViewUtil $csp,
-        private readonly array $utilities = []
+        private AlpineViewUtil $alpine,
+        private ApplicationViewUtil $application,
+        private EnvironmentViewUtil $environment,
+        private FragmentViewUtil $fragment,
+        private LayoutViewUtil $layout,
+        private MagewireViewUtil $magewire,
+        private SecurityViewUtil $security,
+        private TailwindViewUtil $tailwind,
+        private TemplateViewUtil $template,
+        private CspViewUtil $csp,
+        private SlotsViewUtil $slots,
+        private array $utilities = []
     ) {
         //
     }
@@ -95,6 +97,11 @@ class Utils
         return $this->fragment;
     }
 
+    public function slots(): SlotsViewUtil
+    {
+        return $this->slots;
+    }
+
     /**
      * @throws BadMethodCallException
      */
@@ -108,7 +115,7 @@ class Utils
                     return $subject;
                 }
 
-                return ObjectManager::getInstance()->create($subject::class, $arguments);
+                return Factory::create($subject::class, $arguments);
             }
         }
 

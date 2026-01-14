@@ -18,13 +18,13 @@ use Psr\Log\LoggerInterface;
 class Security implements UtilsInterface
 {
     public function __construct(
-        private readonly FormKey $formKey,
-        private readonly LoggerInterface $logger
+        private FormKey $formKey,
+        private LoggerInterface $logger
     ) {
         //
     }
 
-    function getCsrfToken(): string
+    public function getCsrfToken(): string
     {
         try {
             return $this->formKey->getFormKey();

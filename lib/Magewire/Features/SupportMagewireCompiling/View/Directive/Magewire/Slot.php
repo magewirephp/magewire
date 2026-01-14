@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive;
+namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magewire;
 
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Parser\ExpressionParserType;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ScopeDirective;
@@ -17,17 +17,19 @@ use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ScopeDirectivePa
 
 class Slot extends ScopeDirective
 {
-
-
-    #[ScopeDirectiveChain(['endslot'])]
+    #[ScopeDirectiveChain(methods: ['endSlot'])]
     #[ScopeDirectiveParser(ExpressionParserType::FUNCTION_ARGUMENTS)]
-    public function slot(string $type): string
+    public function slot(string $target, string $id): string
     {
-        return '';
+        $var = $this->variableScopeStart($id);
+
+        return "<?php \${$var} = \$__magewire->slots()->bind('{$target}', \$block)->start() ?>";
     }
 
-    public function endslot(): string
+    public function endSlot(): string
     {
-        return '';
+        $var = $this->variableScopeEnd();
+
+        return "<?php \${$var}->end() ?>";
     }
 }

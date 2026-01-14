@@ -18,9 +18,9 @@ use Magewirephp\Magewire\Support\DataScope;
 class MagewireUnderscoreViewModel implements ArgumentInterface
 {
     public function __construct(
-        private readonly ActionManager $actionManager,
-        private readonly DataScope $arguments,
-        private readonly Utils $utils
+        private ActionManager $actionManager,
+        private DataScope $arguments,
+        private Utils $utils
     ) {
         //
     }
@@ -38,5 +38,10 @@ class MagewireUnderscoreViewModel implements ArgumentInterface
     public function utils(): Utils
     {
         return $this->utils;
+    }
+    
+    public function slots(): Utils\Slots
+    {
+        return $this->utils()->slots();
     }
 }

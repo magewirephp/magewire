@@ -11,7 +11,6 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire;
 
 use BadMethodCallException;
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\HandlesMagewireCompiling;
 use Magewirephp\Magewire\Features\SupportAttributes\HandlesAttributes;

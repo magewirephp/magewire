@@ -13,7 +13,7 @@ namespace Magewirephp\Magewire\Support;
 /**
  * Lazy instance distributor for named object instances.
  *
- * This class acts as a factory that creates and caches instances of a specific type
+ * The distributor acts as a factory that creates and caches instances of a specific type
  * on-demand through magic method calls. Each method name becomes a unique key for
  * storing and retrieving instances.
  *
@@ -22,7 +22,7 @@ namespace Magewirephp\Magewire\Support;
  *
  * @template T of object
  */
-class Distributor
+abstract class Distributor
 {
     /** @var array<string, T> */
     private array $instances = [];
@@ -31,7 +31,7 @@ class Distributor
      * @param class-string<T> $type
      */
     public function __construct(
-        private string $type
+        protected string $type
     ) {
         //
     }
@@ -41,6 +41,14 @@ class Distributor
      */
     public function __call(string $name, array $arguments = [])
     {
-        return $this->instances[$name] ??= Factory::create($this->type);
+        return $this->instances[$name] ??= $this->create($name);
+    }
+
+    /**
+     * @return T
+     */
+    protected function create(string $name, array $arguments = [])
+    {
+        return Factory::create($this->type, $arguments);
     }
 }

@@ -14,7 +14,10 @@ use Magewirephp\Magewire\Support\DataArray;
 use Magewirephp\Magewire\Support\Parser\DomElementParser;
 use Magewirephp\Magewire\Support\Random;
 
-class FlakeCompiler
+/**
+ * @deprecated Backup version, will be deleted.
+ */
+class FlakeCompilerBu
 {
     public function __construct(
         private DomElementParser $domElementParser
@@ -61,12 +64,11 @@ class FlakeCompiler
                     $result .= substr($value, $pos, $tagStart - $pos);
 
                     // Compile the self-closing tag.
-                    $compiled = $this->compileFlake([
-                        $match[0], // Full self-closing tag.
+                    $compiled = $this->compileFlake(
                         $component,
                         $attributes,
                         false
-                    ]);
+                    );
 
                     $result .= $compiled;
                     $pos = $tagStart + strlen($match[0]);
@@ -93,15 +95,12 @@ class FlakeCompiler
                     $result .= substr($value, $pos, $tagStart - $pos);
                     // Recursively parse nested magewire tags in content.
                     [$content, $changes] = $this->parseTags($content, $iterations + 1, $maxIterations);
-                    // Compile the opening/closing tag with content.
-                    $fullTag = substr($value, $tagStart, $closingTagEnd - $tagStart);
 
-                    $compiled = $this->compileFlake([
-                        $fullTag, // Full tag with content
+                    $compiled = $this->compileFlake(
                         $component,
                         $attributes,
-                        empty($content) ? false : $content // Actual content between tags
-                    ]);
+                        empty($content) ? false : $content
+                    );
 
                     $result .= $compiled;
                     $pos = $closingTagEnd;
@@ -117,36 +116,30 @@ class FlakeCompiler
         return [$result, $result !== $value];
     }
 
-    protected function compileFlake(array $matches): string
+    protected function compileFlake(string $component, string $attributes, string|false $content): string
     {
-        $component = $matches[1];
-        $attributes = trim($matches[2]);
-        $content = $matches[3];
+        $attributes = trim($attributes);
 
         $parse = $this->domElementParser->newInstance()
-
             ->parse($attributes)
-
             ->attributes()
-
             // Set a random unique component id when none is provided.
             ->default('magewire:id', Random::string(10))
             // Map the mw:id as the mw:name when it doesn't exist.
             ->default('magewire:name', ':magewire:id')
             // Use the component name as the name alias.
             ->default('magewire:alias', $component)
-
             // 1. Take care of all data groups (e.g., mount, prop)
             ->each(function (DataArray $array, $value, $key) {
                 if ($to = $this->renameToMagewireAttributeMeta($key)) {
                     $array->rename($key, $to);
                 }
             })
-
             ->each(function (DataArray $array, $value, $key) {
                 $subject = 'data';
 
                 if ($key === $subject) {
+                    $map = [];
                     foreach ($array->get($subject) as $name => $value) {
                         $map[$subject][substr($name, strlen(':'))] = $value;
                     }
@@ -161,12 +154,10 @@ class FlakeCompiler
 
         $arguments = [
             'flake' => $component,
-
             // Accept everything as data, except those who start with attr:.
             'data' => $parse->fetch(function ($value, $key) {
                 return ! str_starts_with($key, 'attr:');
             }),
-
             'metadata' => [
                 'attributes' => array_combine(
                     array_map(fn ($key) => substr($key, 5), array_keys($attributes)),
@@ -175,8 +166,11 @@ class FlakeCompiler
             ]
         ];
 
-        // Transform <x-{component} into a uniform @-directive.
-        return '@flake(arguments: ' . json_encode($arguments) . ')';
+        if ($content) {
+            return '@flake(arguments: ' . json_encode($arguments) . ')' . $content . '@endFlake';
+        }
+
+        return '@flakeSingleLiner(arguments: ' . json_encode($arguments) . ')';;
     }
 
     private function renameToMagewireAttributeMeta(string $attribute): string|null

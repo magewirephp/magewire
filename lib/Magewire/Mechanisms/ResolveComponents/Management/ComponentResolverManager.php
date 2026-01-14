@@ -11,7 +11,6 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Mechanisms\ResolveComponents\Management;
 
 use Exception;
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\Exception\RuntimeException;
 use Magento\Framework\View\Element\AbstractBlock;
@@ -27,9 +26,9 @@ class ComponentResolverManager
      * @param array<string, ComponentResolver|string|false|null> $resolvers
      */
     public function __construct(
-        private readonly LoggerInterface $logger,
-        private readonly ResolversCache $resolversCache,
-        private readonly ComponentResolverFactory $componentResolverFactory,
+        private LoggerInterface $logger,
+        private ResolversCache $resolversCache,
+        private ComponentResolverFactory $componentResolverFactory,
         private array $resolvers = []
     ) {
         $this->resolvers = array_filter($this->resolvers, fn ($resolver) => is_object($resolver) || is_string($resolver));
@@ -81,13 +80,15 @@ class ComponentResolverManager
             try {
                 return $this->createResolverByType($this->getResolverClass($resolver));
             } catch (NotFoundException $exception) {
-                $log = sprintf('Magewire resolver data value found on block, but "%s" can not be resolved.', $resolver);
-                $this->logger->info($log, ['exception' => $exception]);
+                $this->logger->info(
+                    sprintf('Magewire resolver data value found on block, but "%s" can not be resolved.', $resolver),
+                    ['exception' => $exception]
+                );
             }
         }
 
-        // Last resort: find a resolver that matches the given block.
         try {
+            // Last resort: find a resolver that matches the given block.
             // @todo Consider prioritizing resolvers instead of always using the first match.
             $resolver = array_key_first(
                 array_filter(
@@ -120,7 +121,7 @@ class ComponentResolverManager
     /**
      * Create a resolver instance by its accessor.
      *
-     * @throws NotFoundException
+     * @throws ComponentResolverNotFoundException
      */
     public function createResolverByAccessor(string $resolver, array $arguments = []): ComponentResolver
     {
@@ -128,7 +129,7 @@ class ComponentResolverManager
     }
 
     /**
-     * @throws NotFoundException
+     * @throws ComponentResolverNotFoundException
      */
     public function createResolverByType(string $type, array $arguments = []): ComponentResolver
     {
@@ -138,7 +139,7 @@ class ComponentResolverManager
             return $instance;
         }
 
-        throw new NotFoundException(__('Component resolver cannot be found.'));
+        throw new ComponentResolverNotFoundException('Component resolver cannot be found.');
     }
 
     /**
@@ -148,8 +149,8 @@ class ComponentResolverManager
     {
         try {
             return is_string($this->getResolverClass($resolver));
-        } catch (NotFoundException $exception) {
-            // WIP
+        } catch (ComponentResolverNotFoundException $exception) {
+            //
         }
 
         return false;
@@ -158,7 +159,7 @@ class ComponentResolverManager
     /**
      * @template T of ComponentResolver
      * @return class-string<T>
-     * @throws NotFoundException
+     * @throws ComponentResolverNotFoundException
      */
     private function getResolverClass(string $resolver): string
     {
@@ -180,15 +181,21 @@ class ComponentResolverManager
             return $this->resolvers[$resolver];
         }
 
-        throw new NotFoundException(__('No block resolver found for accessor "%s"', $resolver));
+        throw new ComponentResolverNotFoundException(sprintf('No block resolver found for accessor "%s"', $resolver));
     }
 
+    /**
+     * @throws RuntimeException
+     */
     private function getBlockCacheKey(AbstractBlock $block, bool $unique = true): string
     {
         return $unique ? sprintf('%s_%s', $block->getCacheKey(), $block->getNameInLayout()) : $block->getCacheKey();
     }
 
-    private function cache(AbstractBlock $block, ComponentResolver $resolver): ComponentResolver
+    /**
+     * @throws RuntimeException
+     */
+    private function cache(AbstractBlock $block, ComponentResolver $resolver): void
     {
         $cache = $this->resolversCache->fetch();
         $cache['blocks'][$this->getBlockCacheKey($block)] = $resolver->getAccessor();
@@ -203,7 +210,5 @@ class ComponentResolverManager
 
         // Attempt to cache the resolvers, regardless of whether caching is enabled or disabled.
         $this->resolversCache->save($cache);
-
-        return $resolver;
     }
 }

@@ -33,9 +33,9 @@ class Middleware extends Pipeline
         try {
             $throughput = $middleware($throughput);
         } catch (Throwable $exception) {
-            $this->processHandlers('catch', $exception, $throughput);
+            $this->processHandler('catch', $exception, $throughput);
         } finally {
-            $this->processHandlers('finally', $throughput);
+            $this->processHandler('finally', $throughput);
         }
 
         return $throughput;
@@ -51,7 +51,7 @@ class Middleware extends Pipeline
                     ($this->positions[$a] ?? 500) <=> ($this->positions[$b] ?? 500)
                 );
 
-                foreach ($groups as $group) {
+                foreach ($groups as $name => $group) {
                     $throughput = $group->run($throughput);
                 }
 

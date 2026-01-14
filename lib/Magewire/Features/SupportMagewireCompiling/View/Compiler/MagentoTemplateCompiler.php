@@ -17,13 +17,11 @@ class MagentoTemplateCompiler extends Compiler
 {
     protected function newCompilerPipelineDistributorInstance(): CompilerPipelines
     {
-        $distributor = parent::newCompilerPipelineDistributorInstance();
+        // Create the initial pipeline.
+        $pipeline = parent::newCompilerPipelineDistributorInstance();
+        // Elements middleware group for things like <magewire-...
+        $pipeline->template()->middleware()->group('elements', 150);
 
-        // Middleware group that sits right after the cores 'first'.
-        $distributor->template()->middleware()->group('components', 101);
-        // Middleware group that sits right after the cores 'last'.
-        $distributor->template()->middleware()->group('shutdown', 901);
-
-        return $distributor;
+        return $pipeline;
     }
 }

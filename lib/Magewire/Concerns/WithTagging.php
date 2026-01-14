@@ -13,7 +13,7 @@ namespace Magewirephp\Magewire\Concerns;
 trait WithTagging
 {
     /** @var array<int, string> */
-    private array $tags = [];
+    protected array $withTags = [];
 
     /**
      * Tag a fragment with a recognizable name.
@@ -23,7 +23,7 @@ trait WithTagging
         $sanitized = preg_replace('/[^a-z0-9]/', '', strtolower($tag));
 
         if ($sanitized !== '') {
-            $this->tags[] = $sanitized;
+            $this->withTags[] = $sanitized;
         }
 
         return $this;
@@ -34,7 +34,7 @@ trait WithTagging
      */
     public function clearTags(callable|null $filter = null): static
     {
-        $this->tags = $filter ? array_filter($this->tags, $filter) : [];
+        $this->withTags = $filter ? array_filter($this->withTags, $filter) : [];
 
         return $this;
     }
@@ -58,9 +58,9 @@ trait WithTagging
     /**
      * Retrieve the fragment alias (if set).
      */
-    public function getTags(): array
+    public function getWithTags(): array
     {
-        return $this->tags;
+        return $this->withTags;
     }
 
     /**
@@ -72,9 +72,9 @@ trait WithTagging
             return false;
         }
         if ($strict) {
-            return empty(array_diff($tags, $this->tags));
+            return empty(array_diff($tags, $this->withTags));
         }
 
-        return ! empty(array_intersect($this->tags, $tags));
+        return ! empty(array_intersect($this->withTags, $tags));
     }
 }

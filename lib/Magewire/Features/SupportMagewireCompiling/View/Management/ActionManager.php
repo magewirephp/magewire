@@ -12,6 +12,7 @@ namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management
 
 use Magento\Framework\App\ObjectManager;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ViewAction;
+use Magewirephp\Magewire\Support\Factory;
 
 class ActionManager
 {
@@ -39,7 +40,7 @@ class ActionManager
      * This method attempts to resolve the namespace in the following order:
      * 1. If the namespace is an existing class, creates an ActionManager with that class
      * 2. If the namespace exists in the registered namespaces array:
-     *    - Uses the object directly if it's already instantiated
+     *    - Use the object directly if it's already instantiated
      *    - Creates the object via ObjectManager if it's a class name
      * 3. Returns the current instance if no resolution is possible
      *
@@ -60,7 +61,7 @@ class ActionManager
             }
 
             return $this->actionManagerFactory->create([
-                'action' => ObjectManager::getInstance()->create($this->namespaces[$namespace])
+                'action' => Factory::create($this->namespaces[$namespace])
             ]);
         }
 

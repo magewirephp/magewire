@@ -10,10 +10,13 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View;
 
+use LogicException;
+use Magewirephp\Magewire\Support\Random;
 use ReflectionClass;
 
 abstract class ScopeDirective extends Directive
 {
+    private array $scopeVariables = [];
     private array $scopeResponsibilities = [];
 
     /**
@@ -35,5 +38,36 @@ abstract class ScopeDirective extends Directive
         }
 
         return $this->scopeResponsibilities[$directive] ?? [];
+    }
+
+    /**
+     * Start a new scoped block and return the generated variable name.
+     */
+    protected function variableScopeStart(string|null $var = null): string
+    {
+        $var ??= Random::alphabetical(10);
+        $this->scopeVariables[] = $var;
+
+        return $var;
+    }
+
+    /**
+     * End the most recent scope and return its variable name.
+     */
+    protected function variableScopeEnd(): string
+    {
+        if (empty($this->scopeVariables)) {
+            throw new LogicException('Trying to end a scope without a matching start.');
+        }
+
+        return array_pop($this->scopeVariables);
+    }
+
+    /**
+     * Get the current (most recent) scoped variable name without ending it.
+     */
+    protected function variableScope(): string|null
+    {
+        return $this->scopeVariables[count($this->scopeVariables) - 1] ?? null;
     }
 }

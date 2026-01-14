@@ -8,11 +8,12 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Fragment;
+namespace Magewirephp\Magewire\Support\DataArray;
 
-use Magewirephp\Magewire\Model\View\Fragment\Html;
-
-class FlakeFragment extends Html
+enum Hook: string
 {
-    protected array $attributes = ['wire:flake'];
+    case SET = 'set';
+    case PUT = 'put';
+    case GET = 'get';
+    case UNSET = 'unset';
 }

@@ -23,7 +23,8 @@ class SupportMagewireCompiling extends ComponentHook
 {
     public function __construct(
         private MagewireUnderscoreViewModelFactory $underscoreViewModelFactory,
-        private CompilerManager $compilerManager
+        private CompilerManager $compilerManager,
+        private Compiler\MagewireElementsCompiler $magewireElementsCompiler
     ) {
         //
     }
@@ -57,22 +58,38 @@ class SupportMagewireCompiling extends ComponentHook
         });
 
         on('magewire:view:compile', function (Compiler $compiler) {
-            $middleware = $compiler->pipelines()->template()->middleware();
+            $templatePipelineMiddleware = $compiler->pipelines()->template()->middleware();
 
-            // Appends a basepath comment to compiled template output.
-            $middleware->group('last')->pipe(
-                function (string $throughput) use ($compiler) {
+            $templatePipelineMiddleware->group('first')
+
+                // Appends a template basepath comment to compiled template output.
+                ->pipe(function (string $throughput) use ($compiler) {
                     return $throughput . '<?php /** Template Basepath: ' . $compiler->basePath() . ' **/ ?>' . PHP_EOL;
                 }
             );
 
-            // Appends a compilation duration comment to the compiled template output.
-            $middleware->group('shutdown')->pipe(
-                function (string $throughput) use ($compiler) {
-                    $duration = round((microtime(true) - $compiler->compileStartTime()) * 1000, 2) . 'ms';
-                    return $throughput . '<?php /** Compile Duration: ' . $duration . ' **/ ?>' . PHP_EOL;
+            $templatePipelineMiddleware->group('elements')
+
+                // Compiles all <magewire-... prefixed DOM elements to a @-directive.
+                ->pipe(function (string $throughput, callable $next) {
+                    return $next($this->magewireElementsCompiler->compile($throughput));
                 }
             );
+
+            $templatePipelineMiddleware->group('last')
+
+                // Appends a template compilation duration comment to the compiled template output.
+                ->pipe(function (string $throughput) use ($compiler) {
+                    $durationMs = round((microtime(true) - $compiler->compileStartTime()) * 1000, 2);
+                    $durationSec = round($durationMs / 1000, 4);
+
+                    return $throughput . '<?php /** Compile Duration: ' . $durationMs . 'ms or ' . $durationSec . 's **/ ?>' . PHP_EOL;
+                })
+
+                // Appends a template compilation date/time comment to the compiled template output.
+                ->pipe(function (string $throughput) {
+                    return $throughput . '<?php /** Compile Date/Time: ' . date('Y-m-d H:i:s') . ' **/ ?>' . PHP_EOL;
+                });
         });
     }
 

@@ -14,17 +14,54 @@ use ArrayAccess;
 use ArrayIterator;
 use Countable;
 use IteratorAggregate;
-use Magento\Framework\App\ObjectManager;
 use Magewirephp\Magewire\Support\Concerns\WithFactory;
 use Magewirephp\Magewire\Support\DataArray\Filter;
+use Magewirephp\Magewire\Support\DataArray\Hook;
 use Traversable;
 
 class DataArray implements ArrayAccess, Countable, IteratorAggregate
 {
     use WithFactory;
 
+    /**
+     * The collection's data items.
+     *
+     * @var array<string|int, mixed>
+     */
     private array $items = [];
+
+    /**
+     * Categorized DataArray instances for organizing related data into logical groups.
+     *
+     * Each category maintains its own independent collection of items and is lazily
+     * initialized when first accessed via categorize() or magic method calls.
+     *
+     * @var array<string, DataArray>
+     */
+    private array $subitems = [];
+
+    /**
+     * Stack of saved collection states for snapshot/revert functionality.
+     *
+     * @var array<int, array{
+     *     items: array<string|int, mixed>,
+     *     snapshots: array<int, array{items: array<string|int, mixed>, snapshots: array}>
+     * }>
+     */
     private array $snapshots = [];
+
+    /**
+     * @var array<Hook, array<int, callable>>
+     */
+    private array $hooks = [];
+
+    public function __construct(
+        private int $level = 0,
+        private string $name = 'root',
+        private DataArray|null $parent = null
+    ) {
+        //
+    }
 
     /**
      * Maps (renames) multiple keys in the collection based on a mapping array.
@@ -101,19 +138,45 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
         return $this;
     }
 
+    /**
+     * Sets a value for the given key if it doesn't already exist.
+     *
+     * Only sets the value if the key is not already present in the collection.
+     * If the key exists, the collection remains unchanged.
+     *
+     * Supports parameter references: if the value is a string starting with ':',
+     * it will be replaced with the value of the referenced key. For example,
+     * setting ':name' will use the value stored under 'name'.
+     */
     public function set(string|int $name, $value): static
     {
         if ($this->isset($name)) {
             return $this;
         }
 
-        // Substitute parameter references (e.g., ':name' becomes the value of 'name').
-        if (is_string($value) && str_starts_with($value, ':') && $this->isset(substr($value, 1))) {
-            $value = $this->get(substr($value, 1));
-        }
-
         $this->items[$name] = $value;
         return $this;
+    }
+
+    /**
+     * Creates or retrieves a nested DataArray subset.
+     *
+     * Returns an existing subset if it has been previously created, or initializes
+     * a new DataArray instance with an incremented nesting level. The subset name
+     * is automatically converted to snake_case for consistent storage.
+     *
+     * Subsets are useful for creating hierarchical data structures where each level
+     * maintains its own independent collection while tracking its depth and name.
+     */
+    public function subset(string|int $name): DataArray
+    {
+        $name = Str::snake($name);
+
+        return $this->subitems[$name] ??= $this->newInstance([
+            'parent' => $this,
+            'level' => $this->level + 1,
+            'name' => $name
+        ]);
     }
 
     /**
@@ -156,9 +219,9 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
         return $this;
     }
 
-    public function isset(string|int $argument): bool
+    public function isset(string|int $name): bool
     {
-        return isset($this->items[$argument]);
+        return isset($this->items[$name]);
     }
 
     /**
@@ -203,13 +266,16 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
         return $this->filter($this->items, $filter);
     }
 
+    /**
+     * Filters an array using a callback or Filter instance.
+     *
+     * Applies the provided filter to each item in the array, passing both the value
+     * and key to the filter function. Supports both custom callables and Filter
+     * enum instances for predefined filtering logic.
+     */
     public function filter(array $items, callable|Filter $filter): array
     {
-        if ($filter instanceof Filter) {
-            $filter = $filter->get();
-        }
-
-        return array_filter($items, $filter, ARRAY_FILTER_USE_BOTH);
+        return array_filter($items, $filter instanceof Filter ? $filter->get() : $filter, ARRAY_FILTER_USE_BOTH);
     }
 
     /**
@@ -272,6 +338,17 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
         }
 
         return $this->revert($i);
+    }
+
+    /**
+     * Completely empty items and subitems.
+     */
+    public function destroy(): static
+    {
+        $this->items = [];
+        $this->subitems = [];
+
+        return $this;
     }
 
     /**
@@ -352,6 +429,75 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
         return $this;
     }
 
+    /**
+     * Recursively applies a callback to this instance and all nested subsets.
+     *
+     * Behavior adapts based on the callback's return type:
+     * - Chainable mode: Returns $this when callback returns $this, static instance, or null
+     *   (useful for setters, fluent methods, or side-effect operations)
+     * - Collection mode: Returns flat associative array when callback returns values
+     *   (each result is keyed by the instance's name)
+     *
+     * In collection mode, all results are collected into a single flat array where
+     * the key is each DataArray instance's name and the value is the callback's
+     * return value for that instance. Results from parent and all nested subsets
+     * are merged at the same level.
+     *
+     * @example $data->recursive(fn (DataArray $item) => $item->set('processed', true));
+     * @example $data->recursive(fn (DataArray $item) => $item->count());
+     * @example $data->recursive(fn (DataArray $item) => $item->get('value'));
+     */
+    public function recursive(callable $callback): static|array
+    {
+        $result = $callback($this);
+
+        if ($result === $this || $result instanceof static || $result === null) {
+            foreach ($this->subitems as $subitem) {
+                $subitem->recursive($callback);
+            }
+            return $this;
+        }
+
+        $result = [$this->name() => $result];
+
+        foreach ($this->subitems as $subitem) {
+            $inner = $subitem->recursive($callback);
+
+            if (is_array($inner)) {
+                $result = array_merge($result, $inner);
+            }
+        }
+
+        return $result;
+    }
+
+    public function level(): int
+    {
+        return $this->level;
+    }
+
+    public function name(): string
+    {
+        return $this->name;
+    }
+
+    public function parent(): DataArray|null
+    {
+        return $this->parent;
+    }
+
+    /**
+     * @deprecated Hooks are still under development and shouldn't be used at the moment.
+     *             The idea, is to be able to add a hook to your DataArray for several occasions
+     *             like when an item gets unset, set, updated or requested.
+     */
+    public function hook(callable $action, Hook|array $on): static
+    {
+        $this->hooks[$on->value][] = $action;
+
+        return $this;
+    }
+
     public function offsetExists($offset): bool
     {
         return $this->isset($offset);
@@ -378,6 +524,6 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
 
     public function getIterator(): Traversable
     {
-        return ObjectManager::getInstance()->create(ArrayIterator::class, ['array' => $this->items]);
+        return $this->newTypeInstance(ArrayIterator::class, ['array' => $this->items]);
     }
 }

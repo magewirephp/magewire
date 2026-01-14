@@ -16,13 +16,8 @@ use Magewirephp\Magewire\Features\SupportMagewireFlakes\Mechanisms\ResolveCompon
 class Flake extends Component
 {
     public function __construct(
-        private FlakeResolver $resolver
+        private FlakeResolver $magewireResolver
     ) {
         //
-    }
-
-    public function click()
-    {
-        $this->dispatchSuccessMessage('Succes from the default Flake! ' . $this->id());
     }
 }

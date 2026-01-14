@@ -24,10 +24,9 @@ abstract class ExpressionParser extends Parser
 
     public function parse(string $content): self
     {
-        $this->arguments()->merge(
-            strlen($content) === 0 ? [] : $this->parseArguments($content)
-        );
+        $content = strlen($content) === 0 ? [] : $this->parseArguments($content);
 
+        $this->arguments()->merge($content)->snapshot();
         return $this;
     }
 
