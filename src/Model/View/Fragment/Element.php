@@ -57,6 +57,11 @@ abstract class Element extends Fragment
         return $this->data()->properties();
     }
 
+    public function prop(string $name, mixed $default = null)
+    {
+        return $this->properties()->get($name, $default);
+    }
+
     public function data(): DomElementData
     {
         return $this->data ??= Factory::create(DomElementData::class);

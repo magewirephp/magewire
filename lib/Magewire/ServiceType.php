@@ -13,6 +13,7 @@ namespace Magewirephp\Magewire;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
+use Magewirephp\Magewire\Support\Factory;
 
 /**
  * The ServiceType class provides a structured way to manage and organize different operation types
@@ -112,7 +113,7 @@ abstract class ServiceType
                 return $item;
             }
 
-            $item['type'] = ObjectManager::getInstance()->create($item['type']);
+            $item['type'] = Factory::get($item['type']);
 
             // Injects data if a `setData()` method is present in the operation type item class.
             if (method_exists($item['type'], 'setData')) {

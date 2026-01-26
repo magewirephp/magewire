@@ -72,8 +72,8 @@ class ResolveComponents
         });
 
         // Register a dehydrate listener to attach the used resolver accessor for easy reconstruction.
-        on('dehydrate', function ($component, ComponentContext $context) {
-            $context->addMemo('resolver', $component->resolver()->getAccessor());
+        on('dehydrate', function (Component $component, ComponentContext $context) {
+            $context->addMemo('resolver', $component->magewireResolver()->getAccessor());
         });
     }
 

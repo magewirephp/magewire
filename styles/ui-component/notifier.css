@@ -13,7 +13,7 @@
 }
 
 .magewire-notifier__notification-content {
-    @apply flex items-center justify-between space-y-1 p-4;
+    @apply flex items-center justify-between space-y-1 px-4 py-2;
 }
 
 .magewire-notifier__notification-before {
