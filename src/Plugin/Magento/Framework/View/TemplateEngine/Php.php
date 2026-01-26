@@ -14,8 +14,9 @@ use Magento\Framework\DataObject;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magento\Framework\View\Element\BlockInterface;
 use Magento\Framework\View\TemplateEngine\Php as Subject;
-use Magewirephp\Magento\Framework\View\BlockRenderingRegistry;
+use Magewirephp\Magento\Framework\View\BlockRenderLifecycle;
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Model\View\SlotsRegistry;
 use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
 use function Magewirephp\Magewire\trigger;
 
@@ -26,7 +27,8 @@ class Php
 
     public function __construct(
         private MagewireViewModel $magewireViewModel,
-        private BlockRenderingRegistry $renderRegistry,
+        private BlockRenderLifecycle $renderRegistry,
+        private SlotsRegistry $slotsRegistry
     ) {
         //
     }

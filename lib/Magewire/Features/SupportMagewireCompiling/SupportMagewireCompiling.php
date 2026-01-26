@@ -16,6 +16,7 @@ use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\ComponentHook;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\CompilerManager;
+use Magewirephp\Magewire\Model\View\SlotsRegistry;
 use function Magewirephp\Magewire\on;
 use function Magewirephp\Magewire\trigger;
 
@@ -24,7 +25,7 @@ class SupportMagewireCompiling extends ComponentHook
     public function __construct(
         private MagewireUnderscoreViewModelFactory $underscoreViewModelFactory,
         private CompilerManager $compilerManager,
-        private Compiler\MagewireElementsCompiler $magewireElementsCompiler
+        private SlotsRegistry $slotsRegistry
     ) {
         //
     }
@@ -50,8 +51,13 @@ class SupportMagewireCompiling extends ComponentHook
                     }
                 }
 
-                // Include the Magewire underscore object optionally required by compiled views.
+                // Concept: Include the Magewire underscore object optionally required by compiled views.
                 $result['dictionary']['__magewire'] ??= $this->underscoreViewModelFactory->create();
+
+                if ($this->slotsRegistry->hasAreas()) {
+                    $result['dictionary']['__slot'] ??= $this->slotsRegistry->snapshot();
+                    $result['dictionary']['__el'] = $this->slotsRegistry->element();
+                }
 
                 return $result;
             };
@@ -65,14 +71,6 @@ class SupportMagewireCompiling extends ComponentHook
                 // Appends a template basepath comment to compiled template output.
                 ->pipe(function (string $throughput) use ($compiler) {
                     return $throughput . '<?php /** Template Basepath: ' . $compiler->basePath() . ' **/ ?>' . PHP_EOL;
-                }
-            );
-
-            $templatePipelineMiddleware->group('elements')
-
-                // Compiles all <magewire-... prefixed DOM elements to a @-directive.
-                ->pipe(function (string $throughput, callable $next) {
-                    return $next($this->magewireElementsCompiler->compile($throughput));
                 }
             );
 

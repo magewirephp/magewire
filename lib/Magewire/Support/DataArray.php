@@ -168,15 +168,17 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
      * Subsets are useful for creating hierarchical data structures where each level
      * maintains its own independent collection while tracking its depth and name.
      */
-    public function subset(string|int $name): DataArray
+    public function subset(string|int $name, string $type = DataArray::class, array $arguments = []): DataArray
     {
         $name = Str::snake($name);
 
-        return $this->subitems[$name] ??= $this->newInstance([
+        $arguments = array_merge($arguments, [
             'parent' => $this,
             'level' => $this->level + 1,
             'name' => $name
         ]);
+
+        return $this->subitems[$name] ??= $this->newInstance($arguments, $type);
     }
 
     /**

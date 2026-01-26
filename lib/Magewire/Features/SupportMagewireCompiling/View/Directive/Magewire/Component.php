@@ -22,14 +22,15 @@ class Component extends ScopeDirective
     public function component(string $type, string $id, string|null $variant = null): string
     {
         $var = $this->variableScopeStart($id);
+        $variant ??= 'default';
 
-        return "<?php \${$var} = \$__magewire->utils()->fragment()->make()->element('{$type}', '{$variant}', \$block)->start() ?>";
+        return "<?php \${$var} = \$__magewire->factory()->elements()->element('{$type}', \$block, '{$variant}')->track() ?>";
     }
 
     public function endComponent(): string
     {
         $var = $this->variableScopeEnd();
 
-        return "<?php \${$var}->end() ?>";
+        return "<?php \${$var}->end()->untrack() ?>";
     }
 }

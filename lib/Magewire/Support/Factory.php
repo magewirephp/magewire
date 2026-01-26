@@ -23,7 +23,7 @@ class Factory
     {
         // POC: Factories can be singletons because of their single responsibility.
         if (str_ends_with($type, 'Factory')) {
-            return self::get($type);
+            return static::get($type);
         }
 
         return ObjectManager::getInstance()->create($type, $arguments); // phpcs:ignore

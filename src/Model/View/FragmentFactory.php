@@ -12,8 +12,6 @@ namespace Magewirephp\Magewire\Model\View;
 
 use InvalidArgumentException;
 use LogicException;
-use Magento\Framework\View\Element\AbstractBlock;
-use Magewirephp\Magewire\Model\View\Fragment\Element;
 use Magewirephp\Magewire\Model\View\Fragment\Html;
 use Magewirephp\Magewire\Model\View\Fragment\Javascript;
 use Magewirephp\Magewire\Model\View\Fragment\Script;
@@ -50,16 +48,6 @@ class FragmentFactory
     public function style(): Style
     {
         return $this->create(Style::class);
-    }
-
-    public function slot(string $target, AbstractBlock $block): Element\Slot
-    {
-        return $this->elementFactory->slot($target, $block);
-    }
-
-    public function element(string $type, string $variant, AbstractBlock $block)
-    {
-        return $this->elementFactory->element($type, $variant, $block);
     }
 
     public function elements(): FragmentElementFactory

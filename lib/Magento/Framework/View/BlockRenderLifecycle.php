@@ -10,9 +10,11 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magento\Framework\View;
 
+use Magento\Framework\View\Element\AbstractBlock;
 use Magento\Framework\View\Element\BlockInterface;
+use function Magewirephp\Magewire\trigger;
 
-class BlockRenderingRegistry
+class BlockRenderLifecycle
 {
     private array $blocks = [];
 
@@ -24,12 +26,20 @@ class BlockRenderingRegistry
         $this->current = $block;
         $this->blocks[] = $block;
 
+        if ($block instanceof AbstractBlock) {
+            trigger('magewire:render:start', $this, $block);
+        }
+
         return $this;
     }
 
     public function pop(): static
     {
         $this->previous = array_pop($this->blocks);
+
+        if ($this->previous instanceof AbstractBlock) {
+            trigger('magewire:render:end', $this, $this->previous);
+        }
 
         return $this;
     }

@@ -10,14 +10,17 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Fragment\Element;
 
+use Magento\Framework\App\State as ApplicationState;
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\AbstractBlock;
+use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
 use Magewirephp\Magewire\Features\SupportMagewireFlakes\Component\FlakeFactory;
-use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolverNotFoundException;
 use Magewirephp\Magewire\Model\View\Fragment;
 use Magewirephp\Magewire\Model\View\SlotsRegistry;
 use Magewirephp\Magewire\Support\Random;
 use Psr\Log\LoggerInterface;
+use Throwable;
 
 class Flake extends Fragment\Element
 {
@@ -27,6 +30,7 @@ class Flake extends Fragment\Element
 
     public function __construct(
         private FlakeFactory $flakeFactory,
+        private ApplicationState $applicationState,
         string $variant,
         AbstractBlock $block,
         SlotsRegistry $slotsRegistry,
@@ -37,38 +41,35 @@ class Flake extends Fragment\Element
         parent::__construct($variant, $block, $slotsRegistry, $logger, $escaper, $modifiers);
     }
 
-    public function start(): static
-    {
-        // Begin tracking a new slot context for this component.
-        // This pushes a new layer onto the slot registry stack, allowing named slots to be captured.
-        $this->slotsRegistry->track();
-
-        return parent::start();
-    }
-
-    public function end(): void
+    public function end(): static
     {
         // Finalize fragment buffering to capture all output.
         parent::end();
-
         // Register any content outside of named slots as the 'default' slot.
         $this->slotsRegistry->update('default', $this->output);
 
         try {
             $flake = $this->flakeFactory->createByName($this->variant, [
-                'magewire:id' => Random::alphabetical(4),
+                'magewire:id'   => Random::alphabetical(4),
                 'magewire:name' => Random::alphabetical(4),
             ]);
 
+            if ($flake === false) {
+                throw new ComponentNotFoundException(
+                    sprintf('Magewire: Flake "%s" could not be found or doesnt exist.', $this->variant)
+                );
+            }
+
             // Render the final Flake component.
             echo $flake->toHtml();
-        } catch (ComponentResolverNotFoundException $exception) {
+        } catch (Throwable $exception) {
             $this->logger->critical($exception->getMessage(), ['exception' => $exception]);
 
-            echo '<!-- Flake component could not be rendered. -->';
+            if ($this->applicationState->getMode() !== ApplicationState::MODE_PRODUCTION) {
+                echo '<!-- ' . $exception->getMessage() . ' -->';
+            }
         }
 
-        // End tracking for this component — pop the current slot context from the stack.
-        $this->slotsRegistry->untrack();
+        return $this;
     }
 }

@@ -19,7 +19,6 @@ use Magewirephp\Magewire\Model\View\Utils\Fragment as FragmentViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Layout as LayoutViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Magewire as MagewireViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Security as SecurityViewUtil;
-use Magewirephp\Magewire\Model\View\Utils\Slots as SlotsViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Tailwind as TailwindViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Template as TemplateViewUtil;
 use Magewirephp\Magewire\Support\Factory;
@@ -41,7 +40,6 @@ class Utils
         private TailwindViewUtil $tailwind,
         private TemplateViewUtil $template,
         private CspViewUtil $csp,
-        private SlotsViewUtil $slots,
         private array $utilities = []
     ) {
         //
@@ -95,11 +93,6 @@ class Utils
     public function fragment(): FragmentViewUtil
     {
         return $this->fragment;
-    }
-
-    public function slots(): SlotsViewUtil
-    {
-        return $this->slots;
     }
 
     /**

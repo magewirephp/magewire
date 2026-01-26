@@ -23,7 +23,7 @@ class Slot extends ScopeDirective
     {
         $var = $this->variableScopeStart($id);
 
-        return "<?php \${$var} = \$__magewire->slots()->bind('{$target}', \$block)->start() ?>";
+        return "<?php \${$var} = \$__magewire->factory()->elements()->slot('{$target}', \$block) ?>";
     }
 
     public function endSlot(): string

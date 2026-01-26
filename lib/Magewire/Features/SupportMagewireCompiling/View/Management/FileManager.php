@@ -29,13 +29,6 @@ class FileManager
 
     /**
      * Get the path to the compiled version of a view.
-     *
-     * @todo Enhance path generation to be context-aware:
-     *       - Include store view identifiers in the hash to support multi-store setups
-     *       - Incorporate theme information to prevent collision between themes
-     *       - Consider locale/language variations that may affect the same base template
-     *       Currently, identical file paths across different stores/themes will generate
-     *       the same compiled file, potentially causing incorrect view rendering.
      */
     public function generateFilePath(string $path, bool $includeResourceDir = true): string
     {

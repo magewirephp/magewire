@@ -28,7 +28,7 @@ class FragmentElementFactory
      */
     public function slot(string $target, AbstractBlock $block): Element\Slot
     {
-        return $this->element('slot', $target, $block);
+        return $this->element('slot', $block, $target);
     }
 
     /**
@@ -37,7 +37,7 @@ class FragmentElementFactory
      * @return T
      * @throws LogicException
      */
-    public function element(string $type, string $variant, AbstractBlock $block): Element
+    public function element(string $type, AbstractBlock $block, string $variant = 'default'): Element
     {
         $type = $this->elements[$type] ?? Element\Unknown::class;
 

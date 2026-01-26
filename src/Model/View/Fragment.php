@@ -52,6 +52,11 @@ abstract class Fragment
         $this->id = Random::alphabetical(10);
     }
 
+    public function id(): string
+    {
+        return $this->id;
+    }
+
     /**
      * Begins output buffering for the fragment.
      *
@@ -78,10 +83,10 @@ abstract class Fragment
      * Retrieves the buffered output as raw content, applies an optional transformation
      * to produce the final content, and triggers the inspection process.
      */
-    public function end(): void
+    public function end(): static
     {
         if (! $this->buffering || ob_get_level() !== $this->level) {
-            return;
+            return $this;
         }
 
         // Stores the output to be able to flag buffering as false.
@@ -94,8 +99,10 @@ abstract class Fragment
             // Unreachable: fragment buffering state verified in method preconditions.
         }
 
-        // Echo result.
+        // Echo result (hide content when not allowed to render).
         echo $this->echo ? $this->output : '';
+
+        return $this;
     }
 
     /**

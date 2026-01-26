@@ -29,26 +29,46 @@ abstract class Distributor
 
     /**
      * @param class-string<T> $type
+     * @param array<string, class-string<T>> $mapping
      */
     public function __construct(
-        protected string $type
+        protected string $type,
+        protected array $mapping = []
     ) {
         //
     }
 
     /**
-     * @return T
+     * @return object<T>
      */
     public function __call(string $name, array $arguments = [])
     {
-        return $this->instances[$name] ??= $this->create($name);
+        if (isset($this->instances[$name])) {
+            return $this->instances[$name];
+        }
+
+        return $this->instances[$name] ??= $this->create($name, $arguments);
     }
 
     /**
-     * @return T
+     * Resolve the appropriate type for a given name.
+     *
+     * @param string $name The instance identifier
+     * @return class-string<T> The resolved class name
      */
-    protected function create(string $name, array $arguments = [])
+    protected function resolve(string $name): string
     {
-        return Factory::create($this->type, $arguments);
+        $map = $this->mapping[$name] ?? null;
+
+        if ($map !== null && is_a($map, $this->type, true)) {
+            return $map;
+        }
+
+        return $this->type;
+    }
+
+    protected function create(string $type, array $arguments): object
+    {
+        return Factory::create($this->resolve($type), $arguments);
     }
 }

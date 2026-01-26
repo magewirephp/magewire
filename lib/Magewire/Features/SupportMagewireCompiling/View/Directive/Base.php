@@ -31,10 +31,4 @@ class Base extends FunctionDirective
     {
         return "<?= \$block->getChildHtml('{$alias}') ?>";
     }
-
-    #[ScopeDirectiveParser(ExpressionParserType::FUNCTION_ARGUMENTS)]
-    public function slot(string $name): string
-    {
-        return "<?= \$__magewire->slots()->print('{$name}') ?>";
-    }
 }

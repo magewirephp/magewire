@@ -12,6 +12,7 @@ namespace Magewirephp\Magewire\Features\SupportMagewireCompiling;
 
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\ActionManager;
+use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ViewFactory;
 use Magewirephp\Magewire\Model\View\Utils;
 use Magewirephp\Magewire\Support\DataScope;
 
@@ -20,7 +21,8 @@ class MagewireUnderscoreViewModel implements ArgumentInterface
     public function __construct(
         private ActionManager $actionManager,
         private DataScope $arguments,
-        private Utils $utils
+        private Utils $utils,
+        private ViewFactory $viewFactory
     ) {
         //
     }
@@ -39,9 +41,9 @@ class MagewireUnderscoreViewModel implements ArgumentInterface
     {
         return $this->utils;
     }
-    
-    public function slots(): Utils\Slots
+
+    public function factory(): ViewFactory
     {
-        return $this->utils()->slots();
+        return $this->viewFactory;
     }
 }
