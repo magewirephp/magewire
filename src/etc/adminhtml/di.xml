@@ -151,7 +151,6 @@
                 <item name="magento_flash_messages" xsi:type="string" sortOrder="5100">Magewirephp\Magewire\Features\SupportMagentoFlashMessages\SupportMagentoFlashMessages</item>
 
                 <item name="magewire_loaders" xsi:type="string" sortOrder="5200">Magewirephp\Magewire\Features\SupportMagewireLoaders\SupportMagewireLoaders</item>
-                <item name="magewire_view_instructions" xsi:type="string" sortOrder="5300">Magewirephp\Magewire\Features\SupportMagewireViewInstructions\SupportMagewireViewInstructions</item>
 
                 <!-- Highest priorities (do not register features above this sort order range). -->
                 <item name="lifecycle_hooks" xsi:type="string" sortOrder="99900">Magewirephp\Magewire\Features\SupportLifecycleHooks\SupportLifecycleHooks</item>

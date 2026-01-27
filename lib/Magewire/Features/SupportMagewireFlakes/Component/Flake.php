@@ -20,4 +20,9 @@ class Flake extends Component
     ) {
         //
     }
+
+    public function refresh()
+    {
+
+    }
 }

@@ -185,11 +185,6 @@
                     <item name="sort_order" xsi:type="number">5200</item>
                 </item>
 
-                <item name="magewire_view_instructions" xsi:type="array">
-                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireViewInstructions\SupportMagewireViewInstructions</item>
-                    <item name="sort_order" xsi:type="number">5300</item>
-                </item>
-
                 <!-- HIGHEST PRIORITIY: Do not register features above this sort order range. -->
                 <item name="lifecycle_hooks" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportLifecycleHooks\SupportLifecycleHooks</item>

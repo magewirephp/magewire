@@ -45,6 +45,7 @@ class FlakeFactory
         if ($block instanceof AbstractBlock) {
             $data['magewire'] ??= $this->create();
             $data['magewire:resolver'] ??= 'flake';
+            $data['magewire:alias'] ??= $name;
 
             $block->addData($data);
         }

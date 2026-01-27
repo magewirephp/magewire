@@ -21,7 +21,6 @@ use Magewirephp\Magewire\Features\SupportMagentoLayouts\HandlesMagentoLayout;
 use Magewirephp\Magewire\Concerns\InteractsWithProperties;
 use Magewirephp\Magewire\Exceptions\PropertyNotFoundException;
 use Magewirephp\Magewire\Features\SupportEvents\HandlesEvents;
-use Magewirephp\Magewire\Features\SupportMagewireViewInstructions\HandlesMagewireViewInstructions;
 use Magewirephp\Magewire\Features\SupportMagewireViewModel\HandlesMagewireViewModel;
 use Magewirephp\Magewire\Features\SupportRedirects\HandlesRedirects;
 use Magewirephp\Magewire\Features\SupportStreaming\HandlesStreaming;
@@ -42,7 +41,6 @@ abstract class Component implements ArgumentInterface
     use HandlesMagentoLayout;
     use HandlesMagewireFlashMessages;
     use HandlesMagewireLoaders;
-    use HandlesMagewireViewInstructions;
     use HandlesMagewireViewModel;
     use HandlesComponentBackwardsCompatibility;
     use HandlesMagewireCompiling;

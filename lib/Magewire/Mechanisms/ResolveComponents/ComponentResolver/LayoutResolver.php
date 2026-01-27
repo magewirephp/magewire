@@ -74,7 +74,7 @@ class LayoutResolver extends ComponentResolver
 
         if (! $magewire) {
             throw new ComponentNotFoundException(
-                sprintf('No component object found for "%1"', $block->getNameInLayout())
+                sprintf('No component object found for "%s"', $block->getNameInLayout())
             );
         }
 
