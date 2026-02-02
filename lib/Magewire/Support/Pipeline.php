@@ -16,24 +16,23 @@ use Throwable;
 
 /**
  * A flexible pipeline implementation for chaining operations.
+ *
+ * Allows building a chain of callbacks (pipes) that process data sequentially,
+ * with support for middleware, one-time execution and event handlers for error handling and cleanup.
  */
 class Pipeline
 {
     use WithFactory;
 
-    /** @var array<int, callable> $pipes */
+    /** @var array<string, callable> $pipes */
     protected array $pipes = [];
     /** @var Middleware|null $middleware */
     protected Middleware|null $middleware = null;
-    /** @var array<string, array<int, callable>> */
-    protected array $stashes = [];
-    /** @var array<string, array<int, callable> $handlers */
-    protected array $handlers = [];
-    /** @var array<int, string> $persists */
-    protected array $persists = [];
+    /** @var array<string, array<string, callable> $handlers */
+    private array $handlers = [];
 
     public function __construct(
-        private LoggerInterface $logger
+        protected LoggerInterface $logger
     ) {
         //
     }
@@ -47,49 +46,68 @@ class Pipeline
     }
 
     /**
-     * Register a (aliased) pipeline section.
+     * Register a pipe in the pipeline.
+     *
+     * Pipes are callbacks that receive the current throughput and a $next callable.
+     * They must call $next($throughput) to continue the pipeline chain.
      *
      * @example $pipeline->pipe(fn ($throughput, callable $next) => $next($throughput));
      */
-    public function pipe(callable $callback, string|null $alias = null, bool $force = false): static
+    public function pipe(callable $callback): static
     {
-        $alias ??= Random::alphabetical(20);
+        $this->pipes[] = $callback;
 
-        // Validate conditions for when not to add the given pipe.
-        if (in_array($alias, $this->persists) || (! $force && isset($this->pipes[$alias]))) {
-            return $this;
-        }
-
-        $this->pipes[$alias] = $callback;
         return $this;
     }
 
     /**
-     * Persists the given pipe.
+     * Pipeline middleware entrypoint.
      */
-    public function persist(string $alias): static
-    {
-        $this->persists[] = $alias;
-        return $this;
-    }
-
     public function middleware(): Middleware
     {
         return $this->middleware ??= $this->newInstance([], Middleware::class);
     }
 
     /**
-     * Remove all pipes.
+     * Register a handler to execute when an exception occurs during pipeline execution.
+     *
+     * Catch handlers receive the exception and logger as arguments.
+     * Multiple catch handlers can be registered and will all be executed.
+     *
+     * @example $pipeline->onCatch(fn($e, $logger) => $logger->error($e->getMessage()));
      */
-    public function clear(): static
+    public function onCatch(callable $handler, string|null $alias = null): static
     {
-        $this->pipes = [];
-
-        return $this;
+        return $this->registerHandler('catch', $handler, $alias);
     }
 
     /**
-     * Returns the number of pipes.
+     * Register a handler to execute after pipeline completion (success or failure).
+     *
+     * Finally handlers receive the throughput as an argument and are always executed,
+     * similar to a try-finally block.
+     *
+     * @example $pipeline->onFinally(fn($data) => cleanup($data));
+     */
+    public function onFinally(callable $handler, string|null $alias = null): static
+    {
+        return $this->registerHandler('finally', $handler, $alias);
+    }
+
+    /**
+     * Register a handler to execute after pipeline completion (success only).
+     *
+     * Success handlers receive the throughput as an argument and are always executed
+     *
+     * @example $pipeline->onFinally(fn($data) => cleanup($data));
+     */
+    public function onSuccess(callable $handler, string|null $alias = null): static
+    {
+        return $this->registerHandler('success', $handler, $alias);
+    }
+
+    /**
+     * Get the number of currently registered pipes.
      */
     public function count(): int
     {
@@ -97,80 +115,23 @@ class Pipeline
     }
 
     /**
-     * Temporarily stash current pipes.
-     */
-    public function stash(string $name): static
-    {
-        $this->stashes[$name] = $this->pipes;
-
-        return $this->clear();
-    }
-
-    /**
-     * Unstash a stashed set of pipes at the end of the current pipeline.
-     */
-    public function unstash(string $name): static
-    {
-        if (isset($this->stashes[$name])) {
-            foreach ($this->stashes[$name] as $callback) {
-                $this->pipe($callback);
-            }
-
-            unset($this->stashes[$name]);
-        }
-
-        return $this;
-    }
-
-    public function onCatch(callable $handler): static
-    {
-        $this->handlers['catch'][] = $handler;
-        return $this;
-    }
-
-    public function onFinally(callable $handler): static
-    {
-        $this->handlers['finally'][] = $handler;
-        return $this;
-    }
-
-    protected function processHandler(string $handler, mixed ...$args): static
-    {
-        // Always log any Pipeline exception no matter what.
-        if ($handler === 'catch' && $args[0] ?? null instanceof Throwable) {
-            $this->logger->critical('Pipeline', ['exception' => $args[0]]);
-        }
-
-        foreach ($this->handlers[$handler] ?? [] as $callback) {
-            try {
-                $callback(...$args);
-            } catch (Throwable $exception) {
-                $this->logger->error('Pipeline handler failed: ' . $exception->getMessage(), [
-                    'handler' => $handler,
-                    'exception' => $exception,
-                ]);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @throws Throwable
+     * Process all pipes in the pipeline with the given throughput.
+     *
+     * Couples all pipes into a single callable chain, applies middleware if configured,
+     * handles exceptions with catch handlers, and ensures finally handlers are executed.
+     * Performs cleanup after successful execution to remove one-time pipes.
      */
     protected function processPipes(mixed $throughput): mixed
     {
-        if ($this->count() === 0) {
-            return $throughput;
-        }
-
         // Build the final pipeline.
         $pipeline = $this->couple($this->pipes);
 
         try {
             $throughput = $this->middleware
-                ? $this->middleware()->run($throughput, fn ($throughput) => $pipeline($throughput))
+                ? $this->middleware()->run($throughput, $pipeline)
                 : $pipeline($throughput);
+
+            $this->processHandler('success', $throughput);
         } catch (Throwable $exception) {
             $this->processHandler('catch', $exception, $this->logger);
         } finally {
@@ -181,15 +142,73 @@ class Pipeline
     }
 
     /**
-     * @param array<mixed, callable> $pipes
+     * Execute all registered handlers for a specific event type.
+     *
+     * Automatically logs critical exceptions when processing 'catch' handlers.
+     * If a handler itself throws an exception, it's logged but doesn't interrupt other handlers.
      */
-    private function couple(array $pipes): callable
+    protected function processHandler(string $handler, mixed ...$args): static
     {
-        // Acts as the final "next" callable in the pipeline.
-        $passthrough = fn ($throughput) => $throughput;
-        // Wraps each pipe around the existing pipeline.
-        $decorator = fn ($next, $pipe) => fn ($throughput) => $pipe($throughput, $next);
-        // Construct the final pipeline.
-        return array_reduce(array_reverse($pipes), $decorator, $passthrough);
+        $class = basename(str_replace('\\', '/', __CLASS__));
+
+        // Always log any exception no matter what.
+        if ($handler === 'catch' && $args[0] ?? null instanceof Throwable) {
+            $this->logger->critical($class, ['exception' => $args[0]]);
+        }
+
+        foreach ($this->handlers[$handler] ?? [] as $callback) {
+            try {
+                $callback(...$args);
+            } catch (Throwable $exception) {
+                $this->logger->error($class . ' handler failed: ' . $exception->getMessage(), [
+                    'handler' => $handler,
+                    'exception' => $exception,
+                ]);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Register a handler for a specific event type.
+     *
+     * Prevents duplicate registration of handlers with the same alias unless
+     * the force flag is set to true.
+     */
+    protected function registerHandler(
+        string $event,
+        callable $handler,
+        string|null $alias = null
+    ): static
+    {
+        $this->handlers[$event][$alias ?? Random::alphabetical()] = $handler;
+        return $this;
+    }
+
+    /**
+     * Couple multiple pipes into a single callable chain.
+     *
+     * Uses array_reduce to build a nested chain of callables where each pipe
+     * wraps the next, creating a middleware-style execution pattern.
+     */
+    protected function couple(array $pipes): callable
+    {
+        $core = fn (mixed $throughput): mixed => $throughput;
+
+        foreach (array_reverse($pipes) as $pipe) {
+            $core = function (mixed $throughput) use ($pipe, $core): mixed {
+                $result = $pipe($throughput, $core);
+
+                // @todo This is something to concider later on...
+//                if ($result instanceof ShortCircuit) {
+//                    return $result->value;  // Short-circuit: return early with this value
+//                }
+
+                return $result;
+            };
+        }
+
+        return $core;
     }
 }

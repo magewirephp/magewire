@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireCompiling;
 
+use DateTime;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Component;
@@ -64,29 +65,29 @@ class SupportMagewireCompiling extends ComponentHook
         });
 
         on('magewire:view:compile', function (Compiler $compiler) {
-            $templatePipelineMiddleware = $compiler->pipelines()->template()->middleware();
+            $compiler->pipelines()->template()->middleware()->group('components')
 
-            $templatePipelineMiddleware->group('first')
+                ->pipe(function (string $throughput, callable $next) use ($compiler): string {
+                    $result = $next($throughput);
 
-                // Appends a template basepath comment to compiled template output.
-                ->pipe(function (string $throughput) use ($compiler) {
-                    return $throughput . '<?php /** Template Basepath: ' . $compiler->basePath() . ' **/ ?>' . PHP_EOL;
-                }
-            );
-
-            $templatePipelineMiddleware->group('last')
-
-                // Appends a template compilation duration comment to the compiled template output.
-                ->pipe(function (string $throughput) use ($compiler) {
-                    $durationMs = round((microtime(true) - $compiler->compileStartTime()) * 1000, 2);
-                    $durationSec = round($durationMs / 1000, 4);
-
-                    return $throughput . '<?php /** Compile Duration: ' . $durationMs . 'ms or ' . $durationSec . 's **/ ?>' . PHP_EOL;
+                    $date = new DateTime();
+                    return $result . '<?php /** Compile Date/Time: ' . $date->format('Y-m-d H:i:s.u') . ' **/ ?>' . PHP_EOL;
                 })
 
-                // Appends a template compilation date/time comment to the compiled template output.
-                ->pipe(function (string $throughput) {
-                    return $throughput . '<?php /** Compile Date/Time: ' . date('Y-m-d H:i:s') . ' **/ ?>' . PHP_EOL;
+                ->pipe(function (string $throughput, callable $next) use ($compiler): string {
+                    $result = $next($throughput);
+
+                    return $result . '<?php /** Template Basepath: ' . $compiler->basePath() . ' **/ ?>' . PHP_EOL;
+                })
+
+                // Render the final compilation duration.
+                ->pipe(function (string $throughput, callable $next) use ($compiler): string {
+                    $result = $next($throughput);
+
+                    $durationMs  = round((microtime(true) - $compiler->compileStartTime()) * 1000, 2);
+                    $durationSec = round($durationMs / 1000, 4);
+
+                    return $result . '<?php /** Compile Duration: ' . $durationMs . ' milliseconds (' . $durationSec . ' seconds) **/ ?>' . PHP_EOL;
                 });
         });
     }

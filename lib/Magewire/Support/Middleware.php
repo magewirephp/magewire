@@ -10,70 +10,84 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Support;
 
-use Throwable;
-
+/**
+ * Middleware layer for pipeline processing.
+ *
+ * Extends Pipeline to provide middleware-specific functionality with support for
+ * grouping middleware with configurable execution order.
+ */
 class Middleware extends Pipeline
 {
-    /** @var array<string, Pipeline> $bypasses */
+    /** @var array<string, Pipeline> */
     protected array $groups = [];
-    /** @var array<string, int> $positions */
+    /** @var array<string, int> */
     protected array $positions = [];
 
     /**
-     * @throws Throwable
+     * Main entry point when this middleware wraps the core pipeline.
+     *
+     * Receives $throughput and the core pipeline closure ($action).
      */
-    public function run(mixed $throughput, callable $next = null): mixed
+    public function run(mixed $throughput, callable|null $action = null): mixed
     {
-        if ($this->count() === 0) {
-            return $next ? $next($throughput) : $throughput;
+        $throughput = $this->runGroups($throughput);
+        $originalPipes = $this->pipes;
+
+        if ($action !== null) {
+            $this->pipes[] = $action;
         }
 
-        $middleware = $this->couple($this->pipes, $next);
-
         try {
-            $throughput = $middleware($throughput);
-        } catch (Throwable $exception) {
-            $this->processHandler('catch', $exception, $throughput);
+            return parent::run($throughput);
         } finally {
-            $this->processHandler('finally', $throughput);
+            $this->pipes = $originalPipes;
+        }
+    }
+
+    /**
+     * Execute all groups in position order (ascending = lower first).
+     * @throws \Throwable
+     */
+    protected function runGroups(mixed $throughput): mixed
+    {
+        if (empty($this->groups)) {
+            return $throughput;
+        }
+
+        $sortedGroups = $this->groups;
+
+        uasort($sortedGroups, function ($a, $b) {
+            $posA = $this->positions[array_search($a, $this->groups, true)] ?? 500;
+            $posB = $this->positions[array_search($b, $this->groups, true)] ?? 500;
+
+            return $posA <=> $posB;
+        });
+
+        foreach ($sortedGroups as $group) {
+            $throughput = $group->run($throughput);
         }
 
         return $throughput;
     }
 
-    public function group(string $name, $position = 500): Pipeline
+    /**
+     * Create or retrieve a middleware group with execution position.
+     */
+    public function group(string $name, int $position = 500): Pipeline
     {
-        if (count($this->groups) === 0) {
-            $this->pipe(function (mixed $throughput, callable $next) {
-                $groups = $this->groups;
-
-                uksort($groups, fn ($a, $b) =>
-                    ($this->positions[$a] ?? 500) <=> ($this->positions[$b] ?? 500)
-                );
-
-                foreach ($groups as $name => $group) {
-                    $throughput = $group->run($throughput);
-                }
-
-                return $next($throughput);
-            });
-        }
-
-        // A position can only be set once, and cannot be altered.
         $this->positions[$name] ??= $position;
 
-        return $this->groups[$name] ??= $this->newTypeInstance(Pipeline::class);
+        if (!isset($this->groups[$name])) {
+            $this->groups[$name] = $this->newTypeInstance(Pipeline::class);
+        }
+
+        return $this->groups[$name];
     }
 
-    /**
-     * @param array<mixed, callable> $pipes
-     */
-    private function couple(array $pipes, callable $action): callable
+    protected function couple(array $pipes): callable
     {
-        return array_reduce(
-            array_reverse($pipes),
-            fn ($inner, $pipe) => fn ($throughput) => $pipe($throughput, $inner),
-            $action
-        );
+        // Your original version – first registered = innermost
+        $decorator = fn ($next, $pipe) => fn ($throughput) => $pipe($throughput, $next);
+        return array_reduce($pipes, $decorator, fn ($throughput) => $throughput);
     }
 }

@@ -72,7 +72,7 @@ class DomElementData extends Distributor
         return $this;
     }
 
-    protected function create(string $type, array $arguments = []): object
+    protected function create(string|null $type = null, array $arguments = []): object
     {
         if ($type === 'data') {
             return parent::create($type, $arguments);

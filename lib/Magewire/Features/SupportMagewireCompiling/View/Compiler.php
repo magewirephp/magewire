@@ -262,28 +262,15 @@ abstract class Compiler
     {
         $distributor = $this->compilerPipelinesFactory->create(['type' => Pipeline::class]);
 
-        // Template compiler.
-        $tokens = fn (string $throughput, callable $next) => $next($this->compileTokens($throughput));
+        $distributor->template()->pipe(function (string $throughput, callable $next) {
+            return $next($this->compileTokens($throughput));
+        });
 
-        /*
-         * Templates compiler pipeline.
-         */
-        $distributor->template()
-            ->pipe($tokens, 'tokens', true)->persist('tokens');
+        $distributor->template()->middleware()->group('components', 1);
 
-        // Define core middleware groups.
-        $distributor->template()->middleware()->group('first', 100);
-        $distributor->template()->middleware()->group('last', 900);
-
-        // @-directives compiler (native Magewire feature).
-        $directives = fn ($throughput, callable $next) => $this->compileDirectives($throughput);
-
-        /*
-         * Inline HTML (318) compiler pipeline.
-         */
-        $distributor->html()
-            ->pipe($directives, 'directives', true)
-            ->persist('directives');
+        $distributor->html()->pipe(function (string $throughput, callable $next) {
+            return $next($this->compileDirectives($throughput));
+        });
 
         return $distributor;
     }

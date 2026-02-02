@@ -25,7 +25,7 @@ namespace Magewirephp\Magewire\Support;
 abstract class Distributor
 {
     /** @var array<string, T> */
-    private array $instances = [];
+    protected array $instances = [];
 
     /**
      * @param class-string<T> $type
@@ -67,8 +67,12 @@ abstract class Distributor
         return $this->type;
     }
 
-    protected function create(string $type, array $arguments): object
+    protected function create(string|null $type = null, array $arguments = []): object
     {
+        if ($type === null) {
+            return Factory::create($this->type, $arguments);
+        }
+
         return Factory::create($this->resolve($type), $arguments);
     }
 }
