@@ -41,16 +41,6 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
     private array $subitems = [];
 
     /**
-     * Stack of saved collection states for snapshot/revert functionality.
-     *
-     * @var array<int, array{
-     *     items: array<string|int, mixed>,
-     *     snapshots: array<int, array{items: array<string|int, mixed>, snapshots: array}>
-     * }>
-     */
-    private array $snapshots = [];
-
-    /**
      * @var array<Hook, array<int, callable>>
      */
     private array $hooks = [];
@@ -174,11 +164,19 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
 
         $arguments = array_merge($arguments, [
             'parent' => $this,
-            'level' => $this->level + 1,
-            'name' => $name
+            'level'  => $this->level + 1,
+            'name'   => $name
         ]);
 
         return $this->subitems[$name] ??= $this->newInstance($arguments, $type);
+    }
+
+    /**
+     * Returns all subsets.
+     */
+    public function subsets(): array
+    {
+        return $this->subitems;
     }
 
     /**
@@ -328,26 +326,19 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
         return $this->items[$name] ?? ($set ? $this->default($name, $default)->get($name) : $default);
     }
 
-    /**
-     * Reset the array to a given state.
-     */
     public function reset(): static
     {
-        $i = count($this->snapshots);
+        $this->items = [];
 
-        if ($i === 0) {
-            $this->fill([]);
-        }
-
-        return $this->revert($i);
+        return $this;
     }
 
     /**
-     * Completely empty items and subitems.
+     * Destroy both the items and the subitems.
      */
     public function destroy(): static
     {
-        $this->items = [];
+        $this->reset();
         $this->subitems = [];
 
         return $this;
@@ -400,35 +391,11 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
     }
 
     /**
-     * Take a snapshot of the current data state.
+     * Clones the current data items into a new collection object excluding the subsets.
      */
-    public function snapshot(): static
+    public function snapshot(): DataArray
     {
-        $this->snapshots[] = [
-            'items' => $this->items,
-            'snapshots' => $this->snapshots,
-        ];
-
-        return $this;
-    }
-
-    /**
-     * Revert to a specific taken snapshot.
-     */
-    public function revert(int $offset = 1): static
-    {
-        $i = count($this->snapshots);
-
-        if ($i < $offset) {
-            return $this;
-        }
-
-        $latest = $this->snapshots[$i - $offset];
-
-        $this->items = $latest['items'];
-        $this->snapshots = $latest['snapshots'];
-
-        return $this;
+        return $this->newInstance()->fill($this->all());
     }
 
     /**
@@ -445,32 +412,37 @@ class DataArray implements ArrayAccess, Countable, IteratorAggregate
      * return value for that instance. Results from parent and all nested subsets
      * are merged at the same level.
      *
-     * @example $data->recursive(fn (DataArray $item) => $item->set('processed', true));
-     * @example $data->recursive(fn (DataArray $item) => $item->count());
-     * @example $data->recursive(fn (DataArray $item) => $item->get('value'));
+     * @example $data->recursively(fn (DataArray $item) => $item->set('processed', true));
+     * @example $data->recursively(fn (DataArray $item) => $item->count());
+     * @example $data->recursively(fn (DataArray $item) => $item->get('value'));
      */
-    public function recursive(callable $callback): static|array
+    public function recursively(callable $callback): static|array
     {
-        $result = $callback($this);
+        $result  = $callback($this);
+        $subsets = $this->subsets();
 
+        // Chainable mode: callback returned nothing or this instance.
         if ($result === $this || $result instanceof static || $result === null) {
-            foreach ($this->subitems as $subitem) {
-                $subitem->recursive($callback);
+            foreach ($subsets as $subitem) {
+                $subitem->recursively($callback);
             }
+
             return $this;
         }
 
-        $result = [$this->name() => $result];
+        // Collection mode: gather all results into a flat array.
+        $collection = [$this->name() => $result];
 
-        foreach ($this->subitems as $subitem) {
-            $inner = $subitem->recursive($callback);
+        foreach ($subsets as $subitem) {
+            $inner = $subitem->recursively($callback);
 
+            // Merge nested results (they'll always be arrays in collection mode).
             if (is_array($inner)) {
-                $result = array_merge($result, $inner);
+                $collection = array_merge($collection, $inner);
             }
         }
 
-        return $result;
+        return $collection;
     }
 
     public function level(): int

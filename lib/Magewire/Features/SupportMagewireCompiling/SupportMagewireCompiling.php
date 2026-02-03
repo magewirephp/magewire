@@ -18,6 +18,7 @@ use Magewirephp\Magewire\ComponentHook;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\CompilerManager;
 use Magewirephp\Magewire\Model\View\SlotsRegistry;
+use function Magewirephp\Magewire\before;
 use function Magewirephp\Magewire\on;
 use function Magewirephp\Magewire\trigger;
 
@@ -55,6 +56,7 @@ class SupportMagewireCompiling extends ComponentHook
                 // Concept: Include the Magewire underscore object optionally required by compiled views.
                 $result['dictionary']['__magewire'] ??= $this->underscoreViewModelFactory->create();
 
+                // Currently only for dev-purposes, will change over time and shouldn't be used.
                 if ($this->slotsRegistry->hasAreas()) {
                     $result['dictionary']['__slot'] ??= $this->slotsRegistry->snapshot();
                     $result['dictionary']['__el'] = $this->slotsRegistry->element();
@@ -64,30 +66,40 @@ class SupportMagewireCompiling extends ComponentHook
             };
         });
 
-        on('magewire:view:compile', function (Compiler $compiler) {
+        before('magewire:view:compile', function (Compiler $compiler) {
             $compiler->pipelines()->template()->middleware()->group('components')
 
                 ->pipe(function (string $throughput, callable $next) use ($compiler): string {
                     $result = $next($throughput);
-
                     $date = new DateTime();
-                    return $result . '<?php /** Compile Date/Time: ' . $date->format('Y-m-d H:i:s.u') . ' **/ ?>' . PHP_EOL;
+
+                    return $result . sprintf(
+                            '<?php /** Compile Date/Time: %s **/ ?>' . PHP_EOL,
+                            $date->format('Y-m-d H:i:s.u')
+                        );
                 })
 
                 ->pipe(function (string $throughput, callable $next) use ($compiler): string {
                     $result = $next($throughput);
 
-                    return $result . '<?php /** Template Basepath: ' . $compiler->basePath() . ' **/ ?>' . PHP_EOL;
+                    return $result . sprintf(
+                            '<?php /** Template Basepath: %s **/ ?>' . PHP_EOL,
+                            $compiler->basePath()
+                        );
                 })
 
-                // Render the final compilation duration.
                 ->pipe(function (string $throughput, callable $next) use ($compiler): string {
+                    $start = $compiler->compileStartTime();
                     $result = $next($throughput);
 
-                    $durationMs  = round((microtime(true) - $compiler->compileStartTime()) * 1000, 2);
+                    $durationMs  = round((microtime(true) - $start) * 1000, 2);
                     $durationSec = round($durationMs / 1000, 4);
 
-                    return $result . '<?php /** Compile Duration: ' . $durationMs . ' milliseconds (' . $durationSec . ' seconds) **/ ?>' . PHP_EOL;
+                    return $result . sprintf(
+                            '<?php /** Compile Duration: %.2f ms (%.4f s) **/ ?>' . PHP_EOL,
+                            $durationMs,
+                            $durationSec
+                        );
                 });
         });
     }

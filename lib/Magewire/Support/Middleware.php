@@ -10,6 +10,8 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Support;
 
+use Throwable;
+
 /**
  * Middleware layer for pipeline processing.
  *
@@ -23,51 +25,16 @@ class Middleware extends Pipeline
     /** @var array<string, int> */
     protected array $positions = [];
 
-    /**
-     * Main entry point when this middleware wraps the core pipeline.
-     *
-     * Receives $throughput and the core pipeline closure ($action).
-     */
     public function run(mixed $throughput, callable|null $action = null): mixed
     {
-        $throughput = $this->runGroups($throughput);
-        $originalPipes = $this->pipes;
-
-        if ($action !== null) {
-            $this->pipes[] = $action;
-        }
+        $origin = $this->pipes;
+        $this->pipes[] = $action ?? fn (mixed $t) => $t;
 
         try {
-            return parent::run($throughput);
+            return parent::run($this->processGroups($throughput));
         } finally {
-            $this->pipes = $originalPipes;
+            $this->pipes = $origin;
         }
-    }
-
-    /**
-     * Execute all groups in position order (ascending = lower first).
-     * @throws \Throwable
-     */
-    protected function runGroups(mixed $throughput): mixed
-    {
-        if (empty($this->groups)) {
-            return $throughput;
-        }
-
-        $sortedGroups = $this->groups;
-
-        uasort($sortedGroups, function ($a, $b) {
-            $posA = $this->positions[array_search($a, $this->groups, true)] ?? 500;
-            $posB = $this->positions[array_search($b, $this->groups, true)] ?? 500;
-
-            return $posA <=> $posB;
-        });
-
-        foreach ($sortedGroups as $group) {
-            $throughput = $group->run($throughput);
-        }
-
-        return $throughput;
     }
 
     /**
@@ -77,17 +44,37 @@ class Middleware extends Pipeline
     {
         $this->positions[$name] ??= $position;
 
-        if (!isset($this->groups[$name])) {
+        if (! isset($this->groups[$name])) {
             $this->groups[$name] = $this->newTypeInstance(Pipeline::class);
         }
 
         return $this->groups[$name];
     }
 
-    protected function couple(array $pipes): callable
+    /**
+     * Execute all groups in position order (ascending = lower first).
+     *
+     * @throws Throwable
+     */
+    protected function processGroups(mixed $throughput): mixed
     {
-        // Your original version – first registered = innermost
-        $decorator = fn ($next, $pipe) => fn ($throughput) => $pipe($throughput, $next);
-        return array_reduce($pipes, $decorator, fn ($throughput) => $throughput);
+        if (empty($this->groups)) {
+            return $throughput;
+        }
+
+        $groups = $this->groups;
+
+        uasort($groups, function ($a, $b) {
+            $posA = $this->positions[array_search($a, $this->groups, true)] ?? 500;
+            $posB = $this->positions[array_search($b, $this->groups, true)] ?? 500;
+
+            return $posA <=> $posB;
+        });
+
+        foreach ($groups as $group) {
+            $throughput = $group->run($throughput);
+        }
+
+        return $throughput;
     }
 }

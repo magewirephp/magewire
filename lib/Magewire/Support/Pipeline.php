@@ -123,10 +123,9 @@ class Pipeline
      */
     protected function processPipes(mixed $throughput): mixed
     {
-        // Build the final pipeline.
-        $pipeline = $this->couple($this->pipes);
-
         try {
+            $pipeline = $this->couple($this->pipes);
+
             $throughput = $this->middleware
                 ? $this->middleware()->run($throughput, $pipeline)
                 : $pipeline($throughput);
@@ -149,18 +148,20 @@ class Pipeline
      */
     protected function processHandler(string $handler, mixed ...$args): static
     {
-        $class = basename(str_replace('\\', '/', __CLASS__));
+        $handlers = $this->handlers[$handler] ?? [];
 
-        // Always log any exception no matter what.
-        if ($handler === 'catch' && $args[0] ?? null instanceof Throwable) {
-            $this->logger->critical($class, ['exception' => $args[0]]);
+        // Re-throw exception if no catch handlers are registered to process it.
+        if (empty($handlers) && $handler === 'catch' && ($args[0] ?? null) instanceof Throwable) {
+            throw $args[0];
         }
 
-        foreach ($this->handlers[$handler] ?? [] as $callback) {
+        $class = basename(str_replace('\\', '/', __CLASS__));
+
+        foreach ($handlers as $callback) {
             try {
                 $callback(...$args);
             } catch (Throwable $exception) {
-                $this->logger->error($class . ' handler failed: ' . $exception->getMessage(), [
+                $this->logger->error($class . ' exception: ' . $exception->getMessage(), [
                     'handler' => $handler,
                     'exception' => $exception,
                 ]);
@@ -183,6 +184,7 @@ class Pipeline
     ): static
     {
         $this->handlers[$event][$alias ?? Random::alphabetical()] = $handler;
+
         return $this;
     }
 
@@ -198,14 +200,7 @@ class Pipeline
 
         foreach (array_reverse($pipes) as $pipe) {
             $core = function (mixed $throughput) use ($pipe, $core): mixed {
-                $result = $pipe($throughput, $core);
-
-                // @todo This is something to concider later on...
-//                if ($result instanceof ShortCircuit) {
-//                    return $result->value;  // Short-circuit: return early with this value
-//                }
-
-                return $result;
+                return $pipe($throughput, $core);
             };
         }
 

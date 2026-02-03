@@ -266,7 +266,10 @@ abstract class Compiler
             return $next($this->compileTokens($throughput));
         });
 
-        $distributor->template()->middleware()->group('components', 1);
+        // Reserves the 'security' groups at the very earliest position
+        // so security-related pipes always run before everything else.
+        $distributor->template()->middleware()->group('security', 0);
+        $distributor->html()->middleware()->group('security', 0);
 
         $distributor->html()->pipe(function (string $throughput, callable $next) {
             return $next($this->compileDirectives($throughput));
