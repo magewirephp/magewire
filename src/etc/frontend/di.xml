@@ -261,6 +261,7 @@
                 <item name="script" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Script</item>
                 <item name="fragment" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Fragment</item>
                 <item name="slot" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Base\Proxy</item>
+                <item name="template" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Template\Proxy</item>
 
                 <!-- Basic PHP methods. -->
                 <!-- WIP... -->

@@ -269,6 +269,7 @@ abstract class Compiler
         // Reserves the 'security' groups at the very earliest position
         // so security-related pipes always run before everything else.
         $distributor->template()->middleware()->group('security', 0);
+        $distributor->template()->middleware()->group('last', 900);
         $distributor->html()->middleware()->group('security', 0);
 
         $distributor->html()->pipe(function (string $throughput, callable $next) {

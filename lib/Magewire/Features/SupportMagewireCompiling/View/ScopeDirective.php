@@ -46,6 +46,7 @@ abstract class ScopeDirective extends Directive
     protected function variableScopeStart(string|null $var = null): string
     {
         $var ??= Random::alphabetical(10);
+
         $this->scopeVariables[] = $var;
 
         return $var;

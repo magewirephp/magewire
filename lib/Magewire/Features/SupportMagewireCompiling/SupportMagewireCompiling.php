@@ -24,6 +24,8 @@ use function Magewirephp\Magewire\trigger;
 
 class SupportMagewireCompiling extends ComponentHook
 {
+    private int $i = 0;
+
     public function __construct(
         private MagewireUnderscoreViewModelFactory $underscoreViewModelFactory,
         private CompilerManager $compilerManager,
@@ -67,9 +69,28 @@ class SupportMagewireCompiling extends ComponentHook
         });
 
         before('magewire:view:compile', function (Compiler $compiler) {
-            $compiler->pipelines()->template()->middleware()->group('components')
+            $runs['html'] = 0;
 
-                ->pipe(function (string $throughput, callable $next) use ($compiler): string {
+            $compiler->pipelines()->html()->middleware()->group('first-line', 2)
+
+                ->pipe(function (string $throughput, callable $next) use (&$runs, $compiler) {
+                    $runs['html']++;
+
+                    if ($runs['html'] === 1) {
+                        return '@template()' . PHP_EOL . $next($throughput);
+                    }
+
+                    return $next($throughput);
+                });
+
+            $compiler->pipelines()->template()->middleware()->group('last')
+                ->pipe(function (string $throughput, callable $next): string {
+                    return $next($throughput) . '@endtemplate';
+                });
+
+            $compiler->pipelines()->template()->middleware()->group('last')
+
+                ->pipe(function (string $throughput, callable $next): string {
                     $result = $next($throughput);
                     $date = new DateTime();
 
