@@ -24,28 +24,8 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
         }
 
         window.Magewire = window.Livewire;
-
-        const magewireEventsMap = [
-            { from: 'livewire:init', to: 'magewire:init'},
-            { from: 'livewire:initialized', to: 'magewire:initialized'},
-
-            <?php /* To support legacy V1 events. */ ?>
-            { from: 'magewire:init', to: 'magewire:load', legacy: true },
-            { from: 'magewire:initialized', to: 'magewire:available', legacy: true }
-        ];
-
-        magewireEventsMap.forEach(({ from, to }) => {
-            document.addEventListener(from, original => {
-                const details = { ...original.detail };
-                const event = to.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-
-                document.dispatchEvent(new CustomEvent(event, {
-                    detail: details,
-                    bubbles: original.bubbles,
-                    cancelable: original.cancelable
-                }));
-            });
-        });
     })();
 </script>
 <?php $script->end() ?>
+
+<?= $block->getChildHtml('internal.backwards-compatibility.events') ?>

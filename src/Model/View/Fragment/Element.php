@@ -20,6 +20,9 @@ use Magewirephp\Magewire\Support\Distributor;
 use Magewirephp\Magewire\Support\Factory;
 use Psr\Log\LoggerInterface;
 
+/**
+ * @deprecated Work in progress, do not use in production.
+ */
 abstract class Element extends Fragment
 {
     private Distributor|null $data = null;

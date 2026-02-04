@@ -22,6 +22,8 @@ use Magewirephp\Magewire\Model\View\Fragment;
  * Unlike standard fragments, slots do not create nested tracking contexts - they
  * simply register their content as a named slot in the current area's registry.
  * The slot's name is determined by its variant property.
+ *
+ * @deprecated Work in progress, do not use in production.
  */
 class Slot extends Fragment\Element
 {

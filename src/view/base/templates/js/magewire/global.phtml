@@ -71,6 +71,9 @@ $templateUtil = $magewireViewModel->utils()->template();
                 if (! name || typeof name !== 'string') {
                     throw new Error('Magewire: Name must be a non-empty string');
                 }
+                if (name === 'magewire') {
+                    throw new Error('Magewire: namespace "magewire" is a reserved name.');
+                }
                 if (typeof callback !== 'function') {
                     throw new Error('Magewire: Callback must be a function');
                 }

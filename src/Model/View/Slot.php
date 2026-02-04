@@ -23,6 +23,8 @@ use Stringable;
  * @todo Needs to become lockable after the content has been updated with the final output buffer/content.
  *       This should maybe be done with a generic WithLockable trait sitting in the Magewire/Support namespace.
  *       Read-only for the class is not sufficient, since the content has to be updated.
+ *
+ * @deprecated Work in progress, do not use in production.
  */
 class Slot implements Stringable
 {

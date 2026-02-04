@@ -27,7 +27,7 @@
                 />
 
                 <!--
-                    Magewire Utilities.
+                    MAGEWIRE UTILITIES.
 
                     Utilities are standalone helper functions that can be used throughout the codebase.
                     They operate independently from Magewire but can optionally integrate with the
@@ -49,7 +49,7 @@
                 </container>
 
                 <!--
-                    Magewire Addons.
+                    MAGEWIRE ADDONS.
 
                     Addons complement the framework without depending on it. Each addon functions
                     independently but can optionally integrate with Magewire when compatibility
@@ -132,14 +132,26 @@
                 </block>
             </container>
 
-            <!-- Intended for non-overridable internal code. -->
+            <!--
+                MAGEWIRE INTERNAL.
+
+                Non-overridable internal block. Deliberately defined as a block (not container)
+                to prevent injection without explicitly overwriting this internally-flagged template file.
+
+                To inject content after this block, use the "magewire.after.internal" container.
+            -->
             <block name="magewire.internal"
                    as="internal"
                    template="Magewirephp_Magewire::js/magewire/internal.phtml"
-            />
+            >
+                <block name="magewire.internal.backwards-compatibility.events"
+                       as="internal.backwards-compatibility.events"
+                       template="Magewirephp_Magewire::js/magewire/internal/backwards-compatibility-events.phtml"
+                />
+            </block>
 
             <!--
-                Magewire Directives.
+                MAGEWIRE DIRECTIVES.
             -->
             <container name="magewire.directives" as="directives">
                 <!-- The primary defense mechanism to mitigate an excessive influx of XHR requests. -->
@@ -153,7 +165,7 @@
             </container>
 
             <!--
-                Magewire Features.
+                MAGEWIRE FEATURES.
             -->
             <container name="magewire.features" as="features">
                 <block name="magewire.features.support-magewire-loaders"

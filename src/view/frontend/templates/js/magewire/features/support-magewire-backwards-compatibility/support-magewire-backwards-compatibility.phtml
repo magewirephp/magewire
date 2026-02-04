@@ -17,51 +17,49 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
 ?>
 <?php $script = $magewireFragment->make()->script()->start() ?>
 <script>
-    document.addEventListener('magewire:init', event => {
-        const makeBackwardsCompatible = function(component) {
-            return new Proxy(component, {
-                get(target, prop, receiver) {
-                    if (target.effects.bc && prop in target.effects.bc) {
-                        const value = target.effects.bc[prop];
+    const makeComponentBackwardsCompatible = function(component) {
+        return new Proxy(component, {
+            get(target, prop, receiver) {
+                if (target.effects.bc && prop in target.effects.bc) {
+                    const value = target.effects.bc[prop];
 
-                        if (typeof value === 'string' && value.startsWith('path:')) {
-                            return value.slice(5).split('.').reduce((obj, key) => obj?.[key], target);
-                        }
-
-                        return value;
+                    if (typeof value === 'string' && value.startsWith('path:')) {
+                        return value.slice(5).split('.').reduce((obj, key) => obj?.[key], target);
                     }
 
-                    return Reflect.get(target, prop, receiver);
-                },
-
-                has(target, prop) {
-                    if (target.effects.bc && prop in target.effects.bc) {
-                        return true;
-                    }
-
-                    return Reflect.has(target, prop);
+                    return value;
                 }
-            });
-        }
+
+                return Reflect.get(target, prop, receiver);
+            },
+
+            has(target, prop) {
+                if (target.effects.bc && prop in target.effects.bc) {
+                    return true;
+                }
+
+                return Reflect.has(target, prop);
+            }
+        });
+    };
+    document.addEventListener('magewire:init', event => {
+
 
         <?php /* @deprecated 'component.initialized' has been replaced with 'component.init'. */ ?>
         Magewire.hook('component.init', ({ component, cleanup }) => {
-            Magewire.trigger('component.initialized', makeBackwardsCompatible(component));
+            Magewire.trigger('component.initialized', { component: makeComponentBackwardsCompatible(component) });
         });
-
         <?php /* @deprecated 'element.initialized' has been replaced with 'element.init'. */ ?>
         Magewire.hook('element.init', ({ el, component }) => {
-            Magewire.trigger('element.initialized', el, makeBackwardsCompatible(component));
+            Magewire.trigger('element.initialized', el, makeComponentBackwardsCompatible(component));
         });
-
         <?php /* @deprecated 'element.updating' has been replaced with 'morph.updating'. */ ?>
         Magewire.hook('morph.updating', ({ el, toEl, component }) => {
-            Magewire.trigger('element.updating', el, toEl, makeBackwardsCompatible(component));
+            Magewire.trigger('element.updating', el, toEl, makeComponentBackwardsCompatible(component));
         });
-
         <?php /* @deprecated 'element.removed' has been replaced with 'morph.removed'. */ ?>
         Magewire.hook('morph.removed', ({ el, component }) => {
-            Magewire.trigger('element.removed', el, makeBackwardsCompatible(component));
+            Magewire.trigger('element.removed', el, makeComponentBackwardsCompatible(component));
         });
 
         <?php /* @deprecated 'message.sent' has been replaced with 'commit'. */ ?>
@@ -69,7 +67,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
         <?php /* @deprecated 'message.received' has been replaced with 'commit' - succeed(). */ ?>
         <?php /* @deprecated 'message.processed' has been replaced with 'commit' - succeed() - queueMicrotask. */ ?>
         Magewire.hook('commit', ({ component, commit, respond, succeed, fail }) => {
-            component = makeBackwardsCompatible(component);
+            component = makeComponentBackwardsCompatible(component);
 
             const generateSignature = () => {
                 return (Math.random() + 1).toString(36).substring(8)

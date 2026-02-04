@@ -15,7 +15,7 @@ use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Model\View\Fragment;
 use Psr\Log\LoggerInterface;
 
-class Template extends Fragment
+class Component extends Fragment
 {
     public function __construct(
         private readonly AbstractBlock $block,

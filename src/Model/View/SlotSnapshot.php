@@ -21,6 +21,8 @@ use Stringable;
  *
  * This is useful for passing slot collections between template layers
  * or storing slot states for later rendering.
+ *
+ * @deprecated Work in progress, do not use in production.
  */
 readonly class SlotSnapshot implements Stringable
 {

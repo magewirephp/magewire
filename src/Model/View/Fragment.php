@@ -163,11 +163,9 @@ abstract class Fragment
     /**
      * Sets a validation callback who can only return true or false.
      */
-    protected function withValidator(callable $callback, string|null $name = null): static
+    protected function withValidator(callable $callback): static
     {
-        // We can be sure all validator callback keys are integers.
-        $key = $name ?? key($this->validators) + 1;
-        $this->validators[$key] = $callback;
+        $this->validators[] = $callback;
 
         return $this;
     }

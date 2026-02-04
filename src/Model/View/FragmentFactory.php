@@ -17,7 +17,7 @@ use Magewirephp\Magewire\Model\View\Fragment\Html;
 use Magewirephp\Magewire\Model\View\Fragment\Javascript;
 use Magewirephp\Magewire\Model\View\Fragment\Script;
 use Magewirephp\Magewire\Model\View\Fragment\Style;
-use Magewirephp\Magewire\Model\View\Fragment\Template;
+use Magewirephp\Magewire\Model\View\Fragment\Component;
 use Magewirephp\Magewire\Support\Factory;
 
 class FragmentFactory
@@ -57,9 +57,9 @@ class FragmentFactory
         return $this->elementFactory;
     }
 
-    public function template(AbstractBlock $block): Template
+    public function component(AbstractBlock $block): Component
     {
-        return $this->create(Template::class, ['block' => $block]);
+        return $this->create(Component::class, ['block' => $block]);
     }
 
     /**

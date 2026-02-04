@@ -17,6 +17,9 @@ use Magewirephp\Magewire\Model\View\Fragment;
 use Magewirephp\Magewire\Model\View\SlotsRegistry;
 use Psr\Log\LoggerInterface;
 
+/**
+ * @deprecated Work in progress, do not use in production.
+ */
 class Unknown extends Fragment\Element
 {
     public function __construct(

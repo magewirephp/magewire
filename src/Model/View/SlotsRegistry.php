@@ -23,6 +23,8 @@ use Magewirephp\Magewire\Support\Factory;
  *
  * Areas are tracked and untracked as templates are rendered, creating isolated
  * slot contexts that prevent naming conflicts between nested components.
+ *
+ * @deprecated Work in progress, do not use in production.
  */
 class SlotsRegistry
 {

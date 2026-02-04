@@ -23,7 +23,7 @@ class Template extends ScopeDirective
     {
         $var = $this->variableScopeStart();
 
-        return "<?php \${$var} = \$__magewire->utils()->fragment()->make()->template(\$block) ?>";
+        return "<?php \${$var} = \$__magewire->utils()->fragment()->make()->component(\$block) ?>";
     }
 
     public function endtemplate(): string

@@ -1,0 +1,44 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment = $magewireViewModel->utils()->fragment();
+
+/** @internal Do not modify to ensure Magewire continues to function correctly. */
+?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    (() => {
+        const magewireBcEventsMapping = [
+            { from: 'livewire:init', to: 'magewire:init', legacy: false },
+            { from: 'livewire:initialized', to: 'magewire:initialized' },
+
+            <?php /* To support legacy V1 events. */ ?>
+            { from: 'magewire:init', to: 'magewire:load', legacy: false },
+            { from: 'magewire:initialized', to: 'magewire:available', legacy: true }
+        ];
+
+        magewireBcEventsMapping.forEach(({ from, to, legacy }) => {
+            document.addEventListener(from, original => {
+                const details = { ...original.detail };
+                const event = to.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
+
+                console.log(event)
+
+                document.dispatchEvent(new CustomEvent(event, {
+                    detail: details,
+                    bubbles: original.bubbles,
+                    cancelable: original.cancelable
+                }));
+            });
+        });
+    })();
+</script>
+<?php $script->end() ?>
