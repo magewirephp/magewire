@@ -137,6 +137,9 @@
                 <block name="magewire.features.support-magewire-rate-limiting"
                        template="Magewirephp_Magewire::js/magewire/features/support-magewire-rate-limiting/support-magewire-rate-limiting.phtml"
                 />
+                <block name="magewire.features.support-magewire-cache"
+                       template="Magewirephp_Magewire::js/magewire/features/support-magewire-cache/support-magewire-cache.phtml"
+                />
             </container>
 
             <container name="magewire.after.internal" as="after.internal"/>

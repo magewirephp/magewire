@@ -148,6 +148,7 @@
                 <item name="magento_flash_messages" xsi:type="string" sortOrder="5100">Magewirephp\Magewire\Features\SupportMagentoFlashMessages\SupportMagentoFlashMessages</item>
 
                 <item name="magewire_loaders" xsi:type="string" sortOrder="5200">Magewirephp\Magewire\Features\SupportMagewireLoaders\SupportMagewireLoaders</item>
+                <item name="magewire_cache" xsi:type="string" sortOrder="5250">Magewirephp\Magewire\Features\SupportMagewireCache\SupportMagewireCache</item>
                 <item name="magewire_view_instructions" xsi:type="string" sortOrder="5300">Magewirephp\Magewire\Features\SupportMagewireViewInstructions\SupportMagewireViewInstructions</item>
 
                 <!-- Highest priorities (do not register features above this sort order range). -->

@@ -1,0 +1,187 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment = $magewireViewModel->utils()->fragment();
+?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script src="<?= $escaper->escapeUrl($block->getViewFileUrl('Magewirephp_Magewire::js/magewire/cache-store.js')) ?>"></script>
+<script>
+    document.addEventListener('magewire:init', () => {
+        'use strict';
+
+        const store = window.__magewire_cache_store;
+
+        if (!store) {
+            return;
+        }
+
+        const CACHE_VERSION = 3;
+        const SESSID_KEY = 'wire_cache_sessid';
+        const TIMEOUT_KEY = 'mage-cache-timeout';
+        const pendingWrites = {};
+
+        const getMageCacheSessid = () => {
+            const match = document.cookie.match(/(^|;\s*)mage-cache-sessid=([^;]*)/);
+            return match ? match[2] : null;
+        };
+
+        const shouldClearCache = () => {
+            try {
+                const stored = localStorage.getItem(SESSID_KEY);
+
+                if (!stored) {
+                    return false;
+                }
+
+                const current = getMageCacheSessid();
+
+                if (!current || stored !== current) {
+                    return true;
+                }
+
+                const timeout = localStorage.getItem(TIMEOUT_KEY);
+
+                return timeout && new Date(timeout) < new Date();
+            } catch {
+                return true;
+            }
+        };
+
+        const storeSessionMarker = () => {
+            try {
+                const sessid = getMageCacheSessid();
+
+                if (sessid) {
+                    localStorage.setItem(SESSID_KEY, sessid);
+                }
+            } catch {}
+        };
+
+        const cacheKeyFor = (el) => {
+            const attr = el.getAttribute('data-wire-cache');
+            return attr ? `wire:cache:${attr}` : null;
+        };
+
+        const sanitiseHtml = (html) => {
+            if (typeof html !== 'string') {
+                return '';
+            }
+
+            const so = '<' + 'script';
+            const sc = '<' + '/' + 'script>';
+            const re = new RegExp(so + '\\b[^<]*(?:(?!' + sc + ')<[^<]*)*' + sc, 'gi');
+
+            return html
+                .replace(re, '')
+                .replace(/\s+on[a-z]+\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]*)/gi, '');
+        };
+
+        const patchWireId = (outerHtml, wireId) => {
+            const temp = document.createElement('div');
+            temp.innerHTML = outerHtml;
+
+            const root = temp.firstElementChild;
+
+            if (root) {
+                root.setAttribute('wire:id', wireId);
+                return root.outerHTML;
+            }
+
+            return outerHtml;
+        };
+
+        if (shouldClearCache()) {
+            store.clear();
+            try { localStorage.removeItem(SESSID_KEY); } catch {}
+        }
+
+        storeSessionMarker();
+
+        Magewire.hook('component.init', ({ component }) => {
+            const { el } = component;
+            const key = cacheKeyFor(el);
+
+            if (!key) {
+                return;
+            }
+
+            store.get(key).then((entry) => {
+                if (!entry || !entry.html || !entry.snapshot || entry.v !== CACHE_VERSION) {
+                    if (entry && entry.v !== CACHE_VERSION) {
+                        store.clear();
+                    }
+
+                    el.dispatchEvent(new CustomEvent('magewire:cache:miss', {
+                        bubbles: true,
+                        detail: { key }
+                    }));
+
+                    return;
+                }
+
+                try {
+                    component.mergeNewSnapshot(entry.snapshot, component.effects);
+                } catch {
+                    el.dispatchEvent(new CustomEvent('magewire:cache:miss', {
+                        bubbles: true,
+                        detail: { key }
+                    }));
+
+                    return;
+                }
+
+                const html = patchWireId(sanitiseHtml(entry.html), component.id);
+
+                component.processEffects({ html });
+
+                el.dispatchEvent(new CustomEvent('magewire:cache:hit', {
+                    bubbles: true,
+                    detail: { key }
+                }));
+            });
+        });
+
+        Magewire.hook('commit', ({ component, succeed }) => {
+            succeed(() => {
+                const key = cacheKeyFor(component.el);
+
+                if (key) {
+                    pendingWrites[component.id] = key;
+                }
+            });
+        });
+
+        Magewire.hook('morphed', ({ component }) => {
+            const key = pendingWrites[component.id];
+
+            if (!key) {
+                return;
+            }
+
+            delete pendingWrites[component.id];
+
+            store.post(key, {
+                v: CACHE_VERSION,
+                html: component.el.outerHTML,
+                snapshot: component.snapshotEncoded,
+                ts: Date.now()
+            });
+
+            component.el.dispatchEvent(new CustomEvent('magewire:cache:update', {
+                bubbles: true,
+                detail: { key }
+            }));
+        });
+    });
+</script>
+<?php $script->end() ?>
