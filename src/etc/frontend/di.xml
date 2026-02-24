@@ -118,6 +118,10 @@
                     Magewire-specific features rely solely on whether a feature needs to load before or after another,
                     rather than a strict sort order.
                 -->
+                <item name="magewire_view_model" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireViewModel\SupportMagewireViewModel</item>
+                </item>
+
                 <item name="magento_exception_handling" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireExceptionHandling\SupportMagewireExceptionHandling</item>
                     <item name="sort_order" xsi:type="number">800</item>

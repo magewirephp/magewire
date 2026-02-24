@@ -70,7 +70,7 @@ class Request implements RequestInterface
 
     public function isSubsequent(bool $flag = null, bool $force = false)
     {
-        return $this->magewireServiceProvider->state()->mode()->isSubsequent();
+        return $this->magewireServiceProvider->runtime()->mode()->isSubsequent();
     }
 
     public function isPreceding(): bool

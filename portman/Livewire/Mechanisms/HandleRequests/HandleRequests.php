@@ -44,7 +44,7 @@ class HandleRequests extends \Livewire\Mechanisms\HandleRequests\HandleRequests
 
     public function isMagewireRequest()
     {
-        return $this->magewireServiceProvider->state()->mode()->isSubsequent();
+        return $this->magewireServiceProvider->runtime()->mode()->isSubsequent();
     }
 
     public function request(): Http

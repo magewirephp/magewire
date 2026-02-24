@@ -10,9 +10,9 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire;
 
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
+use Magewirephp\Magewire\Enums\ServiceTypeItemBootMode;
 use Magewirephp\Magewire\Support\Factory;
 
 /**
@@ -22,29 +22,35 @@ use Magewirephp\Magewire\Support\Factory;
  */
 abstract class ServiceType
 {
-    private bool $booted = false;
+    protected bool $assembled = false;
+    protected bool $sorted = false;
+    protected bool $booted = false;
 
     private int $sortOrder = 0;
+
+    /** @var ServiceTypeItemsBooter|null $booter */
+    private ServiceTypeItemsBooter|null $booter = null;
 
     /**
      * @param array<string, string|array> $items
      */
     public function __construct(
-        protected array $items = []
+        private array $items = []
     ) {
         //
     }
 
-    public function boot(): static
+    /**
+     * Returns true when fully booted, false when only partially booted.
+     */
+    public function boot(ServiceTypeItemBootMode $mode = ServiceTypeItemBootMode::ALWAYS): bool
     {
-        if ($this->booted) {
-            return $this;
+        // Short circuit when the service is fully booted.
+        if ($this->items()->booted()) {
+            return true;
         }
 
-        $this->assemble()->sort();
-        $this->booted = true;
-
-        return $this;
+        return $this->items()->boot($mode, $this->callback())->booted();
     }
 
     /**
@@ -60,7 +66,7 @@ abstract class ServiceType
         $facade = $this->items[$for]['facade'];
 
         if (is_string($facade)) {
-            $this->items[$for]['facade'] = ObjectManager::getInstance()->get($facade);
+            $this->items[$for]['facade'] = Factory::get($facade);
         } elseif (! is_object($facade)) {
             throw new NotFoundException(
                 __('Operation type facade "%1" could not be found.', $for)
@@ -105,6 +111,10 @@ abstract class ServiceType
 
     private function assemble(): static
     {
+        if ($this->assembled) {
+            return $this;
+        }
+
         $this->items = array_map(function (string|array $item) {
             if (is_string($item)) {
                 $item = ['type' => $item];
@@ -137,15 +147,22 @@ abstract class ServiceType
             $item['view_model'] ??= null;
             // Ensure the config key exists, defaulting to null if not set.
             $item['config'] ??= null;
+            // Ensure the boot mode exists, or set the default if not set.
+            $item['boot_mode'] = ServiceTypeItemBootMode::try($item['boot_mode'] ?? null, $this->getServiceTypeItemBootModeFallback());
 
             return $item;
         }, array_filter($this->items, fn ($value) => is_string($value) || is_array($value)));
 
+        $this->assembled = true;
         return $this;
     }
 
-    private function sort(): static
+    private function sort(): array
     {
+        if ($this->sorted) {
+            return $this->items;
+        }
+
         uasort($this->items, function ($a, $b) {
             if ($a['sort_order'] == $b['sort_order']) {
                 if (isset($a['sequence'])) {
@@ -167,9 +184,23 @@ abstract class ServiceType
                 return 0;
             }
 
-            return ($a['sort_order'] ?? 0 < $b['sort_order'] ?? 0) ? -1 : 1;
+            return (($a['sort_order'] ?? 0) < ($b['sort_order'] ?? 0)) ? -1 : 1;
         });
 
-        return $this;
+        $this->sorted = true;
+        return $this->items;
     }
+
+    protected function items(): ServiceTypeItemsBooter
+    {
+        return $this->booter ??= Factory::create(ServiceTypeItemsBooter::class)
+            ->setup($this->assemble()->sort());
+    }
+
+    /**
+     * Callback ran during a booting process of a service type item.
+     */
+    abstract protected function callback(): callable;
+
+    abstract protected function getServiceTypeItemBootModeFallback(): ServiceTypeItemBootMode;
 }

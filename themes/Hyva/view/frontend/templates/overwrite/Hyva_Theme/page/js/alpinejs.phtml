@@ -8,12 +8,10 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Magewire\Support\DataArray;
+use Magento\Framework\View\Element\Template;
 
-enum Hook: string
-{
-    case SET = 'set';
-    case PUT = 'put';
-    case GET = 'get';
-    case UNSET = 'unset';
-}
+/** @var Template $block */
+
+// Defers Alpine.js initialisation, while preserving the rendering of all child elements.
+?>
+<?= $block->getChildHtml() ?>

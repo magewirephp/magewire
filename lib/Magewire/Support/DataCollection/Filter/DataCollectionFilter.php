@@ -8,11 +8,11 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Magewire\Model\View\Element;
+namespace Magewirephp\Magewire\Support\DataCollection\Filter;
 
-use Magewirephp\Magewire\Support\DataCollection;
+use Magewirephp\Magewire\Support\DataCollection\Filter;
 
-class Properties extends DataArray
+class DataCollectionFilter extends Filter
 {
     //
 }

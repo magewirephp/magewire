@@ -43,7 +43,7 @@ class ResolveComponents
          * This means, unless there is a better way that it needs a customized Generator Pool and a
          * new builder that can make sure this is available only during subsequent Magewire requests.
          */
-        if ($this->magewireServiceProvider->state()->mode()->isSubsequent()) {
+        if ($this->magewireServiceProvider->runtime()->mode()->isSubsequent()) {
             $this->layoutManager->decorator()->decorateForPagelessBlockFetching(
                 $this->layoutManager->singleton()
             );

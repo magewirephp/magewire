@@ -23,11 +23,7 @@ $templateUtil = $magewireViewModel->utils()->template();
 $layoutUtil = $magewireViewModel->utils()->layout();
 ?>
 <?= $templateUtil->echoCodeComment('notifier', false, 'UI Component') ?>
-<div
-    class="magewire-notifier"
-    x-data="magewireNotifier"
-    x-bind="magewireNotifierBindings"
->
+<div x-data="magewireNotifier" x-bind="magewireNotifierBindings">
     <template x-for="notification in notifications">
         <div
             class="magewire-notifier__notification"

@@ -113,7 +113,7 @@ class HandleRequests extends Mechanism
     }
     public function isMagewireRequest()
     {
-        return $this->magewireServiceProvider->state()->mode()->isSubsequent();
+        return $this->magewireServiceProvider->runtime()->mode()->isSubsequent();
     }
     public function request(): Http
     {

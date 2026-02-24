@@ -42,24 +42,91 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             }
         });
     };
+
+    let magewireBcHooksReady = false;
+    let magewireBcHooksResolver = null;
+    let magewireBcHooksNotifications = [];
+
+    // A mapping for what the old event became 'old' => 'new'.
+    const magewireBcHooksReplacementMapping = {
+        'component.initialized': 'component.init',
+        'element.initialized': 'element.init',
+        'element.removed': 'morph.removed',
+        'element.updating': 'morph.updating',
+        'message.sent': 'commit',
+        'message.failed': 'commit',
+        'message.received': 'commit',
+        'message.processed': 'commit'
+    };
+
+    // Create a promise that resolves when Magewire is available.
+    const magewireBcReady = new Promise(resolve => {
+        magewireBcHooksResolver = resolve;
+    });
+
+    // Function to run a hook when ready.
+    const runMagewireBackwardsCompatibleHook = async function(hook, callable) {
+        if (! magewireBcHooksNotifications.includes(hook)) {
+            const replacement = magewireBcHooksReplacementMapping[hook] || 'TBD';
+
+            <?php if ($magewireViewModel->utils()->magewire()->config()->isInDebugMode()): ?>
+                console.warn(`Magewire: Somewhere within your code, you are using a Magewire hook "${hook}". This hook is no longer supported and will eventually be removed. Please upgrade to use "${replacement}" instead. This message is only shown in developer mode.`);
+            <?php endif ?>
+        }
+
+        magewireBcHooksNotifications.push(hook);
+
+        if (! callable) return;
+        // Wait for Magewire to be ready.
+        await magewireBcReady;
+        // Execute the callable.
+        callable();
+    };
+
+    // Resolve the promise when magewire:available fires
+    document.addEventListener('magewire:available', () => {
+        if (! magewireBcHooksReady) {
+            magewireBcHooksReady = true;
+
+            // Resolve the promise to release all waiting hooks
+            if (magewireBcHooksResolver) {
+                magewireBcHooksResolver();
+            }
+        }
+    });
+
     document.addEventListener('magewire:init', event => {
-
-
         <?php /* @deprecated 'component.initialized' has been replaced with 'component.init'. */ ?>
         Magewire.hook('component.init', ({ component, cleanup }) => {
-            Magewire.trigger('component.initialized', { component: makeComponentBackwardsCompatible(component) });
+            component = makeComponentBackwardsCompatible(component);
+
+            runMagewireBackwardsCompatibleHook('component.initialized', () => {
+                Magewire.trigger('component.initialized', component);
+            });
         });
         <?php /* @deprecated 'element.initialized' has been replaced with 'element.init'. */ ?>
         Magewire.hook('element.init', ({ el, component }) => {
-            Magewire.trigger('element.initialized', el, makeComponentBackwardsCompatible(component));
+            component = makeComponentBackwardsCompatible(component);
+
+            runMagewireBackwardsCompatibleHook('element.initialized', () => {
+                Magewire.trigger('element.initialized', el, component);
+            });
         });
         <?php /* @deprecated 'element.updating' has been replaced with 'morph.updating'. */ ?>
         Magewire.hook('morph.updating', ({ el, toEl, component }) => {
-            Magewire.trigger('element.updating', el, toEl, makeComponentBackwardsCompatible(component));
+            component = makeComponentBackwardsCompatible(component);
+
+            runMagewireBackwardsCompatibleHook('element.updating', () => {
+                Magewire.trigger('element.updating', el, toEl, component);
+            });
         });
         <?php /* @deprecated 'element.removed' has been replaced with 'morph.removed'. */ ?>
         Magewire.hook('morph.removed', ({ el, component }) => {
-            Magewire.trigger('element.removed', el, makeComponentBackwardsCompatible(component));
+            component = makeComponentBackwardsCompatible(component);
+
+            runMagewireBackwardsCompatibleHook('element.removed', () => {
+                Magewire.trigger('element.removed', el, component);
+            });
         });
 
         <?php /* @deprecated 'message.sent' has been replaced with 'commit'. */ ?>
@@ -123,18 +190,38 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 });
             }
 
-            Magewire.trigger('message.sent', message, component);
+            runMagewireBackwardsCompatibleHook('message.sent', () => {
+                Magewire.trigger('message.sent', message, component);
+            });
 
             succeed(({ snapshot, effects }) => {
-                Magewire.trigger('message.received', message, component)
+                let c = {...component};
+
+                c.effects = effects;
+                c.snapshotEncoded = snapshot;
+                c.snapshot = JSON.parse(c.snapshotEncoded);
+
+                c = makeComponentBackwardsCompatible(c);
+
+                message.response.effects = c.effects
+                message.response.serverMemo = c.effects.bc.serverMemo
+
+                runMagewireBackwardsCompatibleHook('message.received', () => {
+                    Magewire.trigger('message.received', message, c);
+                });
 
                 queueMicrotask(() => {
-                    Magewire.trigger('message.processed', message, component)
+                    runMagewireBackwardsCompatibleHook('message.processed', () => {
+                        Magewire.trigger('message.processed', message, c);
+                    });
                 });
             });
 
             fail(() => {
-                Magewire.trigger('message.processed', message, component)
+                // @todo Check if this really needs to dispatch 'message.processed'.
+                runMagewireBackwardsCompatibleHook('message.processed', () => {
+                    Magewire.trigger('message.processed', message, c);
+                });
             });
         });
     });

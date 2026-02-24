@@ -19,6 +19,12 @@
     <preference for="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler"
                 type="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\MagentoTemplateCompiler"
     />
+    <preference for="Magewirephp\Magewire\Support\DataCollection"
+                type="Magewirephp\Magewire\Support\DataArray"
+    />
+    <preference for="Magewirephp\Magewire\Support\DataCollection\Filter"
+                type="Magewirephp\Magewire\Support\DataCollection\Filter\DataCollectionFilter"
+    />
 
     <!--
         Feature: Magewire Rate Limiting
@@ -27,11 +33,19 @@
                 type="Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Storage\RateLimiterCacheStorage"
     />
 
+    <!--
+        Feature: Magewire View Model
+    -->
+    <preference for="Magewirephp\Magewire\Features\SupportMagewireViewModel\MagewireViewModelInterface"
+                type="Magewirephp\Magewire\Features\SupportMagewireViewModel\MagewireViewModel"
+    />
+
     <!-- Global Non-Shareables -->
     <type name="Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\LayoutBlockArguments" shared="false"/>
     <type name="Magewirephp\Magewire\Support\DataScope" shared="false"/>
     <type name="Magewirephp\Magewire\Support\Conditions" shared="false"/>
     <type name="Magewirephp\Magewire\Support\DataArray" shared="false"/>
+    <type name="Magewirephp\Magewire\Support\DataCollection\Filter\DataCollectionFilter" shared="false"/>
 
     <!-- Global Plugins -->
     <type name="Magento\Framework\View\TemplateEngine\Php">

@@ -25,7 +25,7 @@ use Magewirephp\Magento\App\Router\MagewireRouteValidator;
 use Magewirephp\Magewire\MagewireServiceProvider;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\CorruptComponentPayloadException;
 use Magewirephp\Magewire\Mechanisms\HandleRequests\ComponentRequestContext;
-use Magewirephp\Magewire\Mode;
+use Magewirephp\Magewire\Enums\RequestMode;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use function Magewirephp\Magewire\trigger;
@@ -78,7 +78,7 @@ abstract class MagewireUpdateRoute extends MagewireRoute
          *
          * @see \Magewirephp\Magewire\Observer\ViewBlockAbstractToHtmlBefore
          */
-        $this->magewireServiceProvider->boot(Mode::SUBSEQUENT);
+        $this->magewireServiceProvider->boot(RequestMode::SUBSEQUENT);
 
         try {
             $request->setParams($this->parseRequest($request));

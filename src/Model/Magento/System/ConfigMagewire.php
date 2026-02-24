@@ -93,6 +93,14 @@ class ConfigMagewire
     }
 
     /**
+     * Retrieve if Magewire is in debug mode.
+     */
+    public function isInDebugMode(): bool
+    {
+        return $this->isDebugGroupFlag('enable');
+    }
+
+    /**
      * Returns a formatted path based on the provided path and optional group.
      */
     private function createPath(string $path, string|null $group = null): string

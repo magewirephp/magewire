@@ -14,8 +14,7 @@ $templateUtil = $magewireViewModel->utils()->template();
 
 /** @internal Do not modify to ensure Magewire continues to function correctly. */
 ?>
-<?= $templateUtil->echoCodeComment('script', false, 'Magewire') ?>
-<?= $block->getChildHtml('script') ?>
+<?= $block->getChildHtml('before') ?>
 
 <?php $script = $magewireFragment->make()->script()->start() ?>
 <script>
@@ -27,6 +26,7 @@ $templateUtil = $magewireViewModel->utils()->template();
                 super();
 
                 this.namespace = namespace;
+                this._queue = [];
 
                 return new Proxy(this, {
                     get(target, prop) {
@@ -89,14 +89,28 @@ $templateUtil = $magewireViewModel->utils()->template();
                 if (result === undefined) {
                     throw new Error(`Magewire: Callback for "${name}" must return a value`);
                 }
+
                 if (reactive && ! window.Alpine) {
-                    throw new Error('Magewire: AlpineJS must be loaded before Magewire when reactivity is enabled.')
+                    if (this._queue.length === 0) {
+                        window.addEventListener('alpine:init', () => this._processQueue(), { once: true });
+                    }
+
+                    this._queue.push({ name, result });
+
+                    return;
                 }
 
                 const subject = reactive ? Alpine.reactive(result) : result;
                 super.set(name, subject);
 
                 return subject;
+            }
+
+            _processQueue() {
+                while (this._queue.length > 0) {
+                    const { name, result } = this._queue.shift();
+                    super.set(name, Alpine.reactive(result));
+                }
             }
         }
 
@@ -110,3 +124,4 @@ $templateUtil = $magewireViewModel->utils()->template();
 <?= $block->getChildHtml('utilities') ?>
 <?= $templateUtil->echoCodeComment('addons', false, 'container') ?>
 <?= $block->getChildHtml('addons') ?>
+<?= $block->getChildHtml('after') ?>

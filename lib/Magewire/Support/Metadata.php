@@ -61,7 +61,7 @@ class Metadata
 
     public function fetch(callable $filter): array
     {
-        return $this->data()->fetch($filter);
+        return $this->data()->filter()->byClosure($filter)->all();
     }
 
     protected function data(): DataArray

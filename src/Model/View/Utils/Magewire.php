@@ -45,11 +45,6 @@ class Magewire implements UtilsInterface
         return $this->config;
     }
 
-    public function build(): Builder
-    {
-        return $this->builder;
-    }
-
     public function getUpdateUri(): string
     {
         return '/magewire/update';
@@ -60,10 +55,7 @@ class Magewire implements UtilsInterface
         return $this->logger;
     }
 
-    /**
-     * Returns if Magewire should be loaded.
-     */
-    public function canRequireMagewire(): bool
+    public function canRequireMagewireJsLibrary(): bool
     {
         try {
             return $this->mechanisms()->resolveComponents()->doesPageHaveComponents();
@@ -72,5 +64,13 @@ class Magewire implements UtilsInterface
         }
 
         return false;
+    }
+
+    /**
+     * @deprecated Work in Progress.
+     */
+    public function build(): Builder
+    {
+        return $this->builder;
     }
 }

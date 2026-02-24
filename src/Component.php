@@ -28,7 +28,7 @@ use Magewirephp\Magewire\Features\SupportStreaming\HandlesStreaming;
 abstract class Component implements ArgumentInterface
 {
     use InteractsWithProperties;
-    use HandlesEvents;
+//    use HandlesEvents;
     use HandlesRedirects;
     use HandlesStreaming;
     use HandlesAttributes;

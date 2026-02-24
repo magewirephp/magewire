@@ -8,26 +8,26 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Magewire;
+namespace Magewirephp\Magewire\Enums;
 
-enum Mode: int
+enum RequestMode: int
 {
-    case UNKNOWN = 0;
+    case UNDEFINED = 0;
     case PRECEDING = 1;
     case SUBSEQUENT = 2;
 
-    public function isUnknown(): bool
+    public function isUndefined(): bool
     {
-        return $this === Mode::UNKNOWN;
+        return $this === RequestMode::UNDEFINED;
     }
 
     public function isSubsequent(): bool
     {
-        return $this === Mode::SUBSEQUENT;
+        return $this === RequestMode::SUBSEQUENT;
     }
 
     public function isPreceding(): bool
     {
-        return $this === Mode::PRECEDING;
+        return $this === RequestMode::PRECEDING;
     }
 }

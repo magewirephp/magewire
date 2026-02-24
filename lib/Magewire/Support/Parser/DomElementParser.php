@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Support\Parser;
 
 use Magewirephp\Magewire\Support\Concerns\WithFactory;
-use Magewirephp\Magewire\Support\DataArray;
+use Magewirephp\Magewire\Support\DataCollection;
 use Magewirephp\Magewire\Support\DataArrayFactory;
 use Magewirephp\Magewire\Support\Parser;
 

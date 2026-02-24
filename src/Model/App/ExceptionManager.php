@@ -41,7 +41,7 @@ class ExceptionManager
      */
     function handle(Exception $exception, bool $log = true): callable|null
     {
-        $subsequent = $this->magewireServiceProvider->state()->mode()->isSubsequent();
+        $subsequent = $this->magewireServiceProvider->runtime()->mode()->isSubsequent();
 
         try {
             $exception = $this->resolveExceptionHandler($exception, $subsequent)->handle($exception, $subsequent);
@@ -67,7 +67,7 @@ class ExceptionManager
      */
     function handleWithBlock(AbstractBlock $block, Exception $exception, bool $log = true): AbstractBlock
     {
-        $subsequent = $this->magewireServiceProvider->state()->mode()->isSubsequent();
+        $subsequent = $this->magewireServiceProvider->runtime()->mode()->isSubsequent();
 
         if ($subsequent) {
             $this->handle($exception, $log);

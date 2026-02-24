@@ -11,9 +11,15 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\ViewModel;
 
 use Magewirephp\Magewire\Features\SupportMagewireViewModel\MagewireViewModel;
+use Magewirephp\Magewire\Features\SupportMagewireViewModel\MagewireViewModelInterface;
 use Magewirephp\Magewire\Model\Magento\System\ConfigMagewire as MagewireSystemConfig;
 use Magewirephp\Magewire\Model\View\Utils as ViewUtils;
 
+/**
+ * @deprecated Been replaced running via a feature.
+ * @see MagewireViewModel
+ * @see MagewireViewModelInterface
+ */
 class Magewire extends MagewireViewModel
 {
     /**

@@ -8,13 +8,12 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Magewire\Support\DataArray;
+namespace Magewirephp\Magewire\Support\DataCollection;
 
 use Countable;
 use Exception;
-use Magewirephp\Magewire\Support\DataArray;
 
-enum Filter
+enum TypeFilter
 {
     case ALL;
     case NONE;

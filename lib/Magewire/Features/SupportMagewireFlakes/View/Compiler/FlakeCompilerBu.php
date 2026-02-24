@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Compiler;
 
-use Magewirephp\Magewire\Support\DataArray;
+use Magewirephp\Magewire\Support\DataCollection;
 use Magewirephp\Magewire\Support\Parser\DomElementParser;
 use Magewirephp\Magewire\Support\Random;
 

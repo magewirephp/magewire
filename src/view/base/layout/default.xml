@@ -7,24 +7,31 @@
     </head>
 
     <body>
-        <block name="magewire" template="Magewirephp_Magewire::magewire.phtml">
-            <!--
-                Container Usage Guidelines:
-                - Child containers: Use only for their designated purpose
-                - Global container: Loads core dependencies upfront as standalone components
-                - Important: Global container components must NOT depend on Magewire
-            -->
+        <block name="magewire" template="Magewirephp_Magewire::root.phtml">
             <block name="magewire.global"
                    as="global"
                    template="Magewirephp_Magewire::js/magewire/global.phtml"
             >
-                <!-- Intended for injecting the <script> element loading the Magewire JS. -->
-                <!-- Docs: This doesn't have a template because it should be applied per theme specifically
-                           using a layout block reference and a template attribute. -->
-                <block name="magewire.script"
-                       as="script"
-                       template="Magewirephp_Magewire::js/magewire/script.phtml"
-                />
+                <container name="magewire.global.before" as="before">
+                    <container name="magewire.alpinejs.load"/>
+
+                    <!-- Intended to hold custom Alpine JS code that must render
+                         before any Magewire-related Alpine JS code. -->
+                    <container name="magewire.alpinejs">
+                        <!-- Magewire (global functions) -->
+                        <block name="magewire.alpinejs.magewire"
+                               template="Magewirephp_Magewire::js/alpinejs/magewire.phtml"
+                               after="-"
+                        />
+                    </container>
+
+                    <container name="magewire.alpinejs.components">
+                        <!-- Magewire Notifier - Alpine JS component -->
+                        <block name="magewire.alpinejs.components.magewire-notifier"
+                               template="Magewirephp_Magewire::js/alpinejs/components/magewire-notifier.phtml"
+                        />
+                    </container>
+                </container>
 
                 <!--
                     MAGEWIRE UTILITIES.
@@ -63,31 +70,15 @@
                     <!-- To ensure custom addons are rendered after those from the core. -->
                     <container name="magewire.addons.after"/>
                 </container>
+
+                <container name="magewire.global.after" as="after"/>
             </block>
 
             <container name="magewire.before" as="before">
-                <container name="magewire.alpinejs">
-                    <!-- Intended to hold custom AlpineJS code that must render
-                         before any Magewire-related AlpineJS code. -->
-                    <container name="magewire.alpinejs.before">
-                        <!-- Magewire (global functions) -->
-                        <block name="magewire.alpinejs.magewire"
-                               template="Magewirephp_Magewire::js/alpinejs/magewire.phtml"
-                        />
-                    </container>
-
-                    <container name="magewire.alpinejs.components">
-                        <!-- Magewire Notifier - AlpineJS component -->
-                        <block name="magewire.alpinejs.components.magewire-notifier"
-                               template="Magewirephp_Magewire::js/alpinejs/components/magewire-notifier.phtml"
-                        />
-                    </container>
-                </container>
-
-                <!-- Intended to hold custom AlpineJS directives. -->
+                <!-- Intended to hold custom Alpine JS directives. -->
                 <container name="magewire.alpinejs.directives"/>
 
-                <!-- Intended to hold custom AlpineJS UI-components. -->
+                <!-- Intended to hold custom Alpine JS UI-components. -->
                 <container name="magewire.ui-components">
                     <block name="magewire.ui-components.notifier"
                            template="Magewirephp_Magewire::magewire/ui-components/notifier.phtml"
@@ -115,8 +106,8 @@
                     </block>
                 </container>
 
-                <!-- Intended to hold custom AlpineJS code that must render
-                     after any Magewire-related AlpineJS code. -->
+                <!-- Intended to hold custom Alpine JS code that must render
+                     after any Magewire-related Alpine JS code. -->
                 <container name="magewire.alpinejs.after"/>
             </container>
 
@@ -144,9 +135,8 @@
                    as="internal"
                    template="Magewirephp_Magewire::js/magewire/internal.phtml"
             >
-                <block name="magewire.internal.backwards-compatibility.events"
-                       as="internal.backwards-compatibility.events"
-                       template="Magewirephp_Magewire::js/magewire/internal/backwards-compatibility-events.phtml"
+                <container name="magewire.internal.backwards-compatibility"
+                           as="internal.backwards-compatibility"
                 />
             </block>
 

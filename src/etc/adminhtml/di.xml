@@ -253,7 +253,7 @@
         </arguments>
     </virtualType>
 
-    <!-- Directive area: AlpineJS -->
+    <!-- Directive area: Alpine JS -->
     <virtualType name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\AlpinejsDirectiveArea"
                  type="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\DirectiveArea"
     />

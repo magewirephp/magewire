@@ -11,24 +11,18 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Plugin\Magento\Framework\View\TemplateEngine;
 
 use Magento\Framework\DataObject;
-use Magento\Framework\View\Element\AbstractBlock;
 use Magento\Framework\View\Element\BlockInterface;
 use Magento\Framework\View\TemplateEngine\Php as Subject;
-use Magewirephp\Magento\Framework\View\BlockRenderLifecycle;
+use Magewirephp\Magento\Framework\View\RenderLifecycleManager;
 use Magewirephp\Magewire\Component;
-use Magewirephp\Magewire\Model\View\SlotsRegistry;
-use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
 use function Magewirephp\Magewire\trigger;
 
 class Php
 {
     private array $components = [];
-    private array $magewireBlocks = [];
 
     public function __construct(
-        private MagewireViewModel $magewireViewModel,
-        private BlockRenderLifecycle $renderRegistry,
-        private SlotsRegistry $slotsRegistry
+        private readonly RenderLifecycleManager $renderLifecycleManager
     ) {
         //
     }
@@ -39,33 +33,8 @@ class Php
         string $filename,
         array $dictionary = []
     ): array {
-        $this->renderRegistry->push($block);
+        $this->renderLifecycleManager->push($block);
 
-        [$block, $filename, $dictionary] = $this->registerMagewireVariableBefore($subject, $block, $filename, $dictionary);
-        [$block, $filename, $dictionary] = $this->registerMagewireViewModelVariableBefore($subject, $block, $filename, $dictionary);
-
-        return [$block, $filename, $dictionary];
-    }
-
-    function afterRender(Subject $subject, string $html): string
-    {
-        $html = $this->registerMagewireVariableAfter($subject, $html);
-        $html = $this->registerMagewireViewModelVariableAfter($subject, $html);
-
-        $this->renderRegistry->pop();
-        return $html;
-    }
-
-    /**
-     * Binds the $magewire variable as a globally accessible variable,
-     * making it available for use within Magewire component templates.
-     */
-    private function registerMagewireVariableBefore(
-        Subject $subject,
-        BlockInterface $block,
-        string $filename,
-        array $dictionary = []
-    ): array {
         if ($block instanceof DataObject) {
             $magewire = $block->getData('magewire') ?? end($this->components);
 
@@ -99,7 +68,7 @@ class Php
         return [$block, $filename, $dictionary];
     }
 
-    private function registerMagewireVariableAfter(Subject $subject, string $html): string
+    function afterRender(Subject $subject, string $html): string
     {
         $latest = end($this->components);
 
@@ -111,47 +80,10 @@ class Php
             // which is represented by the $html variable.
             $finish = trigger('magento:template:rendered', $latest);
 
-            return $finish($html);
+            $html = $finish($html);
         }
 
-        return $html;
-    }
-
-    /**
-     * Ensures the Magewire view model is automatically bound to the block as a "view_model" data argument,
-     * if it hasn't been set or is not an instance of the expected Magewire view model class.
-     *
-     * This reduces the need for manual binding, which is often repetitive since many sibling blocks depend on it.
-     *
-     * Why bind a view model instead of exposing a global template variable like $magewireViewModel?
-     * Because when a block is moved outside its parent "magewire" wrapper, it still needs to maintain compatibility.
-     * Using a shared view model ensures this compatibility without requiring changes to the template.
-     *
-     * Relying on global dictionary variables would force template modifications in such cases—something this method avoids.
-     */
-    private function registerMagewireViewModelVariableBefore(
-        Subject $subject,
-        BlockInterface $block,
-        string $filename,
-        array $dictionary = []
-    ): array {
-        if (($block instanceof AbstractBlock && $block->getNameInLayout() === 'magewire') || count($this->magewireBlocks) > 0) {
-            if (! $block->getData('view_model') instanceof MagewireViewModel) {
-                $block->setData('view_model', $this->magewireViewModel);
-            }
-
-            $this->magewireBlocks[] = $block;
-        }
-
-        return [$block, $filename, $dictionary];
-    }
-
-    private function registerMagewireViewModelVariableAfter(Subject $subject, $html): string
-    {
-        if (count($this->magewireBlocks) > 0) {
-            array_pop($this->magewireBlocks);
-        }
-
+        $this->renderLifecycleManager->pop();
         return $html;
     }
 }

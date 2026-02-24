@@ -15,7 +15,7 @@ use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ViewAction as ViewAction;
 use Magewirephp\Magewire\Features\SupportMagewireFlakes\Component\FlakeFactory;
 use Magewirephp\Magewire\Features\SupportMagewireFlakes\Mechanisms\ResolveComponent\ComponentResolver\FlakeResolver;
-use Magewirephp\Magewire\Support\DataArray;
+use Magewirephp\Magewire\Support\DataCollection;
 use Magewirephp\Magewire\Support\DataArrayFactory;
 use RuntimeException;
 

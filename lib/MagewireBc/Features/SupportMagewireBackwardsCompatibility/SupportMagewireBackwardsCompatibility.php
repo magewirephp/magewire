@@ -30,7 +30,5 @@ class SupportMagewireBackwardsCompatibility extends ComponentHook
         foreach ($bc as $ikey => $value) {
             $context->pushEffect('bc', $value, $ikey);
         }
-
-        $break = true;
     }
 }

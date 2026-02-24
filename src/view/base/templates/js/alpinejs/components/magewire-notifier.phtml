@@ -16,7 +16,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
 
 /** @internal Do not modify to ensure Magewire continues to function correctly. */
 ?>
-<?= $magewireTemplate->echoCodeComment('magewire notifier', false, 'AlpineJS') ?>
+<?= $magewireTemplate->echoCodeComment('magewire notifier', false, 'Alpine JS') ?>
 <?php $script = $magewireFragment->make()->script()->start() ?>
 <script>
     function magewireNotifier() {
@@ -137,3 +137,4 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
 </script>
 <?php $script->end() ?>
 
+<?= $block->getChildBlock('ac') ?>

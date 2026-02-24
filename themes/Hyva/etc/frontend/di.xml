@@ -38,6 +38,7 @@
         </arguments>
     </type>
 
+    <!-- WIP: Here as an example for now. -->
     <type name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\ActionManager">
         <arguments>
             <argument name="namespaces" xsi:type="array">

@@ -8,11 +8,12 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Magewire\Model\View\Element;
+namespace Magewirephp\Magewire\Support\DataCollection;
 
-use Magewirephp\Magewire\Support\DataCollection;
-
-class Properties extends DataArray
+enum Hook: string
 {
-    //
+    case SET = 'set';
+    case PUT = 'put';
+    case GET = 'get';
+    case UNSET = 'unset';
 }
