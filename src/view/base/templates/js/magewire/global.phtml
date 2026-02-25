@@ -40,13 +40,17 @@ $templateUtil = $magewireViewModel->utils()->template();
                             return value;
                         }
 
-                        if (target.has(prop)) {
+                        if (Map.prototype.has.call(target, prop)) {
                             return target.get(prop);
                         }
 
                         return undefined;
                     }
                 });
+            }
+
+            has(name) {
+                return super.has(name) || this._queue.some(item => item.name === name);
             }
 
             call(key, ...args) {

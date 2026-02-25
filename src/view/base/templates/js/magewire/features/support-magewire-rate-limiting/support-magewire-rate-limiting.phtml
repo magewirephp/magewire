@@ -24,7 +24,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
         Magewire.hook('request', ({ fail }) => {
             fail(({ status, preventDefault }) => {
                 if (status === 429) {
-                    if ('notifier' in addons) {
+                    if (addons.has('notifier')) {
                         addons.notifier.create('<?= $escaper->escapeJs(__('Too many requests! Please wait.')) ?>', {
                             type: '<?= $escaper->escapeJs(NotificationTypeEnum::WARNING->getType()) ?>'
                         });
