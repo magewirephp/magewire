@@ -23,12 +23,12 @@ class FrontendAssetsViewModel implements ArgumentInterface
         //
     }
 
-    function getScriptPath(): string
+    public function getScriptPath(): string
     {
         return $this->frontendAssetsMechanism->returnJavaScriptAsFile();
     }
 
-    function getScriptAttributes(): string
+    public function getScriptAttributes(): string
     {
         $attributes = $this->frontendAssetsMechanism->getDataByPath('script.html_attributes', []);
 

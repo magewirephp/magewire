@@ -19,8 +19,8 @@ use Psr\Log\LoggerInterface;
 class Features
 {
     public function __construct(
-        private readonly FeaturesServiceType $featuresServiceType,
-        private readonly LoggerInterface $logger
+        private FeaturesServiceType $featuresServiceType,
+        private LoggerInterface $logger
     ) {
         //
     }

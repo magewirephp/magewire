@@ -25,4 +25,10 @@ class Base extends FunctionDirective
 
         return "<?= __({$value}) ?>";
     }
+
+    #[ScopeDirectiveParser(ExpressionParserType::FUNCTION_ARGUMENTS)]
+    public function child(string $alias): string
+    {
+        return "<?= \$block->getChildHtml('{$alias}') ?>";
+    }
 }

@@ -1,0 +1,47 @@
+<?php
+/**
+ * Copyright © Willem Poortman 2021-present. All rights reserved.
+ *
+ * Please read the README and LICENSE files for more
+ * details on copyrights and license information.
+ */
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+
+$magewireViewModel = $block->getData('view_model');
+
+$magewireUtility = $magewireViewModel->utils()->magewire();
+
+// The Hyvä theme requires AlpineJS to function. Magewire ships with its own bundled version of AlpineJS,
+// so when Magewire is present and active on the page, it acts as the AlpineJS provider for Hyvä as well.
+//
+// The condition below determines which AlpineJS source should be used:
+//
+// - TRUE (canRequireMagewire): Magewire is responsible for bootstrapping Alpine. The Magewire script
+//        tag is rendered directly, which includes Alpine out of the box. Hyva piggybacks on this.
+//
+// - FALSE (else): Magewire is not driving the page, so Alpine must come from elsewhere. The child
+//         block output is rendered instead, which is expected to contain the standalone Alpine script
+//         configured by the Hyvä theme or another module.
+//
+// @todo Make Alpine.js loading configurable with three options:
+//       1. Load the Magewire-bundled Alpine.js version.
+//       2. Load standalone Alpine.js only (coming with the Hyvä theme).
+//       3. Load the Alpine.js version that ships with Magewire, without loading Magewire itself.
+?>
+<?php if ($magewireUtility->canRequireMagewireJsLibrary()): ?>
+    <script
+        id="magewire-script"
+        src="<?= $escaper->escapeUrl($magewireUtility->mechanisms()->frontendAssets()->getScriptPath()) ?>"
+        x-data="magewireScript"
+        x-bind="magewireScriptBindings"
+    ></script>
+<?php else: ?>
+    <?= $block->getChildHtml() ?>
+<?php endif ?>

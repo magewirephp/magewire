@@ -23,6 +23,22 @@ class FileSystem
         //
     }
 
+    /**
+     * @throws FileSystemException
+     */
+    public function read(string $from): string
+    {
+        return $this->magentoFileSystemDriver->fileGetContents($from);
+    }
+
+    /**
+     * @throws FileSystemException
+     */
+    public function write(string $content, string $to, int|string $mode = 0): void
+    {
+        $this->magentoFileSystemDriver->filePutContents($to, $content, $mode);
+    }
+
     public function exists(string $path): bool
     {
         try {
@@ -37,34 +53,32 @@ class FileSystem
     /**
      * @throws FileSystemException
      */
+    public function stats(string $path): array
+    {
+        return $this->magentoFileSystemDriver->stat($path);
+    }
+
+    /**
+     * @throws FileSystemException
+     */
     public function makeDirectory(string $path, int $mode = 0755, bool $recursive = false): void
     {
         $this->magentoFileSystemDriver->createDirectory($path, $mode);
     }
 
+    /**
+     * @throws FileSystemException
+     */
     public function lastModified(string $path): int
     {
-        $stat = $this->magentoFileSystemDriver->stat($path);
+        $stat = $this->stats($path);
 
-        return $stat['mtime'];
+        return $stat['mtime'] ?? time();
     }
 
     /**
      * @throws FileSystemException
      */
-    public function get(string $path): string
-    {
-        return $this->magentoFileSystemDriver->fileGetContents($path);
-    }
-
-    /**
-     * @throws FileSystemException
-     */
-    public function put(string $path, string $contents): void
-    {
-        $this->magentoFileSystemDriver->filePutContents($path, $contents);
-    }
-
     public function ensureDirectoryExists(string $path): void
     {
         if ($this->exists(dirname($path))) {

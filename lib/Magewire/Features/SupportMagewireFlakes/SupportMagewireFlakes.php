@@ -13,14 +13,17 @@ namespace Magewirephp\Magewire\Features\SupportMagewireFlakes;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\ComponentHook;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
+use Magewirephp\Magewire\Support\Concerns\AsDataObject;
 use function Magewirephp\Magewire\on;
 
 class SupportMagewireFlakes extends ComponentHook
 {
+    use AsDataObject;
+
     public function provide(): void
     {
         on('hydrate', function (Component $component, array $memo) {
-            $block = $component->block();
+            $block = $component->magewireBlock();
 
             if (is_array($memo['flake'] ?? null)) {
                 $block->setData('magewire:flake', $memo['flake']);
@@ -28,7 +31,7 @@ class SupportMagewireFlakes extends ComponentHook
         });
 
         on('dehydrate', function (Component $component, ComponentContext $context) {
-            $metadata = $component->block()->getData('magewire:flake');
+            $metadata = $component->magewireBlock()->getData('magewire:flake');
 
             if (is_array($metadata) && is_array($metadata['element'] ?? null)) {
                 $context->pushMemo('flake', $metadata['element'], 'element');

@@ -17,115 +17,105 @@ class FunctionExpressionParser extends ExpressionParser
 {
     /**
      * Parse named arguments from a function expression.
-     *
-     * @throws InvalidArgumentException If parsing fails
+     * Supports: key: value, key2: ['a' => 'b', "x-data" => "init()"]
      */
     public function parseArguments(string $expression): array
     {
-        if (empty(trim($expression))) {
+        $expression = trim($expression);
+
+        if ($expression === '') {
             return [];
         }
 
-        // Check if the entire expression is a JSON string first.
+        // Fast path: entire expression is a valid JSON object.
         if ($this->isJsonString($expression)) {
             return $this->parseJsonArguments($expression);
         }
 
+        // Main path: parse named arguments with complex values (including PHP arrays).
+        return $this->parseNamedArguments($expression);
+    }
+
+    /**
+     * Parse named arguments: key: value, key2: value2, ...
+     */
+    private function parseNamedArguments(string $expression): array
+    {
         $arguments = [];
-        $errors = [];
         $pos = 0;
         $length = strlen($expression);
 
         while ($pos < $length) {
-            // Skip whitespace
-            while ($pos < $length && ctype_space($expression[$pos])) {
-                $pos++;
-            }
+            $pos = $this->skipWhitespace($expression, $pos);
 
             if ($pos >= $length) {
                 break;
             }
 
-            // Extract key
-            $keyStart = $pos;
-            while ($pos < $length && preg_match('/[a-zA-Z0-9_]/', $expression[$pos])) {
-                $pos++;
+            // Extract key (unquoted identifier: name, attributes, etc.).
+            [$key, $pos] = $this->extractKey($expression, $pos);
+
+            if ($key === null) {
+                throw new InvalidArgumentException("Invalid or missing key near position {$pos}");
             }
 
-            if ($pos === $keyStart) {
-                $errors[] = "Invalid key at position $pos";
-                $pos++;
-                continue;
-            }
-
-            $key = substr($expression, $keyStart, $pos - $keyStart);
-
-            // Validate key
-            if (!$this->isValidKey($key)) {
-                $errors[] = "Invalid key at position $keyStart: '$key'";
-                // Skip to next comma or end
-                while ($pos < $length && $expression[$pos] !== ',') {
-                    $pos++;
-                }
-                $pos++;
-                continue;
-            }
-
-            // Skip whitespace and colon
-            while ($pos < $length && ctype_space($expression[$pos])) {
-                $pos++;
-            }
+            $pos = $this->skipWhitespace($expression, $pos);
 
             if ($pos >= $length || $expression[$pos] !== ':') {
-                $errors[] = "Missing colon after key '$key' at position $pos";
-                continue;
+                throw new InvalidArgumentException("Expected ':' after key '{$key}' near position {$pos}");
             }
 
-            $pos++; // Skip colon
-
-            // Skip whitespace
-            while ($pos < $length && ctype_space($expression[$pos])) {
-                $pos++;
-            }
+            $pos++; // skip ':'.
+            $pos = $this->skipWhitespace($expression, $pos);
 
             if ($pos >= $length) {
-                $errors[] = "Missing value for key '$key'";
-                continue;
+                throw new InvalidArgumentException("Missing value for key '{$key}'");
             }
 
-            // Extract value using smart parsing
-            $valueStart = $pos;
-            try {
-                $value = $this->extractValue($expression, $pos);
-                $arguments[$key] = $value;
-            } catch (Exception $e) {
-                $errors[] = "Failed to parse value for key '$key' at position $valueStart: " . $e->getMessage();
-            }
+            // Extract value — supports strings, JSON, and full PHP arrays.
+            [$value, $pos] = $this->extractComplexValue($expression, $pos);
 
-            // Skip whitespace and comma
-            while ($pos < $length && ctype_space($expression[$pos])) {
-                $pos++;
-            }
+            $arguments[$key] = $value;
 
+            $pos = $this->skipWhitespace($expression, $pos);
+
+            // Optional comma separator.
             if ($pos < $length && $expression[$pos] === ',') {
                 $pos++;
             }
-        }
-
-        // If we have errors but also some successful parses, you might want to log warnings
-        // instead of throwing. Adjust based on your needs.
-        if (! empty($errors) && empty($arguments)) {
-            throw new InvalidArgumentException("Parsing failed with errors: " . implode(', ', $errors));
         }
 
         return $arguments;
     }
 
     /**
-     * Extract a value from the expression starting at position $pos.
-     * Updates $pos to point after the extracted value.
+     * Extract an identifier key (e.g. name, attributes)
      */
-    private function extractValue(string $expression, &$pos): mixed
+    private function extractKey(string $expression, int $pos): array
+    {
+        $start = $pos;
+        while ($pos < strlen($expression) && preg_match('/[a-zA-Z0-9_]/', $expression[$pos])) {
+            $pos++;
+        }
+
+        if ($pos === $start) {
+            return [null, $pos];
+        }
+
+        $key = substr($expression, $start, $pos - $start);
+
+        // Keep top-level keys strict (valid PHP identifiers).
+        if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $key)) {
+            return [null, $pos];
+        }
+
+        return [$key, $pos];
+    }
+
+    /**
+     * Extract complex value: quoted string, JSON {}, JSON [], or PHP array []
+     */
+    private function extractComplexValue(string $expression, int $pos): array
     {
         if ($pos >= strlen($expression)) {
             throw new InvalidArgumentException("Unexpected end of expression");
@@ -133,84 +123,48 @@ class FunctionExpressionParser extends ExpressionParser
 
         $char = $expression[$pos];
 
-        // JSON object
-        if ($char === '{') {
-            return $this->extractJsonObject($expression, $pos);
-        }
-
-        // JSON array
-        if ($char === '[') {
-            return $this->extractJsonArray($expression, $pos);
-        }
-
-        // Quoted string
         if ($char === '"' || $char === "'") {
-            return $this->extractQuotedString($expression, $pos);
+            return [$this->extractQuotedString($expression, $pos), $pos];
         }
 
-        // Unquoted value (null, true, false, number, variable, unquoted string)
-        return $this->extractUnquotedValue($expression, $pos);
-    }
-
-    /**
-     * Extract a JSON object with proper bracket matching.
-     */
-    private function extractJsonObject(string $expression, &$pos): array
-    {
-        $start = $pos;
-        $depth = 0;
-        $inString = false;
-        $escape = false;
-
-        while ($pos < strlen($expression)) {
-            $char = $expression[$pos];
-
-            if ($escape) {
-                $escape = false;
-                $pos++;
-                continue;
-            }
-
-            if ($char === '\\') {
-                $escape = true;
-                $pos++;
-                continue;
-            }
-
-            if ($char === '"') {
-                $inString = !$inString;
-                $pos++;
-                continue;
-            }
-
-            if (!$inString) {
-                if ($char === '{') {
-                    $depth++;
-                } elseif ($char === '}') {
-                    $depth--;
-                    if ($depth === 0) {
-                        $pos++;
-                        $json = substr($expression, $start, $pos - $start);
-                        return $this->parseJsonStructure($json);
+        if ($char === '{' || $char === '[') {
+            // Could be JSON or PHP array — try PHP array first if starts with [.
+            if ($char === '[') {
+                // Peek ahead to see if it looks like PHP array (contains =>).
+                $peekPos = $pos + 1;
+                $peekPos = $this->skipWhitespace($expression, $peekPos);
+                if ($peekPos < strlen($expression) && ($expression[$peekPos] === '"' || $expression[$peekPos] === "'" || $expression[$peekPos] === '$')) {
+                    // Likely PHP array — try to parse it.
+                    try {
+                        $tempPos = $pos;
+                        $array = $this->extractPhpArray($expression, $tempPos);
+                        return [$array, $tempPos];
+                    } catch (Exception) {
+                        // Fall through to JSON array.
                     }
                 }
             }
 
-            $pos++;
+            // JSON object/array.
+            return [$this->extractJsonStructure($expression, $pos), $pos];
         }
 
-        throw new InvalidArgumentException("Unclosed JSON object");
+        // Unquoted value (true, false, null, number, variable, unquoted string).
+        return [$this->extractUnquotedValue($expression, $pos), $pos];
     }
 
     /**
-     * Extract a JSON array with proper bracket matching.
+     * Extract and evaluate a full PHP array literal: ['class' => 'btn', "x-data" => "init()"]
      */
-    private function extractJsonArray(string $expression, &$pos): array
+    private function extractPhpArray(string $expression, int &$pos): array
     {
         $start = $pos;
         $depth = 0;
         $inString = false;
         $escape = false;
+        $quoteChar = null;
+
+        $pos++; // skip opening [.
 
         while ($pos < strlen($expression)) {
             $char = $expression[$pos];
@@ -227,8 +181,14 @@ class FunctionExpressionParser extends ExpressionParser
                 continue;
             }
 
-            if ($char === '"') {
-                $inString = !$inString;
+            if ($char === '"' || $char === "'") {
+                if (!$inString) {
+                    $inString = true;
+                    $quoteChar = $char;
+                } elseif ($quoteChar === $char) {
+                    $inString = false;
+                    $quoteChar = null;
+                }
                 $pos++;
                 continue;
             }
@@ -237,25 +197,90 @@ class FunctionExpressionParser extends ExpressionParser
                 if ($char === '[') {
                     $depth++;
                 } elseif ($char === ']') {
-                    $depth--;
                     if ($depth === 0) {
-                        $pos++;
-                        $json = substr($expression, $start, $pos - $start);
-                        return $this->parseJsonStructure($json);
+                        $pos++; // include closing ].
+                        $arrayStr = substr($expression, $start, $pos - $start);
+                        return $this->evaluatePhpArray($arrayStr);
                     }
+                    $depth--;
                 }
             }
 
             $pos++;
         }
 
-        throw new InvalidArgumentException("Unclosed JSON array");
+        throw new InvalidArgumentException("Unclosed PHP array starting at position {$start}");
     }
 
     /**
-     * Extract a quoted string.
+     * Safely evaluate a PHP array literal using eval in a controlled way
      */
-    private function extractQuotedString(string $expression, &$pos): string
+    private function evaluatePhpArray(string $arrayStr): array
+    {
+        $code = "return {$arrayStr};";
+
+        $result = @eval($code);
+
+        if ($result === false && $arrayStr !== '[]') {
+            throw new InvalidArgumentException("Failed to parse PHP array: syntax error in {$arrayStr}");
+        }
+
+        if (!is_array($result)) {
+            throw new InvalidArgumentException("Expression did not evaluate to an array: {$arrayStr}");
+        }
+
+        return $result;
+    }
+
+    /**
+     * Extract JSON object { ... } or array [ ... ]
+     */
+    private function extractJsonStructure(string $expression, int &$pos): array
+    {
+        $start = $pos;
+        $opening = $expression[$pos];
+        $closing = $opening === '{' ? '}' : ']';
+        $depth = 0;
+        $inString = false;
+        $escape = false;
+
+        $pos++;
+
+        while ($pos < strlen($expression)) {
+            $char = $expression[$pos];
+
+            if ($escape) {
+                $escape = false;
+            } elseif ($char === '\\') {
+                $escape = true;
+            } elseif ($char === '"') {
+                $inString = !$inString;
+            } elseif (!$inString) {
+                if ($char === $opening) {
+                    $depth++;
+                } elseif ($char === $closing) {
+                    if ($depth === 0) {
+                        $pos++;
+                        $json = substr($expression, $start, $pos - $start);
+                        $decoded = json_decode($json, true);
+                        if (json_last_error() !== JSON_ERROR_NONE) {
+                            throw new InvalidArgumentException("Invalid JSON: " . json_last_error_msg());
+                        }
+                        return $decoded;
+                    }
+                    $depth--;
+                }
+            }
+            $pos++;
+        }
+
+        throw new InvalidArgumentException("Unclosed JSON structure starting at position {$start}");
+    }
+
+    /**
+     * Extract quoted string
+     */
+    private function extractQuotedString(string $expression, int &$pos): string
     {
         $quote = $expression[$pos];
         $pos++;
@@ -280,7 +305,6 @@ class FunctionExpressionParser extends ExpressionParser
             if ($char === $quote) {
                 $value = substr($expression, $start, $pos - $start);
                 $pos++;
-                // Handle escape sequences
                 return str_replace(['\\' . $quote, '\\\\'], [$quote, '\\'], $value);
             }
 
@@ -291,181 +315,55 @@ class FunctionExpressionParser extends ExpressionParser
     }
 
     /**
-     * Extract an unquoted value (null, true, false, number, variable, or unquoted string).
+     * Extract unquoted value (true, false, null, number, variable, simple string)
      */
-    private function extractUnquotedValue(string $expression, &$pos): mixed
+    private function extractUnquotedValue(string $expression, int &$pos): mixed
     {
         $start = $pos;
 
-        // Read until we hit a comma, closing bracket, or end of string
-        while ($pos < strlen($expression) && $expression[$pos] !== ',' && $expression[$pos] !== '}' && $expression[$pos] !== ']') {
+        while ($pos < strlen($expression) && !in_array($expression[$pos], [',', '}', ']', ')', ' '], true)) {
             $pos++;
         }
 
         $value = trim(substr($expression, $start, $pos - $start));
 
         if ($value === '') {
-            throw new InvalidArgumentException("Empty value");
+            throw new InvalidArgumentException("Empty unquoted value");
         }
 
-        // Parse the unquoted value
-        if ($value === 'null') {
-            return null;
-        }
-        if ($value === 'true') {
-            return true;
-        }
-        if ($value === 'false') {
-            return false;
-        }
-        if ($this->isNumber($value)) {
-            return $this->parseNumber($value);
-        }
-        if ($this->isVariable($value)) {
-            return $this->parseVariable($value);
-        }
-
-        return $value;
+        return match (strtolower($value)) {
+            'null' => null,
+            'true' => true,
+            'false' => false,
+            default => $this->parseNumberOrVariableOrString($value),
+        };
     }
 
-
-
-    /**
-     * Validate if a key is a valid-named argument identifier.
-     *
-     * @param string $key The key to validate
-     * @return bool True if valid named argument, false otherwise
-     */
-    private function isValidKey(string $key): bool
+    private function parseNumberOrVariableOrString(string $value): mixed
     {
-        // Named arguments should be valid PHP identifiers
-        return preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $key) === 1;
-    }
-
-    /**
-     * Parse a value string into the appropriate PHP type.
-     *
-     * @throws InvalidArgumentException If value cannot be parsed
-     */
-    private function parseValue(string $value): mixed
-    {
-        $value = trim($value);
-
-        if ($value === '') {
-            throw new InvalidArgumentException("Empty value");
-        }
-
-        if ($value === 'null') {
-            return null;
-        }
-
-        if ($value === 'true') {
-            return true;
-        }
-        if ($value === 'false') {
-            return false;
-        }
-
-        // Handle quoted strings.
-        if ($this->isQuotedString($value)) {
-            return $this->parseQuotedString($value);
-        }
-
-        // Handle JSON objects and arrays.
-        if ($this->isJsonStructure($value)) {
-            return $this->parseJsonStructure($value);
-        }
-
-        // Handle numbers.
         if ($this->isNumber($value)) {
             return $this->parseNumber($value);
         }
 
-        // Handle variables (starting with $).
         if ($this->isVariable($value)) {
             return $this->parseVariable($value);
         }
 
-        // Handle unquoted strings (be careful with this).
-        if ($this->isValidUnquotedString($value)) {
-            return $value;
+        return $value; // unquoted string.
+    }
+
+    private function skipWhitespace(string $expression, int $pos): int
+    {
+        while ($pos < strlen($expression) && ctype_space($expression[$pos])) {
+            $pos++;
         }
-
-        throw new InvalidArgumentException("Unable to parse value: $value");
+        return $pos;
     }
 
-    /**
-     * Check if the value is a quoted string.
-     */
-    private function isQuotedString(string $value): bool
-    {
-        return (str_starts_with($value, '"') && str_ends_with($value, '"'))
-            || (str_starts_with($value, "'") && str_ends_with($value, "'"));
-    }
-
-    /**
-     * Parse quoted string, handling escape sequences.
-     */
-    private function parseQuotedString(string $value): string
-    {
-        $quote = $value[0];
-        $content = substr($value, 1, -1);
-
-        // Handle escape sequences.
-        return str_replace(['\\' . $quote, '\\\\'], [$quote, '\\'], $content);
-    }
-
-    /**
-     * Check if value is a JSON structure.
-     */
-    private function isJsonStructure(string $value): bool
-    {
-        return (str_starts_with($value, '{') && str_ends_with($value, '}')) ||
-            (str_starts_with($value, '[') && str_ends_with($value, ']'));
-    }
-
-    /**
-     * Parse JSON structure.
-     */
-    private function parseJsonStructure(string $value)
-    {
-        $decoded = json_decode($value, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new InvalidArgumentException("Invalid JSON: " . json_last_error_msg());
-        }
-
-        return $decoded;
-    }
-
-    /**
-     * Check if value is a number.
-     */
-    private function isNumber(string $value): bool
-    {
-        return preg_match('/^-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?$/', $value) === 1;
-    }
-
-    /**
-     * Parse number value.
-     */
-    private function parseNumber(string $value): float|int
-    {
-        if (str_contains($value, '.') || str_contains(strtolower($value), 'e')) {
-            return (float) $value;
-        }
-
-        return (int) $value;
-    }
-
-    /**
-     * Check if the expression is a JSON string.
-     */
     private function isJsonString(string $expression): bool
     {
         $trimmed = trim($expression);
-
-        if (! str_starts_with($trimmed, '{') || ! str_ends_with($trimmed, '}')) {
+        if (!str_starts_with($trimmed, '{') || !str_ends_with($trimmed, '}')) {
             return false;
         }
 
@@ -473,9 +371,6 @@ class FunctionExpressionParser extends ExpressionParser
         return json_last_error() === JSON_ERROR_NONE;
     }
 
-    /**
-     * Parse JSON string into named arguments.
-     */
     private function parseJsonArguments(string $jsonString): array
     {
         $decoded = json_decode(trim($jsonString), true);
@@ -483,48 +378,37 @@ class FunctionExpressionParser extends ExpressionParser
         if (json_last_error() !== JSON_ERROR_NONE) {
             throw new InvalidArgumentException("Invalid JSON: " . json_last_error_msg());
         }
-        if (! is_array($decoded)) {
-            throw new InvalidArgumentException("JSON must decode to an associative array");
+
+        if (!is_array($decoded)) {
+            throw new InvalidArgumentException("JSON must decode to an array");
         }
 
-        $arguments = [];
-        foreach ($decoded as $key => $value) {
-            // Validate that keys are valid named argument identifiers
-            if (! $this->isValidKey($key)) {
-                throw new InvalidArgumentException("Invalid argument name in JSON: '$key'");
-            }
-
-            $arguments[$key] = $value;
-        }
-
-        return $arguments;
+        // No more strict key validation — allows 'x-data', 'aria-*', etc.
+        return $decoded;
     }
 
-    /**
-     * Check if value is a variable reference.
-     */
+    private function isNumber(string $value): bool
+    {
+        return preg_match('/^-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?$/', $value) === 1;
+    }
+
+    private function parseNumber(string $value): float|int
+    {
+        return str_contains($value, '.') || str_contains(strtolower($value), 'e')
+            ? (float) $value
+            : (int) $value;
+    }
+
     private function isVariable(string $value): bool
     {
         return preg_match('/^\$[a-zA-Z_][a-zA-Z0-9_]*$/', $value) === 1;
     }
 
-    /**
-     * Parse variable reference - returns a special object to indicate it's a variable.
-     */
     private function parseVariable(string $value): array
     {
         return [
             'type' => 'variable',
-            'name' => substr($value, 1) // Remove the $ prefix
+            'name' => substr($value, 1),
         ];
-    }
-
-    /**
-     * Check if unquoted string is valid for named arguments.
-     */
-    private function isValidUnquotedString(string $value): bool
-    {
-        // Be restrictive about what we accept as unquoted strings in function expressions.
-        return preg_match('/^[a-zA-Z_][a-zA-Z0-9_-]*$/', $value) === 1;
     }
 }

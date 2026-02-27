@@ -44,6 +44,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                     recoverable: false,
 
                     hooks: {
+                        onCreate: ({ notification }) => {},
                         onActivate: ({ notification }) => {},
                         onCleanup: ({ notification }) => {},
                         onTerminate: ({ notification }) => {},
@@ -107,6 +108,8 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 });
 
                 this.notifications.push(notification);
+
+                await this.trigger('create', { notification }, notification);
 
                 if (activate) {
                     await this.activate(notification.id);
@@ -209,7 +212,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 }
 
                 <?php /* Trigger global hooks. */ ?>
-                if (window.MagewireAddons && window.MagewireAddons.has('notifier')) {
+                if (window.Magewire && window.MagewireAddons && window.MagewireAddons.has('notifier')) {
                     await Magewire.triggerAsync(`addons.notifier.${hook}`, args);
                 }
             },

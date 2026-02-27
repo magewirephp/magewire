@@ -17,17 +17,16 @@ abstract class ExpressionParser extends Parser
     private Arguments|null $arguments = null;
 
     public function __construct(
-        private readonly ArgumentsFactory $argumentsFactory
+        private ArgumentsFactory $argumentsFactory
     ) {
         //
     }
 
     public function parse(string $content): self
     {
-        $this->arguments()->merge(
-            strlen($content) === 0 ? [] : $this->parseArguments($content)
-        );
+        $content = strlen($content) === 0 ? [] : $this->parseArguments($content);
 
+        $this->arguments()->merge($content)->snapshot();
         return $this;
     }
 

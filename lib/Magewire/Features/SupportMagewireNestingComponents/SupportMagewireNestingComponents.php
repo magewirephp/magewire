@@ -29,7 +29,6 @@ class SupportMagewireNestingComponents extends ComponentHook
             // Returns a callable that will execute after the component is constructed.
             return function (AbstractBlock $block) {
                 $this->renderLifecycleManager->push($block->getData('magewire'));
-
                 return $block;
             };
         });
@@ -38,7 +37,6 @@ class SupportMagewireNestingComponents extends ComponentHook
             // Returns a callable that will execute after the component is reconstructed.
             return function (AbstractBlock $block) {
                 $this->renderLifecycleManager->push($block->getData('magewire'));
-
                 return $block;
             };
         });

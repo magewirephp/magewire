@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Observer;
 
 use Exception;
-use Magewirephp\Magewire\Mode;
+use Magewirephp\Magewire\Enums\RequestMode;
 use function Magewirephp\Magewire\store;
 use function Magewirephp\Magewire\trigger;
 use Magento\Framework\Event\Observer;
@@ -41,8 +41,6 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
      */
     public function execute(Observer $observer): void
     {
-        $this->magewireServiceProvider->setup();
-
         /** @var AbstractBlock $block */
         $block = $observer->getData('block');
         /** @var mixed $magewire */
@@ -69,7 +67,7 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
                  *
                  * @see \Magewirephp\Magewire\Controller\Router
                  */
-                $this->magewireServiceProvider->boot(Mode::PRECEDING);
+                $this->magewireServiceProvider->boot(RequestMode::PRECEDING);
 
                 $construct = trigger('magewire:component:construct', $block);
                 $block = $construct();
@@ -107,7 +105,7 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
 
         $this->magewireManager->mount(
             $component->getName(),
-            $component->resolver()->arguments()->forMount(),
+            $component->magewireResolver()->arguments()->forMount(),
             $block->getCacheKey(),
             $block,
             $component

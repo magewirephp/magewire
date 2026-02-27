@@ -12,7 +12,7 @@ $magewireViewModel = $block->getData('view_model');
 $magewireFragment = $magewireViewModel->utils()->fragment();
 
 /**
- * AlpineJS - Global
+ * Alpine JS - Global
  *
  * @internal Do not modify to ensure Magewire continues to function correctly.
  */
@@ -26,7 +26,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 error: message => console.error(`Magewire: ${ message }`),
                 warn: message => console.warn(`Magewire: ${ message }`),
             }
-        })
-    })
+        });
+    });
 </script>
 <?php $script->end() ?>

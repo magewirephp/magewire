@@ -43,8 +43,9 @@
                     <item name="view_model" xsi:type="object">Magewirephp\Magewire\Mechanisms\ResolveComponents\ResolveComponentsViewModel</item>
                 </item>
 
-                <item name="persist_middleware" xsi:type="string" sortOrder="1050">
-                    Magewirephp\Magewire\Mechanisms\PersistentMiddleware\PersistentMiddleware
+                <item name="persist_middleware" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Mechanisms\PersistentMiddleware\PersistentMiddleware</item>
+                    <item name="sort_order" xsi:type="number">1050</item>
                 </item>
 
                 <item name="handle_components" xsi:type="array">
@@ -84,8 +85,9 @@
                     </item>
                 </item>
 
-                <item name="data_store" xsi:type="string" sortOrder="1250">
-                    Magewirephp\Magewire\Mechanisms\DataStore
+                <item name="data_store" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Mechanisms\DataStore</item>
+                    <item name="sort_order" xsi:type="number">1250</item>
                 </item>
             </argument>
         </arguments>
@@ -116,51 +118,101 @@
                     Magewire-specific features rely solely on whether a feature needs to load before or after another,
                     rather than a strict sort order.
                 -->
-                <item name="magento_exception_handling" xsi:type="string" sortOrder="900">Magewirephp\Magewire\Features\SupportMagewireExceptionHandling\SupportMagewireExceptionHandling</item>
-                <item name="magewire_rate_limiting" xsi:type="string" sortOrder="900">Magewirephp\Magewire\Features\SupportMagewireRateLimiting\SupportMagewireRateLimiting</item>
-                <item name="nesting_components" xsi:type="string" sortOrder="1000">Magewirephp\Magewire\Features\SupportNestingComponents\SupportNestingComponents</item>
-                <item name="magewire_nesting_components" xsi:type="string" sortOrder="1100">Magewirephp\Magewire\Features\SupportMagewireNestingComponents\SupportMagewireNestingComponents</item>
-                <item name="attributes" xsi:type="string" sortOrder="1200">Magewirephp\Magewire\Features\SupportAttributes\SupportAttributes</item>
-                <item name="redirects" xsi:type="string" sortOrder="1300">Magewirephp\Magewire\Features\SupportRedirects\SupportRedirects</item>
-                <item name="streaming" xsi:type="string" sortOrder="1400">Magewirephp\Magewire\Features\SupportStreaming\SupportStreaming</item>
-                <item name="locales" xsi:type="string" sortOrder="1500">Magewirephp\Magewire\Features\SupportLocales\SupportLocales</item>
+                <item name="magewire_view_model" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireViewModel\SupportMagewireViewModel</item>
+                </item>
+
+                <item name="magento_exception_handling" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireExceptionHandling\SupportMagewireExceptionHandling</item>
+                    <item name="sort_order" xsi:type="number">800</item>
+                </item>
+
+                <item name="magewire_rate_limiting" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireRateLimiting\SupportMagewireRateLimiting</item>
+                    <item name="sort_order" xsi:type="number">900</item>
+                </item>
+
+                <item name="nesting_components" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportNestingComponents\SupportNestingComponents</item>
+                    <item name="sort_order" xsi:type="number">1000</item>
+                </item>
+
+                <item name="magewire_nesting_components" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireNestingComponents\SupportMagewireNestingComponents</item>
+                    <item name="sort_order" xsi:type="number">1100</item>
+                </item>
+
+                <item name="attributes" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportAttributes\SupportAttributes</item>
+                    <item name="sort_order" xsi:type="number">1200</item>
+                </item>
+
+                <item name="redirects" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportRedirects\SupportRedirects</item>
+                    <item name="sort_order" xsi:type="number">1300</item>
+                </item>
+
+                <item name="streaming" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportStreaming\SupportStreaming</item>
+                    <item name="sort_order" xsi:type="number">1400</item>
+                </item>
+
+                <item name="locales" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportLocales\SupportLocales</item>
+                    <item name="sort_order" xsi:type="number">1500</item>
+                </item>
+
                 <item name="events" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportEvents\SupportEvents</item>
                     <item name="sort_order" xsi:type="number">1600</item>
                 </item>
 
-                <item name="magento_layouts" xsi:type="string" sortOrder="5000">Magewirephp\Magewire\Features\SupportMagentoLayouts\SupportMagentoLayouts</item>
-                <!-- This functionality requires customization for each theme, as each theme may handle the dispatching of flash messages differently. -->
-                <item name="magento_flash_messages" xsi:type="string" sortOrder="5100">Magewirephp\Magewire\Features\SupportMagentoFlashMessages\SupportMagentoFlashMessages</item>
+                <item name="magento_layouts" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagentoLayouts\SupportMagentoLayouts</item>
+                    <item name="sort_order" xsi:type="number">5000</item>
+                </item>
 
-                <item name="magewire_loaders" xsi:type="string" sortOrder="5200">Magewirephp\Magewire\Features\SupportMagewireLoaders\SupportMagewireLoaders</item>
+                <!-- This functionality requires customization for each theme, as each theme may handle the dispatching of flash messages differently. -->
+                <item name="magento_flash_messages" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagentoFlashMessages\SupportMagentoFlashMessages</item>
+                    <item name="sort_order" xsi:type="number">5100</item>
+                </item>
+
+                <item name="magewire_loaders" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireLoaders\SupportMagewireLoaders</item>
+                    <item name="sort_order" xsi:type="number">5200</item>
+                </item>
+
                 <item name="magewire_notifications" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireNotifications\SupportMagewireNotifications</item>
                     <item name="facade" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireNotifications\MagewireNotificationsFacade</item>
                     <item name="sort_order" xsi:type="number">5200</item>
                 </item>
-                <item name="magewire_view_instructions" xsi:type="string" sortOrder="5300">Magewirephp\Magewire\Features\SupportMagewireViewInstructions\SupportMagewireViewInstructions</item>
 
                 <!-- HIGHEST PRIORITIY: Do not register features above this sort order range. -->
-                <item name="lifecycle_hooks" xsi:type="string" sortOrder="99000">Magewirephp\Magewire\Features\SupportLifecycleHooks\SupportLifecycleHooks</item>
+                <item name="lifecycle_hooks" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportLifecycleHooks\SupportLifecycleHooks</item>
+                    <item name="sort_order" xsi:type="number">99000</item>
+                </item>
+
                 <item name="magewire_backwards_compatibility" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\SupportMagewireBackwardsCompatibility</item>
-                    <item name="sort_order" xsi:type="number">99050</item>
+                    <item name="sort_order" xsi:type="number">99100</item>
                 </item>
 
                 <item name="magewire_flakes" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireFlakes\SupportMagewireFlakes</item>
-                    <item name="sort_order" xsi:type="number">99100</item>
+                    <item name="sort_order" xsi:type="number">99200</item>
                 </item>
 
                 <item name="magewire_compiling" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireCompiling\SupportMagewireCompiling</item>
-                    <item name="sort_order" xsi:type="number">99200</item>
+                    <item name="sort_order" xsi:type="number">99300</item>
                 </item>
 
                 <item name="magento_observer_events" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagentoObserverEvents\SupportMagentoObserverEvents</item>
-                    <item name="sort_order" xsi:type="number">99300</item>
+                    <item name="sort_order" xsi:type="number">99400</item>
                 </item>
             </argument>
         </arguments>
@@ -192,15 +244,7 @@
     -->
     <type name="Magewirephp\Magewire\Features\SupportMagewireCompiling\SupportMagewireCompiling">
         <arguments>
-            <argument name="compiler" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\MagewireCompiler</argument>
-        </arguments>
-    </type>
-
-    <type name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\MagewireCompiler">
-        <arguments>
-            <argument name="precompilers" xsi:type="array">
-                <item name="flakes" sortOrder="1000" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Precompiler\FlakePrecompiler</item>
-            </argument>
+            <argument name="compiler" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\MagentoTemplateCompiler</argument>
         </arguments>
     </type>
 
@@ -220,16 +264,15 @@
                 <!-- Magewire methods (area independent). -->
                 <item name="script" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Script</item>
                 <item name="fragment" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Fragment</item>
-
-                <item name="flake" xsi:type="object">
-                    Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Directive\FlakeDirective
-                </item>
+                <item name="slot" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Base\Proxy</item>
+                <item name="template" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Template\Proxy</item>
 
                 <!-- Basic PHP methods. -->
                 <!-- WIP... -->
 
                 <!-- Magento basic methods. -->
                 <item name="translate" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Base\Proxy</item>
+                <item name="child" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Base\Proxy</item>
 
                 <!-- Magento authentication methods. -->
                 <item name="auth" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Auth\Proxy</item>
@@ -286,7 +329,8 @@
         <arguments>
             <!-- All Magewire-specific directives without the prefix. -->
             <argument name="directives" xsi:type="array">
-                <!-- WIP... -->
+                <item name="slot" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magewire\Slot\Proxy</item>
+                <item name="component" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magewire\Component\Proxy</item>
             </argument>
         </arguments>
     </virtualType>
@@ -353,23 +397,6 @@
     </type>
 
     <!--
-        Concept: Service Provider
-
-        The ServerProvider in Magewire is responsible for setting up server-related configurations.
-        It ensures that necessary services are registered and available for the application.
-
-        This provider is crucial for managing server-specific dependencies efficiently
-        during the application's lifecycle.
-    -->
-    <type name="Magewirephp\Magewire\MagewireServiceProvider">
-        <arguments>
-            <argument name="containers" xsi:type="object">Magewirephp\Magewire\Containers\Proxy</argument>
-            <argument name="mechanisms" xsi:type="object">Magewirephp\Magewire\Mechanisms\Proxy</argument>
-            <argument name="features" xsi:type="object">Magewirephp\Magewire\Features\Proxy</argument>
-        </arguments>
-    </type>
-
-    <!--
         Concept: View Fragments
 
         View Fragments are self-contained sections of code, typically HTML,
@@ -390,9 +417,21 @@
     <type name="Magewirephp\Magewire\Model\View\FragmentFactory">
         <arguments>
             <argument name="types" xsi:type="array">
+                <!-- <?php $random = $__magewire->utils()->fragment()->make('flake')->start()... -->
                 <item name="flake" xsi:type="string">
                     Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Fragment\FlakeFragment
                 </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magewirephp\Magewire\Model\View\FragmentElementFactory">
+        <arguments>
+            <argument name="elements" xsi:type="array">
+                <!-- <magewire-slot:{name}... -->
+                <item name="slot" xsi:type="string">Magewirephp\Magewire\Model\View\Fragment\Element\Slot</item>
+                <!-- <magewire-flake:{variant}... -->
+                <item name="flake" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Fragment\Element\Flake</item>
             </argument>
         </arguments>
     </type>

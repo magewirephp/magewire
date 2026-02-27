@@ -1,0 +1,45 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment = $magewireViewModel->utils()->fragment();
+?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    (() => {
+        'use strict';
+
+        if (typeof Livewire !== 'undefined' && ! Livewire.emitTo) {
+            Livewire.emitTo = function (component, event, ...params) {
+                const instance = typeof component === 'string'
+                    ? Livewire.find(component)
+                    : component;
+
+                if (! instance) {
+                    console.warn(`Component "${component}" not found`);
+                    return;
+                }
+
+                const method = instance.dispatch || instance.$dispatch;
+
+                if (method) {
+                    const payload = params.length === 1 && typeof params[0] === 'object'
+                        ? params[0]
+                        : params.length > 0
+                            ? { params: params }
+                            : {};
+
+                    method.call(instance, event, payload);
+                }
+            };
+        }
+    })();
+</script>
+<?php $script->end() ?>

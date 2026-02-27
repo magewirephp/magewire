@@ -20,18 +20,11 @@ class Html extends Fragment
     protected array $attributes = [];
 
     public function __construct(
-        private readonly LoggerInterface $logger,
-        private readonly Escaper $escaper,
-        private readonly array $modifiers = []
+        LoggerInterface $logger,
+        Escaper $escaper,
+        array $modifiers = []
     ) {
-        parent::__construct($this->logger, $this->modifiers);
-    }
-
-    public function start(): static
-    {
-        $this->withValidator(static fn ($html) => str_starts_with($html, '<'));
-
-        return parent::start();
+        parent::__construct($logger, $escaper, $modifiers);
     }
 
     /**
@@ -48,7 +41,11 @@ class Html extends Fragment
         $this->raw = $input;
 
         try {
-            return $this->start()->render();
+            $this->start();
+            $output = $this->render();
+            $this->end();
+
+            return $output;
         } catch (Throwable $exception) {
             return $this->handleRenderException($exception);
         }

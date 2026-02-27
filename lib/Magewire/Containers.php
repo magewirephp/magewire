@@ -10,7 +10,17 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire;
 
+use Magewirephp\Magewire\Enums\ServiceTypeItemBootMode;
+
 class Containers extends ServiceType
 {
-    //
+    protected function callback(): callable
+    {
+        return fn () => true;
+    }
+
+    protected function getServiceTypeItemBootModeFallback(): ServiceTypeItemBootMode
+    {
+        return ServiceTypeItemBootMode::ALWAYS;
+    }
 }

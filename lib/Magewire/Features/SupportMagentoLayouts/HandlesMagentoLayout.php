@@ -16,44 +16,62 @@ use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolver\Componen
 
 trait HandlesMagentoLayout
 {
-    private AbstractBlock|null $block = null;
-    private ComponentResolver|null $resolver = null;
+    private AbstractBlock|null $magewireBlock = null;
+    private ComponentResolver|null $magewireResolver = null;
 
-    function resolver(ComponentResolver|null $resolver = null): ComponentResolver|null
+    public function magewireResolver(ComponentResolver|null $resolver = null): ComponentResolver|null
     {
         if ($resolver) {
-            $this->resolver = $resolver;
+            $this->magewireResolver = $resolver;
         }
 
-        return $this->resolver;
+        return $this->magewireResolver;
     }
 
-    function block(AbstractBlock|null $block = null): AbstractBlock|null
+    public function magewireBlock(AbstractBlock|null $block = null): AbstractBlock|null
     {
         if ($block) {
-            $this->block = $block;
+            $this->magewireBlock = $block;
         }
 
-        return $this->block;
+        return $this->magewireBlock;
     }
 
     /**
      * @deprecated has been replaced with block()
-     * @see static::block()
+     * @see static::magewireBlock()
      */
-    function setParent(Template|null $parent): static
+    public function setParent(Template|null $parent): static
     {
-        $this->block($parent);
+        $this->magewireBlock($parent);
 
         return $this;
     }
 
     /**
      * @deprecated has been replaced with block()
-     * @see static::block()
+     * @see static::magewireBlock()
      */
-    function getParent(): AbstractBlock|null
+    public function getParent(): AbstractBlock|null
     {
-        return $this->block();
+        return $this->magewireBlock();
+    }
+
+    /**
+     * @deprecated has been replaced with magewireBlock()
+     * @see static::magewireBlock()
+     */
+    public function block(AbstractBlock|null $block = null): AbstractBlock|null
+    {
+        return $this->magewireBlock($block);
+    }
+
+    /**
+     * @deprecated has been replaced with magewireResolver()
+     * @see static::magewireResolver()
+     */
+    public function resolver(AbstractBlock|null $block = null): AbstractBlock|null
+    {
+        return $this->magewireBlock($block);
     }
 }

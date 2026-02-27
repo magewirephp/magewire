@@ -9,21 +9,13 @@
 
         <!-- REFERENCES -->
         <referenceContainer name="magewire.alpinejs">
-            <!-- Intended to hold custom AlpineJS re-usable data components. -->
+            <!-- Intended to hold custom Alpine JS re-usable data components. -->
             <referenceContainer name="magewire.alpinejs.components">
                 <!-- Magewire Script -->
                 <block name="magewire.alpinejs.components.magewire-script"
                        template="Magewirephp_Magewire::js/alpinejs/components/magewire-script.phtml"
                 />
             </referenceContainer>
-        </referenceContainer>
-
-        <referenceContainer name="magewire.disabled">
-            <!-- Fallback: Loads AlpineJS when Magewire is disabled. When AlpineJS is loaded differently, either remove
-                 this block or change its template to match the themes preference. -->
-            <block name="magewire.alpinejs.script"
-                   template="Magewirephp_Magewire::js/alpinejs.phtml"
-            />
         </referenceContainer>
     </body>
 </page>

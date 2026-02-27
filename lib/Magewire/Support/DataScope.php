@@ -13,7 +13,7 @@ namespace Magewirephp\Magewire\Support;
 use Magento\Framework\App\ObjectManager;
 
 /**
- * @deprecated work in progress.
+ * @deprecated This is still a proof of concept and should not be used in a production environment.
  */
 class DataScope
 {

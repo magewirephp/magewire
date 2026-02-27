@@ -10,9 +10,9 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View;
 
-use Magento\Framework\App\ObjectManager;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Parser\ExpressionParser;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Parser\ExpressionParserType;
+use Magewirephp\Magewire\Support\Random;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -20,12 +20,6 @@ abstract class Directive
 {
     private array $expressionParsers = [];
     private array $variables = [];
-
-    public function __construct(
-        private DirectiveHandover|null $directiveHandover
-    ) {
-        $this->directiveHandover ??= ObjectManager::getInstance()->get(DirectiveHandover::class);
-    }
 
     /**
      * Compiles a string-based directive into executable code.
@@ -43,7 +37,19 @@ abstract class Directive
         if (method_exists($this, $directive) && $type = $this->getExpressionParserFor($directive)) {
             $parser = $this->parser($type)->parse($expression);
 
-            return $this->{$directive}(...$parser->arguments()->all());
+            $allArgs = $parser->arguments()->all();
+            $method = new ReflectionMethod($this, $directive);
+            $args = [];
+
+            foreach ($method->getParameters() as $param) {
+                $paramName = $param->getName();
+
+                if (array_key_exists($paramName, $allArgs)) {
+                    $args[$paramName] = $allArgs[$paramName];
+                }
+            }
+
+            return $this->{$directive}(...$args);
         }
 
         return $this->{$directive}();
@@ -74,8 +80,14 @@ abstract class Directive
         return $this->expressionParsers[$directive] ?? null;
     }
 
-    protected function var(string $name): string
+    protected function var(string $name, bool $pop = false): string
     {
-        return $this->variables[$name] ?? ($this->variables[$name] = uniqid('var'));
+        $var = $this->variables[$name] ??= Random::alphabetical(10, true);
+
+        if ($pop) {
+            unset($this->variables[$name]);
+        }
+
+        return $var;
     }
 }

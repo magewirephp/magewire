@@ -25,11 +25,14 @@ use Magewirephp\Magento\App\Router\MagewireRouteValidator;
 use Magewirephp\Magewire\MagewireServiceProvider;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\CorruptComponentPayloadException;
 use Magewirephp\Magewire\Mechanisms\HandleRequests\ComponentRequestContext;
-use Magewirephp\Magewire\Mode;
+use Magewirephp\Magewire\Enums\RequestMode;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 use function Magewirephp\Magewire\trigger;
 
+/**
+ * Handles routing for Magewire component update requests.
+ */
 abstract class MagewireUpdateRoute extends MagewireRoute
 {
     public const PARAM_IS_SUBSEQUENT = 'is_magewire_subsequent';
@@ -48,6 +51,13 @@ abstract class MagewireUpdateRoute extends MagewireRoute
         parent::__construct($this->actionFactory, $this->logger, $this->magewireRouteValidator);
     }
 
+    /**
+     * Matches and processes Magewire update requests.
+     *
+     * Validates the request, boots Magewire in subsequent mode, and parses
+     * component data. Returns a forward action on failure or the matched
+     * action on success.
+     */
     public function match(RequestInterface $request): ActionInterface|null
     {
         $match = parent::match($request);
@@ -68,19 +78,26 @@ abstract class MagewireUpdateRoute extends MagewireRoute
          *
          * @see \Magewirephp\Magewire\Observer\ViewBlockAbstractToHtmlBefore
          */
-        $this->magewireServiceProvider->boot(Mode::SUBSEQUENT);
+        $this->magewireServiceProvider->boot(RequestMode::SUBSEQUENT);
 
         try {
             $request->setParams($this->parseRequest($request));
         } catch (Exception $exception) {
+            $this->logger->critical($exception->getMessage(), ['exception' => $exception]);
+
             return $this->actionFactory->create(Forward::class);
         }
 
         return $match;
     }
 
-
     /**
+     * Parses and validates the component update request payload.
+     *
+     * Deserializes component data from the request body, verifies checksums,
+     * validates component prerequisites (resolver/handle), and converts
+     * component data to service contract objects.
+     *
      * @throws LocalizedException
      * @throws FileSystemException
      * @throws \Magento\Framework\Exception\RuntimeException

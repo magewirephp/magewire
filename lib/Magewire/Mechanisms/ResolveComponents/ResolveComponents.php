@@ -43,7 +43,7 @@ class ResolveComponents
          * This means, unless there is a better way that it needs a customized Generator Pool and a
          * new builder that can make sure this is available only during subsequent Magewire requests.
          */
-        if ($this->magewireServiceProvider->state()->mode()->isSubsequent()) {
+        if ($this->magewireServiceProvider->runtime()->mode()->isSubsequent()) {
             $this->layoutManager->decorator()->decorateForPagelessBlockFetching(
                 $this->layoutManager->singleton()
             );
@@ -72,8 +72,8 @@ class ResolveComponents
         });
 
         // Register a dehydrate listener to attach the used resolver accessor for easy reconstruction.
-        on('dehydrate', function ($component, ComponentContext $context) {
-            $context->addMemo('resolver', $component->resolver()->getAccessor());
+        on('dehydrate', function (Component $component, ComponentContext $context) {
+            $context->addMemo('resolver', $component->magewireResolver()->getAccessor());
         });
     }
 
@@ -96,8 +96,8 @@ class ResolveComponents
             /** @var Component $component */
             $component = $block->getData('magewire');
 
-            $component->block($block);
-            $component->resolver($resolver);
+            $component->magewireBlock($block);
+            $component->magewireResolver($resolver);
 
             return $resolver->assemble($block, $component);
         };

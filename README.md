@@ -76,7 +76,7 @@ To run styles, follow these steps:
 
 1. Install packages:
   ```shell
-  npm ci
+  npm install
   ```
 2. Run styles:
   ```shell

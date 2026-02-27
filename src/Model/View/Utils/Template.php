@@ -12,14 +12,12 @@ namespace Magewirephp\Magewire\Model\View\Utils;
 
 use Magento\Framework\App\State as ApplicationState;
 use Magento\Framework\Escaper;
-use Magewirephp\Magewire\Model\View\FragmentFactory;
 use Magewirephp\Magewire\Model\View\UtilsInterface;
 
 class Template implements UtilsInterface
 {
     public function __construct(
-        private readonly Escaper $escaper,
-        private readonly FragmentFactory $fragmentFactory
+        private readonly Escaper $escaper
     ) {
         //
     }

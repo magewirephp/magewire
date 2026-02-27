@@ -10,26 +10,29 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\Component;
 
-use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\LayoutManager;
+use Magewirephp\Magewire\Support\Factory;
 
 class FlakeFactory
 {
     public function __construct(
-        private readonly ObjectManagerInterface $objectManager,
-        private readonly LayoutManager $layoutManager,
-        private readonly string $type = Flake::class
+        private LayoutManager $layoutManager,
+        private string $type = Flake::class
     ) {
 
     }
 
     public function create(array $arguments = []): Component
     {
-        return $this->objectManager->create($this->type, $arguments);
+        return Factory::create($this->type, $arguments);
     }
 
+    /**
+     * Create and returns a new instance of a named Flake block bound with
+     * a Magewire component and its resolver.
+     */
     public function createByName(string $name, array $data = []): AbstractBlock|false
     {
         $layout = $this->layoutManager->decorator()->decorateForPagelessBlockFetching(
@@ -41,7 +44,8 @@ class FlakeFactory
 
         if ($block instanceof AbstractBlock) {
             $data['magewire'] ??= $this->create();
-            $data['magewire:resolver'] ??= 'test';
+            $data['magewire:resolver'] ??= 'flake';
+            $data['magewire:alias'] ??= $name;
 
             $block->addData($data);
         }
