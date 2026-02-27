@@ -43,7 +43,7 @@
       --tw-outline-style: solid;
       --tw-duration: initial;
       --tw-ease: initial;
-      --tw-space-x-reverse: 0;
+      --tw-leading: initial;
     }
   }
 }
@@ -55,12 +55,17 @@
       --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       --color-red-50: oklch(97.1% .013 17.38);
       --color-red-600: oklch(57.7% .245 27.325);
+      --color-red-700: oklch(50.5% .213 27.518);
       --color-yellow-50: oklch(98.7% .026 102.212);
       --color-yellow-600: oklch(68.1% .162 75.834);
+      --color-yellow-700: oklch(55.4% .135 66.442);
       --color-green-50: oklch(98.2% .018 155.826);
       --color-green-600: oklch(62.7% .194 149.214);
+      --color-green-700: oklch(52.7% .154 150.069);
       --color-blue-50: oklch(97% .014 254.604);
       --color-blue-600: oklch(54.6% .245 262.881);
+      --color-blue-700: oklch(48.8% .243 264.376);
+      --color-gray-400: oklch(70.7% .022 261.325);
       --color-gray-600: oklch(44.6% .03 256.802);
       --color-gray-700: oklch(37.3% .034 259.733);
       --color-black: #000;
@@ -363,10 +368,6 @@
       position: static;
     }
 
-    .right-6 {
-      right: calc(var(--spacing) * 6);
-    }
-
     .isolate {
       isolation: isolate;
     }
@@ -631,13 +632,11 @@
 }
 
 .magewire-notifier {
-  bottom: calc(var(--spacing) * 4);
-  left: calc(var(--spacing) * 6);
+  right: calc(var(--spacing) * 3);
+  bottom: calc(var(--spacing) * 3);
+  left: calc(var(--spacing) * 3);
   z-index: 50;
-  margin-bottom: calc(var(--spacing) * 2);
-  margin-left: calc(var(--spacing) * 2);
   flex-direction: column;
-  width: 100%;
   display: flex;
   position: fixed;
 }
@@ -648,9 +647,13 @@
   margin-block-end: calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-y-reverse)));
 }
 
-@media (min-width: 48rem) {
+@media (min-width: 40rem) {
   .magewire-notifier {
+    right: calc(var(--spacing) * 4);
+    bottom: calc(var(--spacing) * 4);
+    width: 100%;
     max-width: var(--container-xs);
+    left: auto;
   }
 }
 
@@ -704,17 +707,15 @@
   }
 }
 
-@starting-style {
-  @media (min-width: 40rem) {
+@media (min-width: 40rem) {
+  @starting-style {
     .magewire-notifier__notification {
       --tw-translate-x: calc(var(--spacing) * 2);
       translate: var(--tw-translate-x) var(--tw-translate-y);
     }
   }
-}
 
-@starting-style {
-  @media (min-width: 40rem) {
+  @starting-style {
     .magewire-notifier__notification {
       --tw-translate-y: calc(var(--spacing) * 0);
       translate: var(--tw-translate-x) var(--tw-translate-y);
@@ -724,82 +725,99 @@
 
 .magewire-notifier__notification {
   background-color: var(--notifier-bg, var(--color-white));
-  border-left-color: var(--notifier-border, var(--color-gray-600));
+  border-left-color: var(--notifier-border, var(--color-gray-400));
 }
 
 .magewire-notifier__notification-content {
-  justify-content: space-between;
-  align-items: center;
-  display: flex;
-}
-
-:where(.magewire-notifier__notification-content > :not(:last-child)) {
-  --tw-space-y-reverse: 0;
-  margin-block-start: calc(calc(var(--spacing) * 1) * var(--tw-space-y-reverse));
-  margin-block-end: calc(calc(var(--spacing) * 1) * calc(1 - var(--tw-space-y-reverse)));
-}
-
-.magewire-notifier__notification-content {
+  align-items: flex-start;
+  gap: calc(var(--spacing) * 3);
   padding: calc(var(--spacing) * 4);
+  display: flex;
 }
 
 .magewire-notifier__notification-before {
+  flex-shrink: 0;
   align-items: center;
   display: flex;
 }
 
-:where(.magewire-notifier__notification-before > :not(:last-child)) {
-  --tw-space-x-reverse: 0;
-  margin-inline-start: calc(calc(var(--spacing) * 3) * var(--tw-space-x-reverse));
-  margin-inline-end: calc(calc(var(--spacing) * 3) * calc(1 - var(--tw-space-x-reverse)));
+.magewire-notifier__notification-body {
+  min-width: calc(var(--spacing) * 0);
+  flex: 1;
 }
 
 .magewire-notifier__notification-title {
+  font-size: var(--text-sm);
+  line-height: var(--tw-leading, var(--text-sm--line-height));
+  --tw-leading: calc(var(--spacing) * 5);
+  line-height: calc(var(--spacing) * 5);
   --tw-font-weight: var(--font-weight-semibold);
   font-weight: var(--font-weight-semibold);
-  color: var(--notifier-title, var(--color-gray-600));
+  color: var(--notifier-title, var(--color-gray-700));
 }
 
 .magewire-notifier__notification-message {
-  margin-top: calc(var(--spacing) * 1);
+  margin-top: calc(var(--spacing) * .5);
   font-size: var(--text-sm);
   line-height: var(--tw-leading, var(--text-sm--line-height));
-  color: var(--color-gray-700);
+  color: var(--color-gray-600);
 }
 
 .magewire-notifier__notification-after {
   align-items: center;
+  gap: calc(var(--spacing) * 2);
+  flex-shrink: 0;
   display: flex;
 }
 
-:where(.magewire-notifier__notification-after > :not(:last-child)) {
-  --tw-space-x-reverse: 0;
-  margin-inline-start: calc(calc(var(--spacing) * 3) * var(--tw-space-x-reverse));
-  margin-inline-end: calc(calc(var(--spacing) * 3) * calc(1 - var(--tw-space-x-reverse)));
+.magewire-notifier__notification-close {
+  margin-top: calc(var(--spacing) * -.5);
+  margin-right: calc(var(--spacing) * -.5);
+  cursor: pointer;
+  padding: calc(var(--spacing) * 1);
+  --tw-leading: 1;
+  color: var(--color-gray-400);
+  transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to;
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+  transition-duration: var(--tw-duration, var(--default-transition-duration));
+  --tw-duration: .15s;
+  -webkit-user-select: none;
+  user-select: none;
+  border-radius: .25rem;
+  flex-shrink: 0;
+  align-self: flex-start;
+  line-height: 1;
+  transition-duration: .15s;
+}
+
+@media (hover: hover) {
+  .magewire-notifier__notification-close:hover {
+    color: var(--color-gray-600);
+  }
 }
 
 .magewire-notifier__notification--success {
   --notifier-bg: var(--color-green-50);
   --notifier-border: var(--color-green-600);
-  --notifier-title: var(--color-green-600);
+  --notifier-title: var(--color-green-700);
 }
 
 .magewire-notifier__notification--error {
   --notifier-bg: var(--color-red-50);
   --notifier-border: var(--color-red-600);
-  --notifier-title: var(--color-red-600);
+  --notifier-title: var(--color-red-700);
 }
 
 .magewire-notifier__notification--warning {
   --notifier-bg: var(--color-yellow-50);
   --notifier-border: var(--color-yellow-600);
-  --notifier-title: var(--color-yellow-600);
+  --notifier-title: var(--color-yellow-700);
 }
 
 .magewire-notifier__notification--info {
   --notifier-bg: var(--color-blue-50);
   --notifier-border: var(--color-blue-600);
-  --notifier-title: var(--color-blue-600);
+  --notifier-title: var(--color-blue-700);
 }
 
 @property --tw-rotate-x {
@@ -1023,10 +1041,9 @@
   inherits: false
 }
 
-@property --tw-space-x-reverse {
+@property --tw-leading {
   syntax: "*";
-  inherits: false;
-  initial-value: 0;
+  inherits: false
 }
 
 @keyframes spin {

@@ -13,8 +13,6 @@ use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
 /** @var AbstractBlock|false $notificationsBeforeBlock */
 /** @var AbstractBlock|false $notificationsAfterBlock */
 
-/** @purge: bottom-4, left-6, top-4, right-6 */
-
 $notificationsBeforeBlock = $block->getChildBlock('notification.before');
 $notificationsAfterBlock = $block->getChildBlock('notification.after');
 
@@ -45,7 +43,7 @@ $layoutUtil = $magewireViewModel->utils()->layout();
                 </div>
                 <?php endif ?>
 
-                <div>
+                <div class="magewire-notifier__notification-body">
                     <div class="magewire-notifier__notification-title"
                          x-text="notification.title"
                          x-show="notification.title"
@@ -66,6 +64,13 @@ $layoutUtil = $magewireViewModel->utils()->layout();
                     <?= $layoutUtil->renderBlockAsContainer($notificationsAfterBlock) ?>
                 </div>
                 <?php endif ?>
+
+                <button
+                    type="button"
+                    class="magewire-notifier__notification-close"
+                    aria-label="<?= $escaper->escapeHtmlAttr(__('Dismiss')) ?>"
+                    x-bind="bindings.notification.item.close"
+                >&times;</button>
             </div>
         </div>
     </template>
