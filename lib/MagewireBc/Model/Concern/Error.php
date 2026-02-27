@@ -12,6 +12,9 @@ namespace Magewirephp\Magewire\Model\Concern;
 
 use Magento\Framework\Phrase;
 
+/**
+ * @deprecated TBD
+ */
 trait Error
 {
     /** @var Phrase[] */

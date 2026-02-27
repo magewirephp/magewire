@@ -8,12 +8,10 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility;
+namespace Magewirephp\Magewire\Exception;
 
-/**
- * @deprecated TBD
- */
-trait HandlesFormComponentBackwardsCompatibility
+use Exception;
+
+class BackwardsIncompatibilityException extends Exception
 {
-    use HandlesComponentBackwardsCompatibility;
 }

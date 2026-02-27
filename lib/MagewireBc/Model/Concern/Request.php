@@ -14,6 +14,9 @@ use Magento\Framework\App\ObjectManager;
 use Magewirephp\Magewire\Model\Request as MagewireRequest;
 use Magewirephp\Magewire\Model\RequestInterface;
 
+/**
+ * @deprecated TBD
+ */
 trait Request
 {
     /**

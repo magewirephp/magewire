@@ -103,6 +103,26 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             runMagewireBackwardsCompatibleHook('component.initialized', () => {
                 Magewire.trigger('component.initialized', component);
             });
+
+            Object.defineProperty(component, 'deferredActions', {
+                get() {
+                    return this.queuedUpdates;
+                },
+                set(v) {
+                    this.queuedUpdates = v;
+                },
+
+                configurable: true
+            });
+
+            <?php /* @deprecated 'component.data' has been replaced with '$wire'. */ ?>
+            Object.defineProperty(component, 'data', {
+                get() {
+                    return this.$wire;
+                },
+
+                configurable: true
+            });
         });
         <?php /* @deprecated 'element.initialized' has been replaced with 'element.init'. */ ?>
         Magewire.hook('element.init', ({ el, component }) => {

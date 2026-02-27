@@ -13,6 +13,9 @@ namespace Magewirephp\Magewire\Model\Concern;
 use Magewirephp\Magewire\Features\SupportEvents\Event;
 use Magewirephp\Magewire\Features\SupportEvents\HandlesEvents;
 
+/**
+ * @deprecated TBD
+ */
 trait Emit
 {
     use HandlesEvents;

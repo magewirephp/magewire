@@ -1,0 +1,110 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment = $magewireViewModel->utils()->fragment();
+
+/** @internal Do not modify to ensure Magewire continues to function correctly. */
+?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    (() => {
+        if (window.Magewire) {
+            return;
+        }
+
+        const magewireBcProxyQueue = [
+            // Empty by default.
+        ];
+        const magewireBcFunctions = {
+            onError: magewireBcOnError
+        };
+
+        window.Magewire = new Proxy({
+            // Provide a no-op components.onErrorCallback so legacy code that does
+            // `const orig = Magewire.components.onErrorCallback` doesn't crash when
+            // it calls `orig(status, response)` inside the onError handler.
+            components: {
+                onErrorCallback: () => {}
+            }
+        }, {
+            get(target, prop) {
+                if (prop in target) {
+                    return target[prop];
+                }
+
+                return (...args) => {
+                    magewireBcProxyQueue.push({ prop, args });
+                };
+            }
+        });
+
+        /**
+         * Bridges the V1 `Magewire.onError(callback)` API to the V2 request hook.
+         *
+         * V1 signature: callback(status: number, response: Response)
+         * V2 hook:      fail({ status: number, content: string|null, preventDefault: () => void })
+         *
+         * `content` is already the awaited response body text, so we wrap it in a
+         * minimal Response-like object.  Old callbacks that call
+         * `response.clone().text().then(body => JSON.parse(body))` will receive the
+         * real body string — no data is lost.
+         *
+         * If the legacy callback returns `false`, we call `preventDefault()` to stop
+         * Livewire's built-in failure modal, matching V1's suppression behaviour.
+         *
+         * @param {function(number, object): *} callback
+         */
+        function magewireBcOnError(callback) {
+            Magewire.hook('request', ({ fail }) => {
+                fail(({ status, content, preventDefault }) => {
+                    // Synthesise a minimal Response-like object from the body text.
+                    // clone() returns `this` because the body is already a plain string —
+                    // no stream to exhaust, so re-reads are safe.
+                    const syntheticResponse = {
+                        ok: false,
+                        status,
+                        clone() {
+                            return this;
+                        },
+                        text() {
+                            return Promise.resolve(content ?? '{}');
+                        },
+                        json() {
+                            try {
+                                return Promise.resolve(JSON.parse(content ?? '{}'));
+                            } catch {
+                                return Promise.resolve({});
+                            }
+                        }
+                    };
+
+                    const result = callback(status, syntheticResponse);
+
+                    // V1: returning false from an onError handler suppressed default handling.
+                    if (result === false) {
+                        preventDefault();
+                    }
+                });
+            });
+        }
+
+        document.addEventListener('magewire:init', event => {
+            for (const { prop, args } of magewireBcProxyQueue) {
+                if (prop in magewireBcFunctions && typeof magewireBcFunctions[prop] === 'function') {
+                    magewireBcFunctions[prop](...args);
+                }
+            }
+        });
+    })();
+</script>
+<?php $script->end() ?>

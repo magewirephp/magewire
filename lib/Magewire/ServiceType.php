@@ -147,6 +147,7 @@ abstract class ServiceType
             $item['view_model'] ??= null;
             // Ensure the config key exists, defaulting to null if not set.
             $item['config'] ??= null;
+
             // Ensure the boot mode exists, or set the default if not set.
             $item['boot_mode'] = ServiceTypeItemBootMode::try($item['boot_mode'] ?? null, $this->getServiceTypeItemBootModeFallback());
 
