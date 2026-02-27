@@ -770,32 +770,6 @@
   display: flex;
 }
 
-.magewire-notifier__notification-close {
-  margin-top: calc(var(--spacing) * -.5);
-  margin-right: calc(var(--spacing) * -.5);
-  cursor: pointer;
-  padding: calc(var(--spacing) * 1);
-  --tw-leading: 1;
-  color: var(--color-gray-400);
-  transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to;
-  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
-  transition-duration: var(--tw-duration, var(--default-transition-duration));
-  --tw-duration: .15s;
-  -webkit-user-select: none;
-  user-select: none;
-  border-radius: .25rem;
-  flex-shrink: 0;
-  align-self: flex-start;
-  line-height: 1;
-  transition-duration: .15s;
-}
-
-@media (hover: hover) {
-  .magewire-notifier__notification-close:hover {
-    color: var(--color-gray-600);
-  }
-}
-
 .magewire-notifier__notification--success {
   --notifier-bg: var(--color-green-50);
   --notifier-border: var(--color-green-600);

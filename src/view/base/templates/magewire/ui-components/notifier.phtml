@@ -64,13 +64,6 @@ $layoutUtil = $magewireViewModel->utils()->layout();
                     <?= $layoutUtil->renderBlockAsContainer($notificationsAfterBlock) ?>
                 </div>
                 <?php endif ?>
-
-                <button
-                    type="button"
-                    class="magewire-notifier__notification-close"
-                    aria-label="<?= $escaper->escapeHtmlAttr(__('Dismiss')) ?>"
-                    x-bind="bindings.notification.item.close"
-                >&times;</button>
             </div>
         </div>
     </template>

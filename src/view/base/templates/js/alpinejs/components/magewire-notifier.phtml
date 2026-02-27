@@ -66,15 +66,6 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                             }
                         },
 
-                        close: function() {
-                            return {
-                                'x-on:click'(event) {
-                                    event.stopPropagation();
-                                    notifier.terminate(this.notification.id);
-                                }
-                            }
-                        },
-
                         recover: function() {
                             return {
                                 'x-bind:type'() {
