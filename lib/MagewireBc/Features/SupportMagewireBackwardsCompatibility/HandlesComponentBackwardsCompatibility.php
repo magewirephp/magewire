@@ -22,6 +22,8 @@ trait HandlesComponentBackwardsCompatibility
     use EmitConcern;
     use RequestConcern;
 
+    public bool $isObsolete = true;
+
     /**
      * Component id.
      *

@@ -27,6 +27,12 @@ class SupportMagewireBackwardsCompatibility extends ComponentHook
             $bc['serverMemo']['evaluation'] = $context->getEffects()->getData('evaluation');
         }
 
+        $isObsolete = $this->component->isObsolete ?? false;
+
+        if ($isObsolete) {
+            $bc['isObsolete'] = $isObsolete;
+        }
+
         foreach ($bc as $ikey => $value) {
             $context->pushEffect('bc', $value, $ikey);
         }

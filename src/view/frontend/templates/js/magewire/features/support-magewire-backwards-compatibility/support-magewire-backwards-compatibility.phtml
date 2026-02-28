@@ -132,6 +132,15 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 Magewire.trigger('element.initialized', el, component);
             });
         });
+
+        Magewire.hook('element.init', ({ el, component }) => {
+            if (!component.effects?.bc?.isObsolete || !el.hasAttribute('wire:model')) return;
+
+            const prop = el.getAttribute('wire:model');
+            el.removeAttribute('wire:model');
+            el.setAttribute('wire:model.live', prop);
+        });
+
         <?php /* @deprecated 'element.updating' has been replaced with 'morph.updating'. */ ?>
         Magewire.hook('morph.updating', ({ el, toEl, component }) => {
             component = makeComponentBackwardsCompatible(component);
@@ -139,6 +148,14 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             runMagewireBackwardsCompatibleHook('element.updating', () => {
                 Magewire.trigger('element.updating', el, toEl, component);
             });
+        });
+
+        Magewire.hook('morph.updating', ({ el, toEl, component }) => {
+            if (!component.effects?.bc?.isObsolete || !toEl.hasAttribute('wire:model')) return;
+
+            const prop = toEl.getAttribute('wire:model');
+            toEl.removeAttribute('wire:model');
+            toEl.setAttribute('wire:model.live', prop);
         });
         <?php /* @deprecated 'element.removed' has been replaced with 'morph.removed'. */ ?>
         Magewire.hook('morph.removed', ({ el, component }) => {
