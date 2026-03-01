@@ -39,6 +39,12 @@ MagewirePHP helps you deliver modern UX experiences in Magento—faster, cleaner
 
 Click [here](https://github.com/sponsors/wpoortman) to start sponsoring.
 
+## Supported Themes
+
+- ✅ Hyvä
+- 🚧 Magento Admin (wip - module)
+- 🚧 Breeze (wip - MR)
+
 ## Installation
 
 To install Magewire in your Magento 2 project, follow these steps:
