@@ -576,6 +576,10 @@
       text-transform: capitalize;
     }
 
+    .lowercase {
+      text-transform: lowercase;
+    }
+
     .uppercase {
       text-transform: uppercase;
     }
@@ -649,11 +653,11 @@
 
 @media (min-width: 40rem) {
   .magewire-notifier {
-    right: calc(var(--spacing) * 4);
+    right: auto;
     bottom: calc(var(--spacing) * 4);
+    left: calc(var(--spacing) * 4);
     width: 100%;
     max-width: var(--container-xs);
-    left: auto;
   }
 }
 
@@ -710,7 +714,7 @@
 @media (min-width: 40rem) {
   @starting-style {
     .magewire-notifier__notification {
-      --tw-translate-x: calc(var(--spacing) * 2);
+      --tw-translate-x: calc(var(--spacing) * -2);
       translate: var(--tw-translate-x) var(--tw-translate-y);
     }
   }
