@@ -1,12 +1,12 @@
 .magewire-notifier {
     @apply space-y-2 z-50 fixed bottom-3 left-3 right-3 flex flex-col
-           sm:bottom-4 sm:right-4 sm:left-auto sm:w-full sm:max-w-xs;
+           sm:bottom-4 sm:left-4 sm:right-auto sm:w-full sm:max-w-xs;
 }
 
 .magewire-notifier__notification {
     @apply transition duration-300 ease-out
            starting:translate-y-2 starting:opacity-0
-           sm:starting:translate-x-2 sm:starting:translate-y-0
+           sm:starting:-translate-x-2 sm:starting:translate-y-0
            translate-y-0 sm:translate-x-0
            rounded-md opacity-100 shadow-lg outline-1 outline-black/5 border-l-[6px];
 
