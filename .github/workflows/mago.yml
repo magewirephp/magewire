@@ -8,27 +8,17 @@ jobs:
   mago:
     name: Run Mago Checks
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/carthage-software/mago:1
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup PHP with Composer cache
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.2"
-          coverage: none
-          tools: composer
-        env:
-          COMPOSER_ALLOW_SUPERUSER: 1
+      - name: Check Formatting
+        run: mago fmt --check
 
-      - name: Install Composer Dependencies
-        run: composer install --prefer-dist --no-progress
+      - name: Lint
+        run: mago lint --reporting-format=github
 
-      - name: Setup Mago
-        uses: nhedger/setup-mago@v1
-
-      - name: Run Mago
-        run: |
-          mago format --dry-run
-          mago lint --reporting-format=github
-          mago analyze --reporting-format=github
+      - name: Analyze
+        run: mago analyze --reporting-format=github
