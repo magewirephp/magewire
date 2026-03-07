@@ -1,0 +1,59 @@
+# Welcome to Mago!
+# For full documentation, see https://mago.carthage.software/tools/overview
+php-version = "8.2.0"
+
+[source]
+workspace = "."
+paths = ["lib/", "src/", "themes/"]
+includes = ["../../vendor/magento"]
+excludes = ["dist/**", "node_modules/**", "lib/Livewire"]
+extensions = ["php", "phtml"]
+
+[formatter]
+preset = "psr-12"
+print-width = 120
+use-tabs = false
+tab-width = 4
+single-quote = true
+trailing-comma = false
+sort-uses = true
+separate-use-types = true
+expand-use-groups = true
+method-brace-style = "next-line"
+function-brace-style = "next-line"
+following-clause-on-newline = false
+first-method-chain-on-new-line = false
+method-chain-semicolon-on-next-line = false
+space-before-closure-parameter-list-parenthesis = true
+space-before-arrow-function-parameter-list-parenthesis = true
+space-after-logical-not-unary-prefix-operator = true
+space-around-concatenation-binary-operator = true
+null-type-hint = "null_pipe_last"
+align-assignment-like = false
+preserve-breaking-array-like = true
+empty-line-before-return = false
+empty-line-after-method = true
+remove-trailing-close-tag = true
+
+[linter]
+integrations = []
+
+[linter.rules]
+ambiguous-function-call = { enabled = false }
+literal-named-argument = { enabled = false }
+halstead = { effort-threshold = 7000 }
+
+[analyzer]
+plugins = []
+find-unused-definitions = true
+find-unused-expressions = true
+analyze-dead-code = false
+memoize-properties = true
+allow-possibly-undefined-array-keys = false
+check-throws = true
+check-missing-override = true
+find-unused-parameters = true
+strict-list-index-checks = true
+no-boolean-literal-comparison = false
+check-missing-type-hints = false
+register-super-globals = true
