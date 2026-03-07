@@ -91,8 +91,28 @@ class ComponentContext
     {
         return $this->block;
     }
-    public function hasEffect($key): bool
+    public function hasEffect($key, $iKey = null): bool
     {
-        return $this->getEffects()->hasData($key);
+        $has = $this->getEffects()->hasData($key);
+        if ($has && $iKey) {
+            $data = $this->getEffects()->getData($key);
+            if (is_array($data)) {
+                return isset($data[$iKey]);
+            }
+            return false;
+        }
+        return $has;
+    }
+    public function hasMemo($key, $iKey = null)
+    {
+        $has = $this->getMemo()->hasData($key);
+        if ($has && $iKey) {
+            $data = $this->getMemo()->getData($key);
+            if (is_array($data)) {
+                return isset($data[$iKey]);
+            }
+            return false;
+        }
+        return $has;
     }
 }

@@ -89,9 +89,21 @@ class ComponentContext extends \Livewire\Mechanisms\HandleComponents\ComponentCo
         return $this;
     }
 
-    public function hasEffect($key): bool
+    public function hasEffect($key, $iKey = null): bool
     {
-        return $this->getEffects()->hasData($key);
+        $has = $this->getEffects()->hasData($key);
+
+        if ($has && $iKey) {
+            $data = $this->getEffects()->getData($key);
+
+            if (is_array($data)) {
+                return isset($data[$iKey]);
+            }
+
+            return false;
+        }
+
+        return $has;
     }
 
     public function addMemo($key, $value)
@@ -116,5 +128,22 @@ class ComponentContext extends \Livewire\Mechanisms\HandleComponents\ComponentCo
         $this->getMemo()->setData($memo);
 
         return $this;
+    }
+
+    public function hasMemo($key, $iKey = null)
+    {
+        $has = $this->getMemo()->hasData($key);
+
+        if ($has && $iKey) {
+            $data = $this->getMemo()->getData($key);
+
+            if (is_array($data)) {
+                return isset($data[$iKey]);
+            }
+
+            return false;
+        }
+
+        return $has;
     }
 }

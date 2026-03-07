@@ -12,7 +12,6 @@ namespace Magewirephp\Magewire\Mechanisms\HandleComponents\Synthesizers;
 
 use Magento\Framework\DataObject;
 use Magento\Framework\DataObjectFactory;
-use Magewirephp\Magewire\Mechanisms\HandleComponents\Synthesizers\Synth;
 
 class DataObjectSynth extends Synth
 {

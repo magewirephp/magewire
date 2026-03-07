@@ -19,8 +19,8 @@
         </referenceContainer>
 
         <referenceContainer name="after.body.start">
-            <block name="magewire.features.support-magewire-backwards-compatibility.magewire-object-proxy"
-                   template="Magewirephp_Magewire::js/magewire/features/support-magewire-backwards-compatibility/magewire-object-proxy.phtml"
+            <block name="magewire.object-proxy"
+                   template="Magewirephp_Magewire::js/magewire/object-proxy.phtml"
             >
                 <arguments>
                     <argument name="view_model" xsi:type="object">
@@ -29,14 +29,5 @@
                 </arguments>
             </block>
         </referenceContainer>
-
-        <!--
-            MAGEWIRE FEATURES.
-        -->
-        <container name="magewire.features" as="features">
-            <block name="magewire.features.support-magewire-backwards-compatibility"
-                   template="Magewirephp_Magewire::js/magewire/features/support-magewire-backwards-compatibility/support-magewire-backwards-compatibility.phtml"
-            />
-        </container>
     </body>
 </page>

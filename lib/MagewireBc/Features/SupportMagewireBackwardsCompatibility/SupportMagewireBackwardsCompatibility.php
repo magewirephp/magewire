@@ -18,23 +18,27 @@ class SupportMagewireBackwardsCompatibility extends ComponentHook
     public function dehydrate(ComponentContext $context): void
     {
         $bc = [
-            'serverMemo' => [],
-            'data' => 'path:$wire',
-            '__livewire' => 'path:queuedUpdates'
+            'map' => $this->resolvePathsMap(),
+            'preferences' => $this->resolvePreferences()
         ];
-
-        if ($context->hasEffect('evaluation')) {
-            $bc['serverMemo']['evaluation'] = $context->getEffects()->getData('evaluation');
-        }
-
-        $isObsolete = $this->component->isObsolete ?? false;
-
-        if ($isObsolete) {
-            $bc['isObsolete'] = $isObsolete;
-        }
 
         foreach ($bc as $ikey => $value) {
             $context->pushEffect('bc', $value, $ikey);
         }
+    }
+
+    private function resolvePathsMap(): array
+    {
+        return [
+            'data' => 'path:$wire',
+            '__livewire' => 'path:queuedUpdates',
+        ];
+    }
+
+    private function resolvePreferences(): array
+    {
+        return [
+            //
+        ];
     }
 }

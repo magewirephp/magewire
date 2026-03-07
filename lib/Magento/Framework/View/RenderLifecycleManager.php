@@ -16,6 +16,7 @@ use function Magewirephp\Magewire\trigger;
 
 class RenderLifecycleManager
 {
+    /** @var array<string, BlockInterface $blocks */
     private array $blocks = [];
     private bool $running = false;
 
@@ -29,8 +30,10 @@ class RenderLifecycleManager
             $this->first = $block;
         }
 
+        $this->previous = $this->current;
         $this->current  = $block;
-        $this->blocks[] = $block;
+        $this->blocks[$block->getNameInLayout()] = $block;
+        $this->running  = true;
 
         trigger('magewire:render:start', $this, $block);
 
@@ -39,9 +42,19 @@ class RenderLifecycleManager
 
     public function pop(): static
     {
-        $this->previous = array_pop($this->blocks);
+        $popped = array_pop($this->blocks);
 
-        trigger('magewire:render:end', $this, $this->previous);
+        trigger('magewire:render:end', $this, $popped);
+
+        if (empty($this->blocks)) {
+            $this->running  = false;
+            $this->current  = null;
+            $this->previous = null;
+        } else {
+            $values         = array_values($this->blocks);
+            $this->current  = end($values);
+            $this->previous = count($values) >= 2 ? $values[count($values) - 2] : null;
+        }
 
         return $this;
     }
@@ -49,6 +62,11 @@ class RenderLifecycleManager
     public function isRunning(): bool
     {
         return $this->running;
+    }
+
+    public function firstBlock(): BlockInterface|null
+    {
+        return $this->first;
     }
 
     public function previousBlock(): BlockInterface|null
@@ -59,5 +77,20 @@ class RenderLifecycleManager
     public function currentBlock(): BlockInterface|null
     {
         return $this->current;
+    }
+
+    /**
+     * Determines whether the given block is currently being tracked in the lifecycle.
+     *
+     * This can be handy in cases where you need to know if the current handled block sits somewhere
+     * nested within the given block (name).
+     */
+    public function isWithin(AbstractBlock|string $block): bool
+    {
+        if (! is_string($block)) {
+            $block = $block->getNameInLayout();
+        }
+
+        return array_key_exists($block, $this->blocks);
     }
 }

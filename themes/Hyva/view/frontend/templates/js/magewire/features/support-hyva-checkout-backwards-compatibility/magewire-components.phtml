@@ -1,0 +1,74 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment = $magewireViewModel->utils()->fragment();
+
+/** @internal Do not modify to ensure Magewire continues to function correctly. */
+?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    document.addEventListener('magewire:init', event => {
+        const _find = Magewire.find.bind(Magewire);
+
+        Magewire.find = function(id) {
+            const wire = _find(id);
+
+            if (! wire) {
+                return wire;
+            }
+
+            return new Proxy(wire, {
+                get(target, prop, receiver) {
+                    if (prop === '__instance') {
+                        return makeComponentBackwardsCompatible(target.__instance);
+                    }
+
+                    return Reflect.get(target, prop, receiver);
+                }
+            });
+        };
+    });
+
+    const makeComponentBackwardsCompatible = function(component) {
+        return new Proxy(component, {
+            get(target, prop, receiver) {
+                if ('bc' in target.effects) {
+                    const value = target.effects.bc[prop] || target.effects.bc.map[prop];
+
+                    if (value !== undefined) {
+                        if (typeof value === 'string' && value.startsWith('path:')) {
+                            return value.slice(5).split('.').reduce((obj, key) => obj?.[key], target);
+                        }
+
+                        return value;
+                    }
+                }
+
+                return Reflect.get(target, prop, receiver);
+            },
+
+            has(target, prop) {
+                if ('bc' in target.effects) {
+                    const value = target.effects.bc[prop] || target.effects.bc.map[prop];
+
+                    if (value !== undefined) {
+                        return true;
+                    }
+                }
+
+                return Reflect.has(target, prop);
+            }
+        });
+    };
+</script>
+<?php $script->end() ?>

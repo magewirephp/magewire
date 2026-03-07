@@ -17,84 +17,6 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
 ?>
 <?php $script = $magewireFragment->make()->script()->start() ?>
 <script>
-    const makeComponentBackwardsCompatible = function(component) {
-        return new Proxy(component, {
-            get(target, prop, receiver) {
-                if (target.effects.bc && prop in target.effects.bc) {
-                    const value = target.effects.bc[prop];
-
-                    if (typeof value === 'string' && value.startsWith('path:')) {
-                        return value.slice(5).split('.').reduce((obj, key) => obj?.[key], target);
-                    }
-
-                    return value;
-                }
-
-                return Reflect.get(target, prop, receiver);
-            },
-
-            has(target, prop) {
-                if (target.effects.bc && prop in target.effects.bc) {
-                    return true;
-                }
-
-                return Reflect.has(target, prop);
-            }
-        });
-    };
-
-    let magewireBcHooksReady = false;
-    let magewireBcHooksResolver = null;
-    let magewireBcHooksNotifications = [];
-
-    // A mapping for what the old event became 'old' => 'new'.
-    const magewireBcHooksReplacementMapping = {
-        'component.initialized': 'component.init',
-        'element.initialized': 'element.init',
-        'element.removed': 'morph.removed',
-        'element.updating': 'morph.updating',
-        'message.sent': 'commit',
-        'message.failed': 'commit',
-        'message.received': 'commit',
-        'message.processed': 'commit'
-    };
-
-    // Create a promise that resolves when Magewire is available.
-    const magewireBcReady = new Promise(resolve => {
-        magewireBcHooksResolver = resolve;
-    });
-
-    // Function to run a hook when ready.
-    const runMagewireBackwardsCompatibleHook = async function(hook, callable) {
-        if (! magewireBcHooksNotifications.includes(hook)) {
-            const replacement = magewireBcHooksReplacementMapping[hook] || 'TBD';
-
-            <?php if ($magewireViewModel->utils()->magewire()->config()->isInDebugMode()): ?>
-                console.warn(`Magewire: Somewhere within your code, you are using a Magewire hook "${hook}". This hook is no longer supported and will eventually be removed. Please upgrade to use "${replacement}" instead. This message is only shown in developer mode.`);
-            <?php endif ?>
-        }
-
-        magewireBcHooksNotifications.push(hook);
-
-        if (! callable) return;
-        // Wait for Magewire to be ready.
-        await magewireBcReady;
-        // Execute the callable.
-        callable();
-    };
-
-    // Resolve the promise when magewire:available fires
-    document.addEventListener('magewire:available', () => {
-        if (! magewireBcHooksReady) {
-            magewireBcHooksReady = true;
-
-            // Resolve the promise to release all waiting hooks
-            if (magewireBcHooksResolver) {
-                magewireBcHooksResolver();
-            }
-        }
-    });
-
     document.addEventListener('magewire:init', event => {
         <?php /* @deprecated 'component.initialized' has been replaced with 'component.init'. */ ?>
         Magewire.hook('component.init', ({ component, cleanup }) => {
@@ -132,15 +54,6 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 Magewire.trigger('element.initialized', el, component);
             });
         });
-
-        Magewire.hook('element.init', ({ el, component }) => {
-            if (!component.effects?.bc?.isObsolete || !el.hasAttribute('wire:model')) return;
-
-            const prop = el.getAttribute('wire:model');
-            el.removeAttribute('wire:model');
-            el.setAttribute('wire:model.live', prop);
-        });
-
         <?php /* @deprecated 'element.updating' has been replaced with 'morph.updating'. */ ?>
         Magewire.hook('morph.updating', ({ el, toEl, component }) => {
             component = makeComponentBackwardsCompatible(component);
@@ -148,14 +61,6 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             runMagewireBackwardsCompatibleHook('element.updating', () => {
                 Magewire.trigger('element.updating', el, toEl, component);
             });
-        });
-
-        Magewire.hook('morph.updating', ({ el, toEl, component }) => {
-            if (!component.effects?.bc?.isObsolete || !toEl.hasAttribute('wire:model')) return;
-
-            const prop = toEl.getAttribute('wire:model');
-            toEl.removeAttribute('wire:model');
-            toEl.setAttribute('wire:model.live', prop);
         });
         <?php /* @deprecated 'element.removed' has been replaced with 'morph.removed'. */ ?>
         Magewire.hook('morph.removed', ({ el, component }) => {
@@ -257,7 +162,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             fail(() => {
                 // @todo Check if this really needs to dispatch 'message.processed'.
                 runMagewireBackwardsCompatibleHook('message.processed', () => {
-                    Magewire.trigger('message.processed', message, c);
+                    Magewire.trigger('message.processed', message, component);
                 });
             });
         });

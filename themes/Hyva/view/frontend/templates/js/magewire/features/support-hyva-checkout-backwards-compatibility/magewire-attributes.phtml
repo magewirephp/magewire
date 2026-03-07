@@ -1,0 +1,48 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment = $magewireViewModel->utils()->fragment();
+
+/** @internal Do not modify to ensure Magewire continues to function correctly. */
+?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    Magewire.hook('element.init', ({ el, component }) => {
+        if (! 'bc' in component.snapshot.memo) {
+            return;
+        }
+        if (! component.snapshot.memo.bc['enabled'] || ! el.hasAttribute('wire:model')) {
+            return;
+        }
+
+        const prop = el.getAttribute('wire:model');
+
+        el.removeAttribute('wire:model');
+        el.setAttribute('wire:model.live', prop);
+    });
+
+    Magewire.hook('morph.updating', ({ el, toEl, component }) => {
+        if (! 'bc' in component.snapshot.memo) {
+            return;
+        }
+        if (! component.snapshot.memo.bc['enabled'] || ! toEl.hasAttribute('wire:model')) {
+            return;
+        }
+
+        const prop = toEl.getAttribute('wire:model');
+
+        toEl.removeAttribute('wire:model');
+        toEl.setAttribute('wire:model.live', prop);
+    });
+</script>
+<?php $script->end() ?>
