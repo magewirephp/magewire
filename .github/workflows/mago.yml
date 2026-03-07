@@ -1,9 +1,21 @@
+name: Mago Code Quality
+
+on:
+  push:
+  pull_request:
+
 jobs:
   mago:
+    name: Run Mago Checks
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/carthage-software/mago:1
     steps:
-      - uses: actions/checkout@v4
-      - run: mago fmt --check
-      - run: mago lint --reporting-format=github
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Check Formatting
+        run: mago fmt --check
+
+      - name: Lint
+        run: mago lint --reporting-format=github
