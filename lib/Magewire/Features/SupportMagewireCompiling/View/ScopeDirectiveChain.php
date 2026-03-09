@@ -19,6 +19,6 @@ class ScopeDirectiveChain
         public array $methods = [],
         public bool $strict = false
     ) {
-        //
+        
     }
 }

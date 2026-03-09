@@ -20,7 +20,7 @@ class RateLimiterCacheStorage implements RateLimiterStorageInterface
     public function __construct(
         private readonly RateLimiterCache $cache,
     ) {
-        //
+        
     }
 
     public function get(string $key): array

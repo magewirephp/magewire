@@ -14,5 +14,5 @@ use Exception;
 
 class ComponentResolverNotFoundException extends Exception
 {
-    //
+    
 }

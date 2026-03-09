@@ -24,7 +24,7 @@ class Router implements RouterInterface
         private readonly MagewireRouteValidator $magewireRouteValidator,
         private readonly array $routes = []
     ) {
-        //
+        
     }
 
     public function match(RequestInterface $request)

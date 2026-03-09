@@ -33,7 +33,7 @@ trait Emit
      */
     public function emitUp(string $event, $params = []): Event
     {
-        //
+        
     }
 
     /**
@@ -43,7 +43,7 @@ trait Emit
      */
     public function emitSelf(string $event, $params = []): Event
     {
-        //
+        
     }
 
     /**
@@ -63,7 +63,7 @@ trait Emit
      */
     public function emitToRefresh(string $name, $params = []): Event
     {
-        //
+        
     }
 
     /**
@@ -73,6 +73,6 @@ trait Emit
      */
     public function emitToRefreshUp($params = []): Event
     {
-        //
+        
     }
 }

@@ -20,7 +20,7 @@ class FileSystem
         private readonly File $magentoFileSystemDriver,
         private readonly LoggerInterface $logger
     ) {
-        //
+        
     }
 
     /**
@@ -61,7 +61,7 @@ class FileSystem
     /**
      * @throws FileSystemException
      */
-    public function makeDirectory(string $path, int $mode = 0755, bool $recursive = false): void
+    public function makeDirectory(string $path, int $mode = 0o755, bool $recursive = false): void
     {
         $this->magentoFileSystemDriver->createDirectory($path, $mode);
     }
@@ -85,6 +85,6 @@ class FileSystem
             return;
         }
 
-        $this->makeDirectory(dirname($path), 0777, true);
+        $this->makeDirectory(dirname($path), 0o777, true);
     }
 }

@@ -19,6 +19,6 @@ class ScopeDirectiveParser
     public function __construct(
         public ExpressionParserType $expressionParserType
     ) {
-        //
+        
     }
 }

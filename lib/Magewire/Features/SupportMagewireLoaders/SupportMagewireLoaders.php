@@ -22,7 +22,7 @@ class SupportMagewireLoaders extends ComponentHook
 
         if ($loader) {
             if (is_array($loader)) {
-                $loader = map_with_keys(function ($value, $key) {
+                $loader = map_with_keys(static function ($value, $key) {
                     if (is_string($value)) {
                         $value = [$value];
                     }

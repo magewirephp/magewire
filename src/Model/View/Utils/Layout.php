@@ -20,7 +20,7 @@ class Layout implements UtilsInterface
     public function __construct(
         private readonly LoggerInterface $logger
     ) {
-        //
+        
     }
 
     /**
@@ -63,7 +63,7 @@ class Layout implements UtilsInterface
     public function renderBlockAsContainer(AbstractBlock|false $block): string
     {
         if ($block) {
-            return implode('', array_map(function (object $child) {
+            return implode('', array_map(static function (object $child) {
                 return ($child instanceof AbstractBlock ? $child->toHtml() : '') . PHP_EOL;
             }, $this->containerizeBlock($block)));
         }

@@ -101,7 +101,7 @@ class Html extends Fragment
     {
         if ($area === 'root') {
             // Filter those who are not an 'area' (an array value).
-            $attributes = array_filter($this->attributes, fn ($value) => ! is_array($value));
+            $attributes = array_filter($this->attributes, static fn ($value) => ! is_array($value));
 
             return array_merge($this->attributes[$area] ?? [], $attributes);
         }

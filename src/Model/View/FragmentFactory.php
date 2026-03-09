@@ -29,7 +29,7 @@ class FragmentFactory
         private FragmentElementFactory $elementFactory,
         private array $types = []
     ) {
-        //
+        
     }
 
     public function html(): Html

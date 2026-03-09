@@ -15,7 +15,7 @@ abstract class ConfigMagewireGroup
     public function __construct(
         private readonly ConfigMagewire $config
     ) {
-        //
+        
     }
 
     public function config(): ConfigMagewire

@@ -35,7 +35,7 @@ abstract class Distributor
         protected string $type,
         protected array $mapping = []
     ) {
-        //
+        
     }
 
     /**

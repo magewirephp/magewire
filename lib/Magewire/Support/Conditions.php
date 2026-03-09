@@ -46,7 +46,7 @@ class Conditions
     public function or(callable|array $alternative, string|null $name = null): static
     {
         if (is_array($alternative)) {
-            $alternative = array_filter($alternative, fn ($item) => is_callable($item));
+            $alternative = array_filter($alternative, static fn ($item) => is_callable($item));
         }
 
         return $this->set($alternative, ConditionEnum::OR, $name);
@@ -89,8 +89,9 @@ class Conditions
     public function evaluate(...$args): bool
     {
         foreach ($this->get(ConditionEnum::AND) as $condition) {
-            if (! $condition(...$args)) {
-                foreach ($this->get(ConditionEnum::OR) as $alternative) {
+            if ($condition(...$args)) { continue; }
+
+foreach ($this->get(ConditionEnum::OR) as $alternative) {
                     if (is_array($alternative) && $this->evaluateGroup($alternative, ...$args)) {
                         return true;
                     } else {
@@ -99,7 +100,6 @@ class Conditions
                 }
 
                 return false;
-            }
         }
 
         return true;
@@ -117,6 +117,6 @@ class Conditions
 
     private function evaluateGroup(array $group, ...$args): bool
     {
-        return array_reduce($group, fn ($carry, $item) => $carry && $item(...$args), true);
+        return array_reduce($group, static fn ($carry, $item) => $carry && $item(...$args), true);
     }
 }

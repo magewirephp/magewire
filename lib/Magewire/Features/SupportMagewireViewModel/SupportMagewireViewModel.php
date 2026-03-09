@@ -23,7 +23,7 @@ class SupportMagewireViewModel extends ComponentHook
     public function __construct(
         private readonly MagewireViewModelInterfaceFactory $magewireViewModelFactory
     ) {
-        //
+        
     }
 
     public function provide(): void

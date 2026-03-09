@@ -18,7 +18,7 @@ class MagewireRouteValidator
     public function __construct(
         private readonly FrontNameResolver $frontNameResolver
     ) {
-        //
+        
     }
 
     /**

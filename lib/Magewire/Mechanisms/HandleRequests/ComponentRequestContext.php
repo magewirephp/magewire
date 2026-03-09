@@ -24,7 +24,7 @@ class ComponentRequestContext
         private mixed $calls = [],
         private mixed $updates = []
     ) {
-        //
+        
     }
 
     public function setCalls(array $calls): self

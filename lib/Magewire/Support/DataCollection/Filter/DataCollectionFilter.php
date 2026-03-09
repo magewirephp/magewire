@@ -14,5 +14,5 @@ use Magewirephp\Magewire\Support\DataCollection\Filter;
 
 class DataCollectionFilter extends Filter
 {
-    //
+    
 }

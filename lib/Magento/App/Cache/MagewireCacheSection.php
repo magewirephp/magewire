@@ -24,7 +24,7 @@ abstract class MagewireCacheSection
         private readonly MagewireCacheType $magewireCacheType,
         private readonly SerializerInterface $serializer
     ) {
-        //
+        
     }
 
     public function save(array $data, int|null $ttl = null): bool

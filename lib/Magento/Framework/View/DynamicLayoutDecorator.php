@@ -19,7 +19,7 @@ class DynamicLayoutDecorator
         private readonly GeneratorPool $magewireGeneratorPool,
         private readonly DynamicLayoutBuilderFactory $dynamicLayoutBuilderFactory
     ) {
-        //
+        
     }
 
     public function decorate(Layout $layout): Layout

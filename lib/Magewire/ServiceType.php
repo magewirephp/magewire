@@ -37,7 +37,7 @@ abstract class ServiceType
     public function __construct(
         private array $items = []
     ) {
-        //
+        
     }
 
     /**
@@ -142,7 +142,7 @@ abstract class ServiceType
             // Ensure the facade key exists, defaulting to null if not set.
             $item['facade'] ??= null;
             // Keep only active sequences (where the value is true).
-            $item['sequence'] = array_filter($item['sequence'] ?? [], fn ($item) => $item === true);
+            $item['sequence'] = array_filter($item['sequence'] ?? [], static fn ($item) => $item === true);
             // Ensure the view model key exists, defaulting to null if not set.
             $item['view_model'] ??= null;
             // Ensure the config key exists, defaulting to null if not set.
@@ -152,7 +152,7 @@ abstract class ServiceType
             $item['boot_mode'] = ServiceTypeItemBootMode::try($item['boot_mode'] ?? null, $this->getServiceTypeItemBootModeFallback());
 
             return $item;
-        }, array_filter($this->items, fn ($value) => is_string($value) || is_array($value)));
+        }, array_filter($this->items, static fn ($value) => is_string($value) || is_array($value)));
 
         $this->assembled = true;
         return $this;
@@ -164,7 +164,7 @@ abstract class ServiceType
             return $this->items;
         }
 
-        uasort($this->items, function ($a, $b) {
+        uasort($this->items, static function ($a, $b) {
             if ($a['sort_order'] == $b['sort_order']) {
                 if (isset($a['sequence'])) {
                     foreach ($a['sequence'] as $dependency) {

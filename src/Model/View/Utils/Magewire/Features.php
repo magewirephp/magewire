@@ -22,7 +22,7 @@ class Features
         private FeaturesServiceType $featuresServiceType,
         private LoggerInterface $logger
     ) {
-        //
+        
     }
 
     /**

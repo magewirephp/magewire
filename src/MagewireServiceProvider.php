@@ -29,7 +29,7 @@ class MagewireServiceProvider
         private readonly Mechanisms $mechanisms,
         private readonly Features $features
     ) {
-        //
+        
     }
 
     public function setup(): void

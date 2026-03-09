@@ -26,7 +26,7 @@ class ViewBlockAbstractToHtmlAfter implements ObserverInterface
         private readonly MagewireManager  $magewireManager,
         private readonly ExceptionManager $exceptionManager
     ) {
-        //
+        
     }
 
     /**

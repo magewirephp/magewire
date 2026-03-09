@@ -34,7 +34,7 @@ class Pipeline
     public function __construct(
         protected LoggerInterface $logger
     ) {
-        //
+        
     }
 
     /**
@@ -196,10 +196,10 @@ class Pipeline
      */
     protected function couple(array $pipes): callable
     {
-        $core = fn (mixed $throughput): mixed => $throughput;
+        $core = static fn (mixed $throughput): mixed => $throughput;
 
         foreach (array_reverse($pipes) as $pipe) {
-            $core = function (mixed $throughput) use ($pipe, $core): mixed {
+            $core = static function (mixed $throughput) use ($pipe, $core): mixed {
                 return $pipe($throughput, $core);
             };
         }

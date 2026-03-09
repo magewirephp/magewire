@@ -14,5 +14,5 @@ use Magewirephp\Magewire\Model\View\Fragment;
 
 class Javascript extends Fragment
 {
-    //
+    
 }

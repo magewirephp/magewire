@@ -24,8 +24,6 @@ trait Request
      */
     public function getRequest(): RequestInterface
     {
-        $request = ObjectManager::getInstance()->get(MagewireRequest::class);
-
-        return $request;
+        return ObjectManager::getInstance()->get(MagewireRequest::class);
     }
 }

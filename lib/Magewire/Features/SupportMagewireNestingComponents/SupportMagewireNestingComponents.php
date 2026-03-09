@@ -20,7 +20,7 @@ class SupportMagewireNestingComponents extends ComponentHook
     public function __construct(
         private readonly RenderLifecycleManager $renderLifecycleManager
     ) {
-        //
+        
     }
 
     function provide(): void

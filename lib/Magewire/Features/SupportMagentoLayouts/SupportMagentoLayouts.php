@@ -14,5 +14,5 @@ use Magewirephp\Magewire\ComponentHook;
 
 class SupportMagentoLayouts extends ComponentHook
 {
-    //
+    
 }

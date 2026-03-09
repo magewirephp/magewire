@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility;
 
 use Magewirephp\Magewire\Drawer\Utils;
-use Magewirephp\Magewire\Features\SupportMagewireCompiling\BackwardsCompatibilityHandler;
+
 use Magewirephp\Magewire\Model\Concern\BrowserEvent as BrowserEventConcern;
 use Magewirephp\Magewire\Model\Concern\Emit as EmitConcern;
 use Magewirephp\Magewire\Model\Concern\Error as ErrorConcern;

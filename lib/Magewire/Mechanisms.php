@@ -16,7 +16,7 @@ class Mechanisms extends ServiceType
 {
     protected function callback(): callable
     {
-        return function (object $type) {
+        return static function (object $type) {
             $type->boot();
         };
     }

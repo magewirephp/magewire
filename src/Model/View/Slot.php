@@ -34,7 +34,7 @@ class Slot implements Stringable
         private readonly string $name,
         private readonly Element $element
     ) {
-        //
+        
     }
 
     /**

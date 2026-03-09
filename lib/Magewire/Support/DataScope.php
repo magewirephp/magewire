@@ -24,7 +24,7 @@ class DataScope
         private readonly DataScope|null $root = null,
         protected array $data = [],
     ) {
-        //
+        
     }
 
     /**

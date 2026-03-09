@@ -38,7 +38,7 @@ class SupportMagewireBackwardsCompatibility extends ComponentHook
     private function resolvePreferences(): array
     {
         return [
-            //
+            
         ];
     }
 }

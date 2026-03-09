@@ -33,7 +33,7 @@ class Snapshot
         private mixed $memo = [],
         private string $checksum = ''
     ) {
-        //
+        
     }
 
     /**

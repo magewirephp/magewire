@@ -12,5 +12,5 @@ namespace Magewirephp\Magewire\Model\View\Fragment;
 
 class Style extends Html
 {
-    //
+    
 }

@@ -14,5 +14,5 @@ use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ViewAction as Vi
 
 class Magewire extends ViewAction
 {
-    //
+    
 }

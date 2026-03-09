@@ -19,7 +19,7 @@ class SupportMagewireExceptionHandling extends ComponentHook
 {
     function provide(): void
     {
-        on('exception', function (Component $component, Throwable $exception, callable $stopPropagation) {
+        on('exception', static function (Component $component, Throwable $exception, callable $stopPropagation) {
             // TBD
         });
     }

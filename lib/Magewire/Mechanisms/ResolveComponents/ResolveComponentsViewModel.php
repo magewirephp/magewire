@@ -18,7 +18,7 @@ class ResolveComponentsViewModel implements ArgumentInterface
     public function __construct(
         private readonly RenderLifecycleManager $renderLifecycleManager,
     ) {
-        //
+        
     }
 
     public function doesPageHaveComponents(): bool

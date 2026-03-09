@@ -18,7 +18,7 @@ class Metadata
     public function __construct(
         protected DataArrayFactory $dataArrayFactory
     ) {
-        //
+        
     }
 
     public function increment(string $prop, int $by = 1): static

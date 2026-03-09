@@ -81,7 +81,7 @@ class AttributesReader
     public function all(string $attributeClass): array
     {
         return array_map(
-            fn (ReflectionAttribute $attr) => $attr->newInstance(),
+            static fn (ReflectionAttribute $attr) => $attr->newInstance(),
             $this->target->getAttributes($attributeClass)
         );
     }

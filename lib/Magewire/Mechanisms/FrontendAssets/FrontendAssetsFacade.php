@@ -17,7 +17,7 @@ class FrontendAssetsFacade
     public function __construct(
         private readonly FrontendAssetsMechanism $mechanism
     ) {
-        //
+        
     }
 
     public function getMagewireScriptPath()

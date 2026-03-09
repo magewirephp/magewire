@@ -25,7 +25,7 @@ class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
         private readonly RenderLifecycleManager $renderLifecycleManager,
         private readonly LoggerInterface $logger
     ) {
-        //
+        
     }
 
     public function hydrate($memo): void

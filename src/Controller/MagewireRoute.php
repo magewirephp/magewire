@@ -24,7 +24,7 @@ abstract class MagewireRoute
         private readonly LoggerInterface $logger,
         private readonly MagewireRouteValidator $magewireRouteValidator
     ) {
-        //
+        
     }
 
     /**

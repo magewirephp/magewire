@@ -24,11 +24,9 @@ class Scheduler
 
     public function every($interval): Interval
     {
-        $interval = $this->newTypeInstance(Interval::class, ['interval' => $interval]);
-
         // TBD.
 
-        return $interval;
+        return $this->newTypeInstance(Interval::class, ['interval' => $interval]);
     }
 
     public function daily(): static
@@ -54,7 +52,7 @@ class Scheduler
 
     public function unless(callable $condition): Conditions
     {
-        return $this->when(fn (...$args) => ! $condition(...$args));
+        return $this->when(static fn (...$args) => ! $condition(...$args));
     }
 
     protected function conditions(): Conditions

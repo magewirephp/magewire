@@ -18,7 +18,7 @@ class ViewFactory
     public function __construct(
         private FragmentFactory $fragmentFactory
     ) {
-        //
+        
     }
 
     public function fragments(): FragmentFactory

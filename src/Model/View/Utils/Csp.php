@@ -19,7 +19,7 @@ class Csp implements UtilsInterface
         private readonly Escaper $escaper,
         private readonly \Magewirephp\Magewire\Model\Csp $csp
     ) {
-        //
+        
     }
 
     public function generateNonce(): string

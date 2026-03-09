@@ -13,7 +13,7 @@ namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Fragment\Elem
 use Magento\Framework\App\State as ApplicationState;
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\AbstractBlock;
-use Magewirephp\Magewire\Component;
+
 use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
 use Magewirephp\Magewire\Features\SupportMagewireFlakes\Component\FlakeFactory;
 use Magewirephp\Magewire\Model\View\Fragment;

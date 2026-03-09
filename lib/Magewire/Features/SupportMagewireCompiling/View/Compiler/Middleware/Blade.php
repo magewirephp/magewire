@@ -36,9 +36,7 @@ class Blade
         $value = $this->compileSelfClosingTags($value);
         $value = $this->compileSlots($value);
         $value = $this->compileOpeningTags($value);
-        $value = $this->compileClosingTags($value);
-
-        return $value;
+        return $this->compileClosingTags($value);
     }
 
     /**
@@ -139,7 +137,7 @@ class Blade
 
     protected function componentString(string $component, string $attributes = '[]', string|null $variant = 'default'): string
     {
-        $variant = $variant ?? 'default';
+        $variant ??= 'default';
         $var = 'component' . ucfirst(strtolower($variant)) . ucfirst(Random::alphabetical(5, true));
 
         return "@magewireComponent(type: '{$component}', id: '{$var}', variant: '{$variant}')

@@ -24,7 +24,7 @@ class ActionManager
         private readonly ActionManagerFactory $actionManagerFactory,
         private readonly array $namespaces = []
     ) {
-        //
+        
     }
 
     public function execute(string $method, ...$arguments): mixed

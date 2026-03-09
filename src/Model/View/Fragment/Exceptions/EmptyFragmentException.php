@@ -14,5 +14,5 @@ use Exception;
 
 class EmptyFragmentException extends Exception
 {
-    //
+    
 }

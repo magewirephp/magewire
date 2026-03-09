@@ -30,7 +30,7 @@ abstract class Compiler
         private CompilerManager $manager,
         private CompilerPipelinesFactory $compilerPipelinesFactory
     ) {
-        //
+        
     }
 
     /**
@@ -143,7 +143,7 @@ abstract class Compiler
      * Parses and compiles a single token from the tokenized template.
      * @throws Throwable
      */
-    protected function parseToken(array $token): string
+    protected function parseToken(#[\SensitiveParameter] array $token): string
     {
         [$id, $content] = $token;
 

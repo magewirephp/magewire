@@ -18,8 +18,8 @@ class Script extends Html
     {
         return parent::start()
 
-            ->withValidator(fn ($script) => str_starts_with($script, '<script'))
-            ->withValidator(fn ($script) => str_ends_with($script, '</script>'));
+            ->withValidator(static fn ($script) => str_starts_with($script, '<script'))
+            ->withValidator(static fn ($script) => str_ends_with($script, '</script>'));
     }
 
     /**

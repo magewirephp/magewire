@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Compiler;
 
-use Magewirephp\Magewire\Support\DataCollection;
+
 use Magewirephp\Magewire\Support\Parser\DomElementParser;
 use Magewirephp\Magewire\Support\Random;
 
@@ -22,7 +22,7 @@ class FlakeCompilerBu
     public function __construct(
         private DomElementParser $domElementParser
     ) {
-        //
+        
     }
 
     public function compile(string $value): string
@@ -135,7 +135,7 @@ class FlakeCompilerBu
                     $array->rename($key, $to);
                 }
             })
-            ->each(function (DataArray $array, $value, $key) {
+            ->each(static function (DataArray $array, $value, $key) {
                 $subject = 'data';
 
                 if ($key === $subject) {
@@ -150,17 +150,17 @@ class FlakeCompilerBu
             });
 
         // Fetch and transform DOM attributes.
-        $attributes = $parse->fetch(fn ($value, $key) => str_starts_with($key, 'attr:'));
+        $attributes = $parse->fetch(static fn ($value, $key) => str_starts_with($key, 'attr:'));
 
         $arguments = [
             'flake' => $component,
             // Accept everything as data, except those who start with attr:.
-            'data' => $parse->fetch(function ($value, $key) {
+            'data' => $parse->fetch(static function ($value, $key) {
                 return ! str_starts_with($key, 'attr:');
             }),
             'metadata' => [
                 'attributes' => array_combine(
-                    array_map(fn ($key) => substr($key, 5), array_keys($attributes)),
+                    array_map(static fn ($key) => substr($key, 5), array_keys($attributes)),
                     $attributes
                 )
             ]
@@ -170,7 +170,7 @@ class FlakeCompilerBu
             return '@flake(arguments: ' . json_encode($arguments) . ')' . $content . '@endFlake';
         }
 
-        return '@flakeSingleLiner(arguments: ' . json_encode($arguments) . ')';;
+        return '@flakeSingleLiner(arguments: ' . json_encode($arguments) . ')';
     }
 
     private function renameToMagewireAttributeMeta(string $attribute): string|null

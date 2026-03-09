@@ -28,7 +28,7 @@ class ResolveComponents
         private readonly MagewireServiceProvider $magewireServiceProvider,
         private readonly LayoutManager $layoutManager
     ) {
-        //
+        
     }
 
     public function boot(): void
@@ -72,7 +72,7 @@ class ResolveComponents
         });
 
         // Register a dehydrate listener to attach the used resolver accessor for easy reconstruction.
-        on('dehydrate', function (Component $component, ComponentContext $context) {
+        on('dehydrate', static function (Component $component, ComponentContext $context) {
             $context->addMemo('resolver', $component->magewireResolver()->getAccessor());
         });
     }
@@ -90,7 +90,7 @@ class ResolveComponents
             );
         }
 
-        return function () use ($resolver, $block) {
+        return static function () use ($resolver, $block) {
             $resolver->arguments()->assemble($block, true);
 
             /** @var Component $component */

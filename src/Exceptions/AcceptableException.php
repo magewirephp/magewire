@@ -12,5 +12,5 @@ namespace Magewirephp\Magewire\Exceptions;
 
 class AcceptableException extends SilentException
 {
-    //
+    
 }

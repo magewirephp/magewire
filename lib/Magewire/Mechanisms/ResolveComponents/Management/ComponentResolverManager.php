@@ -31,7 +31,7 @@ class ComponentResolverManager
         private ComponentResolverFactory $componentResolverFactory,
         private array $resolvers = []
     ) {
-        $this->resolvers = array_filter($this->resolvers, fn ($resolver) => is_object($resolver) || is_string($resolver));
+        $this->resolvers = array_filter($this->resolvers, static fn ($resolver) => is_object($resolver) || is_string($resolver));
     }
 
     /**
@@ -93,7 +93,7 @@ class ComponentResolverManager
             $resolver = array_key_first(
                 array_filter(
                     $this->resolvers,
-                    fn (ComponentResolver $resolver) => $resolver->complies($block, $block->getData('magewire'))
+                    static fn (ComponentResolver $resolver) => $resolver->complies($block, $block->getData('magewire'))
                 )
             );
 
@@ -150,7 +150,7 @@ class ComponentResolverManager
         try {
             return is_string($this->getResolverClass($resolver));
         } catch (ComponentResolverNotFoundException $exception) {
-            //
+            
         }
 
         return false;
@@ -203,8 +203,8 @@ class ComponentResolverManager
         $resolvers = $cache['resolvers'] ?? [$resolver->getAccessor() => []];
 
         $resolvers[$resolver->getAccessor()]['blocks'][] = $this->getBlockCacheKey($block);
-        $resolvers[$resolver->getAccessor()]['class'] = $resolvers[$resolver->getAccessor()]['class'] ?? $resolver::class;
-        $resolvers[$resolver->getAccessor()]['name'] = $resolvers[$resolver->getAccessor()]['name'] ?? $resolver->getAccessor();
+        $resolvers[$resolver->getAccessor()]['class'] ??= $resolver::class;
+        $resolvers[$resolver->getAccessor()]['name'] ??= $resolver->getAccessor();
 
         $cache['resolvers'] = $resolvers;
 

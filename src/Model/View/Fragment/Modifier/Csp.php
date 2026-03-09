@@ -26,7 +26,7 @@ class Csp extends FragmentModifier
         private readonly LayoutInterface $layout,
         private readonly CacheState $cacheState
     ) {
-        //
+        
     }
 
     public function modify(Fragment $fragment): Fragment

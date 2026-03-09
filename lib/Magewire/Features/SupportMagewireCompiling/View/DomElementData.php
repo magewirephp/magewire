@@ -12,7 +12,7 @@ namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View;
 
 use Magewirephp\Magewire\Model\View\Element\Attributes;
 use Magewirephp\Magewire\Model\View\Element\Properties;
-use Magewirephp\Magewire\Support\DataCollection;
+
 use Magewirephp\Magewire\Support\Distributor;
 
 /**
@@ -64,9 +64,9 @@ class DomElementData extends Distributor
     public function distribute(array $data): static
     {
         foreach ($data as $key => $value) {
-            if (is_string($key) && is_array($value)) {
-                $this->create($key)->fill($value);
-            }
+            if (!(is_string($key) && is_array($value))) { continue; }
+
+$this->create($key)->fill($value);
         }
 
         return $this;

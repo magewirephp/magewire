@@ -18,7 +18,7 @@ class HandleBackwardsCompatibility
     public function __construct(
         public readonly bool $enable = true
     ) {
-        //
+        
     }
 
     public function isEnabled(): bool

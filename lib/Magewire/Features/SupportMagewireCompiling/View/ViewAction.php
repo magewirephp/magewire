@@ -12,5 +12,5 @@ namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View;
 
 abstract class ViewAction
 {
-    //
+    
 }

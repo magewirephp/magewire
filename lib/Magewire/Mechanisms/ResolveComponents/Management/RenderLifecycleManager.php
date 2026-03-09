@@ -104,7 +104,7 @@ class RenderLifecycleManager
         }
 
         $route    = $this->index[$id] . DIRECTORY_SEPARATOR;
-        $siblings = array_filter($this->routes, fn ($key) => str_starts_with($key, $route), ARRAY_FILTER_USE_KEY);
+        $siblings = array_filter($this->routes, static fn ($key) => str_starts_with($key, $route), ARRAY_FILTER_USE_KEY);
         $children = [];
 
         foreach ($siblings as $child) {

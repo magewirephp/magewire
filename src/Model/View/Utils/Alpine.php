@@ -14,5 +14,5 @@ use Magewirephp\Magewire\Model\View\UtilsInterface;
 
 class Alpine implements UtilsInterface
 {
-    //
+    
 }

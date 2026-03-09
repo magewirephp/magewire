@@ -21,7 +21,7 @@ class Security implements UtilsInterface
         private FormKey $formKey,
         private LoggerInterface $logger
     ) {
-        //
+        
     }
 
     public function getCsrfToken(): string

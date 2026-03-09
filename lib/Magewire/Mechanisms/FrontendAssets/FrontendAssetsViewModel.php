@@ -20,7 +20,7 @@ class FrontendAssetsViewModel implements ArgumentInterface
         private readonly FrontendAssetsMechanism $frontendAssetsMechanism,
         private readonly Escaper $escaper
     ) {
-        //
+        
     }
 
     public function getScriptPath(): string

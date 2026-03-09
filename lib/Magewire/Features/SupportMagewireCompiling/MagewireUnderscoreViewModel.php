@@ -24,7 +24,7 @@ class MagewireUnderscoreViewModel implements ArgumentInterface
         private Utils $utils,
         private ViewFactory $viewFactory
     ) {
-        //
+        
     }
 
     public function action(string $class): ActionManager

@@ -36,15 +36,15 @@ abstract class DataCollection implements Countable, IteratorAggregate
         private readonly string $name = 'root',
         private readonly DataCollection|null $parent = null
     ) {
-        //
+        
     }
 
     public function map(array $map): static
     {
         foreach ($map as $from => $to) {
-            if ((is_string($from) || is_int($from)) && is_string($to)) {
-                $this->rename($from, $to);
-            }
+            if (!((is_string($from) || is_int($from)) && is_string($to))) { continue; }
+
+$this->rename($from, $to);
         }
 
         return $this;
@@ -82,9 +82,9 @@ abstract class DataCollection implements Countable, IteratorAggregate
     public function unset(string|int ...$keys): static
     {
         foreach ($keys as $key) {
-            if ($this->isset($key)) {
-                unset($this->items[$key]);
-            }
+            if (!($this->isset($key))) { continue; }
+
+unset($this->items[$key]);
         }
 
         return $this;
@@ -286,9 +286,9 @@ abstract class DataCollection implements Countable, IteratorAggregate
     public function defaults(array $defaults): static
     {
         foreach ($defaults as $key => $value) {
-            if (is_string($key) || is_int($key)) {
-                $this->default($key, $value);
-            }
+            if (!(is_string($key) || is_int($key))) { continue; }
+
+$this->default($key, $value);
         }
 
         return $this;

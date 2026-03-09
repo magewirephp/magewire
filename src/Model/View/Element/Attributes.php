@@ -11,7 +11,7 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Model\View\Element;
 
 use Magento\Framework\Escaper;
-use Magewirephp\Magewire\Support\DataCollection;
+
 use Stringable;
 
 class Attributes extends DataArray implements Stringable

@@ -20,7 +20,7 @@ use Magewirephp\Magewire\Features\SupportMagewireLoaders\HandlesMagewireLoaders;
 use Magewirephp\Magewire\Features\SupportMagentoLayouts\HandlesMagentoLayout;
 use Magewirephp\Magewire\Concerns\InteractsWithProperties;
 use Magewirephp\Magewire\Exceptions\PropertyNotFoundException;
-use Magewirephp\Magewire\Features\SupportEvents\HandlesEvents;
+
 use Magewirephp\Magewire\Features\SupportMagewireViewModel\HandlesMagewireViewModel;
 use Magewirephp\Magewire\Features\SupportRedirects\HandlesRedirects;
 use Magewirephp\Magewire\Features\SupportStreaming\HandlesStreaming;
@@ -129,7 +129,7 @@ abstract class Component implements ArgumentInterface
     {
         $value = 'noneset';
 
-        $returnValue = function ($newValue) use (&$value) {
+        $returnValue = static function ($newValue) use (&$value) {
             $value = $newValue;
         };
 
@@ -153,7 +153,7 @@ abstract class Component implements ArgumentInterface
     {
         $value = 'noneset';
 
-        $returnValue = function ($newValue) use (&$value) {
+        $returnValue = static function ($newValue) use (&$value) {
             $value = $newValue;
         };
 

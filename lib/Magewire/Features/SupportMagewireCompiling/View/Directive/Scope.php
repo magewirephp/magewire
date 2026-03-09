@@ -21,13 +21,13 @@ class Scope extends ScopeDirective
     #[ScopeDirectiveParser(ExpressionParserType::CONDITION)]
     public function if(string $condition): string
     {
-        return "<?php if ($condition): ?>";
+        return "<?php if ({$condition}): ?>";
     }
 
     #[ScopeDirectiveParser(ExpressionParserType::CONDITION)]
     public function elseif(string $condition): string
     {
-        return "<?php elseif ($condition): ?>";
+        return "<?php elseif ({$condition}): ?>";
     }
 
     public function else(): string
@@ -44,7 +44,7 @@ class Scope extends ScopeDirective
     #[ScopeDirectiveParser(ExpressionParserType::ITERATION_CLAUSE)]
     public function foreach(string $iterationClause): string
     {
-        return "<?php foreach ($iterationClause): ?>";
+        return "<?php foreach ({$iterationClause}): ?>";
     }
 
     public function endforeach(): string

@@ -26,7 +26,7 @@ class MagewireUpdateResult extends AbstractResult
         private readonly array $components = [],
         private readonly array $assets = []
     ) {
-        //
+        
     }
 
     public function renderWith(Closure $renderer): self

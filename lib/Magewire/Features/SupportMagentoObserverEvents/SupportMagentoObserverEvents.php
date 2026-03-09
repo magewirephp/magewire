@@ -23,7 +23,7 @@ class SupportMagentoObserverEvents extends ComponentHook
         private readonly ListenerDataTransferObjectFactory $listenerDataTransferObjectFactory,
         private readonly EventManagerInterface $eventManager
     ) {
-        //
+        
     }
 
     public function provide(): void
@@ -98,13 +98,13 @@ class SupportMagentoObserverEvents extends ComponentHook
         $afters = [];
 
         foreach ($listener->listeners() as $listener) {
-            if (is_callable($listener)) {
-                $result = $listener(...$arguments);
+            if (!(is_callable($listener))) { continue; }
+
+$result = $listener(...$arguments);
 
                 if (is_callable($result)) {
                     $afters[] = $result;
                 }
-            }
         }
 
         return function (...$args) use ($afters, $event) {
@@ -112,7 +112,7 @@ class SupportMagentoObserverEvents extends ComponentHook
 
             if ($afters) {
                 foreach ($afters as $after) {
-                    $pipeline->pipe(fn (array $args, callable $next) => $next($after(...$args)));
+                    $pipeline->pipe(static fn (array $args, callable $next) => $next($after(...$args)));
                 }
 
                 return $pipeline->run($args);

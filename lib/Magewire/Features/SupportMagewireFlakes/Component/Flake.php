@@ -18,7 +18,7 @@ class Flake extends Component
     public function __construct(
         private FlakeResolver $magewireResolver
     ) {
-        //
+        
     }
 
     public function refresh()

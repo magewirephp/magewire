@@ -21,7 +21,7 @@ class ConfigMagewire
     public function __construct(
         private readonly ScopeConfigInterface $scopeConfig
     ) {
-        //
+        
     }
 
     /**

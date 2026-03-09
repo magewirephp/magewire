@@ -12,5 +12,5 @@ namespace Magewirephp\Magewire\Support;
 
 class Str extends \Illuminate\Support\Str
 {
-    //
+    
 }

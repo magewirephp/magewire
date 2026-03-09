@@ -51,7 +51,7 @@ abstract class ComponentResolver
     public function __construct(
         private readonly Conditions $conditions
     ) {
-        //
+        
     }
 
     /**
@@ -66,7 +66,7 @@ abstract class ComponentResolver
     public function complies(AbstractBlock $block, mixed $magewire = null): bool
     {
         if ($magewire) {
-            $this->conditions()->if(fn () => $magewire instanceof Component, 'instanceof-component');
+            $this->conditions()->if(static fn () => $magewire instanceof Component, 'instanceof-component');
         }
 
         // Accept this as the resolver if the blocks data key is equal to the resolver accessor.

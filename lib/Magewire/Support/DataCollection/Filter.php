@@ -78,28 +78,28 @@ abstract class Filter
 
     public function byKeyPattern(string $pattern): static
     {
-        return $this->chain(array_filter($this->items(), function ($value, $key) use ($pattern) {
+        return $this->chain(array_filter($this->items(), static function ($value, $key) use ($pattern) {
             return preg_match($pattern, (string) $key);
         }, ARRAY_FILTER_USE_BOTH));
     }
 
     public function byValuePattern(string $pattern): static
     {
-        return $this->chain(array_filter($this->items(), function ($value) use ($pattern) {
+        return $this->chain(array_filter($this->items(), static function ($value) use ($pattern) {
             return preg_match($pattern, (string) $value);
         }));
     }
 
     public function byRange($min, $max): static
     {
-        return $this->chain(array_filter($this->items(), function ($value) use ($min, $max) {
+        return $this->chain(array_filter($this->items(), static function ($value) use ($min, $max) {
             return $value >= $min && $value <= $max;
         }));
     }
 
     public function byInstance(string $type): static
     {
-        return $this->chain(array_filter($this->items(), function ($value) use ($type) {
+        return $this->chain(array_filter($this->items(), static function ($value) use ($type) {
             return $value instanceof $type;
         }));
     }
@@ -111,12 +111,12 @@ abstract class Filter
 
     public function byEmpty(): static
     {
-        return $this->chain(array_filter($this->items(), fn ($value) => empty($value)));
+        return $this->chain(array_filter($this->items(), static fn ($value) => empty($value)));
     }
 
     public function byNotEmpty(): static
     {
-        return $this->chain(array_filter($this->items(), fn ($value) => ! empty($value)));
+        return $this->chain(array_filter($this->items(), static fn ($value) => ! empty($value)));
     }
 
     public function byJsonEncodable(): static

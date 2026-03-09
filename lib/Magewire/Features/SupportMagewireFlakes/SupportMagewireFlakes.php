@@ -22,7 +22,7 @@ class SupportMagewireFlakes extends ComponentHook
 
     public function provide(): void
     {
-        on('hydrate', function (Component $component, array $memo) {
+        on('hydrate', static function (Component $component, array $memo) {
             $block = $component->magewireBlock();
 
             if (is_array($memo['flake'] ?? null)) {
@@ -30,7 +30,7 @@ class SupportMagewireFlakes extends ComponentHook
             }
         });
 
-        on('dehydrate', function (Component $component, ComponentContext $context) {
+        on('dehydrate', static function (Component $component, ComponentContext $context) {
             $metadata = $component->magewireBlock()->getData('magewire:flake');
 
             if (is_array($metadata) && is_array($metadata['element'] ?? null)) {

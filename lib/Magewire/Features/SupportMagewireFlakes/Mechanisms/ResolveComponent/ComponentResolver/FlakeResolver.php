@@ -36,9 +36,9 @@ class FlakeResolver extends LayoutResolver
 
     public function complies(mixed $block, mixed $magewire = null): bool
     {
-        $this->conditions()->if(fn () => $block instanceof AbstractBlock);
+        $this->conditions()->if(static fn () => $block instanceof AbstractBlock);
         /** @var AbstractBlock $block */
-        $this->conditions()->if(fn () => in_array(static::FLAKES_HANDLE, $block->getLayout()->getUpdate()->getHandles()));
+        $this->conditions()->if(static fn () => in_array(static::FLAKES_HANDLE, $block->getLayout()->getUpdate()->getHandles()));
 
         return $this->conditions()->evaluate($block, $magewire);
     }

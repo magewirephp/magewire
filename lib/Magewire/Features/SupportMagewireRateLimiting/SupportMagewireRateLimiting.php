@@ -22,7 +22,7 @@ class SupportMagewireRateLimiting extends ComponentHook
         private readonly UpdateRequestRateLimiter $rateLimiter,
         private readonly RateLimiterConfig $rateLimiterConfig
     ) {
-        //
+        
     }
 
     public function provide(): void

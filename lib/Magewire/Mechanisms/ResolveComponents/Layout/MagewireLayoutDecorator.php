@@ -21,7 +21,7 @@ class MagewireLayoutDecorator extends LayoutDecorator
         private GeneratorPool $generatorPool,
         private DynamicLayoutBuilder $dynamicLayoutBuilder
     ) {
-        //
+        
     }
 
     public function decorateForPagelessBlockFetching(LayoutInterface $layout): LayoutInterface

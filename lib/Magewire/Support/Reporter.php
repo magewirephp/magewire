@@ -21,7 +21,7 @@ class Reporter
     {
         $scheduler = Factory::create(Scheduler::class);
 
-        $this->actions[] = function () use ($action, $scheduler) {
+        $this->actions[] = static function () use ($action, $scheduler) {
             // TBD.
         };
 

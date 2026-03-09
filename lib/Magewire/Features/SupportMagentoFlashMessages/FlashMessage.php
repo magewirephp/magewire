@@ -18,7 +18,7 @@ class FlashMessage
         private readonly string $message,
         private readonly FlashMessageType $type
     ) {
-        //
+        
     }
 
     function getMessage(): Phrase

@@ -16,7 +16,7 @@ class Containers extends ServiceType
 {
     protected function callback(): callable
     {
-        return fn () => true;
+        return static fn () => true;
     }
 
     protected function getServiceTypeItemBootModeFallback(): ServiceTypeItemBootMode

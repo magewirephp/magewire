@@ -80,7 +80,7 @@ class ComponentResolver
             }
         }
 
-        $resolvers = array_filter($this->resolvers, function (ResolverInterface $resolver) use ($block) {
+        $resolvers = array_filter($this->resolvers, static function (ResolverInterface $resolver) use ($block) {
             return $resolver->complies($block);
         });
 

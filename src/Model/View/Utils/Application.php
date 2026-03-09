@@ -18,6 +18,6 @@ class Application implements UtilsInterface
     function __construct(
         private readonly ApplicationState $applicationState
     ) {
-        //
+        
     }
 }

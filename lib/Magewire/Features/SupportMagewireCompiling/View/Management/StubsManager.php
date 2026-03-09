@@ -17,7 +17,7 @@ class StubsManager
     public function __construct(
         private readonly StubCollector $collector
     ) {
-        //
+        
     }
 
     public function get(string $namespace): ViewStub|null

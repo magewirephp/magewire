@@ -28,7 +28,7 @@ class Middleware extends Pipeline
     public function run(mixed $throughput, callable|null $action = null): mixed
     {
         $origin = $this->pipes;
-        $this->pipes[] = $action ?? fn (mixed $t) => $t;
+        $this->pipes[] = $action ?? static fn (mixed $t) => $t;
 
         try {
             return parent::run($this->processGroups($throughput));

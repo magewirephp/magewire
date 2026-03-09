@@ -39,7 +39,7 @@ class Update implements HttpPostActionInterface, CsrfAwareActionInterface
         private readonly MagewireUpdateResultFactory $updateResultFactory,
         private readonly FormKey $formKey
     ) {
-        //
+        
     }
 
     /**

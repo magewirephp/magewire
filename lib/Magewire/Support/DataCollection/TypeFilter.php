@@ -35,22 +35,22 @@ enum TypeFilter
     public function get(): callable
     {
         return match($this) {
-            self::ALL => fn ($value) => true,
-            self::NONE => fn ($value) => false,
+            self::ALL => static fn ($value) => true,
+            self::NONE => static fn ($value) => false,
 
-            self::STRINGS => fn ($value) => is_string($value),
-            self::INTEGERS => fn ($value) => is_int($value),
-            self::FLOATS => fn ($value) => is_float($value),
-            self::BOOLEANS => fn ($value) => is_bool($value),
-            self::ARRAYS => fn ($value) => is_array($value),
-            self::OBJECTS => fn ($value) => is_object($value),
-            self::NULLS => fn ($value) => is_null($value),
-            self::NUMERIC => fn ($value) => is_numeric($value),
-            self::SCALAR => fn ($value) => is_scalar($value),
-            self::CALLABLE => fn ($value) => is_callable($value),
-            self::ITERABLE => fn ($value) => is_iterable($value),
+            self::STRINGS => static fn ($value) => is_string($value),
+            self::INTEGERS => static fn ($value) => is_int($value),
+            self::FLOATS => static fn ($value) => is_float($value),
+            self::BOOLEANS => static fn ($value) => is_bool($value),
+            self::ARRAYS => static fn ($value) => is_array($value),
+            self::OBJECTS => static fn ($value) => is_object($value),
+            self::NULLS => static fn ($value) => is_null($value),
+            self::NUMERIC => static fn ($value) => is_numeric($value),
+            self::SCALAR => static fn ($value) => is_scalar($value),
+            self::CALLABLE => static fn ($value) => is_callable($value),
+            self::ITERABLE => static fn ($value) => is_iterable($value),
 
-            self::COUNTABLE => fn ($value) => $value instanceof Countable,
+            self::COUNTABLE => static fn ($value) => $value instanceof Countable,
 
             self::SERIALIZABLE => fn ($value) => $this->isSerializable($value),
             self::JSON_ENCODABLE => fn ($value) => $this->isJsonEncodable($value),
@@ -62,7 +62,7 @@ enum TypeFilter
      */
     public static function any(self ...$filters): callable
     {
-        return function($value) use ($filters) {
+        return static function($value) use ($filters) {
             if ($value instanceof DataArray) {
                 $value = $value->all();
             }
@@ -83,7 +83,7 @@ enum TypeFilter
      */
     public static function only(self ...$filters): callable
     {
-        return function($value) use ($filters) {
+        return static function($value) use ($filters) {
             if ($value instanceof DataArray) {
                 $value = $value->all();
             }

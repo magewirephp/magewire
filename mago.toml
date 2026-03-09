@@ -28,6 +28,7 @@ space-before-closure-parameter-list-parenthesis = true
 space-before-arrow-function-parameter-list-parenthesis = true
 space-after-logical-not-unary-prefix-operator = true
 space-around-concatenation-binary-operator = true
+space-within-grouping-parenthesis = true
 null-type-hint = "null_pipe_last"
 align-assignment-like = false
 preserve-breaking-array-like = true

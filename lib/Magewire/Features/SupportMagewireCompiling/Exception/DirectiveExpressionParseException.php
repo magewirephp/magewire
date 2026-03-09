@@ -14,5 +14,5 @@ use InvalidArgumentException;
 
 class DirectiveExpressionParseException extends InvalidArgumentException
 {
-    //
+    
 }

@@ -19,7 +19,7 @@ class Developer extends FragmentModifier
     public function __construct(
         private readonly ApplicationState $applicationState
     ) {
-        //
+        
     }
 
     public function modify(Fragment $fragment): Fragment

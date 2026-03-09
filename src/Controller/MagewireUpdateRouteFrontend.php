@@ -20,9 +20,9 @@ class MagewireUpdateRouteFrontend extends MagewireUpdateRoute
     public function getMatchConditions(): array
     {
         return [
-            'method' => fn (Request $request): bool => $request->isPost(),
-            'update_uri' => fn (Request $request): bool => str_starts_with($request->getPathInfo(), '/magewire/update'),
-            'content_type' => fn (Request $request): bool => $request->getHeader('Content-Type') === 'application/json'
+            'method' => static fn (Request $request): bool => $request->isPost(),
+            'update_uri' => static fn (Request $request): bool => str_starts_with($request->getPathInfo(), '/magewire/update'),
+            'content_type' => static fn (Request $request): bool => $request->getHeader('Content-Type') === 'application/json'
         ];
     }
 

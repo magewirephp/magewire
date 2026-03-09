@@ -28,7 +28,7 @@ abstract class MagewireDeveloperAction
         private readonly ForwardFactory $resultForwardFactory,
         private readonly ApplicationState $applicationState
     ) {
-        //
+        
     }
 
     public function execute()

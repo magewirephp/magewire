@@ -14,5 +14,5 @@ use Exception;
 
 class SilentException extends Exception
 {
-    //
+    
 }

@@ -21,7 +21,7 @@ class Config
         private readonly SystemConfig $systemConfig,
         private readonly array $paths = []
     ) {
-        //
+        
     }
 
     /**

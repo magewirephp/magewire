@@ -28,7 +28,7 @@ class Mechanisms
         private readonly MechanismsServiceType $mechanismsServiceType,
         private readonly LoggerInterface $logger
     ) {
-        //
+        
     }
 
     /**

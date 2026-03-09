@@ -32,7 +32,7 @@ readonly class SlotSnapshot implements Stringable
     public function __construct(
         private array $slots = []
     ) {
-        //
+        
     }
 
     /**

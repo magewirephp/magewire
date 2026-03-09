@@ -57,7 +57,7 @@ abstract class Form extends Component
         bool $mergeWithClassProperties = true
     ): bool {
         $rules = $mergeWithClassProperties ? array_merge($this->rules, $rules) : $rules;
-        $data = $data ?? $this->getPublicProperties(true);
+        $data ??= $this->getPublicProperties(true);
 
         $messages = array_map(static function ($message) {
             return __($message);

@@ -26,7 +26,7 @@ class ServiceTypeItemsBooter
     public function __construct(
         private readonly DataCollectionFactory $dataArrayFactory
     ) {
-        //
+        
     }
 
     public function setup(array $items): static

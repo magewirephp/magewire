@@ -19,7 +19,7 @@ class Auth extends ViewAction
     public function __construct(
         private readonly HttpContext $httpContext
     ) {
-        //
+        
     }
 
     public function isCustomer(): bool

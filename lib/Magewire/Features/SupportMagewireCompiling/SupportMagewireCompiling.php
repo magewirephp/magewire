@@ -31,7 +31,7 @@ class SupportMagewireCompiling extends ComponentHook
         private CompilerManager $compilerManager,
         private SlotsRegistry $slotsRegistry
     ) {
-        //
+        
     }
 
     public function provide(): void
@@ -68,12 +68,12 @@ class SupportMagewireCompiling extends ComponentHook
             };
         });
 
-        before('magewire:view:compile', function (Compiler $compiler) {
+        before('magewire:view:compile', static function (Compiler $compiler) {
             $runs['html'] = 0;
 
             $compiler->pipelines()->html()->middleware()->group('first-line', 2)
 
-                ->pipe(function (string $throughput, callable $next) use (&$runs, $compiler) {
+                ->pipe(static function (string $throughput, callable $next) use (&$runs, $compiler) {
                     $runs['html']++;
 
                     if ($runs['html'] === 1) {
@@ -84,13 +84,13 @@ class SupportMagewireCompiling extends ComponentHook
                 });
 
             $compiler->pipelines()->template()->middleware()->group('last')
-                ->pipe(function (string $throughput, callable $next): string {
+                ->pipe(static function (string $throughput, callable $next): string {
                     return $next($throughput) . '@endtemplate';
                 });
 
             $compiler->pipelines()->template()->middleware()->group('last')
 
-                ->pipe(function (string $throughput, callable $next): string {
+                ->pipe(static function (string $throughput, callable $next): string {
                     $result = $next($throughput);
                     $date = new DateTime();
 
@@ -100,7 +100,7 @@ class SupportMagewireCompiling extends ComponentHook
                         );
                 })
 
-                ->pipe(function (string $throughput, callable $next) use ($compiler): string {
+                ->pipe(static function (string $throughput, callable $next) use ($compiler): string {
                     $result = $next($throughput);
 
                     return $result . sprintf(
@@ -109,7 +109,7 @@ class SupportMagewireCompiling extends ComponentHook
                         );
                 })
 
-                ->pipe(function (string $throughput, callable $next) use ($compiler): string {
+                ->pipe(static function (string $throughput, callable $next) use ($compiler): string {
                     $start = $compiler->compileStartTime();
                     $result = $next($throughput);
 

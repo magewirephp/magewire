@@ -27,6 +27,6 @@ class Json extends Directive
         $flags = $arguments->get('flags', $this->encodingOptions);
         $depth = $arguments->get('depth', 512);
 
-        return "<?php echo json_encode($value, $flags, $depth) ?>";
+        return "<?php echo json_encode({$value}, {$flags}, {$depth}) ?>";
     }
 }

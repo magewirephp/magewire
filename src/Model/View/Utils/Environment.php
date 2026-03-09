@@ -18,7 +18,7 @@ class Environment implements UtilsInterface
     function __construct(
         private readonly ApplicationState $applicationState
     ) {
-        //
+        
     }
 
     public function isDeveloperMode(): bool

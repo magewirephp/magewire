@@ -46,9 +46,9 @@ class CompilerUtils
         $result = [];
 
         foreach ($tokens as $token) {
-            if (is_array($token) && in_array($token[0], [T_OPEN_TAG, T_OPEN_TAG_WITH_ECHO, T_CLOSE_TAG])) {
-                $result[] = $token[0];
-            }
+            if (!(is_array($token) && in_array($token[0], [T_OPEN_TAG, T_OPEN_TAG_WITH_ECHO, T_CLOSE_TAG]))) { continue; }
+
+$result[] = $token[0];
         }
 
         return $result;

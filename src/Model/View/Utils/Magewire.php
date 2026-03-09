@@ -27,7 +27,7 @@ class Magewire implements UtilsInterface
         private readonly MagewireSystemConfig $config,
         private readonly LoggerInterface $logger
     ) {
-        //
+        
     }
 
     public function features(): FeaturesViewUtil

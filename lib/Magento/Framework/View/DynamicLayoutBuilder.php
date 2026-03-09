@@ -26,7 +26,7 @@ class DynamicLayoutBuilder implements BuilderInterface
         private readonly MagentoLayoutFactory $magentoLayoutFactory,
         private readonly LayoutInterface $layout
     ) {
-        //
+        
     }
 
     /**

@@ -15,6 +15,6 @@ class MagewireNotificationsFacade
     function __construct(
         private readonly SupportMagewireNotifications $feature
     ) {
-        //
+        
     }
 }

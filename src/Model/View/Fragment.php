@@ -72,7 +72,7 @@ abstract class Fragment
         ob_start();
 
         $this->buffering = true;
-        $this->level = $this->level ?? ob_get_level();
+        $this->level ??= ob_get_level();
 
         return $this;
     }

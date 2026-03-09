@@ -33,7 +33,7 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
         private readonly MagewireServiceProvider $magewireServiceProvider,
         private readonly ExceptionManager $exceptionManager
     ) {
-        //
+        
     }
 
     /**

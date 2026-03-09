@@ -21,7 +21,7 @@ class LayoutManager
         private readonly LayoutFactory $factory,
         private readonly LayoutDecorator $decorator
     ) {
-        //
+        
     }
 
     /**

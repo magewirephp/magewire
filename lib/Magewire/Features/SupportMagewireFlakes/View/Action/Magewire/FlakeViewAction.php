@@ -10,12 +10,12 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Action\Magewire;
 
-use Magento\Framework\Exception\LocalizedException;
+
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ViewAction as ViewAction;
 use Magewirephp\Magewire\Features\SupportMagewireFlakes\Component\FlakeFactory;
-use Magewirephp\Magewire\Features\SupportMagewireFlakes\Mechanisms\ResolveComponent\ComponentResolver\FlakeResolver;
-use Magewirephp\Magewire\Support\DataCollection;
+
+
 use Magewirephp\Magewire\Support\DataArrayFactory;
 use RuntimeException;
 
@@ -25,7 +25,7 @@ class FlakeViewAction extends ViewAction
         private readonly FlakeFactory $flakeFactory,
         private readonly DataArrayFactory $attributesFactory
     ) {
-        //
+        
     }
 
     /**
@@ -39,7 +39,7 @@ class FlakeViewAction extends ViewAction
     ): AbstractBlock {
         $data = $this->attributesFactory->create()->fill($data);
 
-        $data->each(function (DataArray $array, $value, $key) use ($variables) {
+        $data->each(static function (DataArray $array, $value, $key) use ($variables) {
                 if (str_starts_with($value, '$')) {
                     $value = trim($value, '$');
 

@@ -19,7 +19,7 @@ class FileManager
         private FileSystem $filesystem,
         private DirectoryList $directoryList
     ) {
-        //
+        
     }
 
     public function system(): Filesystem

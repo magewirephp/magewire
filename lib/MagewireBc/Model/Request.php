@@ -8,7 +8,7 @@
 
 namespace Magewirephp\Magewire\Model;
 
-use Magewirephp\Magewire\Controller\MagewireUpdateRoute;
+
 use Magewirephp\Magewire\MagewireServiceProvider;
 
 /**
@@ -20,7 +20,7 @@ class Request implements RequestInterface
         private readonly \Magento\Framework\App\RequestInterface $request,
         private readonly MagewireServiceProvider $magewireServiceProvider
     ) {
-        //
+        
     }
 
     public function getMessage(): string

@@ -17,7 +17,7 @@ class MagewireViewModel implements MagewireViewModelInterface
     function __construct(
         private readonly ViewUtils $utils
     ) {
-        //
+        
     }
 
     public function utils(string|null $name = null, array $arguments = []): ViewUtils

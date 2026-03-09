@@ -10,9 +10,9 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Model\View\Element;
 
-use Magewirephp\Magewire\Support\DataCollection;
+
 
 class Properties extends DataArray
 {
-    //
+    
 }

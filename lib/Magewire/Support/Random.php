@@ -20,7 +20,7 @@ class Random
         return substr($characters, 0, $length);
     }
 
-    static public function integer(int $min = 00001, int $max = 99999): int
+    static public function integer(int $min = 0o0001, int $max = 99_999): int
     {
         return mt_rand($min, $max <= $min ? $min * 10 : $max);
     }

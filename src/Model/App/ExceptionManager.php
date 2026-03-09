@@ -33,7 +33,7 @@ class ExceptionManager
         private readonly MagewireServiceProvider $magewireServiceProvider,
         private readonly array $specificExceptionHandlerPool = []
     ) {
-        //
+        
     }
 
     /**

@@ -17,7 +17,7 @@ class ExceptionHandler extends AbstractExceptionHandler
     function __construct(
         private readonly ApplicationState $state
     ) {
-        //
+        
     }
 
     function handleWithBlock(AbstractBlock $block, Exception $exception, bool $subsequent = false): AbstractBlock

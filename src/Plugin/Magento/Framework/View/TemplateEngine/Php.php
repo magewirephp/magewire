@@ -24,7 +24,7 @@ class Php
     public function __construct(
         private readonly RenderLifecycleManager $renderLifecycleManager
     ) {
-        //
+        
     }
 
     function beforeRender(

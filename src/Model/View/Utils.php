@@ -42,7 +42,7 @@ class Utils
         private CspViewUtil $csp,
         private array $utilities = []
     ) {
-        //
+        
     }
 
     public function alpinejs(): AlpineViewUtil

@@ -19,7 +19,7 @@ class EnableCache implements DataPatchInterface
     function __construct(
         private readonly CacheManager $cacheManager
     ) {
-        //
+        
     }
 
     static function getDependencies(): array

@@ -19,7 +19,7 @@ class Template implements UtilsInterface
     public function __construct(
         private readonly Escaper $escaper
     ) {
-        //
+        
     }
 
     public function echoCodeComment(

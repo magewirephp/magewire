@@ -20,7 +20,7 @@ class CompilerFactory
     public function __construct(
         private string $instance = Compiler::class
     ) {
-        //
+        
     }
 
     public function newCompilerInstance(array $arguments = [])

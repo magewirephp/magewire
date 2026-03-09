@@ -19,7 +19,7 @@ class HandleRequestFacade
     public function __construct(
         private readonly HandleRequestsMechanism $mechanism
     ) {
-        //
+        
     }
 
     public function mechanism(): HandleRequestsMechanism

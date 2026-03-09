@@ -20,7 +20,7 @@ class Interval
     public function __construct(
         private int $interval = 0
     ) {
-        //
+        
     }
 
     public function minutes(): static

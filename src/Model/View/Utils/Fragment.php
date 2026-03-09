@@ -19,7 +19,7 @@ class Fragment implements UtilsInterface
     public function __construct(
         private readonly FragmentFactory $fragmentFactory
     ) {
-        //
+        
     }
 
     /**

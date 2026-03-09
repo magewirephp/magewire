@@ -23,7 +23,7 @@ class HandleComponentsFacade
     public function __construct(
         private readonly HandleComponentsMechanism $mechanism
     ) {
-        //
+        
     }
 
     /**

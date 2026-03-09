@@ -18,7 +18,7 @@ class RateLimiter
         private readonly RateLimiterStorageInterface $storage,
         private readonly DateTime $dateTime
     ) {
-        //
+        
     }
 
     /**
@@ -77,6 +77,6 @@ class RateLimiter
      */
     private function getCleanHits(string $key, int $decaySeconds, int $currentTime): array
     {
-        return array_filter($this->storage->get($key), fn ($timestamp) => ($currentTime - $timestamp) < $decaySeconds);
+        return array_filter($this->storage->get($key), static fn ($timestamp) => ($currentTime - $timestamp) < $decaySeconds);
     }
 }
