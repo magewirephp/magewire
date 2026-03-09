@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -55,7 +56,11 @@ class Magewire extends MagewireViewModel
      */
     function pageRequiresMagewire(): bool
     {
-        return $this->utils()->magewire()->mechanisms()->resolveComponents()->doesPageHaveComponents();
+        return $this->utils()
+            ->magewire()
+            ->mechanisms()
+            ->resolveComponents()
+            ->doesPageHaveComponents();
     }
 
     /**
@@ -73,6 +78,10 @@ class Magewire extends MagewireViewModel
      */
     function getScriptPath(): string
     {
-        return $this->utils()->magewire()->mechanisms()->frontendAssets()->getScriptPath();
+        return $this->utils()
+            ->magewire()
+            ->mechanisms()
+            ->frontendAssets()
+            ->getScriptPath();
     }
 }

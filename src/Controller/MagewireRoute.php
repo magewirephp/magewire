@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -24,7 +25,6 @@ abstract class MagewireRoute
         private readonly LoggerInterface $logger,
         private readonly MagewireRouteValidator $magewireRouteValidator
     ) {
-        
     }
 
     /**
@@ -53,10 +53,7 @@ abstract class MagewireRoute
                     return null;
                 }
             } catch (Exception $exception) {
-                $this->log()->debug(
-                    sprintf('Route match condition "%s" threw an exception', $name),
-                    ['exception' => $exception]
-                );
+                $this->log()->debug(sprintf('Route match condition "%s" threw an exception', $name), ['exception' => $exception]);
 
                 return null;
             }

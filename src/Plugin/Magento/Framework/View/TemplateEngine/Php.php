@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -15,6 +16,7 @@ use Magento\Framework\View\Element\BlockInterface;
 use Magento\Framework\View\TemplateEngine\Php as Subject;
 use Magewirephp\Magento\Framework\View\RenderLifecycleManager;
 use Magewirephp\Magewire\Component;
+
 use function Magewirephp\Magewire\trigger;
 
 class Php
@@ -24,7 +26,6 @@ class Php
     public function __construct(
         private readonly RenderLifecycleManager $renderLifecycleManager
     ) {
-        
     }
 
     function beforeRender(
@@ -51,7 +52,7 @@ class Php
                     $result = $render($return);
 
                     // Ensure that the component remains an instance of the Component class.
-                    if (! ($result['component'] ?? null) instanceof Component) {
+                    if (! ( $result['component'] ?? null ) instanceof Component) {
                         $result['component'] = $magewire;
                     }
 
@@ -72,7 +73,7 @@ class Php
     {
         $latest = end($this->components);
 
-        if ($latest && ($latest['component'] ?? null) instanceof Component) {
+        if ($latest && ( $latest['component'] ?? null ) instanceof Component) {
             array_pop($this->components);
 
             // The developer hooking into this event is responsible for compilation.

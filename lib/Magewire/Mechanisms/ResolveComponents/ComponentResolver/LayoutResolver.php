@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -20,11 +21,12 @@ use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\Snapshot;
 use Magewirephp\Magewire\Mechanisms\HandleRequests\ComponentRequestContext;
-use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\MagewireArguments;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\LayoutBlockArgumentsFactory;
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\MagewireArguments;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\LayoutManager;
 use Magewirephp\Magewire\Support\Conditions;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+
 use function Magewirephp\Magewire\on;
 
 class LayoutResolver extends ComponentResolver
@@ -73,18 +75,14 @@ class LayoutResolver extends ComponentResolver
         $magewire = $block->getData('magewire') ?? null;
 
         if (! $magewire) {
-            throw new ComponentNotFoundException(
-                sprintf('No component object found for "%s"', $block->getNameInLayout())
-            );
+            throw new ComponentNotFoundException(sprintf('No component object found for "%s"', $block->getNameInLayout()));
         }
 
         // Magewire block can be directly passed as an argument or nested within a type argument.
         $component = is_array($magewire) ? $magewire['type'] : $magewire;
 
         if (! $component instanceof Component) {
-            throw new ComponentNotFoundException(
-                sprintf('Component "%s" could not be constructed', $block->getNameInLayout())
-            );
+            throw new ComponentNotFoundException(sprintf('Component "%s" could not be constructed', $block->getNameInLayout()));
         }
 
         // Fulfill the main promise to establish or reset a Component instance within the block.
@@ -137,10 +135,7 @@ class LayoutResolver extends ComponentResolver
         $block = $blocks[$alias ?? $name];
 
         if ($block === false) {
-            throw new HttpException(
-                404,
-                sprintf('Magewire component "%s" could not be found', $alias ?? $name)
-            );
+            throw new HttpException(404, sprintf('Magewire component "%s" could not be found', $alias ?? $name));
         }
 
         if ($alias) {

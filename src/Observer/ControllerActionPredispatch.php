@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -19,7 +20,6 @@ class ControllerActionPredispatch implements ObserverInterface
     public function __construct(
         private readonly MagewireServiceProvider $magewireServiceProvider
     ) {
-        
     }
 
     public function execute(Observer $observer): void

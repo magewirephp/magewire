@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
@@ -33,7 +34,6 @@ class ExceptionManager
         private readonly MagewireServiceProvider $magewireServiceProvider,
         private readonly array $specificExceptionHandlerPool = []
     ) {
-        
     }
 
     /**
@@ -41,7 +41,10 @@ class ExceptionManager
      */
     function handle(Exception $exception, bool $log = true): callable|null
     {
-        $subsequent = $this->magewireServiceProvider->runtime()->mode()->isSubsequent();
+        $subsequent = $this->magewireServiceProvider
+            ->runtime()
+            ->mode()
+            ->isSubsequent();
 
         try {
             $exception = $this->resolveExceptionHandler($exception, $subsequent)->handle($exception, $subsequent);
@@ -67,7 +70,10 @@ class ExceptionManager
      */
     function handleWithBlock(AbstractBlock $block, Exception $exception, bool $log = true): AbstractBlock
     {
-        $subsequent = $this->magewireServiceProvider->runtime()->mode()->isSubsequent();
+        $subsequent = $this->magewireServiceProvider
+            ->runtime()
+            ->mode()
+            ->isSubsequent();
 
         if ($subsequent) {
             $this->handle($exception, $log);
@@ -79,16 +85,9 @@ class ExceptionManager
         $block->setData('exception', $exception);
 
         try {
-            $block = $this->resolveExceptionHandler($exception, $subsequent)
-                          ->handleWithBlock($block, $exception, $subsequent);
+            $block = $this->resolveExceptionHandler($exception, $subsequent)->handleWithBlock($block, $exception, $subsequent);
         } catch (Exception $parent) {
-            $this->handle(
-                new SilentException(
-                    $parent->getMessage(),
-                    $parent->getCode(),
-                    $parent->getPrevious()
-                )
-            );
+            $this->handle(new SilentException($parent->getMessage(), $parent->getCode(), $parent->getPrevious()));
         }
 
         if ($log) {
@@ -106,8 +105,7 @@ class ExceptionManager
 
         // Check for a general subsequent tor preceding handler.
         if (is_object($exceptionHandlerPool[$exceptionGroup] ?? null)) {
-            $handler = $this->specificExceptionHandlerPool[$exceptionClass]
-                ?? $exceptionHandlerPool[$exceptionGroup];
+            $handler = $this->specificExceptionHandlerPool[$exceptionClass] ?? $exceptionHandlerPool[$exceptionGroup];
 
             if ($handler instanceof AbstractExceptionHandler) {
                 return $handler;
@@ -122,13 +120,13 @@ class ExceptionManager
         // Check for a grouped handler for the specific exception class.
         $handler = $exceptionHandlerPool[$exceptionGroup][$exceptionClass] ?? null
             ? $exceptionHandlerPool[$exceptionGroup][$exceptionClass]
-
             // Check for a handler for the specific exception class.
-            : ($exceptionHandlerPool[$exceptionClass] ?? null
-                ? $exceptionHandlerPool[$exceptionClass]
-
-                // Continue with the fallback if nothing specific was found.
-                : $fallback);
+            : (
+                $exceptionHandlerPool[$exceptionClass] ?? null
+                    ? $exceptionHandlerPool[$exceptionClass]
+                    // Continue with the fallback if nothing specific was found.
+                    : $fallback
+            );
 
         if (! $handler instanceof AbstractExceptionHandler) {
             return $fallback;

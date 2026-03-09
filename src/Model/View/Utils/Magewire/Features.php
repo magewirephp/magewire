@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -22,7 +23,6 @@ class Features
         private FeaturesServiceType $featuresServiceType,
         private LoggerInterface $logger
     ) {
-        
     }
 
     /**
@@ -35,9 +35,7 @@ class Features
         } catch (NotFoundException $exception) {
             $this->logger->critical($exception->getMessage(), ['exception' => $exception]);
 
-            throw new BadMethodCallException(
-                sprintf('Feature view model "%1" does not exist.', $utility)
-            );
+            throw new BadMethodCallException(sprintf('Feature view model "%1" does not exist.', $utility));
         }
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -20,7 +21,6 @@ class FragmentElementFactory
     public function __construct(
         private array $elements = []
     ) {
-        
     }
 
     /**
@@ -58,10 +58,6 @@ class FragmentElementFactory
             return $fragment;
         }
 
-        throw new LogicException(sprintf(
-            'Class "%s" does not implement Fragment interface. Expected Fragment, got %s.',
-            $type,
-            get_debug_type($fragment)
-        ));
+        throw new LogicException(sprintf('Class "%s" does not implement Fragment interface. Expected Fragment, got %s.', $type, get_debug_type($fragment)));
     }
 }

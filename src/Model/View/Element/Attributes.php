@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -11,7 +12,6 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Model\View\Element;
 
 use Magento\Framework\Escaper;
-
 use Stringable;
 
 class Attributes extends DataArray implements Stringable

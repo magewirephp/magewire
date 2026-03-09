@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -18,11 +19,9 @@ class Flake extends Component
     public function __construct(
         private FlakeResolver $magewireResolver
     ) {
-        
     }
 
     public function refresh()
     {
-
     }
 }

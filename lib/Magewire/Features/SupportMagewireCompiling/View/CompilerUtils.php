@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -46,9 +47,11 @@ class CompilerUtils
         $result = [];
 
         foreach ($tokens as $token) {
-            if (!(is_array($token) && in_array($token[0], [T_OPEN_TAG, T_OPEN_TAG_WITH_ECHO, T_CLOSE_TAG]))) { continue; }
+            if (! ( is_array($token) && in_array($token[0], [T_OPEN_TAG, T_OPEN_TAG_WITH_ECHO, T_CLOSE_TAG]) )) {
+                continue;
+            }
 
-$result[] = $token[0];
+            $result[] = $token[0];
         }
 
         return $result;

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -14,8 +15,8 @@ use Countable;
 use IteratorAggregate;
 use Magewirephp\Magewire\Support\Concerns\WithFactory;
 use Magewirephp\Magewire\Support\DataCollection\Filter;
-use Magewirephp\Magewire\Support\DataCollection\TypeFilter;
 use Magewirephp\Magewire\Support\DataCollection\Hook;
+use Magewirephp\Magewire\Support\DataCollection\TypeFilter;
 
 abstract class DataCollection implements Countable, IteratorAggregate
 {
@@ -36,15 +37,16 @@ abstract class DataCollection implements Countable, IteratorAggregate
         private readonly string $name = 'root',
         private readonly DataCollection|null $parent = null
     ) {
-        
     }
 
     public function map(array $map): static
     {
         foreach ($map as $from => $to) {
-            if (!((is_string($from) || is_int($from)) && is_string($to))) { continue; }
+            if (! ( ( is_string($from) || is_int($from) ) && is_string($to) )) {
+                continue;
+            }
 
-$this->rename($from, $to);
+            $this->rename($from, $to);
         }
 
         return $this;
@@ -57,7 +59,10 @@ $this->rename($from, $to);
 
     public function each(callable $callback, callable|TypeFilter $filter = TypeFilter::ALL): static
     {
-        $items = $this->filter()->with($filter)->return()->all();
+        $items = $this->filter()
+            ->with($filter)
+            ->return()
+            ->all();
 
         foreach ($items as $key => $value) {
             $callback($this, $value, $key);
@@ -82,9 +87,11 @@ $this->rename($from, $to);
     public function unset(string|int ...$keys): static
     {
         foreach ($keys as $key) {
-            if (!($this->isset($key))) { continue; }
+            if (! $this->isset($key)) {
+                continue;
+            }
 
-unset($this->items[$key]);
+            unset($this->items[$key]);
         }
 
         return $this;
@@ -109,7 +116,7 @@ unset($this->items[$key]);
     public function subset(string|int|null $name = null, string|null $type = null, array $arguments = []): DataCollection
     {
         $level = $name ? $this->level + 1 : 0;
-        $name  = Str::snake($name);
+        $name = Str::snake($name);
 
         if (isset($this->subitems[$name])) {
             return $this->subitems[$name];
@@ -117,8 +124,8 @@ unset($this->items[$key]);
 
         $arguments = array_merge($arguments, [
             'parent' => $this,
-            'level'  => $level,
-            'name'   => $name
+            'level' => $level,
+            'name' => $name
         ]);
 
         if ($name === null) {
@@ -160,9 +167,7 @@ unset($this->items[$key]);
                 $target = $this->subset($key);
             }
 
-            $target->isset($key)
-                ? $target->put($key, $value)
-                : $target->set($key, $value);
+            $target->isset($key) ? $target->put($key, $value) : $target->set($key, $value);
         }
 
         return $this;
@@ -217,8 +222,15 @@ unset($this->items[$key]);
 
         if ($filter) {
             $items = $this->subset()
-                ->fill($this->filter()->with(TypeFilter::JSON_ENCODABLE)->return()->all())
-                    ->filter()->with($filter)->return();
+                ->fill(
+                    $this->filter()
+                        ->with(TypeFilter::JSON_ENCODABLE)
+                        ->return()
+                        ->all()
+                )
+                ->filter()
+                ->with($filter)
+                ->return();
         }
 
         return json_encode($items->all());
@@ -256,7 +268,7 @@ unset($this->items[$key]);
 
     public function get(string|int $name, $default = null, bool $set = false): mixed
     {
-        return $this->items[$name] ?? ($set ? $this->default($name, $default)->get($name) : $default);
+        return $this->items[$name] ?? ( $set ? $this->default($name, $default)->get($name) : $default );
     }
 
     public function reset(): static
@@ -286,9 +298,11 @@ unset($this->items[$key]);
     public function defaults(array $defaults): static
     {
         foreach ($defaults as $key => $value) {
-            if (!(is_string($key) || is_int($key))) { continue; }
+            if (! ( is_string($key) || is_int($key) )) {
+                continue;
+            }
 
-$this->default($key, $value);
+            $this->default($key, $value);
         }
 
         return $this;
@@ -296,7 +310,10 @@ $this->default($key, $value);
 
     public function clear(callable|TypeFilter $filter = TypeFilter::NONE): static
     {
-        $this->items = $this->filter()->with($filter)->return()->all();
+        $this->items = $this->filter()
+            ->with($filter)
+            ->return()
+            ->all();
 
         return $this;
     }
@@ -311,8 +328,9 @@ $this->default($key, $value);
         return $this->newInstance(['items' => $this->all()]);
     }
 
-    public function walk(callable $callback): static {
-        $result  = $callback($this);
+    public function walk(callable $callback): static
+    {
+        $result = $callback($this);
         $subsets = $this->subsets();
 
         // Callback returned nothing or this instance.
@@ -327,7 +345,7 @@ $this->default($key, $value);
 
     public function collect(callable $callback): array
     {
-        $result  = $callback($this);
+        $result = $callback($this);
         $subsets = $this->subsets();
 
         // Gather all results into a flat array.

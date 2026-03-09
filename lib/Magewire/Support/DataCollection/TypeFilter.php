@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -34,10 +35,9 @@ enum TypeFilter
 
     public function get(): callable
     {
-        return match($this) {
+        return match ($this) {
             self::ALL => static fn ($value) => true,
             self::NONE => static fn ($value) => false,
-
             self::STRINGS => static fn ($value) => is_string($value),
             self::INTEGERS => static fn ($value) => is_int($value),
             self::FLOATS => static fn ($value) => is_float($value),
@@ -49,11 +49,9 @@ enum TypeFilter
             self::SCALAR => static fn ($value) => is_scalar($value),
             self::CALLABLE => static fn ($value) => is_callable($value),
             self::ITERABLE => static fn ($value) => is_iterable($value),
-
             self::COUNTABLE => static fn ($value) => $value instanceof Countable,
-
             self::SERIALIZABLE => fn ($value) => $this->isSerializable($value),
-            self::JSON_ENCODABLE => fn ($value) => $this->isJsonEncodable($value),
+            self::JSON_ENCODABLE => fn ($value) => $this->isJsonEncodable($value)
         };
     }
 
@@ -62,7 +60,7 @@ enum TypeFilter
      */
     public static function any(self ...$filters): callable
     {
-        return static function($value) use ($filters) {
+        return static function ($value) use ($filters) {
             if ($value instanceof DataArray) {
                 $value = $value->all();
             }
@@ -83,7 +81,7 @@ enum TypeFilter
      */
     public static function only(self ...$filters): callable
     {
-        return static function($value) use ($filters) {
+        return static function ($value) use ($filters) {
             if ($value instanceof DataArray) {
                 $value = $value->all();
             }

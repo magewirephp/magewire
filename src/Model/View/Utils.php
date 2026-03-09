@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -42,7 +43,6 @@ class Utils
         private CspViewUtil $csp,
         private array $utilities = []
     ) {
-        
     }
 
     public function alpinejs(): AlpineViewUtil
@@ -112,8 +112,6 @@ class Utils
             }
         }
 
-        throw new BadMethodCallException(
-            sprintf('Invalid utility "%s"', $utility)
-        );
+        throw new BadMethodCallException(sprintf('Invalid utility "%s"', $utility));
     }
 }

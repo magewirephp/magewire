@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -20,7 +21,6 @@ class CompilerFactory
     public function __construct(
         private string $instance = Compiler::class
     ) {
-        
     }
 
     public function newCompilerInstance(array $arguments = [])

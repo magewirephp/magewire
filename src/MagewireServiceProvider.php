@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -12,8 +13,8 @@ namespace Magewirephp\Magewire;
 
 use BadMethodCallException;
 use Exception;
-use Magewirephp\Magewire\Enums\RuntimeState;
 use Magewirephp\Magewire\Enums\RequestMode;
+use Magewirephp\Magewire\Enums\RuntimeState;
 use Magewirephp\Magewire\Enums\ServiceTypeItemBootMode;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
@@ -29,7 +30,6 @@ class MagewireServiceProvider
         private readonly Mechanisms $mechanisms,
         private readonly Features $features
     ) {
-        
     }
 
     public function setup(): void
@@ -61,7 +61,7 @@ class MagewireServiceProvider
             // Boot a service items.
             $boot['containers'] = $this->containers->boot();
             $boot['mechanisms'] = $this->mechanisms->boot();
-            $boot['features']   = $this->features->boot();
+            $boot['features'] = $this->features->boot();
 
             if (in_array(false, $boot, true)) {
                 throw new RuntimeException('One or more service types were unable to boot completely.');

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -31,14 +32,12 @@ class SupportMagewireBackwardsCompatibility extends ComponentHook
     {
         return [
             'data' => 'path:$wire',
-            '__livewire' => 'path:queuedUpdates',
+            '__livewire' => 'path:queuedUpdates'
         ];
     }
 
     private function resolvePreferences(): array
     {
-        return [
-            
-        ];
+        return [];
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -54,10 +55,10 @@ class Diagnostics extends Metadata
 
     protected function data(): DataArray
     {
-        return $this->data ??= $this->newTypeInstance(DataArray::class)
-            ->set(self::METADATA, $this->newTypeInstance(Metadata::class)
-                ->data()->defaults([
-                    'logs' => []
-                ]));
+        return $this->data ??= $this->newTypeInstance(DataArray::class)->set(self::METADATA, $this->newTypeInstance(Metadata::class)
+            ->data()
+            ->defaults([
+                'logs' => []
+            ]));
     }
 }

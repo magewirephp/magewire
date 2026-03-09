@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -19,7 +20,6 @@ class HandleRequestFacade
     public function __construct(
         private readonly HandleRequestsMechanism $mechanism
     ) {
-        
     }
 
     public function mechanism(): HandleRequestsMechanism

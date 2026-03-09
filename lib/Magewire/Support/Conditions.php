@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -89,17 +90,19 @@ class Conditions
     public function evaluate(...$args): bool
     {
         foreach ($this->get(ConditionEnum::AND) as $condition) {
-            if ($condition(...$args)) { continue; }
+            if ($condition(...$args)) {
+                continue;
+            }
 
-foreach ($this->get(ConditionEnum::OR) as $alternative) {
-                    if (is_array($alternative) && $this->evaluateGroup($alternative, ...$args)) {
-                        return true;
-                    } else {
-                        return $alternative(...$args);
-                    }
+            foreach ($this->get(ConditionEnum::OR) as $alternative) {
+                if (is_array($alternative) && $this->evaluateGroup($alternative, ...$args)) {
+                    return true;
+                } else {
+                    return $alternative(...$args);
                 }
+            }
 
-                return false;
+            return false;
         }
 
         return true;

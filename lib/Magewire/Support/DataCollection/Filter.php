@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -23,10 +24,7 @@ abstract class Filter
     public function with(callable|TypeFilter|string $filter): static
     {
         if (is_string($filter)) {
-            $filter = $this->presets[$filter]
-                ?? throw new InvalidArgumentException(
-                    sprintf('Data array filter preset "%s" does not exist.', $filter)
-                );
+            $filter = $this->presets[$filter] ?? throw new InvalidArgumentException(sprintf('Data array filter preset "%s" does not exist.', $filter));
         }
 
         if (is_callable($filter)) {
@@ -63,7 +61,7 @@ abstract class Filter
 
     public function byPage(int $page, int $limit = 10): static
     {
-        return $this->byOffset($limit, ($page - 1) * $limit);
+        return $this->byOffset($limit, ( $page - 1 ) * $limit);
     }
 
     public function byKeys(array $keys): static
@@ -78,9 +76,13 @@ abstract class Filter
 
     public function byKeyPattern(string $pattern): static
     {
-        return $this->chain(array_filter($this->items(), static function ($value, $key) use ($pattern) {
-            return preg_match($pattern, (string) $key);
-        }, ARRAY_FILTER_USE_BOTH));
+        return $this->chain(array_filter(
+            $this->items(),
+            static function ($value, $key) use ($pattern) {
+                return preg_match($pattern, (string) $key);
+            },
+            ARRAY_FILTER_USE_BOTH
+        ));
     }
 
     public function byValuePattern(string $pattern): static
@@ -172,9 +174,11 @@ abstract class Filter
 
     protected function chain(array $result): static
     {
-        return $this->collection()->newInstance([
-            'items'  => $result,
-            'filter' => $this
-        ])->filter();
+        return $this->collection()
+            ->newInstance([
+                'items' => $result,
+                'filter' => $this
+            ])
+            ->filter();
     }
 }

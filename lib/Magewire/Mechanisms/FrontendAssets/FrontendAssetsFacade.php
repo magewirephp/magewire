@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -17,7 +18,6 @@ class FrontendAssetsFacade
     public function __construct(
         private readonly FrontendAssetsMechanism $mechanism
     ) {
-        
     }
 
     public function getMagewireScriptPath()

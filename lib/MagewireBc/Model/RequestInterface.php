@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -64,7 +65,7 @@ interface RequestInterface
      * @param string $section
      * @return array|null
      */
-    public function getSectionByName(string $section): ?array;
+    public function getSectionByName(string $section): array|null;
 
     /**
      * Check if request is an component update request.

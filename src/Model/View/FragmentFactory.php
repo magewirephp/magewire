@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -13,11 +14,11 @@ namespace Magewirephp\Magewire\Model\View;
 use InvalidArgumentException;
 use LogicException;
 use Magento\Framework\View\Element\AbstractBlock;
+use Magewirephp\Magewire\Model\View\Fragment\Component;
 use Magewirephp\Magewire\Model\View\Fragment\Html;
 use Magewirephp\Magewire\Model\View\Fragment\Javascript;
 use Magewirephp\Magewire\Model\View\Fragment\Script;
 use Magewirephp\Magewire\Model\View\Fragment\Style;
-use Magewirephp\Magewire\Model\View\Fragment\Component;
 use Magewirephp\Magewire\Support\Factory;
 
 class FragmentFactory
@@ -29,7 +30,6 @@ class FragmentFactory
         private FragmentElementFactory $elementFactory,
         private array $types = []
     ) {
-        
     }
 
     public function html(): Html
@@ -95,10 +95,6 @@ class FragmentFactory
             return $fragment;
         }
 
-        throw new LogicException(sprintf(
-            'Class "%s" does not implement Fragment interface. Expected Fragment, got %s.',
-            $type,
-            get_debug_type($fragment)
-        ));
+        throw new LogicException(sprintf('Class "%s" does not implement Fragment interface. Expected Fragment, got %s.', $type, get_debug_type($fragment)));
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -80,11 +81,15 @@ class Blade
             (?<![\/=\-])
         >/x";
 
-        return preg_replace_callback($pattern, function (array $matches) {
-            $attributes = $this->parseParams($matches['attributes']);
+        return preg_replace_callback(
+            $pattern,
+            function (array $matches) {
+                $attributes = $this->parseParams($matches['attributes']);
 
-            return $this->componentString($matches['component'], $attributes, $matches['variant'] ?? null);
-        }, $value);
+                return $this->componentString($matches['component'], $attributes, $matches['variant'] ?? null);
+            },
+            $value
+        );
     }
 
     /**
@@ -128,11 +133,15 @@ class Blade
             (?<![\/=\-])
         \/>/x";
 
-        return preg_replace_callback($pattern, function (array $matches) {
-            $attributes = $this->parseParams($matches['attributes']);
+        return preg_replace_callback(
+            $pattern,
+            function (array $matches) {
+                $attributes = $this->parseParams($matches['attributes']);
 
-            return $this->componentString($matches['component'], $attributes, $matches['variant']) . "\n@endComponent";
-        }, $value);
+                return $this->componentString($matches['component'], $attributes, $matches['variant']) . "\n@endComponent";
+            },
+            $value
+        );
     }
 
     protected function componentString(string $component, string $attributes = '[]', string|null $variant = 'default'): string
@@ -205,22 +214,23 @@ class Blade
             >
         /x";
 
-        $value = preg_replace_callback($pattern, function ($matches) {
-            $name = $this->stripQuotes($matches['inlineName']
-                ?: $matches['name']
-                    ?: $matches['boundName'])
-                ?: "'slot'";
+        $value = preg_replace_callback(
+            $pattern,
+            function ($matches) {
+                $name = $this->stripQuotes($matches['inlineName'] ?: $matches['name'] ?: $matches['boundName']) ?: "'slot'";
 
-            $attributes = $this->parseParams($matches['attributes']);
-            $var = 'slot' . ucfirst(strtolower($name)) . ucfirst(Random::alphabetical(5, true));
+                $attributes = $this->parseParams($matches['attributes']);
+                $var = 'slot' . ucfirst(strtolower($name)) . ucfirst(Random::alphabetical(5, true));
 
-            return "@magewireSlot(target: '{$name}', id: '{$var}')
+                return "@magewireSlot(target: '{$name}', id: '{$var}')
             <?php if (isset(\${$var})): ?>
             <?php \${$var}->dictionary()->fill(get_defined_vars()) ?>
             <?php \${$var}->data()->distribute({$attributes}) ?>
             <?php \${$var}->start() ?>
             <?php endif ?>";
-        }, $value);
+            },
+            $value
+        );
 
         return preg_replace('/<\/\s*magewire-slot[^>]*>/', ' @magewireEndSlot', $value);
     }
@@ -230,9 +240,7 @@ class Blade
      */
     public function stripQuotes(string $value): string
     {
-        return (str_starts_with($value, '"') || str_starts_with($value, "'"))
-            ? substr($value, 1, -1)
-            : $value;
+        return str_starts_with($value, '"') || str_starts_with($value, "'") ? substr($value, 1, -1) : $value;
     }
 
     /**
@@ -247,10 +255,9 @@ class Blade
         foreach ($matches[1] as $i => $key) {
             $value = str_replace('"', '', $matches[2][$i]);
 
-            $value = match($value) {
+            $value = match ($value) {
                 'false' => false,
-                'true'  => true,
-
+                'true' => true,
                 default => $value
             };
 
@@ -279,7 +286,7 @@ class Blade
                 continue;
             }
 
-            $filling = is_bool($value) ? ($value ? 'true' : 'false') : '"' . $value . '"';
+            $filling = is_bool($value) ? ( $value ? 'true' : 'false' ) : '"' . $value . '"';
             $params['properties'][] = '"' . $key . '"' . ' => ' . $filling;
         }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -20,9 +21,9 @@ class SlotsManager
     {
         $id = $block->getNameInLayout() . '_' . $name;
 
-//        if (isset($this->items[$id])) {
-//            throw new AlreadyExistsException();
-//        }
+        //        if (isset($this->items[$id])) {
+        //            throw new AlreadyExistsException();
+        //        }
 
         $this->items[$id] = $content;
 

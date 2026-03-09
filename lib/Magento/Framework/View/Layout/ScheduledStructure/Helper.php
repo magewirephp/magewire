@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -10,14 +11,14 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magento\Framework\View\Layout\ScheduledStructure;
 
-use Magento\Framework\View\Layout\ScheduledStructure;
 use Magento\Framework\View\Layout\Data\Structure;
+use Magento\Framework\View\Layout\ScheduledStructure;
 
 class Helper extends ScheduledStructure\Helper
 {
     public function scheduleElement(ScheduledStructure $scheduledStructure, Structure $structure, $key)
     {
-        $row  = $scheduledStructure->getStructureElement($key);
+        $row = $scheduledStructure->getStructureElement($key);
         $data = $scheduledStructure->getStructureElementData($key);
 
         if (! isset($row[self::SCHEDULED_STRUCTURE_INDEX_TYPE])) {

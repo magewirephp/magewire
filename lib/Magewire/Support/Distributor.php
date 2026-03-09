@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -35,7 +36,6 @@ abstract class Distributor
         protected string $type,
         protected array $mapping = []
     ) {
-        
     }
 
     /**

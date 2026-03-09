@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -21,7 +22,6 @@ class ConfigMagewire
     public function __construct(
         private readonly ScopeConfigInterface $scopeConfig
     ) {
-        
     }
 
     /**
@@ -105,8 +105,6 @@ class ConfigMagewire
      */
     private function createPath(string $path, string|null $group = null): string
     {
-        return $group
-            ? sprintf('magewire/%s/%s', $group, trim($path))
-            : sprintf('magewire/%s', trim($path));
+        return $group ? sprintf('magewire/%s/%s', $group, trim($path)) : sprintf('magewire/%s', trim($path));
     }
 }

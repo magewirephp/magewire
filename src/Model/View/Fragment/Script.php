@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -16,10 +17,7 @@ class Script extends Html
 
     public function start(): static
     {
-        return parent::start()
-
-            ->withValidator(static fn ($script) => str_starts_with($script, '<script'))
-            ->withValidator(static fn ($script) => str_ends_with($script, '</script>'));
+        return parent::start()->withValidator(static fn ($script) => str_starts_with($script, '<script'))->withValidator(static fn ($script) => str_ends_with($script, '</script>'));
     }
 
     /**
@@ -32,7 +30,7 @@ class Script extends Html
         }
 
         $start = strpos($this->raw, '>');
-        $end   = strrpos($this->raw, '<');
+        $end = strrpos($this->raw, '<');
 
         if ($start !== false && $end !== false && $start < $end) {
             $this->code = trim(substr($this->raw, $start + 1, $end - $start - 1));

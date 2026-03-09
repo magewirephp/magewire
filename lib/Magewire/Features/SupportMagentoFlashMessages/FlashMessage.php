@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -18,7 +19,6 @@ class FlashMessage
         private readonly string $message,
         private readonly FlashMessageType $type
     ) {
-        
     }
 
     function getMessage(): Phrase

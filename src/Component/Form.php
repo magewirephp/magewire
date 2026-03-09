@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -11,11 +12,11 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Component;
 
 use Exception;
-use Magewirephp\Magewire\Exception\AcceptableException;
-use Rakit\Validation\Validator;
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Exception\AcceptableException;
 use Magewirephp\Magewire\Exception\ValidationException;
 use Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\HandlesFormComponentBackwardsCompatibility;
+use Rakit\Validation\Validator;
 
 abstract class Form extends Component
 {
@@ -59,9 +60,12 @@ abstract class Form extends Component
         $rules = $mergeWithClassProperties ? array_merge($this->rules, $rules) : $rules;
         $data ??= $this->getPublicProperties(true);
 
-        $messages = array_map(static function ($message) {
-            return __($message);
-        }, $mergeWithClassProperties ? array_merge($this->messages, $messages) : $messages);
+        $messages = array_map(
+            static function ($message) {
+                return __($message);
+            },
+            $mergeWithClassProperties ? array_merge($this->messages, $messages) : $messages
+        );
 
         try {
             $validation = $this->validator->make($data, $rules, $messages);

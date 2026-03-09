@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
@@ -17,7 +18,6 @@ class ExceptionHandler extends AbstractExceptionHandler
     function __construct(
         private readonly ApplicationState $state
     ) {
-        
     }
 
     function handleWithBlock(AbstractBlock $block, Exception $exception, bool $subsequent = false): AbstractBlock

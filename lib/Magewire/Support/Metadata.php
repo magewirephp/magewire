@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -18,7 +19,6 @@ class Metadata
     public function __construct(
         protected DataArrayFactory $dataArrayFactory
     ) {
-        
     }
 
     public function increment(string $prop, int $by = 1): static
@@ -26,7 +26,7 @@ class Metadata
         $subject = $this->data()->get($prop, 0);
 
         if (is_int($subject)) {
-            $this->data()->set($prop, ($subject + $by));
+            $this->data()->set($prop, $subject + $by);
         }
 
         return $this;
@@ -37,7 +37,7 @@ class Metadata
         $subject = $this->data()->get($prop, 0);
 
         if (is_int($subject) && $subject > 0) {
-            $this->data()->set($prop, ($subject - $by));
+            $this->data()->set($prop, $subject - $by);
         }
 
         return $this;
@@ -61,7 +61,10 @@ class Metadata
 
     public function fetch(callable $filter): array
     {
-        return $this->data()->filter()->byClosure($filter)->all();
+        return $this->data()
+            ->filter()
+            ->byClosure($filter)
+            ->all();
     }
 
     protected function data(): DataArray

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -34,7 +35,6 @@ class Pipeline
     public function __construct(
         protected LoggerInterface $logger
     ) {
-        
     }
 
     /**
@@ -126,9 +126,7 @@ class Pipeline
         try {
             $pipeline = $this->couple($this->pipes);
 
-            $throughput = $this->middleware
-                ? $this->middleware()->run($throughput, $pipeline)
-                : $pipeline($throughput);
+            $throughput = $this->middleware ? $this->middleware()->run($throughput, $pipeline) : $pipeline($throughput);
 
             $this->processHandler('success', $throughput);
         } catch (Throwable $exception) {
@@ -151,7 +149,7 @@ class Pipeline
         $handlers = $this->handlers[$handler] ?? [];
 
         // Re-throw exception if no catch handlers are registered to process it.
-        if (empty($handlers) && $handler === 'catch' && ($args[0] ?? null) instanceof Throwable) {
+        if (empty($handlers) && $handler === 'catch' && ( $args[0] ?? null ) instanceof Throwable) {
             throw $args[0];
         }
 
@@ -163,7 +161,7 @@ class Pipeline
             } catch (Throwable $exception) {
                 $this->logger->error($class . ' exception: ' . $exception->getMessage(), [
                     'handler' => $handler,
-                    'exception' => $exception,
+                    'exception' => $exception
                 ]);
             }
         }
@@ -181,8 +179,7 @@ class Pipeline
         string $event,
         callable $handler,
         string|null $alias = null
-    ): static
-    {
+    ): static {
         $this->handlers[$event][$alias ?? Random::alphabetical()] = $handler;
 
         return $this;

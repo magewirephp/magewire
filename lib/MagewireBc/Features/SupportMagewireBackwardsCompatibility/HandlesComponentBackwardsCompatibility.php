@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -11,7 +12,6 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility;
 
 use Magewirephp\Magewire\Drawer\Utils;
-
 use Magewirephp\Magewire\Model\Concern\BrowserEvent as BrowserEventConcern;
 use Magewirephp\Magewire\Model\Concern\Emit as EmitConcern;
 use Magewirephp\Magewire\Model\Concern\Error as ErrorConcern;
@@ -38,7 +38,7 @@ trait HandlesComponentBackwardsCompatibility
     public const RESERVED_PROPERTIES = ['id', 'name'];
 
     /** @deprecated Cache backing for getPublicProperties(). */
-    private ?array $__publicProperties = null;
+    private array|null $__publicProperties = null;
 
     /**
      * @deprecated Use all() instead, which is the v2 equivalent.

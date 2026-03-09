@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -13,6 +14,7 @@ namespace Magewirephp\Magewire\Features\SupportMagewireExceptionHandling;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\ComponentHook;
 use Throwable;
+
 use function Magewirephp\Magewire\on;
 
 class SupportMagewireExceptionHandling extends ComponentHook

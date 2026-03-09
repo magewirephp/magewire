@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -20,7 +21,6 @@ class Layout implements UtilsInterface
     public function __construct(
         private readonly LoggerInterface $logger
     ) {
-        
     }
 
     /**
@@ -64,7 +64,7 @@ class Layout implements UtilsInterface
     {
         if ($block) {
             return implode('', array_map(static function (object $child) {
-                return ($child instanceof AbstractBlock ? $child->toHtml() : '') . PHP_EOL;
+                return ( $child instanceof AbstractBlock ? $child->toHtml() : '' ) . PHP_EOL;
             }, $this->containerizeBlock($block)));
         }
 

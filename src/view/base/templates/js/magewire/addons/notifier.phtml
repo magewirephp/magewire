@@ -78,9 +78,9 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 }
 
                 <?php /* Default Hooks. ?>
-                notification.hooks = { ...this.defaults.notification.hooks, ...hooks };
-
-                <?php /* Defaults (deliberately overwrite on existence). */ ?>
+                 * notification.hooks = { ...this.defaults.notification.hooks, ...hooks };
+                 *
+                 * <?php /* Defaults (deliberately overwrite on existence). */ ?>
                 notification.id = Date.now();
                 notification.state = this.defaults.notification.state;
                 notification.active = false;

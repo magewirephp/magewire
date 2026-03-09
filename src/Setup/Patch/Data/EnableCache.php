@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -10,8 +11,8 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Setup\Patch\Data;
 
-use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magento\Framework\App\Cache\Manager as CacheManager;
+use Magento\Framework\Setup\Patch\DataPatchInterface;
 use Magewirephp\Magento\App\Cache\Type\Magewire as MagewireCacheType;
 
 class EnableCache implements DataPatchInterface
@@ -19,7 +20,6 @@ class EnableCache implements DataPatchInterface
     function __construct(
         private readonly CacheManager $cacheManager
     ) {
-        
     }
 
     static function getDependencies(): array
@@ -37,10 +37,7 @@ class EnableCache implements DataPatchInterface
      */
     function apply(): self
     {
-        $enableMagewireCache = $this->cacheManager->setEnabled(
-            array_intersect($this->cacheManager->getAvailableTypes(), [MagewireCacheType::TYPE_IDENTIFIER]),
-            true
-        );
+        $enableMagewireCache = $this->cacheManager->setEnabled(array_intersect($this->cacheManager->getAvailableTypes(), [MagewireCacheType::TYPE_IDENTIFIER]), true);
 
         $this->cacheManager->clean($enableMagewireCache);
         return $this;

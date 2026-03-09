@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -16,9 +17,8 @@ use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\RenderLifecycle
 class ResolveComponentsViewModel implements ArgumentInterface
 {
     public function __construct(
-        private readonly RenderLifecycleManager $renderLifecycleManager,
+        private readonly RenderLifecycleManager $renderLifecycleManager
     ) {
-        
     }
 
     public function doesPageHaveComponents(): bool

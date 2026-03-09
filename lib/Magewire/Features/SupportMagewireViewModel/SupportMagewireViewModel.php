@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -14,6 +15,7 @@ use InvalidArgumentException;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magento\Framework\View\RenderLifecycleManager;
 use Magewirephp\Magewire\ComponentHook;
+
 use function Magewirephp\Magewire\on;
 
 class SupportMagewireViewModel extends ComponentHook
@@ -23,7 +25,6 @@ class SupportMagewireViewModel extends ComponentHook
     public function __construct(
         private readonly MagewireViewModelInterfaceFactory $magewireViewModelFactory
     ) {
-        
     }
 
     public function provide(): void

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -37,7 +38,6 @@ abstract class ServiceType
     public function __construct(
         private array $items = []
     ) {
-        
     }
 
     /**
@@ -68,9 +68,7 @@ abstract class ServiceType
         if (is_string($facade)) {
             $this->items[$for]['facade'] = Factory::get($facade);
         } elseif (! is_object($facade)) {
-            throw new NotFoundException(
-                __('Operation type facade "%1" could not be found.', $for)
-            );
+            throw new NotFoundException(__('Operation type facade "%1" could not be found.', $for));
         }
 
         return $this->items[$for]['facade'];
@@ -87,9 +85,7 @@ abstract class ServiceType
             return $this->items[$name]['type'];
         }
 
-        throw new NotFoundException(
-            __('Operation type item "%1" could not be found.', $name)
-        );
+        throw new NotFoundException(__('Operation type item "%1" could not be found.', $name));
     }
 
     /**
@@ -104,9 +100,7 @@ abstract class ServiceType
             return $this->items[$name]['view_model'];
         }
 
-        throw new NotFoundException(
-            __('Operation view model "%1" could not be found.', $name)
-        );
+        throw new NotFoundException(__('Operation view model "%1" could not be found.', $name));
     }
 
     private function assemble(): static
@@ -115,44 +109,47 @@ abstract class ServiceType
             return $this;
         }
 
-        $this->items = array_map(function (string|array $item) {
-            if (is_string($item)) {
-                $item = ['type' => $item];
-            }
-            if (is_object($item['type'])) {
-                return $item;
-            }
-
-            $item['type'] = Factory::get($item['type']);
-
-            // Injects data if a `setData()` method is present in the operation type item class.
-            if (method_exists($item['type'], 'setData')) {
-                foreach ($item['data'] ?? [] as $key => $value) {
-                    $item['type']->setData($key, $value);
+        $this->items = array_map(
+            function (string|array $item) {
+                if (is_string($item)) {
+                    $item = ['type' => $item];
                 }
-            }
+                if (is_object($item['type'])) {
+                    return $item;
+                }
 
-            if ($item['sort_order'] ?? false) {
-                $this->sortOrder = (int) $item['sort_order'];
-            } else {
-                $this->sortOrder++;
-                $item['sort_order'] = $this->sortOrder;
-            }
+                $item['type'] = Factory::get($item['type']);
 
-            // Ensure the facade key exists, defaulting to null if not set.
-            $item['facade'] ??= null;
-            // Keep only active sequences (where the value is true).
-            $item['sequence'] = array_filter($item['sequence'] ?? [], static fn ($item) => $item === true);
-            // Ensure the view model key exists, defaulting to null if not set.
-            $item['view_model'] ??= null;
-            // Ensure the config key exists, defaulting to null if not set.
-            $item['config'] ??= null;
+                // Injects data if a `setData()` method is present in the operation type item class.
+                if (method_exists($item['type'], 'setData')) {
+                    foreach ($item['data'] ?? [] as $key => $value) {
+                        $item['type']->setData($key, $value);
+                    }
+                }
 
-            // Ensure the boot mode exists, or set the default if not set.
-            $item['boot_mode'] = ServiceTypeItemBootMode::try($item['boot_mode'] ?? null, $this->getServiceTypeItemBootModeFallback());
+                if ($item['sort_order'] ?? false) {
+                    $this->sortOrder = (int) $item['sort_order'];
+                } else {
+                    $this->sortOrder++;
+                    $item['sort_order'] = $this->sortOrder;
+                }
 
-            return $item;
-        }, array_filter($this->items, static fn ($value) => is_string($value) || is_array($value)));
+                // Ensure the facade key exists, defaulting to null if not set.
+                $item['facade'] ??= null;
+                // Keep only active sequences (where the value is true).
+                $item['sequence'] = array_filter($item['sequence'] ?? [], static fn ($item) => $item === true);
+                // Ensure the view model key exists, defaulting to null if not set.
+                $item['view_model'] ??= null;
+                // Ensure the config key exists, defaulting to null if not set.
+                $item['config'] ??= null;
+
+                // Ensure the boot mode exists, or set the default if not set.
+                $item['boot_mode'] = ServiceTypeItemBootMode::try($item['boot_mode'] ?? null, $this->getServiceTypeItemBootModeFallback());
+
+                return $item;
+            },
+            array_filter($this->items, static fn ($value) => is_string($value) || is_array($value))
+        );
 
         $this->assembled = true;
         return $this;
@@ -169,7 +166,7 @@ abstract class ServiceType
                 if (isset($a['sequence'])) {
                     foreach ($a['sequence'] as $dependency) {
                         if ($dependency == $b['type']) {
-                            return 1;  // $a should come after $b
+                            return 1; // $a should come after $b
                         }
                     }
                 }
@@ -185,7 +182,7 @@ abstract class ServiceType
                 return 0;
             }
 
-            return (($a['sort_order'] ?? 0) < ($b['sort_order'] ?? 0)) ? -1 : 1;
+            return ( $a['sort_order'] ?? 0 ) < ( $b['sort_order'] ?? 0 ) ? -1 : 1;
         });
 
         $this->sorted = true;
@@ -194,8 +191,7 @@ abstract class ServiceType
 
     protected function items(): ServiceTypeItemsBooter
     {
-        return $this->booter ??= Factory::create(ServiceTypeItemsBooter::class)
-            ->setup($this->assemble()->sort());
+        return $this->booter ??= Factory::create(ServiceTypeItemsBooter::class)->setup($this->assemble()->sort());
     }
 
     /**

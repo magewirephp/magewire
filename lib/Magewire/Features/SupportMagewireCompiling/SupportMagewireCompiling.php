@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -18,6 +19,7 @@ use Magewirephp\Magewire\ComponentHook;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\CompilerManager;
 use Magewirephp\Magewire\Model\View\SlotsRegistry;
+
 use function Magewirephp\Magewire\before;
 use function Magewirephp\Magewire\on;
 use function Magewirephp\Magewire\trigger;
@@ -31,15 +33,12 @@ class SupportMagewireCompiling extends ComponentHook
         private CompilerManager $compilerManager,
         private SlotsRegistry $slotsRegistry
     ) {
-        
     }
 
     public function provide(): void
     {
         on('magento:template:render', function (AbstractBlock $block, string $filename, array $dictionary, Component $component) {
-            $compiler = $component->magewireCompiler() ?? $component->magewireCompiler(
-                $this->compilerManager->factory()->newCompilerInstance()
-            );
+            $compiler = $component->magewireCompiler() ?? $component->magewireCompiler($this->compilerManager->factory()->newCompilerInstance());
 
             return function (array $result) use ($component, $compiler, $block) {
                 // Although named "filename", this actually represents the full file path,
@@ -71,8 +70,11 @@ class SupportMagewireCompiling extends ComponentHook
         before('magewire:view:compile', static function (Compiler $compiler) {
             $runs['html'] = 0;
 
-            $compiler->pipelines()->html()->middleware()->group('first-line', 2)
-
+            $compiler
+                ->pipelines()
+                ->html()
+                ->middleware()
+                ->group('first-line', 2)
                 ->pipe(static function (string $throughput, callable $next) use (&$runs, $compiler) {
                     $runs['html']++;
 
@@ -83,44 +85,39 @@ class SupportMagewireCompiling extends ComponentHook
                     return $next($throughput);
                 });
 
-            $compiler->pipelines()->template()->middleware()->group('last')
+            $compiler
+                ->pipelines()
+                ->template()
+                ->middleware()
+                ->group('last')
                 ->pipe(static function (string $throughput, callable $next): string {
                     return $next($throughput) . '@endtemplate';
                 });
 
-            $compiler->pipelines()->template()->middleware()->group('last')
-
+            $compiler
+                ->pipelines()
+                ->template()
+                ->middleware()
+                ->group('last')
                 ->pipe(static function (string $throughput, callable $next): string {
                     $result = $next($throughput);
                     $date = new DateTime();
 
-                    return $result . sprintf(
-                            '<?php /** Compile Date/Time: %s **/ ?>' . PHP_EOL,
-                            $date->format('Y-m-d H:i:s.u')
-                        );
+                    return $result . sprintf('<?php /** Compile Date/Time: %s **/ ?>' . PHP_EOL, $date->format('Y-m-d H:i:s.u'));
                 })
-
                 ->pipe(static function (string $throughput, callable $next) use ($compiler): string {
                     $result = $next($throughput);
 
-                    return $result . sprintf(
-                            '<?php /** Template Basepath: %s **/ ?>' . PHP_EOL,
-                            $compiler->basePath()
-                        );
+                    return $result . sprintf('<?php /** Template Basepath: %s **/ ?>' . PHP_EOL, $compiler->basePath());
                 })
-
                 ->pipe(static function (string $throughput, callable $next) use ($compiler): string {
                     $start = $compiler->compileStartTime();
                     $result = $next($throughput);
 
-                    $durationMs  = round((microtime(true) - $start) * 1000, 2);
+                    $durationMs = round(( microtime(true) - $start ) * 1000, 2);
                     $durationSec = round($durationMs / 1000, 4);
 
-                    return $result . sprintf(
-                            '<?php /** Compile Duration: %.2f ms (%.4f s) **/ ?>' . PHP_EOL,
-                            $durationMs,
-                            $durationSec
-                        );
+                    return $result . sprintf('<?php /** Compile Duration: %.2f ms (%.4f s) **/ ?>' . PHP_EOL, $durationMs, $durationSec);
                 });
         });
     }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -21,7 +22,6 @@ class MagewireLayoutDecorator extends LayoutDecorator
         private GeneratorPool $generatorPool,
         private DynamicLayoutBuilder $dynamicLayoutBuilder
     ) {
-        
     }
 
     public function decorateForPagelessBlockFetching(LayoutInterface $layout): LayoutInterface

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -12,5 +13,4 @@ namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View;
 
 abstract class ViewAction
 {
-    
 }

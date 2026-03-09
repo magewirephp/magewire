@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -34,9 +35,7 @@ enum ExpressionParserType
     public function create(array $arguments = []): ExpressionParser
     {
         return match ($this) {
-            self::CONDITION,
-            self::FUNCTION_ARGUMENTS,
-            self::ITERATION_CLAUSE => ObjectManager::getInstance()->create($this->getTypeClass(), $arguments)
+            self::CONDITION, self::FUNCTION_ARGUMENTS, self::ITERATION_CLAUSE => ObjectManager::getInstance()->create($this->getTypeClass(), $arguments)
         };
     }
 
@@ -45,7 +44,7 @@ enum ExpressionParserType
         return match ($this) {
             self::CONDITION => ConditionExpressionParser::class,
             self::FUNCTION_ARGUMENTS => FunctionExpressionParser::class,
-            self::ITERATION_CLAUSE => IterationClauseExpressionParser::class,
+            self::ITERATION_CLAUSE => IterationClauseExpressionParser::class
         };
     }
 }

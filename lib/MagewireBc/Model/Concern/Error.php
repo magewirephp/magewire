@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -50,7 +51,7 @@ trait Error
 
     public function hasErrors(array $targets = []): bool
     {
-        return !empty($this->getErrors($targets));
+        return ! empty($this->getErrors($targets));
     }
 
     public function hasError(string $property): bool

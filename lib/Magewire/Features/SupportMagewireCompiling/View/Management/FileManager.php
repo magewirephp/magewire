@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -19,7 +20,6 @@ class FileManager
         private FileSystem $filesystem,
         private DirectoryList $directoryList
     ) {
-        
     }
 
     public function system(): Filesystem
@@ -40,7 +40,8 @@ class FileManager
 
     protected function getResourcePath(): string
     {
-        return $this->directoryList->getPath(\Magento\Framework\App\Filesystem\DirectoryList::GENERATED)
+        return (
+            $this->directoryList->getPath(\Magento\Framework\App\Filesystem\DirectoryList::GENERATED)
             . DIRECTORY_SEPARATOR
             . 'code'
             . DIRECTORY_SEPARATOR
@@ -48,6 +49,7 @@ class FileManager
             . DIRECTORY_SEPARATOR
             . 'Magewire'
             . DIRECTORY_SEPARATOR
-            . 'views';
+            . 'views'
+        );
     }
 }

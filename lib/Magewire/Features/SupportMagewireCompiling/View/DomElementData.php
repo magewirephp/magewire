@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -12,7 +13,6 @@ namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View;
 
 use Magewirephp\Magewire\Model\View\Element\Attributes;
 use Magewirephp\Magewire\Model\View\Element\Properties;
-
 use Magewirephp\Magewire\Support\Distributor;
 
 /**
@@ -36,7 +36,7 @@ class DomElementData extends Distributor
     ) {
         $mapping = array_merge([
             'attributes' => Attributes::class,
-            'properties' => Properties::class,
+            'properties' => Properties::class
         ], $mapping);
 
         parent::__construct($type ?? DataArray::class, $mapping);
@@ -64,9 +64,11 @@ class DomElementData extends Distributor
     public function distribute(array $data): static
     {
         foreach ($data as $key => $value) {
-            if (!(is_string($key) && is_array($value))) { continue; }
+            if (! ( is_string($key) && is_array($value) )) {
+                continue;
+            }
 
-$this->create($key)->fill($value);
+            $this->create($key)->fill($value);
         }
 
         return $this;

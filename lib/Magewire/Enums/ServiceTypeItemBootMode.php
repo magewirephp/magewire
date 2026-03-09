@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -93,9 +94,7 @@ enum ServiceTypeItemBootMode: int
             $value = (int) $value;
         }
 
-        return (self::exists($value)
-            ? self::tryFrom($value)
-            : null) ?? $fallback ?? self::default();
+        return ( self::exists($value) ? self::tryFrom($value) : null ) ?? $fallback ?? self::default();
     }
 
     public static function exists(mixed $value): bool

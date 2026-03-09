@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -13,7 +14,6 @@ namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Fragment\Elem
 use Magento\Framework\App\State as ApplicationState;
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\AbstractBlock;
-
 use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
 use Magewirephp\Magewire\Features\SupportMagewireFlakes\Component\FlakeFactory;
 use Magewirephp\Magewire\Model\View\Fragment;
@@ -50,14 +50,12 @@ class Flake extends Fragment\Element
 
         try {
             $flake = $this->flakeFactory->createByName($this->variant, [
-                'magewire:id'   => Random::alphabetical(4),
-                'magewire:name' => Random::alphabetical(4),
+                'magewire:id' => Random::alphabetical(4),
+                'magewire:name' => Random::alphabetical(4)
             ]);
 
             if ($flake === false) {
-                throw new ComponentNotFoundException(
-                    sprintf('Magewire: Flake "%s" could not be found or doesnt exist.', $this->variant)
-                );
+                throw new ComponentNotFoundException(sprintf('Magewire: Flake "%s" could not be found or doesnt exist.', $this->variant));
             }
 
             // Render the final Flake component.

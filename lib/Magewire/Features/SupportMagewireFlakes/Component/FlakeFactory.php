@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -21,7 +22,6 @@ class FlakeFactory
         private LayoutManager $layoutManager,
         private string $type = Flake::class
     ) {
-
     }
 
     public function create(array $arguments = []): Component
@@ -35,9 +35,7 @@ class FlakeFactory
      */
     public function createByName(string $name, array $data = []): AbstractBlock|false
     {
-        $layout = $this->layoutManager->decorator()->decorateForPagelessBlockFetching(
-            $this->layoutManager->factory()->create()
-        );
+        $layout = $this->layoutManager->decorator()->decorateForPagelessBlockFetching($this->layoutManager->factory()->create());
 
         $layout->getUpdate()->addHandle('magewire_flakes');
         $block = $layout->getBlock($name);

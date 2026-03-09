@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -12,6 +13,7 @@ namespace Magewirephp\Magewire\Model\Concern;
 
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Exception\BackwardsIncompatibilityException;
+
 use function Magewirephp\Magewire\store;
 
 /**

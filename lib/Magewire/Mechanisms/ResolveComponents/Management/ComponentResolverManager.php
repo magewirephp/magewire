@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -80,30 +81,20 @@ class ComponentResolverManager
             try {
                 return $this->createResolverByType($this->getResolverClass($resolver));
             } catch (NotFoundException $exception) {
-                $this->logger->info(
-                    sprintf('Magewire resolver data value found on block, but "%s" can not be resolved.', $resolver),
-                    ['exception' => $exception]
-                );
+                $this->logger->info(sprintf('Magewire resolver data value found on block, but "%s" can not be resolved.', $resolver), ['exception' => $exception]);
             }
         }
 
         try {
             // Last resort: find a resolver that matches the given block.
             // @todo Consider prioritizing resolvers instead of always using the first match.
-            $resolver = array_key_first(
-                array_filter(
-                    $this->resolvers,
-                    static fn (ComponentResolver $resolver) => $resolver->complies($block, $block->getData('magewire'))
-                )
-            );
+            $resolver = array_key_first(array_filter($this->resolvers, static fn (ComponentResolver $resolver) => $resolver->complies($block, $block->getData('magewire'))));
 
             $resolver = $this->createResolverByAccessor($resolver);
         } catch (Exception $exception) {
             $this->logger->critical($exception->getMessage(), ['exception' => $exception]);
 
-            throw new ComponentResolverNotFoundException(
-                sprintf('No component resolver complies for block %s.', $block->getNameInLayout())
-            );
+            throw new ComponentResolverNotFoundException(sprintf('No component resolver complies for block %s.', $block->getNameInLayout()));
         }
 
         if ($resolver->remember()) {
@@ -150,7 +141,6 @@ class ComponentResolverManager
         try {
             return is_string($this->getResolverClass($resolver));
         } catch (ComponentResolverNotFoundException $exception) {
-            
         }
 
         return false;
@@ -164,7 +154,7 @@ class ComponentResolverManager
     private function getResolverClass(string $resolver): string
     {
         $cache = $this->resolversCache->fetch();
-        $data  = $cache['resolvers'][$resolver] ?? null;
+        $data = $cache['resolvers'][$resolver] ?? null;
 
         if ($data) {
             return $data['class'];

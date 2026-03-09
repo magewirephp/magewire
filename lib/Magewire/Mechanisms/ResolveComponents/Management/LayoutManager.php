@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -21,7 +22,6 @@ class LayoutManager
         private readonly LayoutFactory $factory,
         private readonly LayoutDecorator $decorator
     ) {
-        
     }
 
     /**

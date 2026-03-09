@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -14,6 +15,7 @@ use Magento\Framework\Event\ManagerInterface as EventManagerInterface;
 use Magewirephp\Magewire\ComponentHook;
 use Magewirephp\Magewire\Features\SupportMagentoObserverEvents\DTO\ListenerDataTransferObjectFactory;
 use Magewirephp\Magewire\Support\PipelineFactory;
+
 use function Magewirephp\Magewire\on;
 
 class SupportMagentoObserverEvents extends ComponentHook
@@ -23,7 +25,6 @@ class SupportMagentoObserverEvents extends ComponentHook
         private readonly ListenerDataTransferObjectFactory $listenerDataTransferObjectFactory,
         private readonly EventManagerInterface $eventManager
     ) {
-        
     }
 
     public function provide(): void
@@ -82,7 +83,7 @@ class SupportMagentoObserverEvents extends ComponentHook
             /** Utility events. */
             'exception',
             'flush-state',
-            'profile',
+            'profile'
         ];
 
         foreach ($events as $event) {
@@ -98,13 +99,15 @@ class SupportMagentoObserverEvents extends ComponentHook
         $afters = [];
 
         foreach ($listener->listeners() as $listener) {
-            if (!(is_callable($listener))) { continue; }
+            if (! is_callable($listener)) {
+                continue;
+            }
 
-$result = $listener(...$arguments);
+            $result = $listener(...$arguments);
 
-                if (is_callable($result)) {
-                    $afters[] = $result;
-                }
+            if (is_callable($result)) {
+                $afters[] = $result;
+            }
         }
 
         return function (...$args) use ($afters, $event) {

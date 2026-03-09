@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -24,7 +25,6 @@ class MagewireUnderscoreViewModel implements ArgumentInterface
         private Utils $utils,
         private ViewFactory $viewFactory
     ) {
-        
     }
 
     public function action(string $class): ActionManager

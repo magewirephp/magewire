@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -28,9 +29,7 @@ trait WithFactory
         $type ??= static::class;
 
         if ($type !== static::class && ! is_subclass_of($type, static::class)) {
-            throw new InvalidArgumentException(
-                sprintf('Type %s must be equal to or a subclass of %s', $type, static::class)
-            );
+            throw new InvalidArgumentException(sprintf('Type %s must be equal to or a subclass of %s', $type, static::class));
         }
 
         return $this->newTypeInstance($type, $arguments);

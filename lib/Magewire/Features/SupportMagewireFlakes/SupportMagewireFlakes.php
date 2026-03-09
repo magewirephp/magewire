@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -14,6 +15,7 @@ use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\ComponentHook;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
 use Magewirephp\Magewire\Support\Concerns\AsDataObject;
+
 use function Magewirephp\Magewire\on;
 
 class SupportMagewireFlakes extends ComponentHook

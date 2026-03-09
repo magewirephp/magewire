@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -10,12 +11,9 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Action\Magewire;
 
-
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ViewAction as ViewAction;
 use Magewirephp\Magewire\Features\SupportMagewireFlakes\Component\FlakeFactory;
-
-
 use Magewirephp\Magewire\Support\DataArrayFactory;
 use RuntimeException;
 
@@ -25,7 +23,6 @@ class FlakeViewAction extends ViewAction
         private readonly FlakeFactory $flakeFactory,
         private readonly DataArrayFactory $attributesFactory
     ) {
-        
     }
 
     /**
@@ -40,16 +37,16 @@ class FlakeViewAction extends ViewAction
         $data = $this->attributesFactory->create()->fill($data);
 
         $data->each(static function (DataArray $array, $value, $key) use ($variables) {
-                if (str_starts_with($value, '$')) {
-                    $value = trim($value, '$');
+            if (str_starts_with($value, '$')) {
+                $value = trim($value, '$');
 
-                    if (array_key_exists($value, $variables)) {
-                        $array->put($key, $variables[$value]);
-                    }
+                if (array_key_exists($value, $variables)) {
+                    $array->put($key, $variables[$value]);
                 }
-            });
+            }
+        });
 
-        $data  = $data->all();
+        $data = $data->all();
         $block = $this->flakeFactory->createByName($flake, $data);
 
         if (! $block) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -12,13 +13,14 @@ namespace Magewirephp\Magewire\Mechanisms\ResolveComponents;
 
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Component;
-use Magewirephp\Magewire\MagewireServiceProvider;
-use Magewirephp\Magewire\Mechanisms\HandleRequests\ComponentRequestContext;
 use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
+use Magewirephp\Magewire\MagewireServiceProvider;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
+use Magewirephp\Magewire\Mechanisms\HandleRequests\ComponentRequestContext;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\ComponentResolverManager;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\LayoutManager;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+
 use function Magewirephp\Magewire\on;
 
 class ResolveComponents
@@ -28,7 +30,6 @@ class ResolveComponents
         private readonly MagewireServiceProvider $magewireServiceProvider,
         private readonly LayoutManager $layoutManager
     ) {
-        
     }
 
     public function boot(): void
@@ -44,9 +45,7 @@ class ResolveComponents
          * new builder that can make sure this is available only during subsequent Magewire requests.
          */
         if ($this->magewireServiceProvider->runtime()->mode()->isSubsequent()) {
-            $this->layoutManager->decorator()->decorateForPagelessBlockFetching(
-                $this->layoutManager->singleton()
-            );
+            $this->layoutManager->decorator()->decorateForPagelessBlockFetching($this->layoutManager->singleton());
         }
 
         on('magewire:component:construct', function (AbstractBlock $block) {
@@ -85,9 +84,7 @@ class ResolveComponents
         [$resolver, $block] = $builder();
 
         if (! $block->getData('magewire') instanceof Component) {
-            throw new ComponentNotFoundException(
-                sprintf('Resolver "%s" failed to construct a Magewire component.', $resolver->getAccessor())
-            );
+            throw new ComponentNotFoundException(sprintf('Resolver "%s" failed to construct a Magewire component.', $resolver->getAccessor()));
         }
 
         return static function () use ($resolver, $block) {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -20,7 +21,6 @@ class FrontendAssetsViewModel implements ArgumentInterface
         private readonly FrontendAssetsMechanism $frontendAssetsMechanism,
         private readonly Escaper $escaper
     ) {
-        
     }
 
     public function getScriptPath(): string
@@ -32,8 +32,12 @@ class FrontendAssetsViewModel implements ArgumentInterface
     {
         $attributes = $this->frontendAssetsMechanism->getDataByPath('script.html_attributes', []);
 
-        return implode(' ', array_map(function ($attribute, ?string $expression) {
-            return $expression === null ? $attribute : sprintf('%s="%s"', $attribute, $this->escaper->escapeHtmlAttr($expression));
-        }, array_keys($attributes), array_values($attributes)));
+        return implode(' ', array_map(
+            function ($attribute, string|null $expression) {
+                return $expression === null ? $attribute : sprintf('%s="%s"', $attribute, $this->escaper->escapeHtmlAttr($expression));
+            },
+            array_keys($attributes),
+            array_values($attributes)
+        ));
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -31,8 +32,10 @@ class MagentoTemplateCompiler extends Compiler
         $pipeline = parent::newCompilerPipelineDistributorInstance();
 
         // Blade-like template precompiler middleware.
-        $pipeline->template()->middleware()->group('blade', 25)
-
+        $pipeline
+            ->template()
+            ->middleware()
+            ->group('blade', 25)
             ->pipe(function (string $throughput, callable $next) {
                 return $next($this->bladeMiddleware->compile($throughput));
             });

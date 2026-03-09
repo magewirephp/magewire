@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -23,7 +24,6 @@ class HandleComponentsFacade
     public function __construct(
         private readonly HandleComponentsMechanism $mechanism
     ) {
-        
     }
 
     /**

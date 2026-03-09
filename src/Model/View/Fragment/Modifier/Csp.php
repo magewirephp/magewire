@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -26,7 +27,6 @@ class Csp extends FragmentModifier
         private readonly LayoutInterface $layout,
         private readonly CacheState $cacheState
     ) {
-        
     }
 
     public function modify(Fragment $fragment): Fragment
@@ -53,19 +53,7 @@ class Csp extends FragmentModifier
         $hash = $this->csp->generateHash($fragment->getScriptCode());
         $algorithm = $this->csp->getHashAlgorithm();
 
-        $this->dynamicCspCollector->add(
-            new FetchPolicy(
-                'script-src',
-                false,
-                [],
-                [],
-                false,
-                false,
-                false,
-                [],
-                [$hash => $algorithm]
-            )
-        );
+        $this->dynamicCspCollector->add(new FetchPolicy('script-src', false, [], [], false, false, false, [], [$hash => $algorithm]));
     }
 
     private function useCspHeader(): bool

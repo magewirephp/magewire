@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -17,6 +18,7 @@ use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
 use Magewirephp\Magewire\Support\AttributesReader;
 use Psr\Log\LoggerInterface;
 use ReflectionException;
+
 use function Magewirephp\Magewire\store;
 
 class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
@@ -25,7 +27,6 @@ class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
         private readonly RenderLifecycleManager $renderLifecycleManager,
         private readonly LoggerInterface $logger
     ) {
-        
     }
 
     public function hydrate($memo): void

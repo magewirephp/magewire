@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -18,6 +19,5 @@ class Application implements UtilsInterface
     function __construct(
         private readonly ApplicationState $applicationState
     ) {
-        
     }
 }

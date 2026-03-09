@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -40,8 +41,6 @@ class GeneratorPool extends \Magento\Framework\View\Layout\GeneratorPool
     protected function addGenerators(array $generators)
     {
         // Limit the generators to just blocks and containers.
-        parent::addGenerators(
-            array_filter($generators, static fn ($generator) => in_array($generator, ['block', 'container']), ARRAY_FILTER_USE_KEY)
-        );
+        parent::addGenerators(array_filter($generators, static fn ($generator) => in_array($generator, ['block', 'container']), ARRAY_FILTER_USE_KEY));
     }
 }

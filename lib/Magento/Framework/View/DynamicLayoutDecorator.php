@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -19,7 +20,6 @@ class DynamicLayoutDecorator
         private readonly GeneratorPool $magewireGeneratorPool,
         private readonly DynamicLayoutBuilderFactory $dynamicLayoutBuilderFactory
     ) {
-        
     }
 
     public function decorate(Layout $layout): Layout

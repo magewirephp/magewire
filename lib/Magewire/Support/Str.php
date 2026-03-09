@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -12,5 +13,4 @@ namespace Magewirephp\Magewire\Support;
 
 class Str extends \Illuminate\Support\Str
 {
-    
 }

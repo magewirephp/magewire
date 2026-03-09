@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -229,9 +230,7 @@ abstract class Fragment
             }
 
             if ($this->buffering) {
-                throw new EmptyFragmentException(
-                    'Unclosed output buffer detected. Fragment buffering must be properly terminated.'
-                );
+                throw new EmptyFragmentException('Unclosed output buffer detected. Fragment buffering must be properly terminated.');
             }
         } catch (Throwable $exception) {
             return $this->handleRenderException($exception);

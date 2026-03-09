@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -30,7 +31,6 @@ class DirectiveArea
     public function __construct(
         private array $directives = []
     ) {
-        
     }
 
     public function set(string $name, Directive $directive, bool $force = false): Directive
@@ -78,9 +78,11 @@ class DirectiveArea
             $type = $standalone ? $type : Factory::create($type::class);
 
             foreach ($type->getResponsibilitiesFor($directive) as $responsibility) {
-                if ($responsibility === $directive) { continue; }
+                if ($responsibility === $directive) {
+                    continue;
+                }
 
-$this->responsibilities()->push($responsibility, $type);
+                $this->responsibilities()->push($responsibility, $type);
             }
         }
 

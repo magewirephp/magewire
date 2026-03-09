@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -7,7 +8,6 @@
  */
 
 namespace Magewirephp\Magewire\Model;
-
 
 use Magewirephp\Magewire\MagewireServiceProvider;
 
@@ -20,7 +20,6 @@ class Request implements RequestInterface
         private readonly \Magento\Framework\App\RequestInterface $request,
         private readonly MagewireServiceProvider $magewireServiceProvider
     ) {
-        
     }
 
     public function getMessage(): string
@@ -63,14 +62,17 @@ class Request implements RequestInterface
         return $this;
     }
 
-    public function getSectionByName(string $section): ?array
+    public function getSectionByName(string $section): array|null
     {
         return null;
     }
 
     public function isSubsequent(bool $flag = null, bool $force = false)
     {
-        return $this->magewireServiceProvider->runtime()->mode()->isSubsequent();
+        return $this->magewireServiceProvider
+            ->runtime()
+            ->mode()
+            ->isSubsequent();
     }
 
     public function isPreceding(): bool

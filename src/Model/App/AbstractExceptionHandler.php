@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
@@ -17,7 +18,7 @@ abstract class AbstractExceptionHandler
 {
     function handle(Exception $exception, bool $subsequent = false): Exception|callable
     {
-        if ($subsequent && ! ($exception instanceof RequestException)) {
+        if ($subsequent && ! $exception instanceof RequestException) {
             return new RequestException($exception->getMessage(), $exception->getCode(), $exception->getPrevious());
         }
 

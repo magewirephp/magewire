@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -24,7 +25,6 @@ class ComponentRequestContext
         private mixed $calls = [],
         private mixed $updates = []
     ) {
-        
     }
 
     public function setCalls(array $calls): self

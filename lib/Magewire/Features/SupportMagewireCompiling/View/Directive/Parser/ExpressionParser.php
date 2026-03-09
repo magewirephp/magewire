@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -19,7 +20,6 @@ abstract class ExpressionParser extends Parser
     public function __construct(
         private ArgumentsFactory $argumentsFactory
     ) {
-        
     }
 
     public function parse(string $content): self

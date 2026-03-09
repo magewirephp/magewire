@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -13,6 +14,7 @@ namespace Magewirephp\Magewire\Features\SupportMagewireNestingComponents;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\ComponentHook;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\RenderLifecycleManager;
+
 use function Magewirephp\Magewire\on;
 
 class SupportMagewireNestingComponents extends ComponentHook
@@ -20,7 +22,6 @@ class SupportMagewireNestingComponents extends ComponentHook
     public function __construct(
         private readonly RenderLifecycleManager $renderLifecycleManager
     ) {
-        
     }
 
     function provide(): void

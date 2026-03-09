@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -51,7 +52,6 @@ abstract class ComponentResolver
     public function __construct(
         private readonly Conditions $conditions
     ) {
-        
     }
 
     /**

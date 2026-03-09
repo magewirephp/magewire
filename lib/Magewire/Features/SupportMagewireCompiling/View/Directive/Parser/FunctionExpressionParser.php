@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -105,7 +106,7 @@ class FunctionExpressionParser extends ExpressionParser
         $key = substr($expression, $start, $pos - $start);
 
         // Keep top-level keys strict (valid PHP identifiers).
-        if (!preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $key)) {
+        if (! preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $key)) {
             return [null, $pos];
         }
 
@@ -118,7 +119,7 @@ class FunctionExpressionParser extends ExpressionParser
     private function extractComplexValue(string $expression, int $pos): array
     {
         if ($pos >= strlen($expression)) {
-            throw new InvalidArgumentException("Unexpected end of expression");
+            throw new InvalidArgumentException('Unexpected end of expression');
         }
 
         $char = $expression[$pos];
@@ -133,7 +134,7 @@ class FunctionExpressionParser extends ExpressionParser
                 // Peek ahead to see if it looks like PHP array (contains =>).
                 $peekPos = $pos + 1;
                 $peekPos = $this->skipWhitespace($expression, $peekPos);
-                if ($peekPos < strlen($expression) && ($expression[$peekPos] === '"' || $expression[$peekPos] === "'" || $expression[$peekPos] === '$')) {
+                if ($peekPos < strlen($expression) && ( $expression[$peekPos] === '"' || $expression[$peekPos] === "'" || $expression[$peekPos] === '$' )) {
                     // Likely PHP array — try to parse it.
                     try {
                         $tempPos = $pos;
@@ -182,7 +183,7 @@ class FunctionExpressionParser extends ExpressionParser
             }
 
             if ($char === '"' || $char === "'") {
-                if (!$inString) {
+                if (! $inString) {
                     $inString = true;
                     $quoteChar = $char;
                 } elseif ($quoteChar === $char) {
@@ -193,7 +194,7 @@ class FunctionExpressionParser extends ExpressionParser
                 continue;
             }
 
-            if (!$inString) {
+            if (! $inString) {
                 if ($char === '[') {
                     $depth++;
                 } elseif ($char === ']') {
@@ -225,7 +226,7 @@ class FunctionExpressionParser extends ExpressionParser
             throw new InvalidArgumentException("Failed to parse PHP array: syntax error in {$arrayStr}");
         }
 
-        if (!is_array($result)) {
+        if (! is_array($result)) {
             throw new InvalidArgumentException("Expression did not evaluate to an array: {$arrayStr}");
         }
 
@@ -254,8 +255,8 @@ class FunctionExpressionParser extends ExpressionParser
             } elseif ($char === '\\') {
                 $escape = true;
             } elseif ($char === '"') {
-                $inString = !$inString;
-            } elseif (!$inString) {
+                $inString = ! $inString;
+            } elseif (! $inString) {
                 if ($char === $opening) {
                     $depth++;
                 } elseif ($char === $closing) {
@@ -264,7 +265,7 @@ class FunctionExpressionParser extends ExpressionParser
                         $json = substr($expression, $start, $pos - $start);
                         $decoded = json_decode($json, true);
                         if (json_last_error() !== JSON_ERROR_NONE) {
-                            throw new InvalidArgumentException("Invalid JSON: " . json_last_error_msg());
+                            throw new InvalidArgumentException('Invalid JSON: ' . json_last_error_msg());
                         }
                         return $decoded;
                     }
@@ -311,7 +312,7 @@ class FunctionExpressionParser extends ExpressionParser
             $pos++;
         }
 
-        throw new InvalidArgumentException("Unclosed quoted string");
+        throw new InvalidArgumentException('Unclosed quoted string');
     }
 
     /**
@@ -321,21 +322,21 @@ class FunctionExpressionParser extends ExpressionParser
     {
         $start = $pos;
 
-        while ($pos < strlen($expression) && !in_array($expression[$pos], [',', '}', ']', ')', ' '], true)) {
+        while ($pos < strlen($expression) && ! in_array($expression[$pos], [',', '}', ']', ')', ' '], true)) {
             $pos++;
         }
 
         $value = trim(substr($expression, $start, $pos - $start));
 
         if ($value === '') {
-            throw new InvalidArgumentException("Empty unquoted value");
+            throw new InvalidArgumentException('Empty unquoted value');
         }
 
         return match (strtolower($value)) {
             'null' => null,
             'true' => true,
             'false' => false,
-            default => $this->parseNumberOrVariableOrString($value),
+            default => $this->parseNumberOrVariableOrString($value)
         };
     }
 
@@ -363,7 +364,7 @@ class FunctionExpressionParser extends ExpressionParser
     private function isJsonString(string $expression): bool
     {
         $trimmed = trim($expression);
-        if (!str_starts_with($trimmed, '{') || !str_ends_with($trimmed, '}')) {
+        if (! str_starts_with($trimmed, '{') || ! str_ends_with($trimmed, '}')) {
             return false;
         }
 
@@ -376,11 +377,11 @@ class FunctionExpressionParser extends ExpressionParser
         $decoded = json_decode(trim($jsonString), true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new InvalidArgumentException("Invalid JSON: " . json_last_error_msg());
+            throw new InvalidArgumentException('Invalid JSON: ' . json_last_error_msg());
         }
 
-        if (!is_array($decoded)) {
-            throw new InvalidArgumentException("JSON must decode to an array");
+        if (! is_array($decoded)) {
+            throw new InvalidArgumentException('JSON must decode to an array');
         }
 
         // No more strict key validation — allows 'x-data', 'aria-*', etc.
@@ -394,9 +395,7 @@ class FunctionExpressionParser extends ExpressionParser
 
     private function parseNumber(string $value): float|int
     {
-        return str_contains($value, '.') || str_contains(strtolower($value), 'e')
-            ? (float) $value
-            : (int) $value;
+        return str_contains($value, '.') || str_contains(strtolower($value), 'e') ? (float) $value : (int) $value;
     }
 
     private function isVariable(string $value): bool
@@ -408,7 +407,7 @@ class FunctionExpressionParser extends ExpressionParser
     {
         return [
             'type' => 'variable',
-            'name' => substr($value, 1),
+            'name' => substr($value, 1)
         ];
     }
 }

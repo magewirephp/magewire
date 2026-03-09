@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -32,12 +33,12 @@ class Scope extends ScopeDirective
 
     public function else(): string
     {
-        return "<?php else: ?>";
+        return '<?php else: ?>';
     }
 
     public function endif(): string
     {
-        return "<?php endif ?>";
+        return '<?php endif ?>';
     }
 
     #[ScopeDirectiveChain(methods: ['endforeach'])]
@@ -49,6 +50,6 @@ class Scope extends ScopeDirective
 
     public function endforeach(): string
     {
-        return "<?php endforeach ?>";
+        return '<?php endforeach ?>';
     }
 }

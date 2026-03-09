@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -11,22 +12,22 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Observer;
 
 use Exception;
-use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
-use Magewirephp\Magewire\Component;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\View\Element\AbstractBlock;
-use Magewirephp\Magewire\Model\App\ExceptionManager;
+use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
 use Magewirephp\Magewire\MagewireManager;
+use Magewirephp\Magewire\Model\App\ExceptionManager;
+
 use function Magewirephp\Magewire\store;
 
 class ViewBlockAbstractToHtmlAfter implements ObserverInterface
 {
     public function __construct(
-        private readonly MagewireManager  $magewireManager,
+        private readonly MagewireManager $magewireManager,
         private readonly ExceptionManager $exceptionManager
     ) {
-        
     }
 
     /**

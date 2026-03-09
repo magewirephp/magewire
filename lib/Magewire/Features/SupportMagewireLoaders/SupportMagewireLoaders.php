@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -12,6 +13,7 @@ namespace Magewirephp\Magewire\Features\SupportMagewireLoaders;
 
 use Magewirephp\Magewire\ComponentHook;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
+
 use function Magewirephp\Magewire\map_with_keys;
 
 class SupportMagewireLoaders extends ComponentHook

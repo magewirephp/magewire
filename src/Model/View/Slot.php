@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -34,7 +35,6 @@ class Slot implements Stringable
         private readonly string $name,
         private readonly Element $element
     ) {
-        
     }
 
     /**
@@ -66,7 +66,10 @@ class Slot implements Stringable
      */
     public function prop(string $name, mixed $default = null)
     {
-        return $this->element->data()->properties()->get($name, $default);
+        return $this->element
+            ->data()
+            ->properties()
+            ->get($name, $default);
     }
 
     /**
@@ -77,7 +80,10 @@ class Slot implements Stringable
      */
     public function attr(string $name, mixed $default = '')
     {
-        return $this->element->data()->attributes()->get($name, $default);
+        return $this->element
+            ->data()
+            ->attributes()
+            ->get($name, $default);
     }
 
     /**

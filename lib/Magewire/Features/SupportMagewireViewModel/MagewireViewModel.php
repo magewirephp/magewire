@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -17,7 +18,6 @@ class MagewireViewModel implements MagewireViewModelInterface
     function __construct(
         private readonly ViewUtils $utils
     ) {
-        
     }
 
     public function utils(string|null $name = null, array $arguments = []): ViewUtils

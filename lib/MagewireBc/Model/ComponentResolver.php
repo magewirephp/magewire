@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -74,9 +75,7 @@ class ComponentResolver
             try {
                 return $this->get($resolver);
             } catch (NoSuchEntityException $exception) {
-                $this->logger->info(
-                    sprintf('Magewire: Resolver "%1s" is no longer present. Retrying available resolvers.', $resolver)
-                );
+                $this->logger->info(sprintf('Magewire: Resolver "%1s" is no longer present. Retrying available resolvers.', $resolver));
             }
         }
 

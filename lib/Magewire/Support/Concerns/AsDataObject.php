@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -82,9 +83,7 @@ trait AsDataObject
                 return isset($this->data[substr($method, 3)]);
         }
 
-        throw new LocalizedException(
-            new Phrase('Invalid method %1::%2', [get_class($this), $method])
-        );
+        throw new LocalizedException(new Phrase('Invalid method %1::%2', [get_class($this), $method]));
     }
 
     function populate(array $data): void

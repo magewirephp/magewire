@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -28,9 +29,7 @@ class DataArray extends DataCollection implements ArrayAccess
 
     public function offsetSet($offset, $value): void
     {
-        is_string($offset) || is_int($offset)
-            ? $this->set($offset, $value)
-            : $this->push($value);
+        is_string($offset) || is_int($offset) ? $this->set($offset, $value) : $this->push($value);
     }
 
     public function offsetUnset($offset): void

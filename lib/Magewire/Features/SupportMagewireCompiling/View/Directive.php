@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -34,7 +35,7 @@ abstract class Directive
      */
     public function compile(string $expression, string $directive)
     {
-        if (method_exists($this, $directive) && $type = $this->getExpressionParserFor($directive)) {
+        if (method_exists($this, $directive) && ( $type = $this->getExpressionParserFor($directive) )) {
             $parser = $this->parser($type)->parse($expression);
 
             $allArgs = $parser->arguments()->all();
@@ -64,12 +65,12 @@ abstract class Directive
     {
         $directive = implode('::', [static::class, $directive]);
 
-        if (! ($this->expressionParsers[$directive] ?? null)) {
+        if (! ( $this->expressionParsers[$directive] ?? null )) {
             $reflection = new ReflectionClass($this);
 
             foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
                 $attributes = $method->getAttributes(ScopeDirectiveParser::class);
-                $attribute  = ($attributes[0] ?? null) ? $attributes[0]->newInstance() : null;
+                $attribute = $attributes[0] ?? null ? $attributes[0]->newInstance() : null;
 
                 if ($attribute) {
                     $this->expressionParsers[implode('::', [static::class, $method->getName()])] = $attribute->expressionParserType;

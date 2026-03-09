@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -57,7 +58,7 @@ class RenderLifecycleManager
         return isset($this->routes[$component->id()]);
     }
 
-    public function getParent(Component $component): ?Component
+    public function getParent(Component $component): Component|null
     {
         $id = $component->id();
 
@@ -103,7 +104,7 @@ class RenderLifecycleManager
             return [];
         }
 
-        $route    = $this->index[$id] . DIRECTORY_SEPARATOR;
+        $route = $this->index[$id] . DIRECTORY_SEPARATOR;
         $siblings = array_filter($this->routes, static fn ($key) => str_starts_with($key, $route), ARRAY_FILTER_USE_KEY);
         $children = [];
 

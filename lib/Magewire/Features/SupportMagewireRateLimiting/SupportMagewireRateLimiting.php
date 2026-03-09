@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -14,6 +15,7 @@ use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\ComponentHook;
 use Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Exceptions\TooManyRequestsException;
+
 use function Magewirephp\Magewire\on;
 
 class SupportMagewireRateLimiting extends ComponentHook
@@ -22,7 +24,6 @@ class SupportMagewireRateLimiting extends ComponentHook
         private readonly UpdateRequestRateLimiter $rateLimiter,
         private readonly RateLimiterConfig $rateLimiterConfig
     ) {
-        
     }
 
     public function provide(): void

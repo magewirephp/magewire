@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -26,7 +27,6 @@ class ServiceTypeItemsBooter
     public function __construct(
         private readonly DataCollectionFactory $dataArrayFactory
     ) {
-        
     }
 
     public function setup(array $items): static

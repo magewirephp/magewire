@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -11,9 +12,6 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Observer;
 
 use Exception;
-use Magewirephp\Magewire\Enums\RequestMode;
-use function Magewirephp\Magewire\store;
-use function Magewirephp\Magewire\trigger;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Exception\FileSystemException;
@@ -21,10 +19,14 @@ use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\Exception\RuntimeException;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Enums\RequestMode;
 use Magewirephp\Magewire\MagewireManager;
 use Magewirephp\Magewire\MagewireServiceProvider;
 use Magewirephp\Magewire\Mechanisms\HandleRequests\ComponentRequestContext;
 use Magewirephp\Magewire\Model\App\ExceptionManager;
+
+use function Magewirephp\Magewire\store;
+use function Magewirephp\Magewire\trigger;
 
 class ViewBlockAbstractToHtmlBefore implements ObserverInterface
 {
@@ -33,7 +35,6 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
         private readonly MagewireServiceProvider $magewireServiceProvider,
         private readonly ExceptionManager $exceptionManager
     ) {
-        
     }
 
     /**
@@ -86,12 +87,7 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
      */
     private function handleUpdate(ComponentRequestContext $update, AbstractBlock $block): void
     {
-        $this->magewireManager->update(
-            $update->getSnapshot(),
-            $update->getUpdates(),
-            $update->getCalls(),
-            $block
-        );
+        $this->magewireManager->update($update->getSnapshot(), $update->getUpdates(), $update->getCalls(), $block);
     }
 
     /**
@@ -103,12 +99,6 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
         /** @var Component $component */
         $component = $block->getData('magewire');
 
-        $this->magewireManager->mount(
-            $component->getName(),
-            $component->magewireResolver()->arguments()->forMount(),
-            $block->getCacheKey(),
-            $block,
-            $component
-        );
+        $this->magewireManager->mount($component->getName(), $component->magewireResolver()->arguments()->forMount(), $block->getCacheKey(), $block, $component);
     }
 }

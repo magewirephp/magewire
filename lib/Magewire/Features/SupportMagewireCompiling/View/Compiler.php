@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -30,7 +31,6 @@ abstract class Compiler
         private CompilerManager $manager,
         private CompilerPipelinesFactory $compilerPipelinesFactory
     ) {
-        
     }
 
     /**
@@ -169,14 +169,10 @@ abstract class Compiler
                 $matches[1][$i],
                 $matches[2][$i],
                 $matches[3][$i] ?: null,
-                $matches[4][$i] ?: null,
+                $matches[4][$i] ?: null
             ];
 
-            while (
-                isset($match[4])
-                && str_ends_with($match[0], ')')
-                && ! $this->management()->utils()->hasEvenNumberOfParentheses($match[0])
-            ) {
+            while (isset($match[4]) && str_ends_with($match[0], ')') && ! $this->management()->utils()->hasEvenNumberOfParentheses($match[0])) {
                 $after = strstr($template, $match[0]);
 
                 if ($after === false) {
@@ -202,12 +198,7 @@ abstract class Compiler
                 $match[4] .= $rest;
             }
 
-            [$template, $offset] = $this->replaceFirstStatement(
-                $match[0],
-                $this->compileDirective($match),
-                $template,
-                $offset
-            );
+            [$template, $offset] = $this->replaceFirstStatement($match[0], $this->compileDirective($match), $template, $offset);
         }
 
         return $template;
@@ -225,7 +216,7 @@ abstract class Compiler
         } elseif ($area instanceof DirectiveArea && is_string($directive)) {
             if ($area->responsibilities()->has($directive)) {
                 $match[0] = $area->responsibilities()->pop($directive)->compile($match[4] ?? '', $directive);
-            } elseif ($area->has($directive)){
+            } elseif ($area->has($directive)) {
                 $match[0] = $area->get($directive)->compile($match[4] ?? '', $directive);
             }
         } elseif ($directive = $this->management()->directives()->area()->get($directive)) {
@@ -251,7 +242,7 @@ abstract class Compiler
         if ($position !== false) {
             return [
                 substr_replace($subject, $replace, $position, strlen($search)),
-                $position + strlen($replace),
+                $position + strlen($replace)
             ];
         }
 
@@ -262,9 +253,11 @@ abstract class Compiler
     {
         $distributor = $this->compilerPipelinesFactory->create(['type' => Pipeline::class]);
 
-        $distributor->template()->pipe(function (string $throughput, callable $next) {
-            return $next($this->compileTokens($throughput));
-        });
+        $distributor
+            ->template()
+            ->pipe(function (string $throughput, callable $next) {
+                return $next($this->compileTokens($throughput));
+            });
 
         // Reserves the 'security' groups at the very earliest position
         // so security-related pipes always run before everything else.
@@ -272,9 +265,11 @@ abstract class Compiler
         $distributor->template()->middleware()->group('last', 900);
         $distributor->html()->middleware()->group('security', 0);
 
-        $distributor->html()->pipe(function (string $throughput, callable $next) {
-            return $next($this->compileDirectives($throughput));
-        });
+        $distributor
+            ->html()
+            ->pipe(function (string $throughput, callable $next) {
+                return $next($this->compileDirectives($throughput));
+            });
 
         return $distributor;
     }

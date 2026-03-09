@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -19,7 +20,6 @@ class Auth extends ViewAction
     public function __construct(
         private readonly HttpContext $httpContext
     ) {
-        
     }
 
     public function isCustomer(): bool

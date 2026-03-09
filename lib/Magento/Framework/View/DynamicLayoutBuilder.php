@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -26,7 +27,6 @@ class DynamicLayoutBuilder implements BuilderInterface
         private readonly MagentoLayoutFactory $magentoLayoutFactory,
         private readonly LayoutInterface $layout
     ) {
-        
     }
 
     /**
@@ -38,7 +38,7 @@ class DynamicLayoutBuilder implements BuilderInterface
         $handles = $this->layout->getUpdate()->getHandles();
 
         sort($handles);
-        $hash = hash('xxh3', json_encode(($handles)));
+        $hash = hash('xxh3', json_encode($handles));
 
         // Early return when a version with the identical handles already exists.
         if ($force === false && array_key_exists($hash, $this->builds)) {

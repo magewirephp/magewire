@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -29,7 +30,7 @@ class LayoutRenderLifecycle
      */
     private array $views = [];
 
-    private ?string $start = null;
+    private string|null $start = null;
 
     /**
      * Marks view as 'start rendering'.

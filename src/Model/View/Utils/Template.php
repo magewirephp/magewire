@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -19,7 +20,6 @@ class Template implements UtilsInterface
     public function __construct(
         private readonly Escaper $escaper
     ) {
-        
     }
 
     public function echoCodeComment(
@@ -29,7 +29,7 @@ class Template implements UtilsInterface
         string|array|null $state = ApplicationState::MODE_DEVELOPER
     ): string {
         $text = $uppercased ? strtoupper($text) : strtolower($text);
-        $text = $subsection ? ucfirst($subsection) . ': ' .$text : $text;
+        $text = $subsection ? ucfirst($subsection) . ': ' . $text : $text;
         $text = trim($text, '.');
 
         $states = [
@@ -40,7 +40,7 @@ class Template implements UtilsInterface
         ];
 
         if (in_array($state, $states) || is_array($state) && empty(array_diff($state, array_filter($states)))) {
-            return '<!-- Magewire: '. $this->escaper->escapeHtml($text) .'. -->' . PHP_EOL;
+            return '<!-- Magewire: ' . $this->escaper->escapeHtml($text) . '. -->' . PHP_EOL;
         }
 
         return '';

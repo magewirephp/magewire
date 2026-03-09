@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -29,9 +30,7 @@ class AttributesReader
      */
     private function __construct(object|string $subject)
     {
-        $this->reflection = $subject instanceof ReflectionClass
-            ? $subject
-            : new ReflectionClass($subject);
+        $this->reflection = $subject instanceof ReflectionClass ? $subject : new ReflectionClass($subject);
 
         $this->target = $this->reflection;
     }
@@ -64,7 +63,7 @@ class AttributesReader
      * @param class-string<T> $attributeClass
      * @return T|null
      */
-    public function first(string $attributeClass): ?object
+    public function first(string $attributeClass): object|null
     {
         $attrs = $this->target->getAttributes($attributeClass);
 
@@ -80,10 +79,7 @@ class AttributesReader
      */
     public function all(string $attributeClass): array
     {
-        return array_map(
-            static fn (ReflectionAttribute $attr) => $attr->newInstance(),
-            $this->target->getAttributes($attributeClass)
-        );
+        return array_map(static fn (ReflectionAttribute $attr) => $attr->newInstance(), $this->target->getAttributes($attributeClass));
     }
 
     public function has(string $attributeClass): bool

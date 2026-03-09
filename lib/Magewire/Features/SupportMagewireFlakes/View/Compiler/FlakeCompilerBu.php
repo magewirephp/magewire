@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -9,7 +10,6 @@
 declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Compiler;
-
 
 use Magewirephp\Magewire\Support\Parser\DomElementParser;
 use Magewirephp\Magewire\Support\Random;
@@ -22,7 +22,6 @@ class FlakeCompilerBu
     public function __construct(
         private DomElementParser $domElementParser
     ) {
-        
     }
 
     public function compile(string $value): string
@@ -46,13 +45,7 @@ class FlakeCompilerBu
                 $tagStart = strpos($value, $match[0], $pos);
 
                 // Check if there's an opening tag before this position.
-                $nextOpeningMatch = preg_match(
-                    '/<flake:([a-zA-Z0-9\-_.]+)((?:[^>\/]|\/(?!>))*)\s*>/',
-                    $value,
-                    $openingMatch,
-                    0,
-                    $pos
-                );
+                $nextOpeningMatch = preg_match('/<flake:([a-zA-Z0-9\-_.]+)((?:[^>\/]|\/(?!>))*)\s*>/', $value, $openingMatch, 0, $pos);
                 $nextOpeningPos = $nextOpeningMatch ? strpos($value, $openingMatch[0], $pos) : PHP_INT_MAX;
 
                 // If self-closing tag comes first, process it.
@@ -64,11 +57,7 @@ class FlakeCompilerBu
                     $result .= substr($value, $pos, $tagStart - $pos);
 
                     // Compile the self-closing tag.
-                    $compiled = $this->compileFlake(
-                        $component,
-                        $attributes,
-                        false
-                    );
+                    $compiled = $this->compileFlake($component, $attributes, false);
 
                     $result .= $compiled;
                     $pos = $tagStart + strlen($match[0]);
@@ -96,11 +85,7 @@ class FlakeCompilerBu
                     // Recursively parse nested magewire tags in content.
                     [$content, $changes] = $this->parseTags($content, $iterations + 1, $maxIterations);
 
-                    $compiled = $this->compileFlake(
-                        $component,
-                        $attributes,
-                        empty($content) ? false : $content
-                    );
+                    $compiled = $this->compileFlake($component, $attributes, empty($content) ? false : $content);
 
                     $result .= $compiled;
                     $pos = $closingTagEnd;
@@ -120,7 +105,8 @@ class FlakeCompilerBu
     {
         $attributes = trim($attributes);
 
-        $parse = $this->domElementParser->newInstance()
+        $parse = $this->domElementParser
+            ->newInstance()
             ->parse($attributes)
             ->attributes()
             // Set a random unique component id when none is provided.
@@ -159,10 +145,7 @@ class FlakeCompilerBu
                 return ! str_starts_with($key, 'attr:');
             }),
             'metadata' => [
-                'attributes' => array_combine(
-                    array_map(static fn ($key) => substr($key, 5), array_keys($attributes)),
-                    $attributes
-                )
+                'attributes' => array_combine(array_map(static fn ($key) => substr($key, 5), array_keys($attributes)), $attributes)
             ]
         ];
 

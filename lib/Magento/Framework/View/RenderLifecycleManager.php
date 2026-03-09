@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -12,6 +13,7 @@ namespace Magewirephp\Magento\Framework\View;
 
 use Magento\Framework\View\Element\AbstractBlock;
 use Magento\Framework\View\Element\BlockInterface;
+
 use function Magewirephp\Magewire\trigger;
 
 class RenderLifecycleManager
@@ -31,9 +33,9 @@ class RenderLifecycleManager
         }
 
         $this->previous = $this->current;
-        $this->current  = $block;
+        $this->current = $block;
         $this->blocks[$block->getNameInLayout()] = $block;
-        $this->running  = true;
+        $this->running = true;
 
         trigger('magewire:render:start', $this, $block);
 
@@ -47,12 +49,12 @@ class RenderLifecycleManager
         trigger('magewire:render:end', $this, $popped);
 
         if (empty($this->blocks)) {
-            $this->running  = false;
-            $this->current  = null;
+            $this->running = false;
+            $this->current = null;
             $this->previous = null;
         } else {
-            $values         = array_values($this->blocks);
-            $this->current  = end($values);
+            $values = array_values($this->blocks);
+            $this->current = end($values);
             $this->previous = count($values) >= 2 ? $values[count($values) - 2] : null;
         }
 
