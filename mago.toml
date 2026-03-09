@@ -1,5 +1,3 @@
-# Welcome to Mago!
-# For full documentation, see https://mago.carthage.software/tools/overview
 php-version = "8.2.0"
 
 [source]
