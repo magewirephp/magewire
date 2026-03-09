@@ -198,7 +198,7 @@ abstract class Fragment
         $message = 'A validation exception occurred while processing the fragment.';
         $this->logger->critical($message, ['exception' => $exception]);
 
-        return $this->raw ?? '';
+        return $this->raw ?: '';
     }
 
     protected function handleRenderException(Throwable $exception): string

@@ -21,7 +21,7 @@ class Scheduler
 {
     use WithFactory;
 
-    private array $conditions = [];
+    private Conditions|null $conditions = null;
 
     public function every($interval): Interval
     {

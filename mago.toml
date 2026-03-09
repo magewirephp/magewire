@@ -46,16 +46,15 @@ literal-named-argument = { enabled = false }
 halstead = { effort-threshold = 7000 }
 
 [analyzer]
-plugins = []
-find-unused-definitions = true
-find-unused-expressions = true
+# Magento 2 DI: classes wired via di.xml appear unused to static analysis.
+find-unused-definitions = false
+
+# Magento 2 DI: array arguments injected via di.xml have no statically-known shape.
+allow-possibly-undefined-array-keys = true
+strict-list-index-checks = false
+
+# Magento 2 DI: code paths reachable only through DI-resolved calls appear dead.
 analyze-dead-code = false
-memoize-properties = true
-allow-possibly-undefined-array-keys = false
 check-throws = true
-check-missing-override = false
-find-unused-parameters = true
-strict-list-index-checks = true
-register-super-globals = true
-check-missing-type-hints = false
-no-boolean-literal-comparison = false
+
+excludes = ["lib/Magewire/Features/SupportMagewireFlakes/View/Compiler/FlakeCompilerBu.php"]

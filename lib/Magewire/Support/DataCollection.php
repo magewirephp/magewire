@@ -42,7 +42,7 @@ abstract class DataCollection implements Countable, IteratorAggregate
     public function map(array $map): static
     {
         foreach ($map as $from => $to) {
-            if (! ( ( is_string($from) || is_int($from) ) && is_string($to) )) {
+            if (! is_string($to)) {
                 continue;
             }
 
@@ -132,7 +132,7 @@ abstract class DataCollection implements Countable, IteratorAggregate
             return $this->newTypeInstance($type ?? static::class, $arguments);
         }
 
-        return $this->subitems[$name] ??= $this->newTypeInstance($type ?? static::class, $arguments);
+        return $this->subitems[$name] = $this->newTypeInstance($type ?? static::class, $arguments);
     }
 
     public function subsets(): array

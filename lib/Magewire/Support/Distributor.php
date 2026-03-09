@@ -43,10 +43,6 @@ abstract class Distributor
      */
     public function __call(string $name, array $arguments = [])
     {
-        if (isset($this->instances[$name])) {
-            return $this->instances[$name];
-        }
-
         return $this->instances[$name] ??= $this->create($name, $arguments);
     }
 

@@ -39,12 +39,12 @@ class RateLimiterConfig extends ConfigMagewireGroup
 
     public function getRequestsMaxAttempts(): int
     {
-        return (int) $this->config()->getFeaturesGroupValue('rate_limiting/requests/max_attempts') ?? 4;
+        return (int) ($this->config()->getFeaturesGroupValue('rate_limiting/requests/max_attempts') ?? 4);
     }
 
     public function getRequestsDecaySeconds(): int
     {
-        return (int) $this->config()->getFeaturesGroupValue('rate_limiting/requests/decay_seconds') ?? 5;
+        return (int) ($this->config()->getFeaturesGroupValue('rate_limiting/requests/decay_seconds') ?? 5);
     }
 
     protected function getRateLimitingVariant(): string
