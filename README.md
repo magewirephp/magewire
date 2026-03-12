@@ -62,9 +62,6 @@ Click [here](https://github.com/sponsors/wpoortman) to start sponsoring.
 amount of time and is incredibly easy to work with. It's not a matter of whether you should use it, you simply must
 use it.
 
-- **Vinai Kopp — Technical Director** — Magewire is like magic sauce that can save a ton of time implementing features! It’s great to see more tools from the
-Laravel ecosystem being made available within Magento
-
 - **Jesse de Boer — Frontend Developer** — Magewire gives you the ability to add reactivity without the use of a a bloated JS framework or package. Useing Magewire
 is intuitive, quick and easy to learn. It feels like a breath of fresh air to work with and takes away a lot headaches
 compared to using Luma and RequireJS.
