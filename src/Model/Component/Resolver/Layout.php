@@ -85,6 +85,9 @@ class Layout implements ResolverInterface
     public function reconstruct(RequestInterface $request): Component
     {
         $page = $this->resultPageFactory->create();
+        if ($request->getFingerprint('layout')) {
+            $page->getConfig()->setPageLayout(strtolower($request->getFingerprint('layout')));
+        }
         $page->addHandle(strtolower($request->getFingerprint('handle')))->initLayout();
 
         /**
