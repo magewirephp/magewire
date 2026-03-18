@@ -1,4 +1,4 @@
-# Magewire PHP - BETA
+mooi# Magewire PHP - BETA
 
 > **⚠️ BETA WARNING:** The main branch contains the beta version of MagewirePHP v3. For stable v1 documentation and releases, please switch to the [1.x branch]([../../tree/1.x](https://github.com/magewirephp/magewire/tree/1.x)).
 
@@ -44,35 +44,6 @@ Click [here](https://github.com/sponsors/wpoortman) to start sponsoring.
 - ✅ Hyvä
 - 🚧 Magento Admin (wip - module)
 - 🚧 Breeze (wip - MR)
-
-## Installation
-
-To install Magewire in your Magento 2 project, follow these steps:
-
-1. Require Magewire via Composer:
-   ```shell
-   composer require magewirephp/magewire
-   ```
-2. Enable the module:
-   ```shell
-   bin/magento module:enable Magewirephp_Magewire
-   ```
-3. Enable the theme compatibility module (determined per theme, in this case Hyvä):
-   ```shell
-   bin/magento module:enable Magewirephp_MagewireCompatibilityWithHyva
-   ```
-4. Run the setup upgrade command:
-   ```shell
-   bin/magento setup:upgrade
-   ```
-5. Deploy static content (when in production mode):
-   ```shell
-   bin/magento setup:static-content:deploy
-   ```
-6. Flush the cache:
-   ```shell
-   bin/magento cache:flush
-   ```
 
 ## Code
 
