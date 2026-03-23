@@ -22,18 +22,11 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
     function magewireNotifierAddon() {
         'use strict';
 
+        <?php /* Parsed once at addon init, shared across all notification instances. */ ?>
+        const levels = JSON.parse('<?= json_encode(NotificationStateEnum::cases()) ?>');
+
         return {
             notifications: [],
-
-            hooks: {
-                onActivate: [],
-                onCleanup: [],
-                onTerminate: [],
-                onRecover: [],
-                onStateChange: [],
-                onFailure: [],
-                onClick: []
-            },
 
             defaults: {
                 notification: {
@@ -72,11 +65,13 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 });
             },
 
-            create: async function(message, options = {}, hooks = {}, activate = true) {
+            create: async function(message, options = {}, hooks = {}) {
+                const { activate = true, ...notificationOptions } = options;
+
                 let notification = { ...this.defaults.notification, ...{
                     title: null,
                     message: message || '<?= $escaper->escapeJs(__('Message Unknown')) ?>'
-                }, ...options };
+                }, ...notificationOptions };
 
                 notification.hooks = { ...notification.hooks, ...hooks };
 
@@ -94,9 +89,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 notification.state = this.defaults.notification.state;
                 notification.active = false;
 
-                <?php /* Available state levels based on case sort order. */ ?>
-                const levels = JSON.parse('<?= json_encode(NotificationStateEnum::cases()) ?>');
-                const self = this;
+                const notifier = this;
 
                 notification = new Proxy(notification, {
                     set(target, property, value) {
@@ -108,7 +101,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                             notification.level = levels.indexOf(value);
 
                             if (typeof target.hooks.onStateChange === 'function') {
-                                self.trigger('state-change', { state: value, previous, notification }, notification)
+                                notifier.trigger('state-change', { state: value, previous, notification }, notification)
                             }
                         }
 
@@ -128,32 +121,26 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             },
 
             get: function(id) {
-                try {
-                    return this.notifications.find(notification => notification.id === id);
-                } catch (exception) {
-                    return null;
-                }
+                return this.notifications.find(notification => notification.id === id) ?? null;
             },
 
             activate: async function(id) {
+                const notification = this.get(id);
+
+                if (! notification) {
+                    return;
+                }
+
+                notification.state = '<?= $escaper->escapeJs(NotificationStateEnum::RUNNING->getState()) ?>';
+                notification.active = typeof notification.message === 'string' && notification.message.length !== 0;
+
                 try {
-                    const notification = this.get(id);
-
-                    notification.state = '<?= $escaper->escapeJs(NotificationStateEnum::RUNNING->getState()) ?>';
-                    notification.active = typeof notification.message === 'string' && notification.message.length !== 0;
-
-                    try {
-                        await this.trigger('activate', { notification }, notification)
-                            .then(() => this.finish(id));
-                    } catch (reason) {
-                        await this.fail(id, reason);
-                    } finally {
-                        if (notification.state) {
-                            await this.cleanup(id);
-                        }
-                    }
-                } catch(exception) {
-                    await Promise.reject(exception)
+                    await this.trigger('activate', { notification }, notification);
+                    await this.finish(id);
+                } catch (reason) {
+                    await this.fail(id, reason);
+                } finally {
+                    await this.cleanup(id);
                 }
             },
 
@@ -166,7 +153,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             },
 
             terminate: async function(id) {
-                const notification = this.get(id);
+                const notification = await this.hold(id);
 
                 notification.state = '<?= $escaper->escapeJs(NotificationStateEnum::TERMINATED->getState()) ?>';
                 notification.active = false;
@@ -198,14 +185,10 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 const notification = this.get(id);
 
                 if (notification.timeout) {
-                    await clearTimeout(notification.timeout);
+                    clearTimeout(notification.timeout);
                 }
 
                 return notification;
-            },
-
-            fetch: async function() {
-                return this.notifications;
             },
 
             trigger: async function(hook, args = {}, notification = null) {
@@ -227,12 +210,11 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             },
 
             recover: async function(id) {
-                await this.hold(id);
+                const notification = await this.hold(id);
 
-                const notification = this.get(id);
                 await this.trigger('recover', { notification }, notification);
 
-                notification.state = '<?= $escaper->escapeJs(NotificationStateEnum::RECOVERED->value) ?>';
+                notification.state = '<?= $escaper->escapeJs(NotificationStateEnum::RECOVERED->getState()) ?>';
 
                 return notification;
             }
