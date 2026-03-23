@@ -13,7 +13,7 @@ namespace Magewirephp\Magewire\Support;
 
 class Random
 {
-    public static function string(int $length = 6, bool $uppercased = true): string
+    public static function string(int $length = 10, bool $uppercased = true): string
     {
         $characters = self::alphabetical((int) ceil($length / 2), $uppercased) . self::integer($length);
         $characters = str_shuffle(str_repeat($characters, (int) ceil($length / strlen($characters))));

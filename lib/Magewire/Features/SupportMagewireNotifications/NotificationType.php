@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireNotifications;
 
-class MagewireNotificationsFacade
+enum NotificationType: string
 {
-    function __construct(
-        private readonly SupportMagewireNotifications $feature
-    ) {
-    }
+    case Error = 'error';
+    case Warning = 'warning';
+    case Notice = 'notice';
+    case Success = 'success';
 }

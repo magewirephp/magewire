@@ -77,9 +77,9 @@ class MagewireManager
         $handleComponentsMechanismFacade = $this->magewireServiceProvider->getHandleComponentsMechanismFacade();
         $this->renderStack[$block->getNameInLayout()] = $handleComponentsMechanismFacade->mount($name, $params, $block, $component);
     }
-    function snapshot($component)
+    function snapshot($component, $context = null)
     {
-        return app(HandleComponents::class)->snapshot($component);
+        return app(HandleComponents::class)->snapshot($component, $context);
     }
     function fromSnapshot($snapshot)
     {

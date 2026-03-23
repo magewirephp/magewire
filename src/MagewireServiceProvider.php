@@ -39,7 +39,13 @@ class MagewireServiceProvider
         }
 
         try {
-            $this->containers->boot(ServiceTypeItemBootMode::PERSISTENT);
+            // Containers are always fully booted during setup.
+            $this->containers->boot();
+
+            // Before setup, but after containers service type booted.
+            trigger('magewire:setup', $this->runtime());
+
+            // Boot only persistent and above during setup.
             $this->mechanisms->boot(ServiceTypeItemBootMode::PERSISTENT);
             $this->features->boot(ServiceTypeItemBootMode::PERSISTENT);
 
@@ -49,17 +55,29 @@ class MagewireServiceProvider
         }
     }
 
-    public function boot(RequestMode $mode): void
+    /**
+     * @throws Exception
+     */
+    public function boot(RequestMode $mode, bool $force = false): void
     {
-        if ($this->runtime()->state()->isMinimally(RuntimeState::READY)) {
+        if (! $force && $this->runtime()->state()->is(RuntimeState::UNINITIALIZED)) {
+            $this->setup();
+        }
+        if (! $force && $this->runtime()->state()->isMinimally(RuntimeState::BOOTED)) {
             return;
         }
 
         try {
+            // Define runtime boot mode.
             $this->runtime()->mode($mode);
+            // Define runtime booting state right before service items boot attempt.
+            $this->runtime()->state(RuntimeState::BOOTING);
 
-            // Boot a service items.
-            $boot['containers'] = $this->containers->boot();
+            // Before boot.
+            $finish = trigger('magewire:boot', $this->runtime());
+
+            // Boot all remaining service types not yet booted during setup.
+            $boot['containers'] = $this->mechanisms->boot();
             $boot['mechanisms'] = $this->mechanisms->boot();
             $boot['features'] = $this->features->boot();
 
@@ -67,10 +85,15 @@ class MagewireServiceProvider
                 throw new RuntimeException('One or more service types were unable to boot completely.');
             }
 
-            // Define runtime boot state.
-            $this->runtime()->state(RuntimeState::READY);
+            // After boot without any exceptions.
+            $finish();
+
+            // Define runtime boot state as ready when all succeeded.
+            $this->runtime()->state(RuntimeState::BOOTED);
         } catch (Exception $exception) {
             $this->runtime()->state(RuntimeState::FAILED);
+
+            throw $exception;
         }
     }
 

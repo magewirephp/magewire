@@ -14,7 +14,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
 <?php $script = $magewireFragment->make()->script()->start() ?>
 <script>
     (() => {
-        window.addEventListener('magewire:flash-messages:dispatch', event => dispatchMessages(event.detail));
+        window.addEventListener('magewire:flash-messages:dispatch', event => dispatchMessages(Object.values(event.detail)));
     })();
 </script>
 <?php $script->end() ?>

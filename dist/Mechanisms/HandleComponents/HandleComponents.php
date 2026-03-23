@@ -227,7 +227,7 @@ class HandleComponents extends Mechanism
             return $this->hydrate($child, $context, "{$path}.{$name}");
         });
     }
-    protected function hydratePropertyUpdate($valueOrTuple, $context, $path, $raw)
+    protected function hydratePropertyUpdate($valueOrTuple, $context, $path)
     {
         if (!Utils::isSyntheticTuple($value = $tuple = $valueOrTuple)) {
             return $value;
@@ -238,8 +238,8 @@ class HandleComponents extends Mechanism
             return $value;
         }
         $synth = $this->propertySynth($meta['s'], $context, $path);
-        return $synth->hydrate($value, $meta, function ($name, $child) use ($context, $path, $raw) {
-            return $this->hydrateForUpdate($raw, "{$path}.{$name}", $child, $context);
+        return $synth->hydrate($value, $meta, function ($name, $child) {
+            return $child;
         });
     }
     protected function render($component, $default = null, string|null $html = null)

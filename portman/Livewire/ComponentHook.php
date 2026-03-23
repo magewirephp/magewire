@@ -12,6 +12,9 @@ namespace Magewirephp\Magewire;
 
 abstract class ComponentHook extends \Livewire\ComponentHook
 {
+    /**
+     * @return Component|null
+     */
     public function component()
     {
         return $this->component;

@@ -26,7 +26,6 @@ abstract class Filter
         if (is_string($filter)) {
             $filter = $this->presets[$filter] ?? throw new InvalidArgumentException(sprintf('Data array filter preset "%s" does not exist.', $filter));
         }
-
         if (is_callable($filter)) {
             return $this->byClosure($filter);
         }
@@ -160,7 +159,7 @@ abstract class Filter
 
     protected function items(): array
     {
-        return $this->collection()->all();
+        return $this->collection()->raw();
     }
 
     protected function collection(): DataCollection
@@ -176,7 +175,7 @@ abstract class Filter
     {
         return $this->collection()
             ->newInstance([
-                'items' => $result,
+                'items'  => $result,
                 'filter' => $this
             ])
             ->filter();

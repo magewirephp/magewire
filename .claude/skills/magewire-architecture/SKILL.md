@@ -270,46 +270,38 @@ Full container reference:
 
 | Container | Purpose |
 |-----------|---------|
-| `magewire.before` / `magewire.after` | Bracket all Magewire elements |
-| `magewire.before.internal` / `magewire.after.internal` | Magewire-specific init logic |
-| `magewire.internal` | Non-overridable core code |
-| `magewire.alpinejs.before` / `magewire.alpinejs.after` | Custom Alpine code |
-| `magewire.alpinejs.components` | Alpine components for Magewire |
-| `magewire.alpinejs.directives` | Custom Alpine directives |
-| `magewire.ui-components` | Alpine UI components |
-| `magewire.utilities` | Utility helpers |
+| `magewire.global.before` | Holds `magewire.alpinejs.load`, `magewire.alpinejs`, `magewire.alpinejs.components` |
+| `magewire.alpinejs` | Global Alpine code (stores, plugins) — runs before Magewire Alpine code |
+| `magewire.alpinejs.components` | Alpine component registrations (`Alpine.data`) |
+| `magewire.global.after` | Custom extensions after the global block |
+| `magewire.utilities` | Utility helper registrations |
 | `magewire.addons` | Addon registrations |
-| `magewire.directives` | Magewire directive scripts |
+| `magewire.before` | Holds `magewire.alpinejs.directives`, `magewire.ui-components`, `magewire.alpinejs.after` |
+| `magewire.alpinejs.directives` | Custom Alpine directives (inside `magewire.before`) |
+| `magewire.ui-components` | Alpine UI components like the notifier (inside `magewire.before`) |
+| `magewire.alpinejs.after` | Custom Alpine code after Magewire's Alpine code (inside `magewire.before`) |
+| `magewire.before.internal` | Internal state blocks (e.g. enabled/disabled indicators) |
+| `magewire.internal` | Non-overridable core block — do not inject here |
+| `magewire.directives` | Magewire directive scripts (`mage:*`) |
 | `magewire.features` | Feature JS hooks |
+| `magewire.after.internal` | Inject content after the internal block |
 | `magewire.disabled` | Renders only when Magewire is inactive |
-
-### JS/PHTML Directory Structure
-
-Feature JS files follow a strict directory layout under `view/{area}/templates/`:
-
-```
-js/
-├── alpinejs/                   # Alpine-related code
-└── magewire/
-    ├── utils/                  # Utility functions (note: utils, not utilities)
-    ├── addons/                 # Addon implementations
-    ├── directives/             # Directive implementations
-    └── features/               # Feature support scripts
-        └── support-my-feature/ # Kebab-case subfolder per feature
-            └── support-my-feature.phtml
-```
+| `magewire.after` | Everything else (debug tools, HTML blocks) |
+| `magewire.legacy` | V1 backwards compatibility — do not use for new code |
 
 ---
 
 ## JavaScript Architecture
 
-The JS bundle (`magewire.csp.min.js`) is Livewire's JavaScript core adapted for Magento. It is served as a Magento static asset via the `FrontendAssets` mechanism, with version pinning via `manifest.json`.
+The JS bundle (`magewire.csp.min.js`) is Livewire's JavaScript copied directly, without any modifications.
+It is served as a Magento static asset via the `FrontendAssets` mechanism, with version pinning via `manifest.json`.
+Keeping it untouched is intentional — Livewire bug fixes and feature releases can be adopted simply by replacing the file.
 
-The bundle handles:
+The bundle (all Livewire's own code) handles:
 - Alpine.js plugin registration
 - `wire:*` directive processing
 - Snapshot management and AJAX lifecycle
-- DOM morphing (morph algorithm from Livewire)
+- DOM morphing
 - Effect processing (redirects, events, DOM patches)
 
 **Inline setup scripts** (PHTML templates in `view/base/templates/js/magewire/`) handle:
@@ -318,45 +310,6 @@ The bundle handles:
 - `features.phtml` — Loads the external deferred feature bundle
 
 These inline scripts run synchronously before the deferred bundle, establishing the global API that the bundle and feature scripts depend on.
-
-### JS Extension Points
-
-Features, addons, and utilities all initialize inside the `magewire:init` event:
-
-```javascript
-document.addEventListener('magewire:init', event => {
-    const { addons, utilities } = event.detail.magewire;
-
-    // Hook into Livewire's commit cycle
-    Magewire.hook('commit', ({ component, commit, respond, succeed, fail }) => {
-        // fires on every server roundtrip
-    });
-});
-```
-
-**Addons** — Centralized custom functionality, avoiding global pollution:
-```javascript
-document.addEventListener('magewire:init', () =>
-    Magewire.addon('myAddon', myAddonFactory, true), // true = Alpine.reactive()
-    { once: true }
-);
-```
-
-**Utilities** — General-purpose helpers:
-```javascript
-document.addEventListener('magewire:init', () =>
-    Magewire.utility('dom', magewireDomUtility)
-);
-```
-
-**Alpine components** for Magewire UI (registered via `magewire.alpinejs.components` container):
-```javascript
-document.addEventListener('alpine:init', () => {
-    Alpine.data('myComponent', () => ({ ...Magewire.addons.myAddon }));
-});
-```
-
-Note: objects with an `init` method may execute twice when shared between `Alpine.store()` and `Alpine.data()` — override `init` with an empty function if needed.
 
 ---
 

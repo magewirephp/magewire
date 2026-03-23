@@ -21,6 +21,7 @@ use Magewirephp\Magewire\Features\SupportMagentoLayouts\HandlesMagentoLayout;
 use Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\HandlesComponentBackwardsCompatibility;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\HandlesMagewireCompiling;
 use Magewirephp\Magewire\Features\SupportMagewireLoaders\HandlesMagewireLoaders;
+use Magewirephp\Magewire\Features\SupportMagewireNotifications\HandlesMagewireNotifications;
 use Magewirephp\Magewire\Features\SupportMagewireViewModel\HandlesMagewireViewModel;
 use Magewirephp\Magewire\Features\SupportRedirects\HandlesRedirects;
 use Magewirephp\Magewire\Features\SupportStreaming\HandlesStreaming;
@@ -44,6 +45,7 @@ abstract class Component implements ArgumentInterface
     use HandlesMagewireViewModel;
     use HandlesComponentBackwardsCompatibility;
     use HandlesMagewireCompiling;
+    use HandlesMagewireNotifications;
 
     protected $__id;
     protected $__name;

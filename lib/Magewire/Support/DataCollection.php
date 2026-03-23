@@ -22,8 +22,7 @@ abstract class DataCollection implements Countable, IteratorAggregate
 {
     use WithFactory;
 
-    /** @var array<string, DataCollection> */
-    private array $subitems = [];
+    private self|null $subsets = null;
     /** @var array<Hook, array<int, callable>> */
     private array $hooks = [];
 
@@ -34,7 +33,7 @@ abstract class DataCollection implements Countable, IteratorAggregate
         private readonly Filter $filter,
         private array $items = [],
         private readonly int $level = 0,
-        private readonly string $name = 'root',
+        private readonly string|int $name = 'root',
         private readonly DataCollection|null $parent = null
     ) {
     }
@@ -115,34 +114,67 @@ abstract class DataCollection implements Countable, IteratorAggregate
 
     public function subset(string|int|null $name = null, string|null $type = null, array $arguments = []): DataCollection
     {
-        $level = $name ? $this->level + 1 : 0;
-        $name = Str::snake($name);
+        $level = $name !== null ? $this->level + 1 : 0;
+        $name  = is_string($name) ? Str::snake($name) : $name;
 
-        if (isset($this->subitems[$name])) {
-            return $this->subitems[$name];
+        if ($name !== null && $this->subsets()->has($name)) {
+            return $this->subsets()->get($name);
         }
 
         $arguments = array_merge($arguments, [
             'parent' => $this,
-            'level' => $level,
-            'name' => $name
+            'level'  => $level,
+            'name'   => $name ?? Random::string(),
         ]);
 
         if ($name === null) {
             return $this->newTypeInstance($type ?? static::class, $arguments);
         }
 
-        return $this->subitems[$name] = $this->newTypeInstance($type ?? static::class, $arguments);
+        $instance = $this->newTypeInstance($type ?? static::class, $arguments);
+        $this->subsets()->set($name, $instance);
+
+        return $instance;
     }
 
-    public function subsets(): array
+    /**
+     * Data collection subsets entry point.
+     */
+    public function subsets(): static
     {
-        return $this->subitems;
+        return $this->subsets ??= Factory::create(static::class, [
+            'parent' => $this,
+            'name' => 'subsets'
+        ]);
     }
 
-    public function put(string|int $name, $value): static
+    /**
+     * @deprecated Has been replaced using $this->subsets()->count()
+     * @param array<string|int, string|int> $names
+     */
+    public function hasSubsets(array $names, bool $strict = true): bool
     {
-        if ($this->isset($name)) {
+        $expected = count($names);
+        $found = 0;
+
+        // @todo Can be removed as soon as $found and $test are functioning equally.
+        $test = $this->subsets()->filter()->byKeys($names)->and()->count();
+
+        foreach ($names as $name) {
+            if ($this->subsets()->has($name)) {
+                $found++;
+            }
+        }
+
+        return $strict ? ($found === $expected) : ($found > 0);
+    }
+
+    /**
+     * Update (or set) an (existing) value by name.
+     */
+    public function put(string|int $name, $value, bool $force = false): static
+    {
+        if ($this->isset($name) || $force) {
             $this->items[$name] = $value;
         }
 
@@ -183,6 +215,14 @@ abstract class DataCollection implements Countable, IteratorAggregate
         return $this->isset($name);
     }
 
+    /**
+     * Check if all given props are set within the collection.
+     */
+    public function contains(array $names, bool $strict = true): bool
+    {
+        return ! in_array(false, array_map($this->has(...), $names), $strict);
+    }
+
     public function all(): array
     {
         $result = [];
@@ -213,8 +253,6 @@ abstract class DataCollection implements Countable, IteratorAggregate
      *        $items is modified. This would allow returning pre-encoded JSON if items haven't
      *        changed, eliminating redundant encoding operations. The cache would only contain
      *        JSON-encodable items to ensure validity.
-     *
-     * @throws \JsonException if encoding fails.
      */
     public function json(callable|TypeFilter|null $filter = null): string|false
     {
@@ -268,7 +306,15 @@ abstract class DataCollection implements Countable, IteratorAggregate
 
     public function get(string|int $name, $default = null, bool $set = false): mixed
     {
-        return $this->items[$name] ?? ( $set ? $this->default($name, $default)->get($name) : $default );
+        return $this->items[$name] ?? ($set ? $this->default($name, $default)->get($name) : $default);
+    }
+
+    /**
+     * Harvest the collection by passing all items into a callback to compute the final output.
+     */
+    public function harvest(callable $callback, array $carry = []): array
+    {
+        return (array) $callback($this->items, $carry);
     }
 
     public function reset(): static
@@ -280,8 +326,14 @@ abstract class DataCollection implements Countable, IteratorAggregate
 
     public function destroy(): static
     {
+        foreach ($this->subsets !== null ? $this->subsets->raw() : [] as $subset) {
+            if ($subset instanceof DataCollection) {
+                $subset->destroy();
+            }
+        }
+
+        $this->subsets = null;
         $this->reset();
-        $this->subitems = [];
 
         return $this;
     }
@@ -330,7 +382,7 @@ abstract class DataCollection implements Countable, IteratorAggregate
 
     public function walk(callable $callback): static
     {
-        $result = $callback($this);
+        $result  = $callback($this);
         $subsets = $this->subsets();
 
         // Callback returned nothing or this instance.
@@ -363,7 +415,7 @@ abstract class DataCollection implements Countable, IteratorAggregate
         return $this->level;
     }
 
-    public function name(): string
+    public function name(): string|int
     {
         return $this->name;
     }

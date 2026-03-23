@@ -12,6 +12,7 @@ namespace Magewirephp\Magewire\Concerns;
 use Magento\Framework\DataObject;
 use Magewirephp\Magewire\Drawer\Utils;
 use Illuminate\Database\Eloquent\Model;
+use Magewirephp\Magewire\Form;
 trait InteractsWithProperties
 {
     function hasProperty($prop)
@@ -52,7 +53,8 @@ trait InteractsWithProperties
             if (str($property)->contains('.')) {
                 $propertyName = $property->afterLast('.');
                 $objectName = $property->before('.');
-                if (method_exists($this->{$objectName}, 'reset')) {
+                // form object reset
+                if (is_subclass_of($this->{$objectName}, Form::class)) {
                     $this->{$objectName}->reset($propertyName);
                     continue;
                 }

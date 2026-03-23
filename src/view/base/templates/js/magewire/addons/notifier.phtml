@@ -59,6 +59,17 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 }
             },
 
+            init: function() {
+                window.addEventListener('magewire:notifications', event => {
+                    if (event.detail.length !== 0) {
+                        Object.values(event.detail).forEach(async value => {
+                            console.log(value.text)
+                            await this.create(value.text);
+                        })
+                    }
+                });
+            },
+
             create: async function(message, options = {}, hooks = {}, activate = true) {
                 let notification = { ...this.defaults.notification, ...{
                     title: null,

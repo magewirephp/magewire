@@ -29,9 +29,37 @@ class HandleRequests extends Mechanism
     {
         // Overwrite.
     }
+    protected function updateRouteExists()
+    {
+        return $this->findUpdateRoute() !== null;
+    }
     function getUpdateUri()
     {
-        return (string) str(route($this->updateRoute->getName(), [], false))->start('/');
+        // When routes are cached, $this->updateRoute may be null because
+        // setUpdateRoute() was never called (the route already existed).
+        // In this case, find the route from the router.
+        $route = $this->updateRoute ?? $this->findUpdateRoute();
+        return (string) str(route($route->getName(), [], false))->start('/');
+    }
+    protected function findUpdateRoute()
+    {
+        // Find the route with name ending in 'livewire.update'.
+        // Custom routes can have prefixes (e.g., 'tenant.livewire.update')
+        // so we check for routes ending with 'livewire.update', not just exact matches.
+        // Prioritise custom routes over the default route.
+        $defaultRoute = null;
+        foreach (Route::getRoutes()->getRoutes() as $route) {
+            if (str($route->getName())->endsWith('livewire.update')) {
+                // If it's the default route, save it but keep looking for a custom one
+                if ($route->getName() === 'default.livewire.update') {
+                    $defaultRoute = $route;
+                    continue;
+                }
+                // Found a custom route, return it immediately
+                return $route;
+            }
+        }
+        return $defaultRoute;
     }
     function skipRequestPayloadTamperingMiddleware()
     {

@@ -2,11 +2,11 @@
 return [
     'directories'=> [
         'source' => [
-            'lib/Livewire' => [
+            'portman/lib/Livewire' => [
                 'composer' => [
                     'name'   => 'livewire/livewire',
-                    'version'   => '~3.6.4',
-                    'version-lock'   => '3.6.4',
+                    'version'   => '~3.7.11',
+                    'version-lock'   => '3.7.11',
                     'base-path'   => 'src'
                 ],
                 'glob' => '**/*.php',

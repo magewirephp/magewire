@@ -22,7 +22,7 @@ class Features extends ServiceType
         parent::__construct($items);
     }
 
-    function boot(ServiceTypeItemBootMode $mode = ServiceTypeItemBootMode::ALWAYS): bool
+    function boot(ServiceTypeItemBootMode|null $mode = null): bool
     {
         $booted = parent::boot($mode);
 
@@ -38,10 +38,5 @@ class Features extends ServiceType
         return function (object $type) {
             $this->componentHookRegistry::register($type);
         };
-    }
-
-    protected function getServiceTypeItemBootModeFallback(): ServiceTypeItemBootMode
-    {
-        return ServiceTypeItemBootMode::LAZY;
     }
 }

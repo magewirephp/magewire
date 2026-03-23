@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Observer;
 
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magewirephp\Magewire\MagewireServiceProvider;
@@ -18,7 +19,8 @@ use Magewirephp\Magewire\MagewireServiceProvider;
 class ControllerActionPredispatch implements ObserverInterface
 {
     public function __construct(
-        private readonly MagewireServiceProvider $magewireServiceProvider
+        private readonly MagewireServiceProvider $magewireServiceProvider,
+        private readonly RequestInterface $request
     ) {
     }
 

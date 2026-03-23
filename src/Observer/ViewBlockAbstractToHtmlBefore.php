@@ -87,7 +87,12 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
      */
     private function handleUpdate(ComponentRequestContext $update, AbstractBlock $block): void
     {
-        $this->magewireManager->update($update->getSnapshot(), $update->getUpdates(), $update->getCalls(), $block);
+        $this->magewireManager->update(
+            $update->getSnapshot(),
+            $update->getUpdates(),
+            $update->getCalls(),
+            $block
+        );
     }
 
     /**
@@ -99,6 +104,12 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
         /** @var Component $component */
         $component = $block->getData('magewire');
 
-        $this->magewireManager->mount($component->getName(), $component->magewireResolver()->arguments()->forMount(), $block->getCacheKey(), $block, $component);
+        $this->magewireManager->mount(
+            $component->getName(),
+            $component->magewireResolver()->arguments()->forMount(),
+            $block->getCacheKey(),
+            $block,
+            $component
+        );
     }
 }

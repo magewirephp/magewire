@@ -11,19 +11,14 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire;
 
-use Magewirephp\Magewire\Enums\ServiceTypeItemBootMode;
-
 class Mechanisms extends ServiceType
 {
     protected function callback(): callable
     {
         return static function (object $type) {
-            $type->boot();
+            if (method_exists($type, 'boot')) {
+                $type->boot();
+            }
         };
-    }
-
-    protected function getServiceTypeItemBootModeFallback(): ServiceTypeItemBootMode
-    {
-        return ServiceTypeItemBootMode::ALWAYS;
     }
 }

@@ -100,12 +100,15 @@ $templateUtil = $magewireViewModel->utils()->template();
                     }
 
                     this._queue.push({ name, result });
-
                     return;
                 }
 
                 const subject = reactive ? Alpine.reactive(result) : result;
                 super.set(name, subject);
+
+                if (typeof subject.init === 'function') {
+                    subject.init();
+                }
 
                 return subject;
             }
@@ -113,7 +116,12 @@ $templateUtil = $magewireViewModel->utils()->template();
             _processQueue() {
                 while (this._queue.length > 0) {
                     const { name, result } = this._queue.shift();
-                    super.set(name, Alpine.reactive(result));
+                    const subject = Alpine.reactive(result);
+                    super.set(name, subject);
+
+                    if (typeof subject.init === 'function') {
+                        subject.init();
+                    }
                 }
             }
         }

@@ -45,7 +45,6 @@
     <type name="Magewirephp\Magewire\Support\DataScope" shared="false"/>
     <type name="Magewirephp\Magewire\Support\Conditions" shared="false"/>
     <type name="Magewirephp\Magewire\Support\DataArray" shared="false"/>
-    <type name="Magewirephp\Magewire\Support\DataCollection\Filter\DataCollectionFilter" shared="false"/>
 
     <!-- Global Plugins -->
     <type name="Magento\Framework\View\TemplateEngine\Php">

@@ -96,7 +96,7 @@ public function getFullNameProperty(): string
 }
 ```
 
-Access in template as `$magewire->fullName` or `$this->fullName` in the component.
+Access in PHTML template as `$magewire->fullName` or `$this->fullName` in the PHP component class.
 
 ---
 
@@ -106,7 +106,6 @@ Any public method can be called from the frontend:
 
 ```html
 <button wire:click="save">Save</button>
-<button wire:click="delete({{ $id }})">Delete</button>
 ```
 
 Methods can also be triggered on other events:
@@ -149,9 +148,9 @@ Dot-notation property hooks use underscores: `updatingFoo_Bar` for `foo.bar`.
 ```php
 public function mount(): void
 {
-    $this->skipRender();    // Don't re-render after this request
-    $this->skipMount();     // Skip the mount phase
-    $this->skipHydrate();   // Skip hydrate
+    $this->skipRender();  // Don't re-render after this request
+    $this->skipMount();   // Skip the mount phase
+    $this->skipHydrate(); // Skip hydrate
 }
 ```
 
@@ -306,4 +305,4 @@ document.addEventListener('magewire:init', () =>
 - Flash messages go through **Magento session**
 - Layout and block management use **Magento's layout XML system**
 - The PHP core is ported from Livewire via **Portman** (see `magewire-portman` skill)
-- JavaScript is Livewire's JS bundle, served as a Magento static asset
+- JavaScript is an **unmodified copy** of Livewire's JS bundle, served as a Magento static asset (kept untouched so Livewire upgrades can be adopted by replacing the file)

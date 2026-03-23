@@ -118,6 +118,9 @@ abstract class ComponentHook
     {
         return store($this->component)->has($key);
     }
+    /**
+     * @return Component|null
+     */
     public function component()
     {
         return $this->component;

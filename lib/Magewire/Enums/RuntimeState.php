@@ -25,17 +25,13 @@ enum RuntimeState: int
      */
     case SETUP = 1;
 
-    /**
-     * Magewire booted successfully but some components are unavailable.
-     * Core functionality works but non-critical features may be disabled.
-     */
-    case DEGRADED = 2;
+    case BOOTING = 2;
 
     /**
      * Magewire is fully booted and all components are operational.
      * System is healthy and ready to handle requests.
      */
-    case READY = 3;
+    case BOOTED = 3;
 
     /**
      * Boot process encountered a critical error and cannot continue.

@@ -17,6 +17,7 @@ use Magento\Framework\Exception\RuntimeException;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
+use Magewirephp\Magewire\Exceptions\MethodNotFoundException;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\HandleComponents as HandleComponentsMechanism;
 
 class HandleComponentsFacade
@@ -30,6 +31,7 @@ class HandleComponentsFacade
      * @throws ComponentNotFoundException
      * @throws FileSystemException
      * @throws RuntimeException
+     * @throws MethodNotFoundException
      */
     public function update(Snapshot $snapshot, array $updates, array $calls, AbstractBlock $block): Closure
     {
