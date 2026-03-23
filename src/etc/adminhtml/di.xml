@@ -147,6 +147,8 @@
                 -->
                 <item name="magewire_view_model" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireViewModel\SupportMagewireViewModel</item>
+                    <item name="sort_order" xsi:type="number">700</item>
+                    <item name="boot_mode" xsi:type="number">30</item>
                 </item>
 
                 <item name="magento_exception_handling" xsi:type="array">

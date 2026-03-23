@@ -61,11 +61,13 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
 
             init: function() {
                 window.addEventListener('magewire:notifications', event => {
-                    if (event.detail.length !== 0) {
-                        Object.values(event.detail).forEach(async value => {
-                            console.log(value.text)
-                            await this.create(value.text);
-                        })
+                    const items = Object.values(event.detail);
+                    if (items.length !== 0) {
+                        (async () => {
+                            for (const value of items) {
+                                await this.create(value.text);
+                            }
+                        })();
                     }
                 });
             },
@@ -88,11 +90,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                     notification.duration = window.MagewireUtilities.str.calculateReadingDurationByStrLength(notification.message);
                 }
 
-                <?php /* Default Hooks. ?>
-                 * notification.hooks = { ...this.defaults.notification.hooks, ...hooks };
-                 *
-                 * <?php /* Defaults (deliberately overwrite on existence). */ ?>
-                notification.id = Date.now();
+                notification.id = Math.floor(Math.random() * 2147483647);
                 notification.state = this.defaults.notification.state;
                 notification.active = false;
 
