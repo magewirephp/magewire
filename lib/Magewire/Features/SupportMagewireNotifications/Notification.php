@@ -15,14 +15,16 @@ use Magento\Framework\Phrase;
 
 class Notification
 {
-    protected NotificationType $type = NotificationType::Notice;
+    private NotificationType $type = NotificationType::Notice;
 
-    protected string|Phrase|null $title = null;
-    protected int $duration = 3000;
+    private Phrase $message;
+    private Phrase|null $title = null;
+    private int $duration = 3000;
 
     public function __construct(
-        protected string|Phrase $notification
+        string|Phrase $notification
     ) {
+        $this->withMessage($notification);
     }
 
     public function asSuccess(): static
@@ -53,17 +55,13 @@ class Notification
 
     public function withMessage(string|Phrase $message): static
     {
-        $this->message = $message;
+        $this->message = is_string($message) ? __($message) : $message;
         return $this;
     }
 
     public function withTitle(string|Phrase $title): static
     {
-        if (is_string($title)) {
-            $title = __($title);
-        }
-
-        $this->title = $title;
+        $this->title = is_string($title) ? __($title) : $title;
         return $this;
     }
 
@@ -81,11 +79,21 @@ class Notification
 
     public function notification(): Phrase
     {
-        return $this->notification;
+        return $this->message;
     }
 
     public function type(): NotificationType
     {
         return $this->type;
+    }
+
+    public function title(): Phrase|null
+    {
+        return $this->title;
+    }
+
+    public function duration(): int
+    {
+        return $this->duration;
     }
 }

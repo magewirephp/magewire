@@ -58,7 +58,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                     if (items.length !== 0) {
                         (async () => {
                             for (const value of items) {
-                                await this.create(value.text);
+                                await this.create(value.text, { type: value.type });
                             }
                         })();
                     }
@@ -72,6 +72,8 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                     title: null,
                     message: message || '<?= $escaper->escapeJs(__('Message Unknown')) ?>'
                 }, ...notificationOptions };
+
+                console.log(notification)
 
                 notification.hooks = { ...notification.hooks, ...hooks };
 
