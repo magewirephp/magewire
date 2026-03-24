@@ -73,8 +73,6 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                     message: message || '<?= $escaper->escapeJs(__('Message Unknown')) ?>'
                 }, ...notificationOptions };
 
-                console.log(notification)
-
                 notification.hooks = { ...notification.hooks, ...hooks };
 
                 <?php /* Keeps the notification visible for a day. */ ?>
@@ -159,7 +157,6 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
 
                 notification.state = '<?= $escaper->escapeJs(NotificationStateEnum::TERMINATED->getState()) ?>';
                 notification.active = false;
-
                 await this.trigger('terminate', { notification }, notification);
 
                 return notification;
@@ -215,7 +212,6 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 const notification = await this.hold(id);
 
                 await this.trigger('recover', { notification }, notification);
-
                 notification.state = '<?= $escaper->escapeJs(NotificationStateEnum::RECOVERED->getState()) ?>';
 
                 return notification;
