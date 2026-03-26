@@ -31,8 +31,7 @@
         "files": [
             "lib/magewire-helpers.php",
             "src/registration.php",
-            "lib/Magewire/registration.php",
-            "lib/MagewireBc/registration.php",
+            "lib/registration.php",
             "themes/Backend/registration.php",
             "themes/Breeze/registration.php",
             "themes/Hyva/registration.php",

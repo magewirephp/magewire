@@ -12,7 +12,7 @@ use Magento\Framework\Component\ComponentRegistrar;
 
 ComponentRegistrar::register(
     ComponentRegistrar::LIBRARY,
-    'Magewirephp_Magewire/MagewireBc',
+    'Magewirephp_Magewire/lib',
 
     /*
      * At the time of writing, the `dist` folder was manually added as the `path` for the library registration.
