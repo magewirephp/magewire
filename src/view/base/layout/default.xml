@@ -50,6 +50,9 @@
                     <block name="magewire.utilities.str"
                            template="Magewirephp_Magewire::js/magewire/utilities/str.phtml"
                     />
+                    <block name="magewire.utilities.cookie"
+                           template="Magewirephp_Magewire::js/magewire/utilities/cookie.phtml"
+                    />
 
                     <!-- To ensure custom utilities are rendered after those from the core. -->
                     <container name="magewire.utilities.after"/>

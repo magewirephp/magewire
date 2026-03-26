@@ -28,7 +28,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 return '<?= $escaper->escapeJs($magewireUtility->getUpdateUri()) ?>';
             },
             'x-bind:data-csrf'() {
-                return hyva.getFormKey()
+                return window.MagewireUtilities.cookie.getFormKey()
             }
         };
     }

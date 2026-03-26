@@ -13,6 +13,7 @@ namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View;
 
 use Magewirephp\Magewire\Model\View\Element\Attributes;
 use Magewirephp\Magewire\Model\View\Element\Properties;
+use Magewirephp\Magewire\Support\DataArray;
 use Magewirephp\Magewire\Support\Distributor;
 
 /**
