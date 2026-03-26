@@ -16,6 +16,7 @@ use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\DomElementData;
 use Magewirephp\Magewire\Model\View\Fragment;
 use Magewirephp\Magewire\Model\View\SlotsRegistry;
+use Magewirephp\Magewire\Support\DataArray;
 use Magewirephp\Magewire\Support\Distributor;
 use Magewirephp\Magewire\Support\Factory;
 use Psr\Log\LoggerInterface;
