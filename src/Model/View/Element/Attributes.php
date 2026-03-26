@@ -13,17 +13,20 @@ namespace Magewirephp\Magewire\Model\View\Element;
 
 use Magento\Framework\Escaper;
 use Magewirephp\Magewire\Support\DataArray;
+use Magewirephp\Magewire\Support\DataCollection\Filter;
 use Stringable;
 
 class Attributes extends DataArray implements Stringable
 {
     public function __construct(
         private Escaper $escaper,
+        Filter $filter,
+        array $items = [],
         int $level = 0,
         string $name = 'root',
         DataArray|null $parent = null
     ) {
-        parent::__construct($level, $name, $parent);
+        parent::__construct($filter, $items, $level, $name, $parent);
     }
 
     public function __toString(): string
