@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Model\View\Element;
 
+use Magewirephp\Magewire\Support\DataArray;
+
 class Properties extends DataArray
 {
 }

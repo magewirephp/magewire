@@ -161,9 +161,9 @@ abstract class DataCollection implements Countable, IteratorAggregate
         $test = $this->subsets()->filter()->byKeys($names)->and()->count();
 
         foreach ($names as $name) {
-            if ($this->subsets()->has($name)) {
-                $found++;
-            }
+            if (!($this->subsets()->has($name))) { continue; }
+
+$found++;
         }
 
         return $strict ? ($found === $expected) : ($found > 0);
@@ -327,9 +327,9 @@ abstract class DataCollection implements Countable, IteratorAggregate
     public function destroy(): static
     {
         foreach ($this->subsets !== null ? $this->subsets->raw() : [] as $subset) {
-            if ($subset instanceof DataCollection) {
-                $subset->destroy();
-            }
+            if (!($subset instanceof DataCollection)) { continue; }
+
+$subset->destroy();
         }
 
         $this->subsets = null;

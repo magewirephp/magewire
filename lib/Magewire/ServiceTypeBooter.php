@@ -39,7 +39,7 @@ class ServiceTypeBooter
         }
 
         foreach ($items as $item) {
-            if (!($item['boot_mode'] instanceof ServiceTypeItemBootMode)) {
+            if (! ($item['boot_mode'] instanceof ServiceTypeItemBootMode)) {
                 $item['boot_mode'] = ServiceTypeItemBootMode::try($item['boot_mode'] ?? null);
             }
 
