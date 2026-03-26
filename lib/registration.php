@@ -13,14 +13,5 @@ use Magento\Framework\Component\ComponentRegistrar;
 ComponentRegistrar::register(
     ComponentRegistrar::LIBRARY,
     'Magewirephp_Magewire/lib',
-
-    /*
-     * At the time of writing, the `dist` folder was manually added as the `path` for the library registration.
-     * Naturally, this is a variable thanks to the  portman.config.php configuration.
-     *
-     * Therefore, it is important to be aware that if the `directories.output` path changes, the path here must
-     * also be updated. The same applies to the fact that if the module path changes, this must also be taken
-     * into account, as we assume the path in which this file is located.
-     */
     __DIR__
 );
