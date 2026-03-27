@@ -126,7 +126,7 @@ abstract class MagewireUpdateRoute extends MagewireRoute
              *
              * @see Magento_Framework::View/Layout/etc/elements.xsd
              */
-            if (! $resolver && ( ! $handle || preg_match('/^[a-zA-Z0-9][a-zA-Z\d\-_\.]*$/', $handle) !== 1 )) {
+            if (! $resolver && (! $handle || preg_match('/^[a-zA-Z0-9][a-zA-Z\d\-_\.]*$/', $handle) !== 1 )) {
                 throw new RuntimeException('Base component prerequisites not satisfied.');
             }
 
