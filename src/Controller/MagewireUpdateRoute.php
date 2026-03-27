@@ -12,7 +12,6 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Controller;
 
 use Exception;
-use Magento\Framework\App\Action\Forward;
 use Magento\Framework\App\ActionFactory;
 use Magento\Framework\App\ActionInterface;
 use Magento\Framework\App\RequestInterface;
@@ -20,13 +19,13 @@ use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\HTTP\PhpEnvironment\Request;
 use Magento\Framework\Serialize\SerializerInterface;
-use Magento\Framework\Webapi\ServiceInputProcessor;
 use Magewirephp\Magento\App\Router\MagewireRouteValidator;
 use Magewirephp\Magewire\Enums\RequestMode;
 use Magewirephp\Magewire\MagewireServiceProvider;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\Checksum;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\CorruptComponentPayloadException;
-use Magewirephp\Magewire\Mechanisms\HandleRequests\ComponentRequestContext;
+use Magewirephp\Magewire\Mechanisms\HandleComponents\SnapshotFactory;
+use Magewirephp\Magewire\Mechanisms\HandleRequests\ComponentRequestContextFactory;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 
@@ -43,7 +42,8 @@ abstract class MagewireUpdateRoute extends MagewireRoute
 
     public function __construct(
         private readonly SerializerInterface $serializer,
-        private readonly ServiceInputProcessor $serviceInputProcessor,
+        private readonly SnapshotFactory $snapshotFactory,
+        private readonly ComponentRequestContextFactory $componentRequestContextFactory,
         private readonly MagewireServiceProvider $magewireServiceProvider,
         private readonly ActionFactory $actionFactory,
         private readonly LoggerInterface $logger,
@@ -87,7 +87,7 @@ abstract class MagewireUpdateRoute extends MagewireRoute
         } catch (Exception $exception) {
             $this->logger->critical($exception->getMessage(), ['exception' => $exception]);
 
-            return $this->actionFactory->create(Forward::class);
+            return null;
         }
 
         return $match;
@@ -126,12 +126,21 @@ abstract class MagewireUpdateRoute extends MagewireRoute
              *
              * @see Magento_Framework::View/Layout/etc/elements.xsd
              */
-            if (! $resolver && ( ! $handle || preg_match('/^[a-zA-Z0-9][a-zA-Z\d\-_\.]*$/', $handle) !== 1 )) {
+            if (! $resolver && (! $handle || preg_match('/^[a-zA-Z0-9][a-zA-Z\d\-_\.]*$/', $handle) !== 1)) {
                 throw new RuntimeException('Base component prerequisites not satisfied.');
             }
 
-            // Each component request context must conform to the service contract requirements.
-            $input[self::PARAM_COMPONENTS][$key] = $this->serviceInputProcessor->convertValue($component, ComponentRequestContext::class);
+            $snapshot = $this->snapshotFactory->create([
+                'data'     => $component['snapshot']['data'] ?? [],
+                'memo'     => $component['snapshot']['memo'] ?? [],
+                'checksum' => $component['snapshot']['checksum'] ?? '',
+            ]);
+
+            $input[self::PARAM_COMPONENTS][$key] = $this->componentRequestContextFactory->create([
+                'snapshot' => $snapshot,
+                'calls'    => $component['calls'] ?? [],
+                'updates'  => $component['updates'] ?? [],
+            ]);
         }
 
         /** @var Request $request */
