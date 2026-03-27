@@ -67,7 +67,7 @@ class Request implements RequestInterface
         return null;
     }
 
-    public function isSubsequent(bool $flag = null, bool $force = false)
+    public function isSubsequent(bool|null $flag = null, bool $force = false)
     {
         return $this->magewireServiceProvider
             ->runtime()
@@ -80,7 +80,7 @@ class Request implements RequestInterface
         return ! $this->isSubsequent();
     }
 
-    public function isRefreshing(bool $flag = null)
+    public function isRefreshing(bool|null $flag = null)
     {
         return false;
     }
