@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -11,22 +12,28 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Controller;
 
 use Exception;
-use Magewirephp\Magewire\Mechanisms\HandleComponents\Checksum;
-use Magento\Framework\App\Action\Forward;
 use Magento\Framework\App\ActionFactory;
 use Magento\Framework\App\ActionInterface;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Exception\FileSystemException;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\HTTP\PhpEnvironment\Request;
 use Magento\Framework\Serialize\SerializerInterface;
-use Magento\Framework\Webapi\ServiceInputProcessor;
 use Magewirephp\Magento\App\Router\MagewireRouteValidator;
+use Magewirephp\Magewire\Enums\RequestMode;
 use Magewirephp\Magewire\MagewireServiceProvider;
-use Magewirephp\Magewire\Mechanisms\HandleRequests\ComponentRequestContext;
+use Magewirephp\Magewire\Mechanisms\HandleComponents\Checksum;
+use Magewirephp\Magewire\Mechanisms\HandleComponents\CorruptComponentPayloadException;
+use Magewirephp\Magewire\Mechanisms\HandleComponents\SnapshotFactory;
+use Magewirephp\Magewire\Mechanisms\HandleRequests\ComponentRequestContextFactory;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
+
 use function Magewirephp\Magewire\trigger;
 
+/**
+ * Handles routing for Magewire component update requests.
+ */
 abstract class MagewireUpdateRoute extends MagewireRoute
 {
     public const PARAM_IS_SUBSEQUENT = 'is_magewire_subsequent';
@@ -35,7 +42,8 @@ abstract class MagewireUpdateRoute extends MagewireRoute
 
     public function __construct(
         private readonly SerializerInterface $serializer,
-        private readonly ServiceInputProcessor $serviceInputProcessor,
+        private readonly SnapshotFactory $snapshotFactory,
+        private readonly ComponentRequestContextFactory $componentRequestContextFactory,
         private readonly MagewireServiceProvider $magewireServiceProvider,
         private readonly ActionFactory $actionFactory,
         private readonly LoggerInterface $logger,
@@ -45,6 +53,13 @@ abstract class MagewireUpdateRoute extends MagewireRoute
         parent::__construct($this->actionFactory, $this->logger, $this->magewireRouteValidator);
     }
 
+    /**
+     * Matches and processes Magewire update requests.
+     *
+     * Validates the request, boots Magewire in subsequent mode, and parses
+     * component data. Returns a forward action on failure or the matched
+     * action on success.
+     */
     public function match(RequestInterface $request): ActionInterface|null
     {
         $match = parent::match($request);
@@ -53,30 +68,42 @@ abstract class MagewireUpdateRoute extends MagewireRoute
             return null;
         }
 
-        // Mark the request as a subsequent Magewire request.
-        $request->setParam(self::PARAM_IS_SUBSEQUENT, true);
-
         /**
-         * Magewire has two trigger points for booting itself. One occurs during the updating of components.
-         * This is the only feasible location, after confirming we are on an update request,
-         * where we should attempt to boot. [2/2]
+         * Boot Magewire and initialize the request context.
+         *
+         * Magewire has two trigger points for initialization:
+         * 1. During component updates (the only feasible location after confirming an update request)
+         * 2. During page load via the view block observer
+         *
+         * This call marks the request as "subsequent" to distinguish between initial page loads
+         * and subsequent update requests, allowing system-wide determination of Magewire's state.
          *
          * @see \Magewirephp\Magewire\Observer\ViewBlockAbstractToHtmlBefore
          */
-        $this->magewireServiceProvider->boot();
+        $this->magewireServiceProvider->boot(RequestMode::SUBSEQUENT);
 
         try {
             $request->setParams($this->parseRequest($request));
         } catch (Exception $exception) {
-            return $this->actionFactory->create(Forward::class);
+            $this->logger->critical($exception->getMessage(), ['exception' => $exception]);
+
+            return null;
         }
 
         return $match;
     }
 
-
     /**
+     * Parses and validates the component update request payload.
+     *
+     * Deserializes component data from the request body, verifies checksums,
+     * validates component prerequisites (resolver/handle), and converts
+     * component data to service contract objects.
+     *
      * @throws LocalizedException
+     * @throws FileSystemException
+     * @throws \Magento\Framework\Exception\RuntimeException
+     * @throws CorruptComponentPayloadException
      */
     protected function parseRequest(RequestInterface $request): array
     {
@@ -99,12 +126,21 @@ abstract class MagewireUpdateRoute extends MagewireRoute
              *
              * @see Magento_Framework::View/Layout/etc/elements.xsd
              */
-            if (! $resolver && (! $handle || preg_match('/^[a-zA-Z0-9][a-zA-Z\d\-_\.]*$/', $handle) !== 1)) {
+            if (! $resolver && ( ! $handle || preg_match('/^[a-zA-Z0-9][a-zA-Z\d\-_\.]*$/', $handle) !== 1 )) {
                 throw new RuntimeException('Base component prerequisites not satisfied.');
             }
 
-            // Each component request context must conform to the service contract requirements.
-            $input[self::PARAM_COMPONENTS][$key] = $this->serviceInputProcessor->convertValue($component, ComponentRequestContext::class);
+            $snapshot = $this->snapshotFactory->create([
+                'data'     => $component['snapshot']['data'] ?? [],
+                'memo'     => $component['snapshot']['memo'] ?? [],
+                'checksum' => $component['snapshot']['checksum'] ?? '',
+            ]);
+
+            $input[self::PARAM_COMPONENTS][$key] = $this->componentRequestContextFactory->create([
+                'snapshot' => $snapshot,
+                'calls'    => $component['calls'] ?? [],
+                'updates'  => $component['updates'] ?? [],
+            ]);
         }
 
         /** @var Request $request */
