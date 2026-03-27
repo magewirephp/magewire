@@ -8,3 +8,6 @@ portman.log
 /.DS_Store
 test/Playwright/.env
 package-lock.json
+.env
+.warden
+magento

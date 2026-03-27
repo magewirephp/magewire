@@ -1,0 +1,150 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment = $magewireViewModel->utils()->fragment();
+?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script src="<?= $escaper->escapeUrl($block->getViewFileUrl('Magewirephp_Magewire::js/magewire/cache-store.js')) ?>"></script>
+<script>
+    document.addEventListener('magewire:init', () => {
+        'use strict';
+
+        const store = window.__magewire_cache_store;
+
+        if (!store) {
+            return;
+        }
+
+        const CACHE_VERSION = 3;
+        const SESSID_KEY = 'wire_cache_sessid';
+        const TIMEOUT_KEY = 'mage-cache-timeout';
+        const pendingWrites = {};
+
+        const getMageCacheSessid = () => {
+            const match = document.cookie.match(/(^|;\s*)mage-cache-sessid=([^;]*)/);
+            return match ? match[2] : null;
+        };
+
+        const shouldClearCache = () => {
+            try {
+                const stored = localStorage.getItem(SESSID_KEY);
+
+                if (!stored) {
+                    return false;
+                }
+
+                const current = getMageCacheSessid();
+
+                if (!current || stored !== current) {
+                    return true;
+                }
+
+                const timeout = localStorage.getItem(TIMEOUT_KEY);
+
+                return timeout && new Date(timeout) < new Date();
+            } catch {
+                return true;
+            }
+        };
+
+        const storeSessionMarker = () => {
+            try {
+                const sessid = getMageCacheSessid();
+
+                if (sessid) {
+                    localStorage.setItem(SESSID_KEY, sessid);
+                }
+            } catch {}
+        };
+
+        const cacheKeyFor = (el) => {
+            const attr = el.getAttribute('data-wire-cache');
+            return attr ? `wire:cache:${attr}` : null;
+        };
+
+        const dispatchCacheEvent = (el, type, key) => {
+            el.dispatchEvent(new CustomEvent(`magewire:cache:${type}`, {
+                bubbles: true,
+                detail: { key }
+            }));
+        };
+
+        if (shouldClearCache()) {
+            store.clear();
+            try { localStorage.removeItem(SESSID_KEY); } catch {}
+        }
+
+        storeSessionMarker();
+
+        Magewire.hook('component.init', ({ component }) => {
+            const { el } = component;
+            const key = cacheKeyFor(el);
+
+            if (!key) {
+                return;
+            }
+
+            store.get(key).then((entry) => {
+                if (!entry || !entry.html || !entry.snapshot || entry.v !== CACHE_VERSION) {
+                    if (entry && entry.v !== CACHE_VERSION) {
+                        store.clear();
+                    }
+
+                    dispatchCacheEvent(el, 'miss', key);
+                    return;
+                }
+
+                try {
+                    component.mergeNewSnapshot(entry.snapshot, component.effects);
+                } catch {
+                    dispatchCacheEvent(el, 'miss', key);
+                    return;
+                }
+
+                Alpine.morph(el, entry.html);
+
+                dispatchCacheEvent(el, 'hit', key);
+            });
+        });
+
+        Magewire.hook('commit', ({ component, succeed }) => {
+            succeed(() => {
+                const key = cacheKeyFor(component.el);
+
+                if (key) {
+                    pendingWrites[component.id] = key;
+                }
+            });
+        });
+
+        Magewire.hook('morphed', ({ component }) => {
+            const key = pendingWrites[component.id];
+
+            if (!key) {
+                return;
+            }
+
+            store.post(key, {
+                v: CACHE_VERSION,
+                html: component.el.outerHTML,
+                snapshot: component.snapshotEncoded,
+                ts: Date.now()
+            });
+
+            dispatchCacheEvent(component.el, 'update', key);
+
+            delete pendingWrites[component.id];
+        });
+    });
+</script>
+<?php $script->end() ?>
