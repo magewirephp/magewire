@@ -9,16 +9,11 @@ use Magento\Framework\View\Element\Template;
 /** @var Escaper $escaper */
 
 $blockLoaderIcon = $block->getChildBlock('loader') ?>
-<div class="inline-flex justify-center flex-shrink-0"
->
-    <div class="size-5">
-        <div class="relative" x-show="notification.loader.active">
-            <?php /* Stack items vertically to prevent layout shifting when hiding or disappearing, ensuring consistent visual layout. */ ?>
-            <?php if ($blockLoaderIcon): ?>
-            <div class="absolute" x-show="notification.state">
-                <?= $blockLoaderIcon->toHtml() ?>
-            </div>
-            <?php endif ?>
+<div class="size-5" x-show="notification.loader.active">
+    <?php /* Stack items vertically to prevent layout shifting when hiding or disappearing, ensuring consistent visual layout. */ ?>
+    <?php if ($blockLoaderIcon): ?>
+        <div x-show="notification.state">
+            <?= $blockLoaderIcon->toHtml() ?>
         </div>
-    </div>
+    <?php endif ?>
 </div>

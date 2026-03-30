@@ -1,0 +1,27 @@
+.magewire-notifier {
+    --offset: 2rem;
+    --index: 40;
+    --gap: 0.5rem;
+    z-index: var(--index);
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: 0;
+    margin: var(--offset);
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--gap);
+
+    & .message {
+        border-color: transparent;
+        padding-inline: 1rem;
+        padding-block: 0.875rem;
+        max-width: 42ch;
+        justify-content: flex-start;
+        @apply shadow-xl;
+        overflow-wrap: anywhere;
+    }
+}
+
+.magewire-notifier-after {
+    margin-inline-start: auto;
+}

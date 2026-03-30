@@ -24,7 +24,6 @@ $layoutUtil = $magewireViewModel->utils()->layout();
 <div x-data="magewireNotifier" x-bind="magewireNotifierBindings">
     <template x-for="notification in notifications">
         <div
-            class="magewire-notifier__notification"
             aria-busy="true"
             aria-label="off"
             role="status"
@@ -32,35 +31,32 @@ $layoutUtil = $magewireViewModel->utils()->layout();
             x-transition.duration.300ms
             x-bind="bindings.notification.item.root"
         >
-            <div class="magewire-notifier__notification-content">
-                <?php if ($layoutUtil->canContainerizeBlock($notificationsBeforeBlock)): ?>
-                <div class="magewire-notifier__notification-before">
+            <?php if ($layoutUtil->canContainerizeBlock($notificationsBeforeBlock)): ?>
+                <div class="magewire-notifier-before">
                     <?= $layoutUtil->renderBlockAsContainer($notificationsBeforeBlock) ?>
                 </div>
-                <?php endif ?>
+            <?php endif ?>
 
-                <div class="magewire-notifier__notification-body">
-                    <div class="magewire-notifier__notification-title"
-                         x-text="notification.title"
-                         x-show="notification.title"
-                    >
+            <div class="magewire-notifier-body">
+                <p class="magewire-notifier-title" x-show="notification.title">
+                    <strong x-text="notification.title">
                         <!-- Notification title placeholder. -->
-                    </div>
+                    </strong>
+                </p>
 
-                    <p class="magewire-notifier__notification-message"
-                       x-text="notification.message"
-                       x-show="notification.message"
-                    >
-                        <!-- Notification message placeholder. -->
-                    </p>
-                </div>
+                <p class="magewire-notifier-message"
+                   x-text="notification.message"
+                   x-show="notification.message"
+                >
+                    <!-- Notification message placeholder. -->
+                </p>
+            </div>
 
-                <?php if ($layoutUtil->canContainerizeBlock($notificationsAfterBlock)): ?>
-                <div class="magewire-notifier__notification-after">
+            <?php if ($layoutUtil->canContainerizeBlock($notificationsAfterBlock)): ?>
+                <div class="magewire-notifier-after">
                     <?= $layoutUtil->renderBlockAsContainer($notificationsAfterBlock) ?>
                 </div>
-                <?php endif ?>
-            </div>
+            <?php endif ?>
         </div>
     </template>
 </div>
