@@ -1,6 +1,10 @@
 ---
 name: magewire
-description: Reference for Magewire — Magento 2's reactive component framework inspired by Laravel Livewire v3. Use when building, debugging, or explaining Magewire components, wire:* directives, lifecycle hooks, events, loading states, or any PHP/JS component API. Auto-load when working in a Magewire component class or PHTML template.
+description: >
+  Reference for Magewire — Magento 2's reactive component framework inspired by Laravel Livewire v3.
+  Use when building, debugging, or explaining Magewire components, wire:* directives, lifecycle hooks,
+  events, loading states, or any PHP/JS component API.
+  Auto-load when working in a Magewire component class or PHTML template.
 ---
 
 # Magewire

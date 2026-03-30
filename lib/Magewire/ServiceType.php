@@ -52,6 +52,11 @@ abstract class ServiceType
         return $this->items()->boot($mode, $this->callback())->booted();
     }
 
+    public function booter(): ServiceTypeBooter
+    {
+        return $this->booter ??= Factory::create(ServiceTypeBooter::class);
+    }
+
     /**
      * Returns an operation type facade which simplifies the interface of a complex type by
      * exposing only the necessary methods, thus defining a clear and concise
@@ -81,10 +86,6 @@ abstract class ServiceType
         $name = preg_replace('/(?<!^)[A-Z]/', '_$0', $name);
 
         if (isset($this->items[$name])) {
-            if (is_string($this->items[$name])) {
-                return $this->items[$name];
-            }
-
             return $this->items[$name]['type'];
         }
 
@@ -198,7 +199,7 @@ abstract class ServiceType
 
     protected function items(): ServiceTypeBooter
     {
-        return $this->booter ??= Factory::create(ServiceTypeBooter::class)->setup($this->assemble()->sort());
+        return $this->booter()->setup($this->assemble()->sort());
     }
 
     /**

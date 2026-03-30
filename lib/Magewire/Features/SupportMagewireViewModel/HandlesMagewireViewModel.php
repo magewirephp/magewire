@@ -18,6 +18,15 @@ trait HandlesMagewireViewModel
 {
     protected MagewireViewModel|null $magewireViewModel = null;
 
+    /**
+     * Returns the view model for the current Magewire instance.
+     *
+     * During the deprecation period, the legacy view model is returned — extended by the
+     * feature-driven implementation to maintain backwards compatibility. Once the legacy
+     * version is removed, only the feature-driven model will be returned.
+     *
+     * @see \Magewirephp\Magewire\Features\SupportMagewireViewModel\MagewireViewModel
+     */
     public function magewireViewModel(): MagewireViewModel
     {
         return $this->magewireViewModel ??= Factory::get(MagewireViewModel::class);

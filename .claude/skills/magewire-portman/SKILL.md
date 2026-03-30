@@ -1,6 +1,10 @@
 ---
 name: magewire-portman
-description: Reference for Portman — the dev-only CLI tool that ports Livewire PHP into Magewire by downloading upstream source, merging augmentations, transforming namespaces, and writing the result to dist/. Use when syncing Magewire with a new Livewire release, writing augmentation files in portman/Livewire/, running portman build/watch, or understanding the relationship between lib/Livewire, portman/, and dist/.
+description: >
+  Reference for Portman — the dev-only CLI tool that ports Livewire PHP into Magewire by downloading upstream source,
+  merging augmentations, transforming namespaces, and writing the result to dist/.
+  Use when syncing Magewire with a new Livewire release, writing augmentation files in portman/Livewire/,
+  running portman build/watch, or understanding the relationship between lib/Livewire, portman/, and dist/.
 ---
 
 # Magewire Portman

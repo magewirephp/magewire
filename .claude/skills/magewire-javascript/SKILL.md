@@ -1,6 +1,12 @@
 ---
 name: magewire-javascript
-description: "Use this skill whenever writing JavaScript for Magento 2 themes that are not RequireJS-driven. This includes any frontend JS task involving Magewire, AlpineJS, or both together — such as building CSP-compatible components, enabling PHP-driven reactivity via Magewire, integrating AlpineJS with Magewire lifecycle hooks, or structuring reusable multi-theme JavaScript with clear separation of concerns. Always apply this skill as the default JS convention for non-RequireJS Magento 2 themes, regardless of complexity. Do NOT use for RequireJS-driven Magento 2 themes or server-side PHP Magewire component logic."
+description: >
+  Use this skill whenever writing JavaScript for Magento 2 themes that are not RequireJS-driven.
+  This includes any frontend JS task involving Magewire, AlpineJS, or both together — such as building CSP-compatible components,
+  enabling PHP-driven reactivity via Magewire, integrating AlpineJS with Magewire lifecycle hooks,
+  or structuring reusable multi-theme JavaScript with clear separation of concerns.
+  Always apply this skill as the default JS convention for non-RequireJS Magento 2 themes, regardless of complexity.
+  Do NOT use for RequireJS-driven Magento 2 themes or server-side PHP Magewire component logic.
 allowed-tools: ["Bash", "Read", "Write"]
 ---
 
