@@ -59,8 +59,8 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                                 },
                                 'x-bind:class'() {
                                     return [
-                                        'magewire-notifier__notification',
-                                        `magewire-notifier__notification--${this.notification.type}`
+                                        'message',
+                                        `${this.notification.type}`
                                     ];
                                 },
                             }
@@ -80,9 +80,9 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                                     this.notification.state = 'recovering';
 
                                     try {
-                                       await new Promise(resolve => setTimeout(resolve, 2000)).then(() => {
-                                           this.notification.state = 'recovered'
-                                       });
+                                        await new Promise(resolve => setTimeout(resolve, 2000)).then(() => {
+                                            this.notification.state = 'recovered'
+                                        });
                                     } catch (error) {
                                         console.log(error);
                                     }
@@ -94,9 +94,9 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                                     const unrecoverable = '<?= $escaper->escapeJs(__('Failure')) ?>';
 
                                     return this.notification.state === 'recovering' ? recovering :
-                                               this.notification.state === 'recovered' ? recovered :
-                                                   this.notification.state === 'unrecoverable' ? unrecoverable :
-                                                       recover;
+                                        this.notification.state === 'recovered' ? recovered :
+                                            this.notification.state === 'unrecoverable' ? unrecoverable :
+                                                recover;
                                 },
                                 'x-bind:class'() {
                                     return {
