@@ -36,7 +36,10 @@
                     They operate independently from Magewire but can optionally integrate with the
                     framework when needed.
                 -->
-                <container name="magewire.utilities" as="utilities">
+                <block name="magewire.utilities"
+                       as="utilities"
+                       template="Magewirephp_Magewire::js/magewire/utilities.phtml"
+                >
                     <block name="magewire.utilities.dom"
                            template="Magewirephp_Magewire::js/magewire/utilities/dom.phtml"
                     />
@@ -52,7 +55,7 @@
 
                     <!-- To ensure custom utilities are rendered after those from the core. -->
                     <container name="magewire.utilities.after"/>
-                </container>
+                </block>
 
                 <!--
                     MAGEWIRE ADDONS.
@@ -61,14 +64,17 @@
                     independently but can optionally integrate with Magewire when compatibility
                     is configured.
                 -->
-                <container name="magewire.addons" as="addons">
+                <block name="magewire.addons"
+                       as="addons"
+                       template="Magewirephp_Magewire::js/magewire/addons.phtml"
+                >
                     <block name="magewire.addons.notifier"
                            template="Magewirephp_Magewire::js/magewire/addons/notifier.phtml"
                     />
 
                     <!-- To ensure custom addons are rendered after those from the core. -->
                     <container name="magewire.addons.after"/>
-                </container>
+                </block>
 
                 <container name="magewire.global.after" as="after"/>
             </block>
@@ -142,7 +148,10 @@
             <!--
                 MAGEWIRE DIRECTIVES.
             -->
-            <container name="magewire.directives" as="directives">
+            <block name="magewire.directives"
+                   as="directives"
+                   template="Magewirephp_Magewire::js/magewire/directives.phtml"
+            >
                 <!-- The primary defense mechanism to mitigate an excessive influx of XHR requests. -->
                 <block name="magewire.directives.throttle"
                        template="Magewirephp_Magewire::js/magewire/directives/throttle.phtml"
@@ -151,19 +160,22 @@
                 <block name="magewire.directives.notify"
                        template="Magewirephp_Magewire::js/magewire/directives/notify.phtml"
                 />
-            </container>
+            </block>
 
             <!--
                 MAGEWIRE FEATURES.
             -->
-            <container name="magewire.features" as="features">
+            <block name="magewire.features"
+                   as="features"
+                   template="Magewirephp_Magewire::js/magewire/features.phtml"
+            >
                 <block name="magewire.features.support-magewire-loaders"
                        template="Magewirephp_Magewire::js/magewire/features/support-magewire-loaders/support-magewire-loaders.phtml"
                 />
                 <block name="magewire.features.support-magewire-rate-limiting"
                        template="Magewirephp_Magewire::js/magewire/features/support-magewire-rate-limiting/support-magewire-rate-limiting.phtml"
                 />
-            </container>
+            </block>
 
             <container name="magewire.after.internal" as="after.internal"/>
 

@@ -28,7 +28,7 @@
         <referenceContainer name="magewire.features">
             <!-- Make the flash messages feature compatible with the Hyvä theme. -->
             <block name="magewire.features.support-magento-flash-messages"
-                   template="Magewirephp_MagewireCompatibilityWithHyva::js/magewire/features/support-magento-flash-messages/support-magento-flash-messages.phtml"
+                   template="Magewirephp_MagewireCompatibilityWithHyva::magewire-features/support-magento-flash-messages/support-magento-flash-messages.phtml"
             />
         </referenceContainer>
 

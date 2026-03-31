@@ -16,16 +16,16 @@
             <!-- Make Hyvä Checkout backwards compatible. -->
             <container name="magewire.features.support-hyva-checkout-backwards-compatibility">
                 <block name="magewire.features.support-hyva-checkout-backwards-compatibility.magewire-components"
-                       template="Magewirephp_MagewireCompatibilityWithHyva::js/magewire/features/support-hyva-checkout-backwards-compatibility/magewire-components.phtml"
+                       template="Magewirephp_MagewireCompatibilityWithHyva::magewire-features/support-hyva-checkout-backwards-compatibility/magewire-components.phtml"
                 />
                 <block name="magewire.features.support-hyva-checkout-backwards-compatibility.magewire-events"
-                       template="Magewirephp_MagewireCompatibilityWithHyva::js/magewire/features/support-hyva-checkout-backwards-compatibility/magewire-events.phtml"
+                       template="Magewirephp_MagewireCompatibilityWithHyva::magewire-features/support-hyva-checkout-backwards-compatibility/magewire-events.phtml"
                 />
                 <block name="magewire.features.support-hyva-checkout-backwards-compatibility.magewire-hooks"
-                       template="Magewirephp_MagewireCompatibilityWithHyva::js/magewire/features/support-hyva-checkout-backwards-compatibility/magewire-hooks.phtml"
+                       template="Magewirephp_MagewireCompatibilityWithHyva::magewire-features/support-hyva-checkout-backwards-compatibility/magewire-hooks.phtml"
                 />
                 <block name="magewire.features.support-hyva-checkout-backwards-compatibility.magewire-attributes"
-                       template="Magewirephp_MagewireCompatibilityWithHyva::js/magewire/features/support-hyva-checkout-backwards-compatibility/magewire-attributes.phtml"
+                       template="Magewirephp_MagewireCompatibilityWithHyva::magewire-features/support-hyva-checkout-backwards-compatibility/magewire-attributes.phtml"
                 />
             </container>
         </referenceContainer>

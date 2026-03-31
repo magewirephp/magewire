@@ -17,25 +17,22 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
         'use strict';
 
         const magewireBcEventsMapping = [
-            { from: 'livewire:init', to: 'magewire:init', legacy: false },
-            { from: 'livewire:initialized', to: 'magewire:initialized', legacy: false },
+            { from: 'livewire:init', to: 'magewire:init', once: true },
+            { from: 'livewire:initialized', to: 'magewire:initialized', once: true },
 
             <?php /* To support legacy V1 events. */ ?>
-            { from: 'magewire:init', to: 'magewire:load', legacy: true },
-            { from: 'magewire:initialized', to: 'magewire:available', legacy: true }
+            { from: 'magewire:init', to: 'magewire:load', once: true, legacy: true },
+            { from: 'magewire:initialized', to: 'magewire:available', once: true, legacy: true }
         ];
 
-        magewireBcEventsMapping.forEach(({ from, to, legacy }) => {
+        magewireBcEventsMapping.forEach(({ from, to, once, legacy }) => {
             document.addEventListener(from, original => {
-                const details = { ...original.detail };
-                const event = to.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-
-                document.dispatchEvent(new CustomEvent(event, {
-                    detail: details,
+                document.dispatchEvent(new CustomEvent(to, {
+                    detail: { ...original.detail },
                     bubbles: original.bubbles,
                     cancelable: original.cancelable
                 }));
-            });
+            }, once ? { once: true } : undefined);
         });
     })();
 </script>

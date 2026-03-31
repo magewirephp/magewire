@@ -21,32 +21,84 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 button: 'click'
             },
             updates: {
-                input: 'mousedown|keydown'
+                input: 'mousedown|keydown',
+                select: 'change'
             }
         }
 
-        const listeners = {
+        <?php /* Radio and checkbox inputs fire on change, not mousedown|keydown. */ ?>
+        const updateEventForInput = function(el) {
+            const type = (el.getAttribute('type') || '').toLowerCase();
 
+            return type === 'radio' || type === 'checkbox' ? 'change' : variants.updates.input;
         }
 
+        <?php /* Pending notifications keyed by component id, consumed during commit.prepare. */ ?>
+        const pending = new Map();
+
         document.addEventListener('magewire:initialized', event => {
+            const addons = window.MagewireAddons;
+
             Magewire.hook('commit.prepare', ({component}) => {
-                // WIP
+                const entry = pending.get(component.id);
+
+                if (! entry || ! addons.has('notifier')) {
+                    return;
+                }
+
+                pending.delete(component.id);
+
+                addons.notifier.create(entry.message, {
+                    loader: { active: true }
+                }, {
+                    onActivate: function({ notification }) {
+                        return new Promise(function(resolve) {
+                            Magewire.hook('commit', function({ component: commitComponent, succeed, fail }) {
+                                if (commitComponent.id !== component.id) {
+                                    return
+                                }
+
+                                succeed(function() {
+                                    notification.loader.active = false;
+                                    resolve(true);
+                                });
+                                fail(function() {
+                                    notification.loader.active = false;
+                                    resolve(false);
+                                });
+                            });
+                        });
+                    }
+                });
             })
 
             Magewire.directive('mage:notify', ({el, directive, component, cleanup}) => {
-                let variant = el.tagName.toLowerCase() in variants.calls ? 'call'
-                    : el.tagName.toLowerCase() in variants.updates ? 'update' : null;
+                const tag = el.tagName.toLowerCase();
+
+                let variant = tag in variants.calls ? 'call'
+                    : tag in variants.updates ? 'update' : null;
 
                 <?php /* Map the variant as the 'event' value to always have an object value. */ ?>
-                variant = typeof variant === 'string' ? { event: variant } : variant
+                if (variant === 'update' && tag === 'input') {
+                    variant = { event: updateEventForInput(el) }
+                } else if (typeof variant === 'string') {
+                    variant = { event: variant }
+                }
 
                 if (! variant) {
                     return
                 }
 
                 const action = event => {
+                    if (directive.expression.length === 0) {
+                        return
+                    }
 
+                    pending.set(component.id, {
+                        message: directive.expression,
+                        variant: variant,
+                        el: el
+                    })
                 }
 
                 variant.event.split('|').forEach(event => {

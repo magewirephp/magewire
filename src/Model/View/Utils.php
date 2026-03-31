@@ -24,6 +24,9 @@ use Magewirephp\Magewire\Model\View\Utils\Tailwind as TailwindViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Template as TemplateViewUtil;
 use Magewirephp\Magewire\Support\Factory;
 
+/**
+ * @method UtilsInterface __call(string $utility, array $arguments = [])
+ */
 class Utils
 {
     /**
@@ -108,10 +111,14 @@ class Utils
                     return $subject;
                 }
 
+                if (empty($arguments)) {
+                    return $this->utilities[$utility] = Factory::get($subject::class);
+                }
+
                 return Factory::create($subject::class, $arguments);
             }
         }
 
-        throw new BadMethodCallException(sprintf('Invalid utility "%s"', $utility));
+        throw new BadMethodCallException(sprintf('Utility "%s" was called but does not exist.', $utility));
     }
 }
