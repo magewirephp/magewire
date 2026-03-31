@@ -43,16 +43,13 @@ class Counter extends Component
 }
 ```
 
-Register it in layout XML:
+Register it in layout XML (Magewire can be bound to any block class):
 
 ```xml
-<block class="Magewirephp\Magewire\Block\Magewire"
-       name="my.counter"
+<block name="my.counter"
        template="Vendor_Module::counter.phtml">
     <arguments>
-        <argument name="data" xsi:type="array">
-            <item name="magewire" xsi:type="string">Vendor\Module\Magewire\Counter</item>
-        </argument>
+        <argument name="magewire" xsi:type="object">Vendor\Module\Magewire\Counter</argument>
     </arguments>
 </block>
 ```
@@ -90,17 +87,6 @@ Bind in template:
 - `wire:model` — binds on form submit / next request
 - `wire:model.live` — binds on every change (triggers AJAX immediately)
 - `wire:model.blur` — binds on blur
-
-**Computed properties** — use a getter, not stored in snapshot:
-
-```php
-public function getFullNameProperty(): string
-{
-    return $this->firstName . ' ' . $this->lastName;
-}
-```
-
-Access in PHTML template as `$magewire->fullName` or `$this->fullName` in the PHP component class.
 
 ---
 
@@ -143,7 +129,7 @@ All hooks are optional. Define them as public methods on your component:
 | `dehydrateXxx()` | Dehydrate for specific property |
 | `exception(\Throwable $e, callable $stopPropagation)` | On exception |
 
-Dot-notation property hooks use underscores: `updatingFoo_Bar` for `foo.bar`.
+Dot-notation property hooks use studly case: `updatingFooBar` for `foo.bar` (dots are replaced, then the whole string is converted to StudlyCase).
 
 ---
 
@@ -218,12 +204,30 @@ public function save(): void
 
 ## Notifications
 
-Use the built-in notifier (Magewire-specific):
+Magewire provides a fluent notification API via the `SupportMagewireNotifications` feature. Access it through the `magewireNotifications()` method on your component:
 
 ```php
-$this->notify('Item saved successfully');
-$this->notify('Something went wrong', 'error');
+// Create a notice (default type)
+$this->magewireNotifications()->make(__('Item saved successfully'));
+
+// Create with a specific type using fluent builders
+$this->magewireNotifications()->make(__('Order placed'))->asSuccess();
+$this->magewireNotifications()->make(__('Something went wrong'))->asError();
+$this->magewireNotifications()->make(__('Check your input'))->asWarning();
+
+// Full fluent API
+$this->magewireNotifications()
+    ->make(__('Order #123 confirmed'))
+    ->asSuccess()
+    ->withTitle(__('Order Confirmation'))
+    ->withDuration(5000); // milliseconds (default: 3000)
+
+// Named notifications (prevents duplicates with the same name)
+$this->magewireNotifications()->make(__('Saving...'), 'save-progress');
 ```
+
+Available type methods: `asSuccess()`, `asError()`, `asWarning()`, `asNotice()`, or `as(NotificationType $type)`.
+Additional builders: `withTitle()`, `withoutTitle()`, `withDuration()`.
 
 ---
 
@@ -247,19 +251,35 @@ Target specific actions:
 
 ## Rate Limiting
 
-Use the `#[Throttle]` attribute or enable via `SupportMagewireRateLimiting` feature on a per-component basis to limit how fast the frontend can trigger updates.
+The `SupportMagewireRateLimiting` feature provides configurable rate limiting for Magewire update requests. It is configured via Magento's admin system configuration and DI, not via PHP attributes on components.
 
 ---
 
 ## ViewModel Utilities
 
-Magewire auto-injects a `MagewireViewModel` as `view_model` on every component block. It exposes utilities accessible from the component:
+The `SupportMagewireViewModel` feature auto-injects a `MagewireViewModel` as `view_model` on every component block. Access it from your component via `magewireViewModel()`, or from templates via `$block->getData('view_model')`.
+
+The view model provides access to a rich set of utilities via `utils()`:
 
 ```php
-$this->utils()->magewire();    // Magewire utilities
-$this->utils()->template();    // Template utilities
-$this->utils()->layout();      // Layout utilities
-$this->utils()->fragment();    // Fragment utilities
+// From a component class
+$this->magewireViewModel()->utils()->magewire();     // Magewire runtime access (mechanisms, config, update URI)
+$this->magewireViewModel()->utils()->template();     // Template compilation utilities
+$this->magewireViewModel()->utils()->layout();       // Layout information
+$this->magewireViewModel()->utils()->fragment();     // CSP-compliant script fragment builder
+$this->magewireViewModel()->utils()->security();     // CSRF token, security helpers
+$this->magewireViewModel()->utils()->env();          // Environment mode checks (developer, production)
+$this->magewireViewModel()->utils()->alpinejs();     // Alpine.js integration helpers
+$this->magewireViewModel()->utils()->csp();          // CSP nonce generation
+$this->magewireViewModel()->utils()->tailwind();     // Tailwind CSS utilities
+$this->magewireViewModel()->utils()->application();  // Application-level utilities
+```
+
+From PHTML templates, the common pattern is:
+
+```php
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment  = $magewireViewModel->utils()->fragment();
 ```
 
 ---
@@ -288,13 +308,14 @@ document.addEventListener('magewire:init', () =>
 );
 ```
 
-Register a custom **utility** (accessible as `Magewire.utilities.dom`):
+Register a custom **utility** (accessible as `MagewireUtilities.dom`):
 
 ```javascript
-document.addEventListener('magewire:init', () =>
-    Magewire.utility('dom', function() {
+document.addEventListener('alpine:init', () =>
+    window.MagewireUtilities.register('dom', function() {
         return { filterDataAttributes(el, prefix) { return {}; } };
-    })
+    }),
+    { once: true }
 );
 ```
 

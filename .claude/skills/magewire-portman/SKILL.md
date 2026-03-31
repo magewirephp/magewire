@@ -9,9 +9,11 @@ description: >
 
 # Magewire Portman
 
-Portman is a PHP library porting CLI tool created by Justin van Elst. Its purpose is to automate the process of pulling upstream PHP source code (from Packagist), transforming it (rename namespaces, rename classes, remove methods), and merging local augmentations — so that Magewire can stay in sync with Livewire releases without manually editing ported code.
+Portman is a **general-purpose PHP library porting CLI tool** created by Justin van Elst. While its primary use case is porting Livewire into Magewire, it is architecturally framework-agnostic and can be used to port any PHP package between frameworks. Its purpose is to automate the process of pulling upstream PHP source code (from Packagist), transforming it (rename namespaces, rename classes, remove methods), and merging local augmentations.
 
 Portman is a standalone Composer package (`magewirephp/portman`) and is a **dev-only dependency** — Magewire operates fully independently without it. It is only needed when contributing to Magewire or syncing with a new Livewire release.
+
+Nearly everything in Portman is configurable via `portman.config.php`: source directories, output directory, augmentation paths, file glob patterns, ignore rules, namespace/class transformations, method/property removals, file doc blocks, and post-processors.
 
 ---
 
@@ -112,7 +114,7 @@ return [
 ];
 ```
 
-Override the config file path with the env variable `PORTMAN_CONFIG_FILE`.
+The config file path can be overridden via the `PORTMAN_CONFIG_FILE` environment variable (set in a `.env` file or shell environment). Defaults to `portman.config.php` in the project root.
 
 ---
 
@@ -261,15 +263,17 @@ vendor/bin/portman watch
 
 ## Relationship to Magewire's Directory Structure
 
-| Directory | Role | Edit? |
-|-----------|------|-------|
-| `lib/Livewire/` | Downloaded upstream Livewire source (Portman input cache) | No |
-| `portman/Livewire/` | Augmentations — what to change in Livewire | Yes |
-| `dist/` | Portman build output (ported + merged + transformed) | No |
-| `lib/Magewire/` | Hand-written Magewire core (mechanisms, features, enums) | Yes |
-| `lib/MagewireBc/` | Hand-written backwards compatibility layer | Yes |
-| `lib/Magento/` | Hand-written Magento framework integrations | Yes |
-| `src/` | Magento module structure (etc/, controllers, layout) | Yes |
+The directory paths below are the defaults used in Magewire's `portman.config.php`. All paths (source, augmentation, output) are configurable — these are not hardcoded by Portman.
+
+| Directory | Config key | Role | Edit? |
+|-----------|-----------|------|-------|
+| `lib/Livewire/` | `directories.source` | Downloaded upstream source (Portman input cache) | No |
+| `portman/Livewire/` | `directories.augmentation` | Augmentations — what to change in upstream source | Yes |
+| `dist/` | `directories.output` | Portman build output (ported + merged + transformed) | No |
+| `lib/Magewire/` | — | Hand-written Magewire core (not Portman-managed) | Yes |
+| `lib/MagewireBc/` | — | Hand-written backwards compatibility layer | Yes |
+| `lib/Magento/` | — | Hand-written Magento framework integrations | Yes |
+| `src/` | — | Magento module structure (etc/, controllers, layout) | Yes |
 
 **Never edit `dist/` or `lib/Livewire/` directly.** `dist/` is overwritten on every `portman build`. `lib/Livewire/` is overwritten on every `portman download-source`.
 

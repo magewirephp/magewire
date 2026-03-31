@@ -21,7 +21,7 @@ fully compliant with Magento 2's Content Security Policy requirements.
 
 ## Directory structure
 
-All JavaScript lives in PHTML files under a `js/` subdirectory inside the view template tree. The view area determines
+**Key principle:** All templates containing JavaScript must live inside a `js/` subdirectory within the view template tree, organized by technology. This separation is critical — it makes clear which templates contain JS (and therefore need CSP handling) vs. which are pure HTML/PHP. The view area determines
 the root, and must always be chosen deliberately:
 
 | Area | Path | When to use |
@@ -349,7 +349,7 @@ They add declarative HTML attributes that control element behavior.
 - Wrap in an IIFE `(() => { ... })()` — directives are self-contained and export nothing.
 - `'use strict'` at the top of the IIFE.
 - Listen on `magewire:initialized` (not `magewire:init` — directives require the full runtime to be ready).
-- Magewire directive names use the `mage:` prefix: `mage:throttle`, `mage:notify`.
+- Magewire directive names use the `mage:` prefix: `mage:throttle`, `mage:notify`. In HTML attributes, the full attribute becomes `wire:mage:notify` (Livewire's `wire:` prefix + the `mage:` directive name).
 - Always call `cleanup()` to deregister event listeners and prevent memory leaks.
 - Directive modifiers and expressions are read from the `directive` parameter:
   `directive.modifiers` (array of strings), `directive.expression` (string).
@@ -435,17 +435,7 @@ owns an addon or Alpine component.
 </block>
 ```
 
-The primary PHTML renders children first, then its own bridge script:
-
-```php
-<?= $block->getChildHtml('addon') ?>
-<?= $block->getChildHtml('component') ?>
-<?php $script = $magewireFragment->make()->script()->start() ?>
-<script>
-    // bridge JS
-</script>
-<?php $script->end() ?>
-```
+Keep each PHTML file as small and focused as possible — Magento allows individual PHTML files to be overwritten by themes, so smaller files give theme developers more granular control. The parent block template renders children via `$block->getChildHtml()`:
 
 **Bridge pattern (the primary feature file):**
 
@@ -496,32 +486,22 @@ Every PHTML must have a corresponding block in the layout XML for the matching v
 - `frontend` PHPTMLs → `src/view/frontend/layout/default.xml`
 - `adminhtml` PHPTMLs → `src/view/adminhtml/layout/default.xml`
 
-The available layout containers, in render order:
+The available layout elements for JS registration, in render order. Elements marked **(block)** have parent templates that render children via `$block->getChildHtml()`. Elements marked **(container)** are pure injection points.
 
-| Container | Purpose |
-|---|---|
-| `magewire.alpinejs` | Global Alpine code (stores, plugins) |
-| `magewire.alpinejs.components` | `Alpine.data` component registrations |
-| `magewire.utilities` | Utility registrations |
-| `magewire.addons` | Addon registrations |
-| `magewire.alpinejs.directives` | Custom Alpine directives (inside `magewire.before`) |
-| `magewire.ui-components` | Alpine UI components (inside `magewire.before`) |
-| `magewire.directives` | Magewire directive registrations (`mage:*`) |
-| `magewire.features` | Feature JS |
-| `magewire.after` | Everything else (HTML blocks, debug tools) |
+| Name | Type | Purpose |
+|------|------|---------|
+| `magewire.alpinejs` | container | Global Alpine code (stores, plugins) |
+| `magewire.alpinejs.components` | container | `Alpine.data` component registrations |
+| `magewire.utilities` | block | Utility registrations — add children as blocks inside |
+| `magewire.utilities.after` | container | Custom utilities after core ones |
+| `magewire.addons` | block | Addon registrations — add children as blocks inside |
+| `magewire.addons.after` | container | Custom addons after core ones |
+| `magewire.alpinejs.directives` | container | Custom Alpine directives (inside `magewire.before`) |
+| `magewire.ui-components` | container | Alpine UI components (inside `magewire.before`) |
+| `magewire.directives` | block | Magewire directive registrations (`mage:*`) — add children as blocks |
+| `magewire.features` | block | Feature JS — add children as blocks |
+| `magewire.after` | container | Everything else (HTML blocks, debug tools) |
 
 The `view_model` argument is injected automatically by `SupportMagewireViewModel`. Do not add it manually
 in layout XML blocks.
 
----
-
-## CSP stylesheet rules
-
-Inline `<style>` blocks and `style="..."` HTML attributes both require `style-src 'unsafe-inline'` and
-must not be used.
-
-- Move all styles to an external `.css` file under `src/view/{area}/web/css/`.
-- Load the file via `<link rel="stylesheet" href="<?= $escaper->escapeUrl($block->getViewFileUrl('...')) ?>">`.
-- Alpine's `:style` binding is safe — it sets styles via the JavaScript DOM API, which is not controlled
-  by `style-src`.
-- External same-origin CSS files are covered by the default `style-src 'self'` policy.
