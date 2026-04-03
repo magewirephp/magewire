@@ -39,4 +39,9 @@ class Features extends ServiceType
             $this->componentHookRegistry::register($type);
         };
     }
+
+    protected function getBootModeFallback(): ServiceTypeItemBootMode
+    {
+        return ServiceTypeItemBootMode::LAZY;
+    }
 }

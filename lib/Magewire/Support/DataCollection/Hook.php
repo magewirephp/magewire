@@ -17,4 +17,7 @@ enum Hook: string
     case PUT = 'put';
     case GET = 'get';
     case UNSET = 'unset';
+    case PUSH = 'push';
+    case RESET = 'reset';
+    case CLEAR = 'clear';
 }

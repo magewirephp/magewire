@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace Magewirephp\MagewireCompatibilityWithHyva\Magewire\Features\SupportHyvaCheckoutBackwardsCompatibility;
 
-use Magewirephp\Magento\Framework\View\RenderLifecycleManager;
 use Magewirephp\Magewire\ComponentHook;
 use Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\HandleBackwardsCompatibility;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\LayoutLifecycleManager;
 use Magewirephp\Magewire\Support\AttributesReader;
 use Psr\Log\LoggerInterface;
 use ReflectionException;
@@ -24,8 +24,8 @@ use function Magewirephp\Magewire\store;
 class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
 {
     public function __construct(
-        private readonly RenderLifecycleManager $renderLifecycleManager,
-        private readonly LoggerInterface $logger
+        private readonly LayoutLifecycleManager $renderLifecycleManager,
+        private readonly LoggerInterface        $logger
     ) {
     }
 
@@ -58,7 +58,7 @@ class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
             }
 
             $within ??= $this->component ? store($this->component)->get('bc.enabled') : null;
-            $within ??= $this->renderLifecycleManager->isWithin('hyva-checkout-main');
+            $within ??= $this->renderLifecycleManager->target('magewire')->within('hyva-checkout-main');
         } catch (ReflectionException $exception) {
             $this->logger->critical($exception->getMessage(), ['exception' => $exception]);
         }

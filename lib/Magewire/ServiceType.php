@@ -152,7 +152,7 @@ abstract class ServiceType
             $item['name'] ??= $key;
 
             // Ensure the boot mode exists, or set the default if not set.
-            $item['boot_mode'] = ServiceTypeItemBootMode::try($item['boot_mode'] ?? null, ServiceTypeItemBootMode::lowest());
+            $item['boot_mode'] = ServiceTypeItemBootMode::try($item['boot_mode'] ?? null, $this->getBootModeFallback());
 
             $assembled[$key] = $item;
         }
@@ -200,6 +200,11 @@ abstract class ServiceType
     protected function items(): ServiceTypeBooter
     {
         return $this->booter()->setup($this->assemble()->sort());
+    }
+
+    protected function getBootModeFallback(): ServiceTypeItemBootMode
+    {
+        return ServiceTypeItemBootMode::lowest();
     }
 
     /**

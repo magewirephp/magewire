@@ -9,11 +9,11 @@
 
 namespace Magewirephp\Magewire\Model;
 
-use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\RenderLifecycleManager;
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\LayoutLifecycleManager;
 
 /**
  * @deprecated Has been replaced with the RenderLifecycleManager
- * @see RenderLifecycleManager
+ * @see LayoutLifecycleManager
  */
 class LayoutRenderLifecycle
 {

@@ -12,8 +12,6 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Support;
 
 use ArrayAccess;
-use ArrayIterator;
-use Traversable;
 
 class DataArray extends DataCollection implements ArrayAccess
 {
@@ -35,10 +33,5 @@ class DataArray extends DataCollection implements ArrayAccess
     public function offsetUnset($offset): void
     {
         $this->unset($offset);
-    }
-
-    public function getIterator(): Traversable
-    {
-        return $this->newTypeInstance(ArrayIterator::class, ['array' => $this->all()]);
     }
 }

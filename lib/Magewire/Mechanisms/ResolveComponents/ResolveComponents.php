@@ -81,13 +81,14 @@ class ResolveComponents
      */
     protected function build(callable $builder): callable
     {
+        $lifecycle = $this->layoutManager->lifecycle();
         [$resolver, $block] = $builder();
 
         if (! $block->getData('magewire') instanceof Component) {
             throw new ComponentNotFoundException(sprintf('Resolver "%s" failed to construct a Magewire component.', $resolver->getAccessor()));
         }
 
-        return static function () use ($resolver, $block) {
+        return static function () use ($resolver, $block, $lifecycle) {
             $resolver->arguments()->assemble($block, true);
 
             /** @var Component $component */
@@ -95,6 +96,7 @@ class ResolveComponents
 
             $component->magewireBlock($block);
             $component->magewireResolver($resolver);
+            $component->magewireLayoutLifecycle($lifecycle);
 
             return $resolver->assemble($block, $component);
         };

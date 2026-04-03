@@ -21,6 +21,61 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
         const addons = window.MagewireAddons;
         const utilities = window.MagewireUtilities;
 
+        const loaderTiming = {
+            THRESHOLD_MS: 300,
+            MIN_SAMPLES: 2,
+            MAX_SAMPLES: 5,
+            NAMESPACE: 'loaderTiming',
+
+            _read() {
+                try {
+                    return JSON.parse(sessionStorage.getItem('magewire') || '{}');
+                } catch (e) {
+                    return {};
+                }
+            },
+
+            _write(store) {
+                try {
+                    sessionStorage.setItem('magewire', JSON.stringify(store));
+                } catch (e) {}
+            },
+
+            record(componentName, action, durationMs) {
+                const store = this._read();
+                const timings = store[this.NAMESPACE] || {};
+                const key = componentName + ':' + action;
+                const entries = timings[key] || [];
+
+                entries.push(Math.round(durationMs));
+
+                while (entries.length > this.MAX_SAMPLES) {
+                    entries.shift();
+                }
+
+                timings[key] = entries;
+                store[this.NAMESPACE] = timings;
+                this._write(store);
+            },
+
+            shouldSuppress(componentName, action) {
+                const store = this._read();
+                const entries = (store[this.NAMESPACE] || {})[componentName + ':' + action];
+
+                if (! entries || entries.length < this.MIN_SAMPLES) {
+                    return false;
+                }
+
+                const sorted = [...entries].sort((a, b) => a - b);
+                const mid = Math.floor(sorted.length / 2);
+                const median = sorted.length % 2 === 0
+                    ? (sorted[mid - 1] + sorted[mid]) / 2
+                    : sorted[mid];
+
+                return median < this.THRESHOLD_MS;
+            }
+        };
+
         <?php /* Make sure the notifier has a loader object; since by default, it hasn't. */ ?>
         if (addons.has('notifier')) {
             if (typeof addons.notifier.defaults.notification.loader === 'object') {
@@ -33,6 +88,8 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
         }
 
         Magewire.hook('commit', ({ component, commit, respond, succeed, fail }) => {
+            const commitStartTime = performance.now();
+
             const notify = function(text, title = null, options = {}, hooks = {}) {
                 const parts = utilities.loader.parseText(text);
 
@@ -192,6 +249,14 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             if (component.effects.loader) {
                 if (commit.calls.length !== 0) {
                     commit.calls.forEach(call => {
+                        const action = call.method;
+                        const recordDuration = () => loaderTiming.record(
+                            component.name, action, performance.now() - commitStartTime
+                        );
+
+                        succeed(recordDuration);
+                        fail(recordDuration);
+
                         const notifications = expression.call(call, component.effects.loader[0]);
 
                         /**
@@ -217,7 +282,11 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                          ];
                          */
                         if (typeof notifications === 'object') {
-                            notifications.forEach(notification => notify(notification))
+                            const suppress = loaderTiming.shouldSuppress(component.name, action);
+
+                            notifications.forEach(notification => notify(notification, null, suppress ? {
+                                loader: { active: false }
+                            } : {}))
                         }
                     })
                 }
@@ -227,6 +296,14 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                         if (commit.updates.hasOwnProperty(key)) {
                             const previous = component.canonical[key]
                             const value = commit.updates[key]
+
+                            const recordDuration = () => loaderTiming.record(
+                                component.name, key, performance.now() - commitStartTime
+                            );
+
+                            succeed(recordDuration);
+                            fail(recordDuration);
+
                             const notifications = expression.update(key, value, component.effects.loader[0])
 
                             /**
@@ -255,9 +332,13 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                              */
 
                             if (typeof notifications === 'object') {
+                                const suppress = loaderTiming.shouldSuppress(component.name, key);
+
                                 notifications.forEach(notification => notify(notification
                                     .replace(/{value}/g, value)
-                                    .replace(/{previous_value}/g, previous)
+                                    .replace(/{previous_value}/g, previous),
+                                    null,
+                                    suppress ? { loader: { active: false } } : {}
                                 ))
                             }
                         }

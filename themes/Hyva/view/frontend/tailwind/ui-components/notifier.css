@@ -1,24 +1,35 @@
 .magewire-notifier {
-    --offset: 2rem;
+    --offset: 0.5rem;
     --index: 40;
-    --gap: 0.5rem;
+    --gap: 0.25rem;
     z-index: var(--index);
     position: fixed;
     inset-inline: 0;
     inset-block-end: 0;
+    max-width: 100%;
     margin: var(--offset);
     display: inline-flex;
     flex-direction: column;
     gap: var(--gap);
 
+    /* Desktop */
+    @media(min-width: 768px) {
+        --gap: 0.5rem;
+        --offset: 1.5rem;
+        inset-inline-end: auto;
+    }
+
     & .message {
-        border-color: transparent;
+        @apply shadow-xl;
+
+        margin-bottom: 0;
         padding-inline: 1rem;
         padding-block: 0.875rem;
-        max-width: 42ch;
+        max-width: 70ch;
         justify-content: flex-start;
-        @apply shadow-xl;
         overflow-wrap: anywhere;
+        cursor: pointer;
+        gap: 0.5rem;
     }
 }
 

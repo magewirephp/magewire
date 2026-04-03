@@ -37,7 +37,7 @@ class SupportMagewireCompiling extends ComponentHook
 
     public function provide(): void
     {
-        on('magento:template:render', function (AbstractBlock $block, string $filename, array $dictionary, Component $component) {
+        on('magewire:component-template:render', function (AbstractBlock $block, string $filename, array $dictionary, Component $component) {
             $compiler = $component->magewireCompiler() ?? $component->magewireCompiler($this->compilerManager->factory()->newCompilerInstance());
 
             return function (array $result) use ($component, $compiler, $block) {

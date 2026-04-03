@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire;
 
+use Magewirephp\Magewire\Enums\ServiceTypeItemBootMode;
+
 class Mechanisms extends ServiceType
 {
     protected function callback(): callable
@@ -20,5 +22,10 @@ class Mechanisms extends ServiceType
                 $type->boot();
             }
         };
+    }
+
+    protected function getBootModeFallback(): ServiceTypeItemBootMode
+    {
+        return ServiceTypeItemBootMode::LAZY;
     }
 }

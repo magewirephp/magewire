@@ -42,23 +42,26 @@ class SupportMagentoObserverEvents extends ComponentHook
          *      they can forget, making it not observable.
          */
         $events = [
-            /** Lifecycle events. */
             // Magewire specific.
             'magewire:component:construct',
             'magewire:component:reconstruct',
 
-            'magewire:view:compile',
+            'magewire:component-template:render',
+            'magewire:component-template:rendered',
 
-            'magewire:render:start',
-            'magewire:render:end',
+            'magewire:view:compile',
 
             'magewire:setup',
             'magewire:boot',
 
             // Magento specific.
+            'magento:block:render',
+            'magento:block:rendered',
+
             'magento:template:render',
             'magento:template:rendered',
 
+            // Magewire/Livewire core.
             'pre-mount',
             'mount.stub',
             'mount',

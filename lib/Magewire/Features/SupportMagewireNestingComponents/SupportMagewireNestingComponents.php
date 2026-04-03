@@ -12,24 +12,48 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Features\SupportMagewireNestingComponents;
 
 use Magento\Framework\View\Element\AbstractBlock;
+use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\ComponentHook;
-use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\RenderLifecycleManager;
-
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\LayoutLifecycleManager;
 use function Magewirephp\Magewire\on;
 
 class SupportMagewireNestingComponents extends ComponentHook
 {
     public function __construct(
-        private readonly RenderLifecycleManager $renderLifecycleManager
+        private readonly LayoutLifecycleManager $renderLifecycleManager
     ) {
     }
 
-    function provide(): void
+    public function provide(): void
     {
+        on('magento:template:render', function () {
+            return function (array $result) {
+                $magewire  = $result['dictionary']['magewire'] ?? false;
+                $component = $result['component'] ?? false;
+
+                if ($magewire && $component) {
+                    return $result;
+                }
+
+                $closest = $this->renderLifecycleManager->target('magewire')->closestComponent($result['block']);
+
+                if ($closest) {
+                    $result['dictionary']['magewire'] = $closest;
+                }
+
+                return $result;
+            };
+        });
+
         on('magewire:component:construct', function () {
             // Returns a callable that will execute after the component is constructed.
             return function (AbstractBlock $block) {
-                $this->renderLifecycleManager->push($block->getData('magewire'));
+                $component = $block->getData('magewire');
+
+                if ($component instanceof Component) {
+                    $this->renderLifecycleManager->target('magewire')->bind($component);
+                }
+
                 return $block;
             };
         });
@@ -37,7 +61,12 @@ class SupportMagewireNestingComponents extends ComponentHook
         on('magewire:component:reconstruct', function () {
             // Returns a callable that will execute after the component is reconstructed.
             return function (AbstractBlock $block) {
-                $this->renderLifecycleManager->push($block->getData('magewire'));
+                $component = $block->getData('magewire');
+
+                if ($component instanceof Component) {
+                    $this->renderLifecycleManager->target('magewire')->bind($component);
+                }
+
                 return $block;
             };
         });

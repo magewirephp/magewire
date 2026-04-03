@@ -52,6 +52,8 @@ class MagewireServiceProvider
             $this->runtime()->state(RuntimeState::SETUP);
         } catch (Exception $exception) {
             $this->runtime()->state(RuntimeState::FAILED);
+
+            throw $exception;
         }
     }
 

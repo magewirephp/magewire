@@ -14,13 +14,15 @@ namespace Magewirephp\Magewire\Mechanisms\ResolveComponents\Management;
 use Magento\Framework\View\LayoutFactory;
 use Magento\Framework\View\LayoutInterface;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\Layout\LayoutDecorator;
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\Layout\LayoutLifecycle;
 
 class LayoutManager
 {
     public function __construct(
         private readonly LayoutInterface $layout,
         private readonly LayoutFactory $factory,
-        private readonly LayoutDecorator $decorator
+        private readonly LayoutDecorator $decorator,
+        private readonly LayoutLifecycleManager $lifecycleManager,
     ) {
     }
 
@@ -43,5 +45,10 @@ class LayoutManager
     public function decorator(): LayoutDecorator
     {
         return $this->decorator;
+    }
+
+    public function lifecycle(string $name = 'magewire'): LayoutLifecycle
+    {
+        return $this->lifecycleManager->target($name);
     }
 }

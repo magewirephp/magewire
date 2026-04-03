@@ -13,9 +13,8 @@ namespace Magewirephp\Magewire\Features\SupportMagewireViewModel;
 
 use InvalidArgumentException;
 use Magento\Framework\View\Element\AbstractBlock;
-use Magewirephp\Magento\Framework\View\RenderLifecycleManager;
 use Magewirephp\Magewire\ComponentHook;
-
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\Layout\LayoutLifecycle;
 use function Magewirephp\Magewire\on;
 
 class SupportMagewireViewModel extends ComponentHook
@@ -29,7 +28,7 @@ class SupportMagewireViewModel extends ComponentHook
 
     public function provide(): void
     {
-        on('magewire:render:start', function (RenderLifecycleManager $manager, AbstractBlock $block) {
+        on('magento:block:render', function (LayoutLifecycle $lifecycle, AbstractBlock $block) {
             if ($this->isRootMagewireBlock($block)) {
                 $this->includeMagewireViewModel = true;
             }

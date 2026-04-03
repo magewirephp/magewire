@@ -14,11 +14,13 @@ namespace Magewirephp\Magewire\Features\SupportMagentoLayouts;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolver\ComponentResolver;
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\Layout\LayoutLifecycle;
 
 trait HandlesMagentoLayout
 {
     private AbstractBlock|null $magewireBlock = null;
     private ComponentResolver|null $magewireResolver = null;
+    private LayoutLifecycle|null $magewireLayoutLifecycle = null;
 
     public function magewireResolver(ComponentResolver|null $resolver = null): ComponentResolver|null
     {
@@ -36,6 +38,15 @@ trait HandlesMagentoLayout
         }
 
         return $this->magewireBlock;
+    }
+
+    public function magewireLayoutLifecycle(LayoutLifecycle|null $lifecycle = null): LayoutLifecycle|null
+    {
+        if ($lifecycle) {
+            $this->magewireLayoutLifecycle = $lifecycle;
+        }
+
+        return $this->magewireLayoutLifecycle;
     }
 
     /**

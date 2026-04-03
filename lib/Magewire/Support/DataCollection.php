@@ -13,6 +13,8 @@ namespace Magewirephp\Magewire\Support;
 
 use Countable;
 use IteratorAggregate;
+use ArrayIterator;
+use Traversable;
 use Magewirephp\Magewire\Support\Concerns\WithFactory;
 use Magewirephp\Magewire\Support\DataCollection\Filter;
 use Magewirephp\Magewire\Support\DataCollection\Hook;
@@ -91,6 +93,8 @@ abstract class DataCollection implements Countable, IteratorAggregate
             }
 
             unset($this->items[$key]);
+
+            $this->dispatch(Hook::UNSET, $key);
         }
 
         return $this;
@@ -103,12 +107,16 @@ abstract class DataCollection implements Countable, IteratorAggregate
         }
 
         $this->items[$name] = $value;
+
+        $this->dispatch(Hook::SET, $name, $value);
         return $this;
     }
 
     public function push($value): static
     {
         $this->items[] = $value;
+
+        $this->dispatch(Hook::PUSH, $value);
         return $this;
     }
 
@@ -157,13 +165,12 @@ abstract class DataCollection implements Countable, IteratorAggregate
         $expected = count($names);
         $found = 0;
 
-        // @todo Can be removed as soon as $found and $test are functioning equally.
-        $test = $this->subsets()->filter()->byKeys($names)->and()->count();
-
         foreach ($names as $name) {
-            if (!($this->subsets()->has($name))) { continue; }
+            if (! ($this->subsets()->has($name))) {
+                continue;
+            }
 
-$found++;
+            $found++;
         }
 
         return $strict ? ($found === $expected) : ($found > 0);
@@ -176,6 +183,8 @@ $found++;
     {
         if ($this->isset($name) || $force) {
             $this->items[$name] = $value;
+
+            $this->dispatch(Hook::PUT, $name, $value);
         }
 
         return $this;
@@ -259,16 +268,9 @@ $found++;
         $items = $this;
 
         if ($filter) {
-            $items = $this->subset()
-                ->fill(
-                    $this->filter()
-                        ->with(TypeFilter::JSON_ENCODABLE)
-                        ->return()
-                        ->all()
-                )
-                ->filter()
-                ->with($filter)
-                ->return();
+            $items = $this->subset()->fill(
+                $this->filter()->with(TypeFilter::JSON_ENCODABLE)->return()->all()
+            )->filter()->with($filter)->return();
         }
 
         return json_encode($items->all());
@@ -306,7 +308,10 @@ $found++;
 
     public function get(string|int $name, $default = null, bool $set = false): mixed
     {
-        return $this->items[$name] ?? ($set ? $this->default($name, $default)->get($name) : $default);
+        $value = $this->items[$name] ?? ($set ? $this->default($name, $default)->get($name) : $default);
+
+        $this->dispatch(Hook::GET, $name, $value);
+        return $value;
     }
 
     /**
@@ -321,15 +326,18 @@ $found++;
     {
         $this->items = [];
 
+        $this->dispatch(Hook::RESET);
         return $this;
     }
 
     public function destroy(): static
     {
         foreach ($this->subsets !== null ? $this->subsets->raw() : [] as $subset) {
-            if (!($subset instanceof DataCollection)) { continue; }
+            if (!($subset instanceof DataCollection)) {
+                continue;
+            }
 
-$subset->destroy();
+            $subset->destroy();
         }
 
         $this->subsets = null;
@@ -367,6 +375,7 @@ $subset->destroy();
             ->return()
             ->all();
 
+        $this->dispatch(Hook::CLEAR);
         return $this;
     }
 
@@ -427,22 +436,23 @@ $subset->destroy();
 
     /**
      * Registers a callable to be triggered when the specified hook event occurs.
-     *
-     * @deprecated Hooks are under development and not yet functional (undecided if needed).
      */
-    public function hook(callable $action, Hook|string $on): static
+    public function hook(Hook|string $onto, callable $then): static
     {
-        $hook = is_string($on) ? $on : $on->value;
-        $this->hooks[$hook][] = $action;
+        $hook = is_string($onto) ? $onto : $onto->value;
+        $this->hooks[$hook][] = $then;
 
         return $this;
+    }
+
+    public function getIterator(): Traversable
+    {
+        return $this->newTypeInstance(ArrayIterator::class, ['array' => $this->all()]);
     }
 
     /**
      * Dispatches a hook by invoking all registered actions for the given hook,
      * passing the current instance followed by any additional arguments.
-     *
-     * @deprecated Hooks are under development and not yet functional (undecided if needed).
      */
     protected function dispatch(Hook|string $hook, mixed ...$args): static
     {
