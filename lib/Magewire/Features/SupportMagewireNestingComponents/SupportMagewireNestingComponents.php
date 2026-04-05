@@ -28,10 +28,9 @@ class SupportMagewireNestingComponents extends ComponentHook
     {
         on('magento:template:render', function () {
             return function (array $result) {
-                $magewire  = $result['dictionary']['magewire'] ?? false;
-                $component = $result['component'] ?? false;
+                $magewire = $result['dictionary']['magewire'] ?? false;
 
-                if ($magewire && $component) {
+                if ($magewire) {
                     return $result;
                 }
 

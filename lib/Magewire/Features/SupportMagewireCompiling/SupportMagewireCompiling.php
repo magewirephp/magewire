@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Features\SupportMagewireCompiling;
 
 use DateTime;
+use Magento\Framework\DataObject;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Component;
@@ -37,12 +38,22 @@ class SupportMagewireCompiling extends ComponentHook
 
     public function provide(): void
     {
-        on('magewire:component-template:render', function (AbstractBlock $block, string $filename, array $dictionary, Component $component) {
+        on('magento:template:render', function (AbstractBlock $block, string $filename, array $dictionary) {
+            if (! $block instanceof DataObject) {
+                return;
+            }
+
+            $component = $block->getData('magewire');
+
+            if (! $component instanceof Component) {
+                return;
+            }
+
             $compiler = $component->magewireCompiler() ?? $component->magewireCompiler($this->compilerManager->factory()->newCompilerInstance());
 
             return function (array $result) use ($component, $compiler, $block) {
-                // Although named "filename", this actually represents the full file path,
-                // including the filename and its extension.
+                $result['dictionary']['magewire'] = $component;
+
                 $path = $result['filename'];
 
                 if ($component->magewireCompiler()->canCompile()) {
