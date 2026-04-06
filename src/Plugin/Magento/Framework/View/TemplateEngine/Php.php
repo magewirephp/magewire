@@ -11,29 +11,37 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Plugin\Magento\Framework\View\TemplateEngine;
 
-use Magento\Framework\View\Element\BlockInterface;
+use Magento\Framework\View\Element\AbstractBlock;
 use Magento\Framework\View\TemplateEngine\Php as Subject;
+use Magewirephp\Magento\Framework\View\TemplateEngine\Php\TemplateRenderDataTransferObject;
+use Magewirephp\Magewire\Support\Factory;
 use function Magewirephp\Magewire\trigger;
 
 class Php
 {
+    private array $renderers = [];
+
     public function beforeRender(
         Subject $subject,
-        BlockInterface $block,
+        AbstractBlock $block,
         string $filename,
         array $dictionary = []
     ): array {
-        $renderTemplate = trigger('magento:template:render', $block, $filename, $dictionary);
+        $dto = Factory::create(TemplateRenderDataTransferObject::class, [
+            'block' => $block,
+            'filename' => $filename,
+            'dictionary' => $dictionary,
+        ]);
 
-        $result = ['block' => $block, 'filename' => $filename, 'dictionary' => $dictionary];
-        $result = $renderTemplate($result);
+        $this->renderers[] = trigger('magento:template:render', $dto, $subject);
 
-        return [$result['block'] ?? $block, $result['filename'] ?? $filename, $result['dictionary'] ?? $dictionary];
+        return [$dto->block(), $dto->filename(), $dto->dictionary()];
     }
 
     public function afterRender(Subject $subject, string $html): string
     {
-        $rendered = trigger('magento:template:rendered', $html);
-        return $rendered($html);
+        $finish = array_pop($this->renderers);
+
+        return $finish ? $finish($html, $subject) : $html;
     }
 }

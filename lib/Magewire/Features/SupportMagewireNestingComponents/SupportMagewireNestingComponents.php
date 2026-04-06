@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Features\SupportMagewireNestingComponents;
 
 use Magento\Framework\View\Element\AbstractBlock;
+use Magewirephp\Magento\Framework\View\TemplateEngine\Php\TemplateRenderDataTransferObject;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\ComponentHook;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\LayoutLifecycleManager;
@@ -26,21 +27,21 @@ class SupportMagewireNestingComponents extends ComponentHook
 
     public function provide(): void
     {
-        on('magento:template:render', function () {
-            return function (array $result) {
-                $magewire = $result['dictionary']['magewire'] ?? false;
+        on('magento:template:render', function (TemplateRenderDataTransferObject $dto) {
+            $dictionary = $dto->dictionary();
 
-                if ($magewire) {
-                    return $result;
-                }
+            if (isset($dictionary['magewire'])) {
+                return;
+            }
 
-                $closest = $this->renderLifecycleManager->target('magewire')->closestComponent($result['block']);
+            $closest = $this->renderLifecycleManager->target('magewire')->closestComponent($dto->block());
 
-                if ($closest) {
-                    $result['dictionary']['magewire'] = $closest;
-                }
+            if ($closest) {
+                $dto->dictionary(['magewire' => $closest]);
+            }
 
-                return $result;
+            return function ($html) {
+                return $html;
             };
         });
 

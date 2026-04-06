@@ -56,7 +56,6 @@ class SupportMagentoObserverEvents extends ComponentHook
             'magento:block:rendered',
 
             'magento:template:render',
-            'magento:template:rendered',
 
             // Magewire/Livewire core.
             'pre-mount',

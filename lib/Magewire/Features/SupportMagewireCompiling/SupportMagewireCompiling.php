@@ -15,6 +15,7 @@ use DateTime;
 use Magento\Framework\DataObject;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magento\Framework\View\Element\Template;
+use Magewirephp\Magento\Framework\View\TemplateEngine\Php\TemplateRenderDataTransferObject;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\ComponentHook;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler;
@@ -38,12 +39,12 @@ class SupportMagewireCompiling extends ComponentHook
 
     public function provide(): void
     {
-        on('magento:template:render', function (AbstractBlock $block, string $filename, array $dictionary) {
-            if (! $block instanceof DataObject) {
+        on('magento:template:render', function (TemplateRenderDataTransferObject $dto) {
+            if (! $dto->block() instanceof DataObject) {
                 return;
             }
 
-            $component = $block->getData('magewire');
+            $component = $dto->block()->getData('magewire');
 
             if (! $component instanceof Component) {
                 return;
@@ -51,31 +52,29 @@ class SupportMagewireCompiling extends ComponentHook
 
             $compiler = $component->magewireCompiler() ?? $component->magewireCompiler($this->compilerManager->factory()->newCompilerInstance());
 
-            return function (array $result) use ($component, $compiler, $block) {
-                $result['dictionary']['magewire'] = $component;
+            $dto->dictionary(['magewire' => $component]);
 
-                $path = $result['filename'];
+            if ($component->magewireCompiler()->canCompile()) {
+                $compiledPath = $compiler->management()->file()->generateFilePath($dto->filename());
 
-                if ($component->magewireCompiler()->canCompile()) {
-                    $result['filename'] = $compiler->management()->file()->generateFilePath($path);
-
-                    if ($compiler->requiresRecompile($path)) {
-                        trigger('magewire:view:compile', $compiler, $component, $block);
-                        $compiler->compile($path, $result['filename']);
-                    }
+                if ($compiler->requiresRecompile($dto->filename())) {
+                    trigger('magewire:view:compile', $compiler, $component, $dto->block());
+                    $compiler->compile($dto->filename(), $compiledPath);
                 }
 
-                // Concept: Include the Magewire underscore object optionally required by compiled views.
-                $result['dictionary']['__magewire'] ??= $this->underscoreViewModelFactory->create();
+                $dto->filename($compiledPath);
+            }
 
-                // Currently only for dev-purposes, will change over time and shouldn't be used.
-                if ($this->slotsRegistry->hasAreas()) {
-                    $result['dictionary']['__slot'] ??= $this->slotsRegistry->snapshot();
-                    $result['dictionary']['__el'] = $this->slotsRegistry->element();
-                }
+            // Concept: Include the Magewire underscore object optionally required by compiled views.
+            $dto->dictionary(['__magewire' => $dto->dictionary()['__magewire'] ?? $this->underscoreViewModelFactory->create()]);
 
-                return $result;
-            };
+            // Currently only for dev-purposes, will change over time and shouldn't be used.
+            if ($this->slotsRegistry->hasAreas()) {
+                $dto->dictionary([
+                    '__slot' => $dto->dictionary()['__slot'] ?? $this->slotsRegistry->snapshot(),
+                    '__el' => $this->slotsRegistry->element(),
+                ]);
+            }
         });
 
         before('magewire:view:compile', static function (Compiler $compiler) {
