@@ -36,7 +36,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
         <?php /* Pending notifications keyed by component id, consumed during commit.prepare. */ ?>
         const pending = new Map();
 
-        document.addEventListener('magewire:initialized', event => {
+        document.addEventListener('magewire:init', event => {
             const addons = window.MagewireAddons;
 
             Magewire.hook('commit.prepare', ({component}) => {

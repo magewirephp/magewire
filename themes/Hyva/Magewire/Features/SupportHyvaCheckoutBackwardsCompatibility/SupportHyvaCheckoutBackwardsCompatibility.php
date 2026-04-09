@@ -82,13 +82,20 @@ class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
                 $within = $within->isEnabled();
             }
 
-            // First check if none was set during hydration.
+            // A: First check if none was set during hydration.
             $within ??= $this->component ? store($this->component)->get('bc.enabled') : null;
-            // Alternatively, try to reach out to the actual use case.
+            // B: Try to reach out to the actual use case.
             $within ??= $this->renderLifecycleManager->target('magewire')->within('hyva-checkout-main');
 
-            if ($within === false) {
-                foreach ($this->temporaryHydrationRegistry->values() as $value) {
+            // C: When a Magewire component is dynamically injected onto the page via a subsequent
+            // Magewire request, it can not match any of the above use cases. Herefor, a unique
+            // situation occurs needing to search within the lifecycle to try and figure out if
+            // any of the requested components, rendered this child component.
+            if (! $within) {
+                foreach ($this->temporaryHydrationRegistry->list() as $value) {
+                    $this->temporaryHydrationRegistry->pop($value);
+
+                    // Found look upwards in the layout lifecycle, so flag it and break the current loop.
                     if ($this->renderLifecycleManager->target('magewire')->within($value)) {
                         $within = true;
                         break;

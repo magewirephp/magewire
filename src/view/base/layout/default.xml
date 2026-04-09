@@ -152,13 +152,17 @@
                    as="directives"
                    template="Magewirephp_Magewire::js/magewire/directives.phtml"
             >
-                <!-- The primary defense mechanism to mitigate an excessive influx of XHR requests. -->
-                <block name="magewire.directives.throttle"
-                       template="Magewirephp_Magewire::js/magewire/directives/throttle.phtml"
+                <!-- V1 backported wire:select directive enabling typing without a immediate sync. -->
+                <block name="magewire.directives.select"
+                       template="Magewirephp_Magewire::js/magewire/directives/select.phtml"
                 />
                 <!-- Manages notifications on the frontend, eliminating the need to use the $loader property in the component class. -->
-                <block name="magewire.directives.notify"
+                <block name="magewire.directives.mage-notify"
                        template="Magewirephp_Magewire::js/magewire/directives/notify.phtml"
+                />
+                <!-- The primary defense mechanism to mitigate an excessive influx of XHR requests. -->
+                <block name="magewire.directives.mage-throttle"
+                       template="Magewirephp_Magewire::js/magewire/directives/throttle.phtml"
                 />
             </block>
 

@@ -33,7 +33,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             }
         }
 
-        document.addEventListener('magewire:initialized', event => {
+        document.addEventListener('magewire:init', event => {
             Magewire.directive('mage:throttle', ({ el, directive, component, cleanup }) => {
                 let variant = variants[el.tagName.toLowerCase()]
 
