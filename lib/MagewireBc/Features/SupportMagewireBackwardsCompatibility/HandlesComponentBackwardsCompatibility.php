@@ -16,6 +16,7 @@ use Magewirephp\Magewire\Model\Concern\BrowserEvent as BrowserEventConcern;
 use Magewirephp\Magewire\Model\Concern\Emit as EmitConcern;
 use Magewirephp\Magewire\Model\Concern\Error as ErrorConcern;
 use Magewirephp\Magewire\Model\Concern\Request as RequestConcern;
+use Magewirephp\Magewire\Model\Concern\View;
 
 trait HandlesComponentBackwardsCompatibility
 {
@@ -23,6 +24,7 @@ trait HandlesComponentBackwardsCompatibility
     use BrowserEventConcern;
     use EmitConcern;
     use RequestConcern;
+    use View;
 
     /**
      * Component id.
