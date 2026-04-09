@@ -48,7 +48,8 @@ class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
 {
     public function __construct(
         private readonly LayoutLifecycleManager $renderLifecycleManager,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly TemporaryHydrationRegistry $temporaryHydrationRegistry
     ) {
     }
 
@@ -59,6 +60,7 @@ class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
         }
 
         store($this->component)->set('bc.enabled', $memo['bc']['enabled']);
+        $this->temporaryHydrationRegistry->push($this->component()->id());
     }
 
     public function dehydrate(ComponentContext $context): void
@@ -84,6 +86,15 @@ class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
             $within ??= $this->component ? store($this->component)->get('bc.enabled') : null;
             // Alternatively, try to reach out to the actual use case.
             $within ??= $this->renderLifecycleManager->target('magewire')->within('hyva-checkout-main');
+
+            if ($within === false) {
+                foreach ($this->temporaryHydrationRegistry->values() as $value) {
+                    if ($this->renderLifecycleManager->target('magewire')->within($value)) {
+                        $within = true;
+                        break;
+                    }
+                }
+            }
         } catch (ReflectionException $exception) {
             $this->logger->critical($exception->getMessage(), ['exception' => $exception]);
         }
