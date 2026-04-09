@@ -165,7 +165,34 @@ class LayoutResolver extends ComponentResolver
         $component->setId($block->getNameInLayout());
         $component->setAlias($component->getAlias() ?? $block->getData('magewire:alias'));
 
+        $this->determineTemplate($block, $component);
+
         return parent::assemble($block, $component);
+    }
+
+    /**
+     * Determines the template by a default template path
+     * when the path is not defined within the layout.
+     *
+     * Convention: {Vendor_Module::magewire/dashed-class-name.phtml}
+     */
+    protected function determineTemplate(AbstractBlock $block, Component $component): void
+    {
+        if ($block->getTemplate() !== null) {
+            return;
+        }
+
+        $classParts = array_values(
+            array_filter(
+                explode('\\', get_class($component)),
+                static fn (string $part) => $part !== 'Interceptor'
+            )
+        );
+
+        $prefix = $classParts[0] . '_' . $classParts[1];
+        $suffix = strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', end($classParts)));
+
+        $block->setTemplate($prefix . '::magewire/' . $suffix . '.phtml');
     }
 
     protected function generateBlocks(array $handles): array
