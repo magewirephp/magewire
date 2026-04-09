@@ -94,8 +94,7 @@ class LayoutResolver extends ComponentResolver
 
             if ($resolver->getAccessor() === $this->getAccessor()) {
                 if ($this->canMemorizeLayoutHandles()) {
-                    $handles = $context->getBlock()->getLayout()->getUpdate()->getHandles();
-                    $context->addMemo('handles', array_values($handles));
+                    $context->addMemo('handles', array_values($this->determineLayoutHandles($component, $context)));
                 }
 
                 if ($alias = $component->magewireBlock()->getData('magewire:alias')) {
@@ -132,7 +131,7 @@ class LayoutResolver extends ComponentResolver
         $blocks = $this->generateBlocks($handles);
 
         /** @var Template|false $block */
-        $block = $blocks[$alias ?? $name];
+        $block = $blocks[$alias ?? $name] ?? false;
 
         if ($block === false) {
             throw new HttpException(404, sprintf('Magewire component "%s" could not be found', $alias ?? $name));
@@ -195,6 +194,11 @@ class LayoutResolver extends ComponentResolver
     protected function isBlock(mixed $block): bool
     {
         return $block instanceof AbstractBlock;
+    }
+
+    protected function determineLayoutHandles(Component $component, ComponentContext $context): array
+    {
+        return $context->getBlock()->getLayout()->getUpdate()->getHandles();
     }
 
     protected function recoverLayoutHandles(Snapshot $snapshot): array

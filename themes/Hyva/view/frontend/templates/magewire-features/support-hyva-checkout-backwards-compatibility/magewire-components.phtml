@@ -30,7 +30,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             return new Proxy(wire, {
                 get(target, prop, receiver) {
                     if (prop === '__instance') {
-                        return makeComponentBackwardsCompatible(target.__instance);
+                        return magewireMakeComponentBackwardsCompatible(target.__instance);
                     }
 
                     return Reflect.get(target, prop, receiver);
@@ -39,8 +39,28 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
         };
     });
 
-    const makeComponentBackwardsCompatible = function(component) {
-        return new Proxy(component, {
+    const magewireIsComponentBackwardsCompatibilityEnabled = function(component) {
+        try {
+            return component.snapshot.memo.bc.enabled;
+        } catch (exception) {
+            console.log('TBD')
+        }
+
+        return false;
+    }
+
+    const magewireMakeComponentBackwardsCompatible = function(component) {
+        if (! magewireIsComponentBackwardsCompatibilityEnabled(component)) {
+            return component;
+        }
+
+        const checksum = component.snapshot?.checksum;
+
+        if (component.magewire?.bc?.checksum === checksum) {
+            return component.magewire.bc.proxy;
+        }
+
+        const proxy = new Proxy(component, {
             get(target, prop, receiver) {
                 if ('bc' in target.effects) {
                     const value = target.effects.bc[prop] || target.effects.bc.map[prop];
@@ -69,6 +89,11 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 return Reflect.has(target, prop);
             }
         });
+
+        component.magewire ??= {};
+        component.magewire.bc = { checksum, proxy };
+
+        return proxy;
     };
 </script>
 <?php $script->end() ?>

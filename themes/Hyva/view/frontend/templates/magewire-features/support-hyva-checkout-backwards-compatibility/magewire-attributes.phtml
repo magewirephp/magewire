@@ -17,32 +17,39 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
 ?>
 <?php $script = $magewireFragment->make()->script()->start() ?>
 <script>
+    function migrateWireModelAttributes(el, component) {
+        if (! 'bc' in component.snapshot.memo) {
+            return;
+        }
+        if (! component.snapshot.memo.bc['enabled']) {
+            return;
+        }
+
+        if (el.hasAttribute('wire:model')) {
+            const prop = el.getAttribute('wire:model');
+
+            el.removeAttribute('wire:model');
+            el.setAttribute('wire:model.live', prop);
+        }
+        if (el.hasAttribute('wire:model.defer')) {
+            const prop = el.getAttribute('wire:model.defer');
+
+            el.removeAttribute('wire:model.defer');
+            el.setAttribute('wire:model', prop);
+        }
+        if (el.hasAttribute('wire:model.lazy')) {
+            const prop = el.getAttribute('wire:model.lazy');
+
+            el.removeAttribute('wire:model.lazy');
+            el.setAttribute('wire:model.blur', prop);
+        }
+    }
+
     Magewire.hook('element.init', ({ el, component }) => {
-        if (! 'bc' in component.snapshot.memo) {
-            return;
-        }
-        if (! component.snapshot.memo.bc['enabled'] || ! el.hasAttribute('wire:model')) {
-            return;
-        }
-
-        const prop = el.getAttribute('wire:model');
-
-        el.removeAttribute('wire:model');
-        el.setAttribute('wire:model.live', prop);
+        migrateWireModelAttributes(el, component);
     });
-
     Magewire.hook('morph.updating', ({ el, toEl, component }) => {
-        if (! 'bc' in component.snapshot.memo) {
-            return;
-        }
-        if (! component.snapshot.memo.bc['enabled'] || ! toEl.hasAttribute('wire:model')) {
-            return;
-        }
-
-        const prop = toEl.getAttribute('wire:model');
-
-        toEl.removeAttribute('wire:model');
-        toEl.setAttribute('wire:model.live', prop);
+        migrateWireModelAttributes(toEl, component);
     });
 </script>
 <?php $script->end() ?>

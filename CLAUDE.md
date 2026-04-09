@@ -32,7 +32,7 @@ vendor/bin/rector process dist/     # Apply PHP 8.2 upgrades to dist/
 mago lint                           # Run linter on source directories
 mago format                         # Format code (PSR-12 preset, see mago.toml)
 ```
-Note: `dist/`, `node_modules/`, and `lib/Livewire` are excluded. Dead code and unused definition analysis are disabled due to Magento DI patterns.
+Note: `dist/`, `node_modules/`, and `lib/Livewire` are excluded. Dead code and unused definition analysis are disabled due to Magento DI patterns. Formatter uses PSR-12 with single quotes, 200 char print width, and `sort-uses` enabled (see `mago.toml`).
 
 ### Playwright E2E Tests
 ```bash
@@ -41,6 +41,7 @@ cp .env.example .env               # Configure BASE_URL + credentials
 npm install && npx playwright install
 npx playwright test                 # Run headless
 npx playwright test --ui            # Interactive UI mode
+npx playwright test tests/example.spec.ts  # Run a single test file
 ```
 Requires Magento Sample Data. Test fixtures provide browser contexts for guest, customer, admin, and API access.
 
@@ -136,9 +137,10 @@ To update to a new Livewire version, change `version-lock` in `portman.config.ph
 
 ## Skills
 
-Four `.claude/skills/` files provide deep context — use the Skill tool to load them when relevant:
+Five `.claude/skills/` files provide deep context — use the Skill tool to load them when relevant:
 
 - `magewire` — component API, lifecycle hooks, `wire:*` directives
 - `magewire-architecture` — internals: Mechanisms, Features, snapshot flow, DI patterns
 - `magewire-javascript` — CSP-compatible JS, Alpine.js integration, multi-theme patterns
 - `magewire-portman` — Portman CLI: porting workflow, augmentation files, rebuilding dist/
+- `magewire-best-practices` — coding rules for components, properties, templates, DI, events, security, performance
