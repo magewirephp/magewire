@@ -107,7 +107,8 @@ State progression: `UNINITIALIZED → SETUP → BOOTING → BOOTED` (or `FAILED`
 
 Three global observers bootstrap the framework into Magento's request lifecycle:
 - `controller_action_predispatch` — early setup via `ControllerActionPredispatch`
-- `view_block_abstract_to_html_before` / `_after` — intercepts block rendering to resolve and render Magewire components
+- `view_block_abstract_to_html_before` — intercepts block rendering to resolve Magewire components
+- `view_block_abstract_to_html_after` — completes component rendering after block output
 
 The update endpoint is registered via `src/etc/frontend/di.xml` as a custom router (sort_order 5) handling `magewire/update` POST requests.
 
@@ -137,10 +138,11 @@ To update to a new Livewire version, change `version-lock` in `portman.config.ph
 
 ## Skills
 
-Five `.claude/skills/` files provide deep context — use the Skill tool to load them when relevant:
+Six `.claude/skills/` files provide deep context — use the Skill tool to load them when relevant:
 
 - `magewire` — component API, lifecycle hooks, `wire:*` directives
 - `magewire-architecture` — internals: Mechanisms, Features, snapshot flow, DI patterns
 - `magewire-javascript` — CSP-compatible JS, Alpine.js integration, multi-theme patterns
 - `magewire-portman` — Portman CLI: porting workflow, augmentation files, rebuilding dist/
 - `magewire-best-practices` — coding rules for components, properties, templates, DI, events, security, performance
+- `magewire-backwards-compatibility` — v1→v3 migration, BC memo flag, wire:model/entangle behavioral changes

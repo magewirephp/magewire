@@ -26,14 +26,29 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 Magewire.trigger('component.initialized', component);
             });
 
+            <?php /* @deprecated 'component.call()' has been replaced with 'component.$wire.call()'. */ ?>
+            Object.defineProperty(component, 'call', {
+                value: function (method, ...params) {
+                    return this.$wire.call(method, ...params);
+                },
+                configurable: true
+            });
+
             Object.defineProperty(component, 'deferredActions', {
                 get() {
-                    return this.queuedUpdates;
+                    const diffs = {};
+
+                    for (const key of Object.keys(this.canonical)) {
+                        if (JSON.stringify(this.canonical[key]) !== JSON.stringify(this.reactive[key])) {
+                            diffs[key] = this.reactive[key];
+                        }
+                    }
+
+                    return Object.assign(diffs, this.queuedUpdates);
                 },
                 set(v) {
                     this.queuedUpdates = v;
                 },
-
                 configurable: true
             });
 
