@@ -22,6 +22,7 @@ use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\LayoutManager;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 use function Magewirephp\Magewire\on;
+use function Magewirephp\Magewire\trigger;
 
 class ResolveComponents
 {
@@ -98,7 +99,10 @@ class ResolveComponents
             $component->magewireResolver($resolver);
             $component->magewireLayoutLifecycle($lifecycle);
 
-            return $resolver->assemble($block, $component);
+            $assembly = $resolver->assemble($block, $component);
+            trigger('magewire:component:build', $assembly, $component, $resolver);
+
+            return $assembly;
         };
     }
 }

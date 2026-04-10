@@ -13,7 +13,6 @@ namespace Magewirephp\Magewire\Features\SupportMagewireCompiling;
 
 use DateTime;
 use Magento\Framework\DataObject;
-use Magento\Framework\View\Element\AbstractBlock;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magento\Framework\View\TemplateEngine\Php\TemplateRenderDataTransferObject;
 use Magewirephp\Magewire\Component;
@@ -28,8 +27,6 @@ use function Magewirephp\Magewire\trigger;
 
 class SupportMagewireCompiling extends ComponentHook
 {
-    private int $i = 0;
-
     public function __construct(
         private MagewireUnderscoreViewModelFactory $underscoreViewModelFactory,
         private CompilerManager $compilerManager,
@@ -50,7 +47,9 @@ class SupportMagewireCompiling extends ComponentHook
                 return;
             }
 
-            $compiler = $component->magewireCompiler() ?? $component->magewireCompiler($this->compilerManager->factory()->newCompilerInstance());
+            $compiler = $component->magewireCompiler() ?? $component->magewireCompiler(
+                $this->compilerManager->factory()->newCompilerInstance()
+            );
 
             $dto->dictionary(['magewire' => $component]);
 
