@@ -179,6 +179,18 @@
                 <block name="magewire.features.support-magewire-rate-limiting"
                        template="Magewirephp_Magewire::js/magewire/features/support-magewire-rate-limiting/support-magewire-rate-limiting.phtml"
                 />
+                <block name="magewire.features.support-magewire-exception-handling"
+                       template="Magewirephp_Magewire::js/magewire/features/support-magewire-exception-handling/support-magewire-exception-handling.phtml"
+                >
+                    <block name="magewire.features.support-magewire-exception-handling.addon"
+                           as="addon"
+                           template="Magewirephp_Magewire::js/magewire/features/support-magewire-exception-handling/addon.phtml"
+                    />
+                    <block name="magewire.features.support-magewire-exception-handling.component"
+                           as="component"
+                           template="Magewirephp_Magewire::js/magewire/features/support-magewire-exception-handling/component.phtml"
+                    />
+                </block>
             </block>
 
             <container name="magewire.after.internal" as="after.internal"/>
@@ -197,7 +209,11 @@
             </container>
 
             <!-- Intended for everything else not-related to features or directive. -->
-            <container name="magewire.after" as="after"/>
+            <container name="magewire.after" as="after">
+                <block name="magewire.features.support-magewire-exception-handling.panel"
+                       template="Magewirephp_Magewire::magewire/features/support-magewire-exception-handling/error-panel.phtml"
+                />
+            </container>
 
             <!-- Maintains backward compatibility for blocks and containers created in V1. -->
             <container name="magewire.legacy" as="legacy">

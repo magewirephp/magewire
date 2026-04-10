@@ -1,0 +1,77 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment  = $magewireViewModel->utils()->fragment();
+
+/** @internal Do not modify to ensure Magewire continues to function correctly. */
+?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    function magewireExceptionHandlerAddon() {
+        'use strict';
+
+        return {
+            visible: false,
+            error: null,
+            traceExpanded: false,
+
+            show: function(errorData) {
+                <?php /* Pre-process trace data for CSP compatibility.
+                         Global functions like String.split() and Array.slice() cannot
+                         be called from Alpine HTML attribute expressions. */ ?>
+                if (errorData.trace) {
+                    errorData.trace = errorData.trace.filter(function(frame) {
+                        return frame.file !== null;
+                    }).map(function(frame, index) {
+                        var classParts = frame['class'] ? frame['class'].split('\\') : [];
+
+                        return {
+                            index: index,
+                            file: frame.file || '<?= $escaper->escapeJs(__('unknown')) ?>',
+                            line: frame.line || 0,
+                            className: classParts.length > 0 ? classParts[classParts.length - 1] : '',
+                            fullClass: frame['class'] || '',
+                            functionName: frame['function'] || '<?= $escaper->escapeJs(__('unknown')) ?>',
+                            location: (frame.file || '<?= $escaper->escapeJs(__('unknown')) ?>') + ':' + (frame.line || 0)
+                        };
+                    });
+                } else {
+                    errorData.trace = [];
+                }
+
+                <?php /* Pre-compute the short exception type name. */ ?>
+                var typeParts = errorData.type ? errorData.type.split('\\') : [];
+                errorData.shortType = typeParts.length > 0 ? typeParts[typeParts.length - 1] : '<?= $escaper->escapeJs(__('Unknown')) ?>';
+                errorData.typeNamespace = typeParts.length > 1 ? typeParts.slice(0, -1).join('\\') : '';
+                errorData.traceCount = errorData.trace.length;
+
+                this.error = errorData;
+                this.visible = true;
+                this.traceExpanded = false;
+            },
+
+            dismiss: function() {
+                this.visible = false;
+                this.error = null;
+            },
+
+            toggleTrace: function() {
+                this.traceExpanded = !this.traceExpanded;
+            }
+        };
+    }
+
+    <?php /* Register as Magewire addon. */ ?>
+    window.MagewireAddons.register('exceptionHandler', magewireExceptionHandlerAddon, true);
+</script>
+<?php $script->end() ?>

@@ -1,0 +1,147 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$templateUtil = $magewireViewModel->utils()->template();
+?>
+<?= $templateUtil->echoCodeComment('exception handler', false, 'Error Panel') ?>
+<div x-data="magewireExceptionHandler"
+     x-show="visible"
+     x-bind="bindings.overlay.root"
+     x-cloak
+     class="magewire-exception-handler-overlay"
+>
+    <div x-bind="bindings.panel.root"
+         x-show="visible"
+         x-transition:enter="magewire-exception-handler-transition-enter"
+         x-transition:enter-start="magewire-exception-handler-transition-enter-start"
+         x-transition:enter-end="magewire-exception-handler-transition-enter-end"
+         x-transition:leave="magewire-exception-handler-transition-leave"
+         x-transition:leave-start="magewire-exception-handler-transition-leave-start"
+         x-transition:leave-end="magewire-exception-handler-transition-leave-end"
+         class="magewire-exception-handler-panel"
+         role="dialog"
+         aria-modal="true"
+    >
+        <div class="magewire-exception-handler-header">
+            <div class="magewire-exception-handler-badge">
+                <span class="magewire-exception-handler-badge-dot"></span>
+                <span x-show="error" x-text="errorShortType">
+                    <!-- Exception type placeholder. -->
+                </span>
+            </div>
+
+            <button x-on:click="dismiss"
+                    class="magewire-exception-handler-close"
+                    type="button"
+                    aria-label="<?= $escaper->escapeHtmlAttr(__('Close')) ?>"
+            >
+                <svg viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                    <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z"/>
+                </svg>
+            </button>
+        </div>
+
+        <template x-if="error">
+            <div>
+                <p x-show="error.typeNamespace"
+                   x-text="error.typeNamespace"
+                   class="magewire-exception-handler-namespace"
+                >
+                    <!-- Namespace placeholder. -->
+                </p>
+
+                <div class="magewire-exception-handler-divider"></div>
+
+                <p x-text="error.message" class="magewire-exception-handler-message">
+                    <!-- Error message placeholder. -->
+                </p>
+
+                <div class="magewire-exception-handler-location">
+                    <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+                        <path fill-rule="evenodd" d="M4.5 2A1.5 1.5 0 003 3.5v13A1.5 1.5 0 004.5 18h11a1.5 1.5 0 001.5-1.5V7.621a1.5 1.5 0 00-.44-1.06l-4.12-4.122A1.5 1.5 0 0011.378 2H4.5zm2.25 8.5a.75.75 0 000 1.5h6.5a.75.75 0 000-1.5h-6.5zm0 3a.75.75 0 000 1.5h6.5a.75.75 0 000-1.5h-6.5z" clip-rule="evenodd"/>
+                    </svg>
+                    <span x-text="error.file" class="magewire-exception-handler-file">
+                        <!-- File path placeholder. -->
+                    </span>
+                    <span class="magewire-exception-handler-line-separator">:</span>
+                    <span x-text="error.line" class="magewire-exception-handler-line">
+                        <!-- Line number placeholder. -->
+                    </span>
+                </div>
+
+                <div x-show="hasTrace" class="magewire-exception-handler-trace-section">
+                    <button x-bind="bindings.trace.toggle"
+                            class="magewire-exception-handler-trace-toggle"
+                            type="button"
+                    >
+                        <svg :class="chevronClass"
+                             class="magewire-exception-handler-chevron"
+                             viewBox="0 0 20 20"
+                             fill="currentColor"
+                             width="16"
+                             height="16"
+                        >
+                            <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd"/>
+                        </svg>
+
+                        <span><?= $escaper->escapeHtml(__('Stack Trace')) ?></span>
+
+                        <span x-text="traceCountLabel"
+                              class="magewire-exception-handler-trace-count"
+                        >
+                            <!-- Trace count placeholder. -->
+                        </span>
+                    </button>
+
+                    <div x-show="traceExpanded"
+                         x-transition:enter="magewire-exception-handler-transition-enter"
+                         x-transition:enter-start="magewire-exception-handler-transition-enter-start"
+                         x-transition:enter-end="magewire-exception-handler-transition-enter-end"
+                         class="magewire-exception-handler-trace-list"
+                    >
+                        <template x-for="frame in error.trace">
+                            <div class="magewire-exception-handler-trace-frame">
+                                <span x-text="frameIndex"
+                                      class="magewire-exception-handler-trace-index"
+                                >
+                                    <!-- Frame index placeholder. -->
+                                </span>
+
+                                <div class="magewire-exception-handler-trace-detail">
+                                    <span x-show="isFrameMethod"
+                                          x-text="frameMethod"
+                                          class="magewire-exception-handler-trace-method"
+                                    >
+                                        <!-- Method placeholder. -->
+                                    </span>
+                                    <span x-show="isFrameFunction"
+                                          x-text="frameFunction"
+                                          class="magewire-exception-handler-trace-method"
+                                    >
+                                        <!-- Function placeholder. -->
+                                    </span>
+
+                                    <span x-text="frame.location"
+                                          class="magewire-exception-handler-trace-location"
+                                    >
+                                        <!-- Location placeholder. -->
+                                    </span>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+</div>

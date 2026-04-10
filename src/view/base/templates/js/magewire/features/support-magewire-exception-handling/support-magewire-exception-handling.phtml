@@ -1,0 +1,67 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment  = $magewireViewModel->utils()->fragment();
+
+/** @internal Do not modify to ensure Magewire continues to function correctly. */
+?>
+<?= $block->getChildHtml('addon') ?>
+<?= $block->getChildHtml('component') ?>
+
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    document.addEventListener('magewire:init', function() {
+        const addons = window.MagewireAddons;
+
+        Magewire.hook('request', function({ fail }) {
+            fail(function({ status, content, preventDefault }) {
+                <?php /* Skip statuses handled by other features. */ ?>
+                if (status === 419 || status === 429) {
+                    return;
+                }
+
+                var errorData = null;
+
+                try {
+                    var parsed = JSON.parse(content);
+
+                    if (parsed.magewire_error) {
+                        errorData = parsed;
+                    }
+                } catch (e) {
+                    <?php /* Not JSON (e.g., dd() dump or HTML error page). */ ?>
+                    return;
+                }
+
+                if (! errorData) {
+                    return;
+                }
+
+                preventDefault();
+
+                if (errorData.trace && addons.has('exceptionHandler')) {
+                    <?php /* Developer mode: show the detailed error panel. */ ?>
+                    addons.exceptionHandler.show(errorData);
+                } else if (addons.has('notifier')) {
+                    <?php /* Production mode: show a clean notification. */ ?>
+                    addons.notifier.create(errorData.message || '<?= $escaper->escapeJs(__('Something went wrong. Please try again later.')) ?>', {
+                        type: 'error',
+                        duration: 0
+                    });
+                }
+            });
+        });
+
+    }, { once: true });
+</script>
+<?php $script->end() ?>
