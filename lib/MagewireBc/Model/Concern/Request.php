@@ -14,17 +14,25 @@ namespace Magewirephp\Magewire\Model\Concern;
 use Magento\Framework\App\ObjectManager;
 use Magewirephp\Magewire\Model\Request as MagewireRequest;
 use Magewirephp\Magewire\Model\RequestInterface;
+use Magewirephp\Magewire\Support\Factory;
 
 /**
  * @deprecated TBD
  */
 trait Request
 {
+    /** @deprecated TBD */
+    private RequestInterface|null $__magewireRequest = null;
+
     /**
      * @deprecated TBD
      */
-    public function getRequest(): RequestInterface
+    public function getRequest(RequestInterface|null $request = null): RequestInterface
     {
-        return ObjectManager::getInstance()->get(MagewireRequest::class);
+        if ($request) {
+            $this->__magewireRequest = $request;
+        }
+
+        return $this->__magewireRequest ??= Factory::create(RequestInterface::class);
     }
 }

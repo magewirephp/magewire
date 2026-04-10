@@ -16,6 +16,15 @@ use Magewirephp\Magewire\MagewireServiceProvider;
  */
 class Request implements RequestInterface
 {
+    public $message;
+    public $fingerprint;
+    public $memo;
+    public $meta;
+    public $updates;
+
+    protected bool $isSubsequent = false;
+    protected bool $isRefreshing = false;
+
     public function __construct(
         private readonly \Magento\Framework\App\RequestInterface $request,
         private readonly MagewireServiceProvider $magewireServiceProvider
@@ -42,13 +51,18 @@ class Request implements RequestInterface
         return $this;
     }
 
-    public function getServerMemo(string $index)
+    public function getServerMemo(string|null $index = null)
     {
-        // TODO: Implement getServerMemo() method.
+        if ($index !== null && is_array($this->memo)) {
+            return $this->memo[$index] ?? null;
+        }
+
+        return $this->memo;
     }
 
     public function setServerMemo($memo): \Magewirephp\Magewire\Model\RequestInterface
     {
+        $this->memo = $memo;
         return $this;
     }
 
