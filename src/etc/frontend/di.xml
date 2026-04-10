@@ -2,6 +2,11 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd"
 >
+    <!-- Frontend Preferences -->
+    <preference for="Magewirephp\Magewire\Model\RequestInterface"
+                type="Magewirephp\Magewire\Model\Request"
+    />
+
     <!--
         Bindings: Frontend Proxies
 
