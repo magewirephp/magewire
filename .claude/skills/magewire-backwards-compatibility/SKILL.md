@@ -183,7 +183,7 @@ class MyLegacyComponent extends Component
     // This component gets BC behavior regardless of layout position
 }
 
-#[HandleBackwardsCompatibility(enable: false)]
+#[HandleBackwardsCompatibility(enabled: false)]
 class MyModernComponent extends Component
 {
     // Explicitly opt out, even if inside hyva-checkout-main

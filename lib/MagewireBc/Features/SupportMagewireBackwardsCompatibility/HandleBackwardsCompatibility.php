@@ -17,12 +17,12 @@ use Attribute;
 class HandleBackwardsCompatibility
 {
     public function __construct(
-        public readonly bool $enable = true
+        public readonly bool $enabled = true
     ) {
     }
 
-    public function isEnabled(): bool
+    public function isBackwardsCompatible(): bool
     {
-        return $this->enable;
+        return $this->enabled;
     }
 }

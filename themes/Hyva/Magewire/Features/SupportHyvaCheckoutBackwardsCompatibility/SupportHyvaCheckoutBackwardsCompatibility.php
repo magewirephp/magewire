@@ -79,7 +79,7 @@ class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
             $within = AttributesReader::for($this->component())->first(HandleBackwardsCompatibility::class);
 
             if ($within instanceof HandleBackwardsCompatibility) {
-                $within = $within->isEnabled();
+                $within = $within->isBackwardsCompatible();
             }
 
             // A: First check if none was set during hydration.

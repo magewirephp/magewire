@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What is Magewire
 
-Magewire is a reactive component framework for Magento 2, inspired by Laravel Livewire v3. It ports the Livewire PHP core into Magento via a CLI tool called **Portman**, then layers Magento-specific integrations on top.
+Magewire is a reactive component framework for Magento 2, inspired by Laravel Livewire v3. It ports the Livewire PHP core into Magento via a CLI tool called **Portman**, then layers Magento-specific integrations on top. Currently at **3.0.0-beta1**.
 
 ## Commands
 
@@ -102,6 +102,49 @@ State progression: `UNINITIALIZED → SETUP → BOOTING → BOOTED` (or `FAILED`
 **Features** — optional `ComponentHook` subclasses, hooked into lifecycle signals via `on()`. Named with `SupportMagewire*` (Magewire-specific) or `SupportMagento*` (Magento bridge) prefixes.
 
 **Critical DI rule:** Features and Mechanisms MUST be registered in area-scoped DI (`etc/frontend/di.xml` or `etc/adminhtml/di.xml`), **never** in global `etc/di.xml`. This allows per-area and per-theme customization.
+
+### DI Registration Item Structure
+
+Each Mechanism/Feature is registered as a named item with these optional keys:
+
+| Key | Type | Purpose |
+|-----|------|---------|
+| `type` | string | Fully-qualified class name (required) |
+| `sort_order` | number | Boot priority — lower loads first |
+| `facade` | string | Request-scoped facade class for external access |
+| `view_model` | object | ViewModel for PHTML rendering context |
+| `boot_mode` | number | When to boot: `10` LAZY, `20` PERSISTENT (survives across requests), `30` ALWAYS (default) |
+| `data` | array | Mechanism/Feature-specific configuration (e.g., script paths, query params) |
+| `sequence` | array | Dependencies on other Features that must boot first |
+
+### Feature Sort Order Convention
+
+- **1000–2000:** Ported Livewire features (follow upstream registration order)
+- **5000–5200:** Magewire-specific features (Magento bridges, loaders, notifications)
+- **99000+:** Highest priority — must load last (lifecycle hooks, compiler, observer events)
+
+### Containers (Laravel `app()` Bridge)
+
+Livewire code calls `app()` to resolve services from Laravel's container. In Magewire, the `Containers` service type maps these lookups to Magento DI bindings registered in area-scoped `di.xml`. Currently provides `livewire` and `redirect` containers.
+
+### Synthesizers
+
+Registered via DI on `HandleComponents`, synthesizers handle serialization of complex property types into snapshots. Built-in synths: `DataObjectSynth` (Magento DataObjects), `ArraySynth`, `EnumSynth`, `FloatSynth`, `IntSynth`, `StdClassSynth`. Custom synthesizers can be added via DI.
+
+### Template Compiler & Directives
+
+The `SupportMagewireCompiling` feature provides a PHTML template compiler with directive areas, each scoped to a domain:
+
+- **Base** (no prefix): `@json`, `@if`, `@foreach`, `@script`, `@fragment`, `@slot`, `@template`, `@translate`, `@child`, `@auth`, `@guest`
+- **Block** (`@render.*`): `@render.parent`, `@render.child`
+- **Escape** (`@escape.*`): `@escape.url`, `@escape.attr`, `@escape.js`, `@escape.html`, `@escape.css`
+- **Magewire** (`@magewire.*`), **AlpineJS** (`@alpinejs.*`), **TailwindCSS** (`@twcss.*`): extensible via DI
+
+Directives and directive areas are registered in area-scoped DI as virtualTypes, making them customizable per-area/per-theme.
+
+### Component Resolvers
+
+The `ResolveComponents` mechanism uses pluggable resolvers (registered via DI on `ComponentResolverManager`) to discover and reconstruct components. The default `LayoutResolver` finds Magewire blocks from Magento layout XML.
 
 ## Magento Entry Points (`src/etc/events.xml`)
 
