@@ -34,7 +34,7 @@ class SupportLifecycleHooksPlugin
         $component = $subject->component();
 
         // Continue if components isn't available or backwards compatible.
-        if (! $component || ! store($component)->get('magewire:bc') ?? false) {
+        if (! is_string($name) || ! $component || ! store($component)->get('magewire:bc') ?? false) {
             return [$name, $params];
         }
 
