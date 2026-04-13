@@ -14,6 +14,10 @@ $magewireViewModel = $block->getData('view_model');
 $magewireFragment  = $magewireViewModel->utils()->fragment();
 
 /** @internal Do not modify to ensure Magewire continues to function correctly. */
+
+if (! $magewireViewModel->isDeveloperMode()) {
+    return;
+}
 ?>
 <?php $script = $magewireFragment->make()->script()->start() ?>
 <script>

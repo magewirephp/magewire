@@ -12,6 +12,10 @@ use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
 
 $magewireViewModel = $block->getData('view_model');
 $templateUtil = $magewireViewModel->utils()->template();
+
+if (! $magewireViewModel->isDeveloperMode()) {
+    return;
+}
 ?>
 <?= $templateUtil->echoCodeComment('exception handler', false, 'Error Panel') ?>
 <div x-data="magewireExceptionHandler"
