@@ -25,8 +25,22 @@ $magewireFragment  = $magewireViewModel->utils()->fragment();
 
         Magewire.hook('request', function({ fail }) {
             fail(function({ status, content, preventDefault }) {
-                <?php /* Skip statuses handled by other features. */ ?>
-                if (status === 419 || status === 429) {
+                <?php /* 429 handled by rate-limiting feature. */ ?>
+                if (status === 429) {
+                    return;
+                }
+
+                <?php /* 419 = CSRF/session expired — surface a clear message rather than silent failure. */ ?>
+                if (status === 419) {
+                    preventDefault();
+
+                    if (addons.has('notifier')) {
+                        addons.notifier.create('<?= $escaper->escapeJs(__('Session expired — please refresh the page.')) ?>', {
+                            type: 'error',
+                            duration: 0
+                        });
+                    }
+
                     return;
                 }
 

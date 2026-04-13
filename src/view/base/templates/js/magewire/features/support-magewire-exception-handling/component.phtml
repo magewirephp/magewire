@@ -35,7 +35,14 @@ $magewireFragment  = $magewireViewModel->utils()->fragment();
                 return addon.traceExpanded;
             },
 
-<?php /* START: Only add those methods that should become CSP compatible. */ ?>
+            get copied() {
+                return addon.copied;
+            },
+
+            isNotCopied: function() {
+                return !addon.copied;
+            },
+
             dismiss: function() {
                 addon.dismiss();
             },
@@ -79,6 +86,35 @@ $magewireFragment  = $magewireViewModel->utils()->fragment();
             frameFunction: function() {
                 return this.frame.functionName + '()';
             },
+
+            copy: function() {
+                var e = this.error;
+                if (!e) return;
+
+                var lines = [e.type];
+
+                if (e.file) {
+                    lines.push(e.file + (e.line ? ':' + e.line : ''));
+                }
+
+                lines.push('', e.message);
+
+                if (e.trace && e.trace.length) {
+                    lines.push('');
+                    e.trace.forEach(function(frame) {
+                        var method = frame.className
+                            ? frame.className + '::' + frame.functionName + '()'
+                            : frame.functionName + '()';
+                        lines.push('#' + frame.index + '  ' + method);
+                        lines.push('    ' + frame.location);
+                    });
+                }
+
+                navigator.clipboard.writeText(lines.join('\n')).then(function() {
+                    addon.copied = true;
+                    setTimeout(function() { addon.copied = false; }, 1500);
+                }).catch(function() {});
+            },
             <?php /* END */ ?>
 
             bindings: {
@@ -112,7 +148,6 @@ $magewireFragment  = $magewireViewModel->utils()->fragment();
         }
     }
 
-    <?php /* Register as Alpine component. */ ?>
     document.addEventListener('alpine:init', () => Alpine.data('magewireExceptionHandler', magewireExceptionHandler), { once: true });
 </script>
 <?php $script->end() ?>

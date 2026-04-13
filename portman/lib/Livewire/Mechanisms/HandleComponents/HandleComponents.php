@@ -485,7 +485,7 @@ class HandleComponents extends Mechanism
             $methods[] = '__dispatch';
 
             if (! in_array($method, $methods)) {
-                throw new MethodNotFoundException($method);
+                throw new MethodNotFoundException($method, $root);
             }
 
             if (config('app.debug')) $start = microtime(true);

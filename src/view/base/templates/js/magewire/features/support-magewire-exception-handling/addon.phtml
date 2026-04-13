@@ -24,25 +24,26 @@ $magewireFragment  = $magewireViewModel->utils()->fragment();
             visible: false,
             error: null,
             traceExpanded: false,
+            copied: false,
 
             show: function(errorData) {
-                <?php /* Pre-process trace data for CSP compatibility.
-                         Global functions like String.split() and Array.slice() cannot
-                         be called from Alpine HTML attribute expressions. */ ?>
                 if (errorData.trace) {
-                    errorData.trace = errorData.trace.filter(function(frame) {
-                        return frame.file !== null;
-                    }).map(function(frame, index) {
+                    errorData.trace = errorData.trace.map(function(frame, index) {
                         var classParts = frame['class'] ? frame['class'].split('\\') : [];
+                        var hasFile    = frame.file !== null && frame.file !== undefined;
 
                         return {
                             index: index,
-                            file: frame.file || '<?= $escaper->escapeJs(__('unknown')) ?>',
-                            line: frame.line || 0,
+                            file: hasFile ? frame.file : null,
+                            line: frame.line || null,
                             className: classParts.length > 0 ? classParts[classParts.length - 1] : '',
                             fullClass: frame['class'] || '',
                             functionName: frame['function'] || '<?= $escaper->escapeJs(__('unknown')) ?>',
-                            location: (frame.file || '<?= $escaper->escapeJs(__('unknown')) ?>') + ':' + (frame.line || 0)
+                            location: hasFile
+                                ? (frame.file + (frame.line ? ':' + frame.line : ''))
+                                : '[internal function]',
+                            isVendor: !hasFile || frame.file.startsWith('vendor/'),
+                            vendorClass: (!hasFile || frame.file.startsWith('vendor/')) ? 'magewire-exception-handler-trace-frame--vendor' : ''
                         };
                     });
                 } else {
@@ -54,6 +55,7 @@ $magewireFragment  = $magewireViewModel->utils()->fragment();
                 errorData.shortType = typeParts.length > 0 ? typeParts[typeParts.length - 1] : '<?= $escaper->escapeJs(__('Unknown')) ?>';
                 errorData.typeNamespace = typeParts.length > 1 ? typeParts.slice(0, -1).join('\\') : '';
                 errorData.traceCount = errorData.trace.length;
+                errorData.hasLine = errorData.line !== null && errorData.line !== undefined;
 
                 this.error = errorData;
                 this.visible = true;
@@ -63,6 +65,7 @@ $magewireFragment  = $magewireViewModel->utils()->fragment();
             dismiss: function() {
                 this.visible = false;
                 this.error = null;
+                this.copied = false;
             },
 
             toggleTrace: function() {

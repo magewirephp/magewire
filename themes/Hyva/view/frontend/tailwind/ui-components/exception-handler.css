@@ -55,6 +55,12 @@
     margin-bottom: 0.75rem;
 }
 
+.magewire-exception-handler-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+}
+
 .magewire-exception-handler-badge {
     display: inline-flex;
     align-items: center;
@@ -77,6 +83,18 @@
     flex-shrink: 0;
 }
 
+@keyframes mw-eh-pop {
+    0%   { transform: scale(0.6); opacity: 0; }
+    60%  { transform: scale(1.2); }
+    100% { transform: scale(1);   opacity: 1; }
+}
+
+.magewire-exception-handler-copy-confirm {
+    animation: mw-eh-pop 200ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    color: #4ade80;
+}
+
+.magewire-exception-handler-copy,
 .magewire-exception-handler-close {
     display: flex;
     align-items: center;
@@ -135,6 +153,10 @@
         position: relative;
         top: 0.175em;
     }
+}
+
+.magewire-exception-handler-file-location {
+    min-width: 0;
 }
 
 .magewire-exception-handler-file {
@@ -213,6 +235,15 @@
 
     &:last-child {
         border-bottom: none;
+    }
+}
+
+.magewire-exception-handler-trace-frame--vendor {
+    opacity: 0.4;
+    transition: opacity 150ms;
+
+    &:hover {
+        opacity: 1;
     }
 }
 
