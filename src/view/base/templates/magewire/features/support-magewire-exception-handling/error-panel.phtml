@@ -13,7 +13,7 @@ use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
 $magewireViewModel = $block->getData('view_model');
 $templateUtil = $magewireViewModel->utils()->template();
 
-if (! $magewireViewModel->isDeveloperMode()) {
+if (! $magewireViewModel->utils()->env()->isDeveloperMode()) {
     return;
 }
 ?>
