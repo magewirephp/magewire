@@ -1,0 +1,157 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment  = $magewireViewModel->utils()->fragment();
+
+/** @internal Do not modify to ensure Magewire continues to function correctly. */
+
+if (! $magewireViewModel->utils()->env()->isDeveloperMode()) {
+    return;
+}
+?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    function magewireExceptionHandler() {
+        'use strict';
+
+        const addon = window.MagewireAddons.exceptionHandler;
+
+        return {
+            get visible() {
+                return addon.visible;
+            },
+
+            get error() {
+                return addon.error;
+            },
+
+            get traceExpanded() {
+                return addon.traceExpanded;
+            },
+
+            get copied() {
+                return addon.copied;
+            },
+
+            isNotCopied: function() {
+                return !addon.copied;
+            },
+
+            dismiss: function() {
+                addon.dismiss();
+            },
+
+            toggleTrace: function() {
+                addon.toggleTrace();
+            },
+
+            errorShortType: function() {
+                return this.error ? this.error.shortType : '';
+            },
+
+            hasTrace: function() {
+                return !!(this.error && this.error.traceCount > 0);
+            },
+
+            traceCountLabel: function() {
+                return this.error ? '(' + this.error.traceCount + ')' : '';
+            },
+
+            chevronClass: function() {
+                return this.traceExpanded ? 'magewire-exception-handler-chevron-open' : '';
+            },
+
+            frameIndex: function() {
+                return '#' + this.frame.index;
+            },
+
+            isFrameMethod: function() {
+                return !!this.frame.className;
+            },
+
+            isFrameFunction: function() {
+                return !this.frame.className;
+            },
+
+            frameMethod: function() {
+                return this.frame.className + '::' + this.frame.functionName + '()';
+            },
+
+            frameFunction: function() {
+                return this.frame.functionName + '()';
+            },
+
+            copy: function() {
+                var e = this.error;
+                if (!e) return;
+
+                var lines = [e.type];
+
+                if (e.file) {
+                    lines.push(e.file + (e.line ? ':' + e.line : ''));
+                }
+
+                lines.push('', e.message);
+
+                if (e.trace && e.trace.length) {
+                    lines.push('');
+                    e.trace.forEach(function(frame) {
+                        var method = frame.className
+                            ? frame.className + '::' + frame.functionName + '()'
+                            : frame.functionName + '()';
+                        lines.push('#' + frame.index + '  ' + method);
+                        lines.push('    ' + frame.location);
+                    });
+                }
+
+                navigator.clipboard.writeText(lines.join('\n')).then(function() {
+                    addon.copied = true;
+                    setTimeout(function() { addon.copied = false; }, 1500);
+                }).catch(function() {});
+            },
+            <?php /* END */ ?>
+
+            bindings: {
+                overlay: {
+                    root: {
+                        ['x-on:click']() {
+                            this.dismiss();
+                        },
+                        ['x-on:keydown.escape.window']() {
+                            this.dismiss();
+                        }
+                    }
+                },
+
+                panel: {
+                    root: {
+                        ['x-on:click.stop']() {
+                            <?php /* Prevent click-through to overlay. */ ?>
+                        }
+                    }
+                },
+
+                trace: {
+                    toggle: {
+                        ['x-on:click']() {
+                            this.toggleTrace();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    document.addEventListener('alpine:init', () => Alpine.data('magewireExceptionHandler', magewireExceptionHandler), { once: true });
+</script>
+<?php $script->end() ?>

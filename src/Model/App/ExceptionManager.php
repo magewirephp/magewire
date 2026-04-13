@@ -76,7 +76,16 @@ class ExceptionManager
             ->isSubsequent();
 
         if ($subsequent) {
-            $this->handle($exception, $log);
+            $handler = $this->handle($exception, $log);
+
+            // When handle() returns a callable, the exception handler has produced a direct HTTP
+            // response (e.g. a JSON error panel payload). Re-throw the original exception so it
+            // propagates to Update::execute(), where renderWith() can consume the callable.
+            // Without this, the callable is silently discarded and rendering continues, triggering
+            // a secondary (less meaningful) exception from the render stack.
+            if (is_callable($handler)) {
+                throw $exception;
+            }
         }
 
         // Prevent cyclic loops from re-triggering the entire Magewire lifecycle.

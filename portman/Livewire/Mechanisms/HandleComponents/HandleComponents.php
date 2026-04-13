@@ -386,7 +386,7 @@ class HandleComponents extends \Livewire\Mechanisms\HandleComponents\HandleCompo
             $methods[] = '__dispatch';
 
             if (! in_array($method, $methods)) {
-                throw new MethodNotFoundException($method);
+                throw new MethodNotFoundException($method, $root);
             }
 
             if (config('app.debug')) {

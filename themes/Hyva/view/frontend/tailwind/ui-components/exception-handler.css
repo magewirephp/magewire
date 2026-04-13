@@ -1,0 +1,309 @@
+.magewire-exception-handler-overlay {
+    --mw-eh-overlay: rgba(0, 0, 0, 0.6);
+    --mw-eh-panel-bg: #1a1a2e;
+    --mw-eh-panel-border: rgba(255, 255, 255, 0.08);
+    --mw-eh-badge-bg: rgba(239, 68, 68, 0.15);
+    --mw-eh-badge-text: #f87171;
+    --mw-eh-badge-dot: #ef4444;
+    --mw-eh-text-primary: #e2e8f0;
+    --mw-eh-text-secondary: #94a3b8;
+    --mw-eh-text-muted: #64748b;
+    --mw-eh-accent: #818cf8;
+    --mw-eh-trace-bg: #0f0e1a;
+    --mw-eh-trace-border: rgba(255, 255, 255, 0.05);
+    --mw-eh-divider: rgba(255, 255, 255, 0.06);
+    --mw-eh-close-hover: #e2e8f0;
+
+    position: fixed;
+    inset: 0;
+    z-index: 200000;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem;
+    background-color: var(--mw-eh-overlay);
+    overflow-y: auto;
+
+    @media (min-width: 640px) {
+        padding: 3rem;
+        align-items: center;
+    }
+}
+
+.magewire-exception-handler-panel {
+    width: 100%;
+    max-width: 52rem;
+    max-height: 85vh;
+    overflow-y: auto;
+    background-color: var(--mw-eh-panel-bg);
+    border: 1px solid var(--mw-eh-panel-border);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    box-shadow:
+        0 25px 50px -12px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.03);
+
+    @media (min-width: 640px) {
+        padding: 2rem;
+    }
+}
+
+.magewire-exception-handler-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.magewire-exception-handler-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+}
+
+.magewire-exception-handler-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    background-color: var(--mw-eh-badge-bg);
+    color: var(--mw-eh-badge-text);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.magewire-exception-handler-badge-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 9999px;
+    background-color: var(--mw-eh-badge-dot);
+    flex-shrink: 0;
+}
+
+@keyframes mw-eh-pop {
+    0%   { transform: scale(0.6); opacity: 0; }
+    60%  { transform: scale(1.2); }
+    100% { transform: scale(1);   opacity: 1; }
+}
+
+.magewire-exception-handler-copy-confirm {
+    animation: mw-eh-pop 200ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    color: #4ade80;
+}
+
+.magewire-exception-handler-copy,
+.magewire-exception-handler-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.375rem;
+    border-radius: 0.375rem;
+    color: var(--mw-eh-text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 150ms;
+
+    &:hover {
+        color: var(--mw-eh-close-hover);
+    }
+}
+
+.magewire-exception-handler-namespace {
+    margin: 0 0 0.75rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.75rem;
+    color: var(--mw-eh-text-muted);
+    overflow-wrap: anywhere;
+}
+
+.magewire-exception-handler-divider {
+    height: 1px;
+    background-color: var(--mw-eh-divider);
+    margin-bottom: 1.25rem;
+}
+
+.magewire-exception-handler-message {
+    margin: 0 0 1.25rem;
+    font-size: 1rem;
+    line-height: 1.625;
+    color: var(--mw-eh-text-primary);
+    overflow-wrap: anywhere;
+
+    @media (min-width: 640px) {
+        font-size: 1.125rem;
+    }
+}
+
+.magewire-exception-handler-location {
+    display: flex;
+    align-items: baseline;
+    gap: 0.375rem;
+    margin-bottom: 1.25rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.8125rem;
+    color: var(--mw-eh-accent);
+    overflow-wrap: anywhere;
+
+    & svg {
+        flex-shrink: 0;
+        position: relative;
+        top: 0.175em;
+    }
+}
+
+.magewire-exception-handler-file-location {
+    min-width: 0;
+}
+
+.magewire-exception-handler-file {
+    color: var(--mw-eh-accent);
+}
+
+.magewire-exception-handler-line-separator {
+    color: var(--mw-eh-text-muted);
+}
+
+.magewire-exception-handler-line {
+    color: var(--mw-eh-badge-text);
+    font-weight: 600;
+}
+
+/* Trace section */
+
+.magewire-exception-handler-trace-section {
+    border-top: 1px solid var(--mw-eh-divider);
+    padding-top: 1rem;
+}
+
+.magewire-exception-handler-trace-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    width: 100%;
+    padding: 0.375rem 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--mw-eh-text-secondary);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    text-align: left;
+    transition: color 150ms;
+
+    &:hover {
+        color: var(--mw-eh-text-primary);
+    }
+}
+
+.magewire-exception-handler-chevron {
+    flex-shrink: 0;
+    transition: transform 200ms;
+}
+
+.magewire-exception-handler-chevron-open {
+    transform: rotate(90deg);
+}
+
+.magewire-exception-handler-trace-count {
+    color: var(--mw-eh-text-muted);
+    font-weight: 400;
+}
+
+.magewire-exception-handler-trace-list {
+    margin-top: 0.75rem;
+    border-radius: 0.5rem;
+    background-color: var(--mw-eh-trace-bg);
+    border: 1px solid var(--mw-eh-trace-border);
+    overflow: hidden;
+    max-height: 24rem;
+    overflow-y: auto;
+}
+
+.magewire-exception-handler-trace-frame {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.625rem 1rem;
+    border-bottom: 1px solid var(--mw-eh-trace-border);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.75rem;
+    line-height: 1.5;
+
+    &:last-child {
+        border-bottom: none;
+    }
+}
+
+.magewire-exception-handler-trace-frame--vendor {
+    opacity: 0.4;
+    transition: opacity 150ms;
+
+    &:hover {
+        opacity: 1;
+    }
+}
+
+.magewire-exception-handler-trace-index {
+    color: var(--mw-eh-text-muted);
+    flex-shrink: 0;
+    min-width: 2rem;
+    text-align: right;
+    user-select: none;
+}
+
+.magewire-exception-handler-trace-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    min-width: 0;
+}
+
+.magewire-exception-handler-trace-method {
+    color: var(--mw-eh-text-primary);
+    font-weight: 500;
+    overflow-wrap: anywhere;
+}
+
+.magewire-exception-handler-trace-location {
+    color: var(--mw-eh-text-muted);
+    font-size: 0.6875rem;
+    overflow-wrap: anywhere;
+}
+
+/* Transitions */
+
+.magewire-exception-handler-transition-enter {
+    transition-property: opacity, transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 200ms;
+}
+
+.magewire-exception-handler-transition-enter-start {
+    opacity: 0;
+    transform: scale(0.95) translateY(0.5rem);
+}
+
+.magewire-exception-handler-transition-enter-end {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+
+.magewire-exception-handler-transition-leave {
+    transition-property: opacity, transform;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}
+
+.magewire-exception-handler-transition-leave-start {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.magewire-exception-handler-transition-leave-end {
+    opacity: 0;
+    transform: scale(0.95);
+}

@@ -1,0 +1,84 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment  = $magewireViewModel->utils()->fragment();
+
+/** @internal Do not modify to ensure Magewire continues to function correctly. */
+
+if (! $magewireViewModel->utils()->env()->isDeveloperMode()) {
+    return;
+}
+?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    function magewireExceptionHandlerAddon() {
+        'use strict';
+
+        return {
+            visible: false,
+            error: null,
+            traceExpanded: false,
+            copied: false,
+
+            show: function(errorData) {
+                if (errorData.trace) {
+                    errorData.trace = errorData.trace.map(function(frame, index) {
+                        var classParts = frame['class'] ? frame['class'].split('\\') : [];
+                        var hasFile    = frame.file !== null && frame.file !== undefined;
+
+                        return {
+                            index: index,
+                            file: hasFile ? frame.file : null,
+                            line: frame.line || null,
+                            className: classParts.length > 0 ? classParts[classParts.length - 1] : '',
+                            fullClass: frame['class'] || '',
+                            functionName: frame['function'] || '<?= $escaper->escapeJs(__('unknown')) ?>',
+                            location: hasFile
+                                ? (frame.file + (frame.line ? ':' + frame.line : ''))
+                                : '[internal function]',
+                            isVendor: !hasFile || frame.file.startsWith('vendor/'),
+                            vendorClass: (!hasFile || frame.file.startsWith('vendor/')) ? 'magewire-exception-handler-trace-frame--vendor' : ''
+                        };
+                    });
+                } else {
+                    errorData.trace = [];
+                }
+
+                <?php /* Pre-compute the short exception type name. */ ?>
+                var typeParts = errorData.type ? errorData.type.split('\\') : [];
+                errorData.shortType = typeParts.length > 0 ? typeParts[typeParts.length - 1] : '<?= $escaper->escapeJs(__('Unknown')) ?>';
+                errorData.typeNamespace = typeParts.length > 1 ? typeParts.slice(0, -1).join('\\') : '';
+                errorData.traceCount = errorData.trace.length;
+                errorData.hasLine = errorData.line !== null && errorData.line !== undefined;
+
+                this.error = errorData;
+                this.visible = true;
+                this.traceExpanded = false;
+            },
+
+            dismiss: function() {
+                this.visible = false;
+                this.error = null;
+                this.copied = false;
+            },
+
+            toggleTrace: function() {
+                this.traceExpanded = !this.traceExpanded;
+            }
+        };
+    }
+
+    <?php /* Register as Magewire addon. */ ?>
+    window.MagewireAddons.register('exceptionHandler', magewireExceptionHandlerAddon, true);
+</script>
+<?php $script->end() ?>
