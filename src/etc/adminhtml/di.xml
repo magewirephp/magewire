@@ -264,24 +264,25 @@
                 <item name="json" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Json</item>
 
                 <!-- Basic PHP loops. -->
-                <item name="if" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope\Proxy</item>
-                <item name="else" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope\Proxy</item>
-                <item name="elseif" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope\Proxy</item>
-                <item name="endif" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope\Proxy</item>
-                <item name="foreach" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope\Proxy</item>
-                <item name="endforeach" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope\Proxy</item>
+                <item name="if" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope</item>
+                <item name="foreach" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope</item>
+
+                <!-- Magewire methods (area independent). -->
+                <item name="script" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Script</item>
+                <item name="fragment" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Fragment</item>
+                <item name="slot" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Base\Proxy</item>
+                <item name="template" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Template\Proxy</item>
 
                 <!-- Basic PHP methods. -->
                 <!-- WIP... -->
 
                 <!-- Magento basic methods. -->
                 <item name="translate" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Base\Proxy</item>
+                <item name="child" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Base\Proxy</item>
 
                 <!-- Magento authentication methods. -->
                 <item name="auth" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Auth\Proxy</item>
-                <item name="endauth" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Auth\Proxy</item>
                 <item name="guest" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Auth\Proxy</item>
-                <item name="endguest" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Auth\Proxy</item>
             </argument>
         </arguments>
     </virtualType>
@@ -508,6 +509,28 @@
                 </item>
                 <item name="std_class" xsi:type="string" sortOrder="1200">
                     Magewirephp\Magewire\Mechanisms\HandleComponents\Synthesizers\StdClassSynth
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!--
+        Feature: Backwards Compatibility — Lifecycle Hook Argument Resolution
+
+        Intercepts SupportLifecycleHooks::callHook() to transform lifecycle hook
+        arguments from v3 conventions back to v1 conventions for BC-enabled components.
+    -->
+    <type name="Magewirephp\Magewire\Features\SupportLifecycleHooks\SupportLifecycleHooks">
+        <plugin name="Magewirephp_Magewire_BackwardsCompatibility_CallHookArgumentResolver"
+                type="Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\Plugin\SupportLifecycleHooksPlugin"
+        />
+    </type>
+
+    <type name="Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\Plugin\SupportLifecycleHooksPlugin">
+        <arguments>
+            <argument name="resolvers" xsi:type="array">
+                <item name="argument_swap" xsi:type="object" sortOrder="100">
+                    Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\Resolver\UpdatingUpdatedArgumentSwapResolver
                 </item>
             </argument>
         </arguments>

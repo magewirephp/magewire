@@ -11,15 +11,15 @@ declare(strict_types=1);
 
 namespace Magewirephp\MagewireCompatibilityWithHyva\Magewire\Features\SupportHyvaCheckoutBackwardsCompatibility;
 
+use Hyva\Checkout\Magewire\Checkout\AddressView\AbstractMagewireAddressForm;
+use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\ComponentHook;
-use Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\HandleBackwardsCompatibility;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\LayoutLifecycleManager;
-use Magewirephp\Magewire\Support\AttributesReader;
-use Magewirephp\Magewire\Support\Random;
 use Psr\Log\LoggerInterface;
 use ReflectionException;
 
+use function Magewirephp\Magewire\after;
 use function Magewirephp\Magewire\store;
 
 /**
@@ -49,8 +49,34 @@ class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
     public function __construct(
         private readonly LayoutLifecycleManager $renderLifecycleManager,
         private readonly LoggerInterface $logger,
-        private readonly TemporaryHydrationRegistry $temporaryHydrationRegistry
+        private readonly TemporaryHydrationRegistry $temporaryHydrationRegistry,
+        private readonly \Magewirephp\Magewire\Features\SupportEvents\SupportEvents $supportEvents
     ) {
+    }
+
+    public function provide()
+    {
+        after('dehydrate', function (Component $component, ComponentContext $context) {
+            if ($context->isMounting() || ! $component instanceof AbstractMagewireAddressForm) {
+                return;
+            }
+
+            $effects = $context->getEffects();
+            $currentDispatches = $effects->getData('dispatches');
+            $newDispatches = $this->supportEvents->getServerDispatchedEvents($component);
+
+            foreach ($currentDispatches as $current) {
+                foreach ($newDispatches as $new) {
+                    if ($current['name'] === $new['name']) {
+                        continue;
+                    }
+
+                    $currentDispatches[] = $new;
+                }
+            }
+
+            $context->addEffect('dispatches', $currentDispatches);
+        });
     }
 
     public function hydrate($memo): void
@@ -59,7 +85,6 @@ class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
             return;
         }
 
-        store($this->component)->set('bc.enabled', $memo['bc']['enabled']);
         $this->temporaryHydrationRegistry->push($this->component()->id());
     }
 
@@ -76,37 +101,44 @@ class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
         }
 
         try {
-            $within = AttributesReader::for($this->component())->first(HandleBackwardsCompatibility::class);
+            $backwardsCompatibilityActive = $this->component
+                ? store($this->component)->get('magewire:bc')
+                : false;
 
-            if ($within instanceof HandleBackwardsCompatibility) {
-                $within = $within->isBackwardsCompatible();
-            }
-
-            // A: First check if none was set during hydration.
-            $within ??= $this->component ? store($this->component)->get('bc.enabled') : null;
-            // B: Try to reach out to the actual use case.
-            $within ??= $this->renderLifecycleManager->target('magewire')->within('hyva-checkout-main');
-
-            // C: When a Magewire component is dynamically injected onto the page via a subsequent
+            // When still null, a Magewire component is dynamically injected onto the page via a subsequent
             // Magewire request, it can not match any of the above use cases. Herefor, a unique
             // situation occurs needing to search within the lifecycle to try and figure out if
             // any of the requested components, rendered this child component.
-            if (! $within) {
-                foreach ($this->temporaryHydrationRegistry->list() as $value) {
-                    $this->temporaryHydrationRegistry->pop($value);
+            if ($backwardsCompatibilityActive === false) {
+                // When still null, lets check if this component sits within the Hyvä Checkout Main component.
+                $backwardsCompatibilityActive = $this->renderLifecycleManager->target('magewire')
+                    ->within('hyva-checkout-main');
 
-                    // Found look upwards in the layout lifecycle, so flag it and break the current loop.
-                    if ($this->renderLifecycleManager->target('magewire')->within($value)) {
-                        $within = true;
-                        break;
+                if ($backwardsCompatibilityActive === false) {
+                    foreach ($this->temporaryHydrationRegistry->list() as $value) {
+                        $this->temporaryHydrationRegistry->pop($value);
+
+                        // Found look upwards in the layout lifecycle, so flag it and break the current loop.
+                        if ($this->renderLifecycleManager->target('magewire')->within($value)) {
+                            $backwardsCompatibilityActive = true;
+                            break;
+                        }
                     }
                 }
             }
+
+            store($this->component())->set('magewire:bc', is_bool($backwardsCompatibilityActive)
+                ? $backwardsCompatibilityActive
+                : false
+            );
         } catch (ReflectionException $exception) {
             $this->logger->critical($exception->getMessage(), ['exception' => $exception]);
         }
 
-        $context->pushMemo('bc', $within ?? false, 'enabled');
-        $context->pushMemo('bc', Random::integer(), 'key');
+        $backwardsCompatibilityActive = $this->component
+            ? store($this->component)->get('magewire:bc')
+            : false;
+
+        $context->pushMemo('bc', $backwardsCompatibilityActive ?? false, 'enabled');
     }
 }

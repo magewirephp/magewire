@@ -546,6 +546,31 @@
         </arguments>
     </type>
 
+    <!--
+        Feature: Backwards Compatibility — Lifecycle Hook Argument Resolution
+
+        Intercepts SupportLifecycleHooks::callHook() to transform lifecycle hook
+        arguments from v3 conventions back to v1 conventions for BC-enabled components.
+
+        Resolvers are iterated in sortOrder; the first match wins. Third-party modules
+        can inject additional resolvers (e.g., ArrayPropertyReconstructionResolver) via DI.
+    -->
+    <type name="Magewirephp\Magewire\Features\SupportLifecycleHooks\SupportLifecycleHooks">
+        <plugin name="Magewirephp_Magewire_BackwardsCompatibility_CallHookArgumentResolver"
+                type="Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\Plugin\SupportLifecycleHooksPlugin"
+        />
+    </type>
+
+    <type name="Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\Plugin\SupportLifecycleHooksPlugin">
+        <arguments>
+            <argument name="resolvers" xsi:type="array">
+                <item name="argument_swap" xsi:type="object" sortOrder="100">
+                    Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\Resolver\UpdatingUpdatedArgumentSwapResolver
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
     <!-- Magewire Update Route: Frontend -->
     <type name="Magewirephp\Magewire\Controller\Router">
         <arguments>

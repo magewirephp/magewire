@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolver;
 
+use Exception;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\RuntimeException;
 use Magento\Framework\View\Element\AbstractBlock;
@@ -18,20 +19,27 @@ use Magento\Framework\View\Element\Template;
 use Magento\Framework\View\Layout;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
+use Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\HandleBackwardsCompatibility;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\Snapshot;
 use Magewirephp\Magewire\Mechanisms\HandleRequests\ComponentRequestContext;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\LayoutBlockArgumentsFactory;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\MagewireArguments;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\LayoutManager;
+use Magewirephp\Magewire\Support\AttributesReader;
 use Magewirephp\Magewire\Support\Conditions;
+use Magewirephp\Magewire\Support\Factory;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 use function Magewirephp\Magewire\on;
+use function Magewirephp\Magewire\store;
 
 class LayoutResolver extends ComponentResolver
 {
     protected string $accessor = 'layout';
+
+    private LoggerInterface|null $logger = null;
 
     public function __construct(
         protected Conditions $conditions,
@@ -85,6 +93,7 @@ class LayoutResolver extends ComponentResolver
             throw new ComponentNotFoundException(sprintf('Component "%s" could not be constructed', $block->getNameInLayout()));
         }
 
+        $this->handleBackwardsCompatibilityForComponent($magewire);
         // Fulfill the main promise to establish or reset a Component instance within the block.
         $block->setData('magewire', $component);
 
@@ -170,6 +179,11 @@ class LayoutResolver extends ComponentResolver
         return parent::assemble($block, $component);
     }
 
+    protected function logger(): LoggerInterface
+    {
+        return $this->logger ??= Factory::get(LoggerInterface::class);
+    }
+
     /**
      * Determines the template by a default template path
      * when the path is not defined within the layout.
@@ -240,5 +254,22 @@ class LayoutResolver extends ComponentResolver
     protected function canMemorizeLayoutHandles(): bool
     {
         return true;
+    }
+
+    protected function handleBackwardsCompatibilityForComponent(Component $component): void
+    {
+        $bc = store($component)->get('magewire:bc');
+
+        try {
+            $within = AttributesReader::for($component)->first(HandleBackwardsCompatibility::class);
+
+            if ($within instanceof HandleBackwardsCompatibility) {
+                $bc = $within->isBackwardsCompatible();
+            }
+        } catch (Exception $exception) {
+            $this->logger()->critical($exception->getMessage(), ['exception' => $exception]);
+        }
+
+        store($component)->set('magewire:bc', $bc ?? false);
     }
 }

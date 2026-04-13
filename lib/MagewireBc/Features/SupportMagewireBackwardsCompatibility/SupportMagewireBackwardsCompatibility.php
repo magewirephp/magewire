@@ -18,9 +18,11 @@ class SupportMagewireBackwardsCompatibility extends ComponentHook
 {
     public function hydrate(array $memo): void
     {
-        $this->component->getRequest()->setServerMemo([
-            'data' => $this->getProperties()
-        ]);
+        $this->component
+            ->getRequest()
+            ->setServerMemo([
+                'data' => $this->getProperties()
+            ]);
     }
 
     public function dehydrate(ComponentContext $context): void
