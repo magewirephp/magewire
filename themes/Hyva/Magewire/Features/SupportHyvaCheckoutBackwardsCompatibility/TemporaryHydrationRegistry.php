@@ -21,7 +21,7 @@ class TemporaryHydrationRegistry
         return $this;
     }
 
-    public function pop(string $id = null): static
+    public function pop(string $id): static
     {
         unset($this->items[$id]);
         return $this;
