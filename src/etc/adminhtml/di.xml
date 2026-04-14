@@ -238,6 +238,21 @@
     </type>
 
     <!--
+        Feature: Magewire Rate Limiting
+    -->
+    <type name="Magewirephp\Magewire\Model\App\ExceptionManager">
+        <arguments>
+            <argument name="specificExceptionHandlerPool" xsi:type="array">
+                <item name="subsequent" xsi:type="array">
+                    <item name="Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Exceptions\TooManyRequestsException" xsi:type="object">
+                        Magewirephp\Magewire\Features\SupportMagewireRateLimiting\RateLimiterExceptionHandler
+                    </item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!--
         Feature: Magewire Compiler
 
         Injecting a default compiler for the abstraction required by this feature

@@ -174,10 +174,10 @@
                    template="Magewirephp_Magewire::js/magewire/features.phtml"
             >
                 <block name="magewire.features.support-magewire-loaders"
-                       template="Magewirephp_Magewire::js/magewire/features/support-magewire-loaders/support-magewire-loaders.phtml"
+                       template="Magewirephp_Magewire::magewire-features/support-magewire-loaders/support-magewire-loaders.phtml"
                 />
                 <block name="magewire.features.support-magewire-rate-limiting"
-                       template="Magewirephp_Magewire::js/magewire/features/support-magewire-rate-limiting/support-magewire-rate-limiting.phtml"
+                       template="Magewirephp_Magewire::magewire-features/support-magewire-rate-limiting/support-magewire-rate-limiting.phtml"
                 />
             </block>
 
