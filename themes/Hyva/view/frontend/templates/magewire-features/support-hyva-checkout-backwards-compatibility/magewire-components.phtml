@@ -62,6 +62,11 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
 
         const proxy = new Proxy(component, {
             get(target, prop, receiver) {
+                <?php /* @deprecated 'component.call()' has been replaced with 'component.$wire.call()'. */ ?>
+                if (prop === 'call') {
+                    return (method, ...params) => target.$wire.call(method, ...params);
+                }
+
                 if ('bc' in target.effects) {
                     const value = target.effects.bc[prop] || target.effects.bc.map[prop];
 
