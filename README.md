@@ -1,4 +1,4 @@
-mooi# Magewire PHP - BETA
+# Magewire PHP - BETA
 
 > **⚠️ BETA WARNING:** The main branch contains the beta version of MagewirePHP v3. For stable v1 documentation and releases, please switch to the [1.x branch]([../../tree/1.x](https://github.com/magewirephp/magewire/tree/1.x)).
 
@@ -44,22 +44,6 @@ Click [here](https://github.com/sponsors/wpoortman) to start sponsoring.
 - ✅ Hyvä
 - 🚧 Magento Admin (wip - module)
 - 🚧 Breeze (wip - MR)
-
-## Code
-
-### Styles
-
-To run styles, follow these steps:
-
-1. Install packages:
-  ```shell
-  npm install
-  ```
-2. Run styles:
-  ```shell
-  npx @tailwindcss/cli -i ./styles/magewire.css -o ./src/view/base/web/css/magewire.css --optimize
-  ```
-Use the `--watch` flag to re-compile on template changes.
 
 ## Contributing
 Thank you for considering contributing to Magewire! Please read the [contribution guide](https://github.com/magewirephp/magewire/blob/main/CONTRIBUTING.md) to know how to behave, install and use Magewire for contributors.
