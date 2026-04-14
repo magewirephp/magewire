@@ -43,6 +43,17 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             el.removeAttribute('wire:model.lazy');
             el.setAttribute('wire:model.blur', prop);
         }
+
+        Array.from(el.attributes).forEach(attr => {
+            const match = attr.name.match(/^wire:model\.delay\.(.+)$/);
+
+            if (match) {
+                const prop = attr.value;
+
+                el.removeAttribute(attr.name);
+                el.setAttribute(`wire:model.live.debounce.${match[1]}`, prop);
+            }
+        });
     }
 
     Magewire.hook('element.init', ({ el, component }) => {
