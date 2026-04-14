@@ -76,6 +76,12 @@ class LayoutLifecycle
         $this->stack[] = $route;
         $this->blocks[$route] = $block;
 
+        $component = $block->getData('magewire');
+
+        if ($component instanceof Component) {
+            $this->components[$route] = $component;
+        }
+
         return $this;
     }
 
