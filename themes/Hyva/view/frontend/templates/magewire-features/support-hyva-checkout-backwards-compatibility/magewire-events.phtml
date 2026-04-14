@@ -26,14 +26,6 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 Magewire.trigger('component.initialized', component);
             });
 
-            <?php /* @deprecated 'component.call()' has been replaced with 'component.$wire.call()'. */ ?>
-            Object.defineProperty(component, 'call', {
-                value: function (method, ...params) {
-                    return this.$wire.call(method, ...params);
-                },
-                configurable: true
-            });
-
             Object.defineProperty(component, 'deferredActions', {
                 get() {
                     const diffs = {};

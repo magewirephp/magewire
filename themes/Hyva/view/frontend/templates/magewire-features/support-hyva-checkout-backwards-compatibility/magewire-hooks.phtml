@@ -19,7 +19,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
 <script>
     let magewireBcHooksReady = false;
     let magewireBcHooksResolver = null;
-    let magewireBcHooksNotifications = [];
+    let magewireBcHooksNotifications = new Set();
 
     <?php /* A mapping for what the old event became 'old' => 'new'. */ ?>
     const magewireBcHooksReplacementMapping = {
@@ -40,7 +40,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
 
     <?php /* Function to run a hook when ready. */ ?>
     const runMagewireBackwardsCompatibleHook = async function(hook, callable) {
-        if (! magewireBcHooksNotifications.includes(hook)) {
+        if (! magewireBcHooksNotifications.has(hook)) {
             const replacement = magewireBcHooksReplacementMapping[hook] || 'TBD';
 
             <?php if ($magewireViewModel->utils()->magewire()->config()->isInDebugMode()): ?>
@@ -48,7 +48,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             <?php endif ?>
         }
 
-        magewireBcHooksNotifications.push(hook);
+        magewireBcHooksNotifications.add(hook);
 
         if (! callable) {
             return;

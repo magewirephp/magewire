@@ -18,7 +18,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
 <?php $script = $magewireFragment->make()->script()->start() ?>
 <script>
     function migrateWireModelAttributes(el, component) {
-        if (! 'bc' in component.snapshot.memo) {
+        if (! ('bc' in component.snapshot.memo)) {
             return;
         }
         if (! component.snapshot.memo.bc['enabled']) {

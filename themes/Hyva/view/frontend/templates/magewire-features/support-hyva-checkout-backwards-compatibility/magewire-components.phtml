@@ -43,7 +43,6 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
         try {
             return component.snapshot.memo.bc.enabled;
         } catch (exception) {
-            console.log('TBD')
         }
 
         return false;
@@ -68,7 +67,9 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 }
 
                 if ('bc' in target.effects) {
-                    const value = target.effects.bc[prop] || target.effects.bc.map[prop];
+                    const value = target.effects.bc[prop] !== undefined
+                        ? target.effects.bc[prop]
+                        : target.effects.bc.map?.[prop];
 
                     if (value !== undefined) {
                         if (typeof value === 'string' && value.startsWith('path:')) {
@@ -84,7 +85,9 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
 
             has(target, prop) {
                 if ('bc' in target.effects) {
-                    const value = target.effects.bc[prop] || target.effects.bc.map[prop];
+                    const value = target.effects.bc[prop] !== undefined
+                        ? target.effects.bc[prop]
+                        : target.effects.bc.map?.[prop];
 
                     if (value !== undefined) {
                         return true;
