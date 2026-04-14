@@ -65,27 +65,21 @@ class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
             $currentDispatches = $effects->getData('dispatches') ?? [];
             $newDispatches = $this->supportEvents->getServerDispatchedEvents($component);
 
-            foreach ($newDispatches as $key => $dispatch) {
-                $name = $dispatch['name'] ?? false;
-
-                if ($name) {
-                    foreach ($currentDispatches as $currentDispatch) {
-                        $nameForCurrent = $currentDispatch['name'] ?? false;
-
-                        if ($nameForCurrent) {
-                            if ($name === $nameForCurrent) {
-                                unset($newDispatches[$key]);
-                            }
+            if (empty($currentDispatches)) {
+                $currentDispatches = $newDispatches;
+            } else {
+                foreach ($currentDispatches as $current) {
+                    foreach ($newDispatches as $new) {
+                        if ($current['name'] === $new['name']) {
+                            continue;
                         }
+
+                        $currentDispatches[] = $new;
                     }
                 }
             }
 
-            $currentDispatches = array_merge($currentDispatches, $newDispatches);
-
-            if (! empty($currentDispatches)) {
-                $context->addEffect('dispatches', $currentDispatches);
-            }
+            $context->addEffect('dispatches', $currentDispatches);
         });
     }
 
