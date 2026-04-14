@@ -42,8 +42,8 @@ Click [here](https://github.com/sponsors/wpoortman) to start sponsoring.
 ## Supported Themes
 
 - ✅ Hyvä
-- 🚧 Magento Admin (wip - module)
-- 🚧 Breeze (wip - MR)
+- ✅ Magento Admin
+- :sparkles: Yours? Reach out!
 
 ## Contributing
 Thank you for considering contributing to Magewire! Please read the [contribution guide](https://github.com/magewirephp/magewire/blob/main/CONTRIBUTING.md) to know how to behave, install and use Magewire for contributors.
