@@ -11,6 +11,7 @@ namespace Magewirephp\Magewire\Concerns;
 
 use Magento\Framework\DataObject;
 use Magewirephp\Magewire\Drawer\Utils;
+use Magewirephp\Magewire\Support\Factory;
 use Illuminate\Database\Eloquent\Model;
 use Magewirephp\Magewire\Form;
 trait InteractsWithProperties
@@ -46,7 +47,7 @@ trait InteractsWithProperties
         if (empty($properties)) {
             $properties = array_keys($this->all());
         }
-        $freshInstance = new static();
+        $freshInstance = Factory::create(static::class);
         foreach ($properties as $property) {
             $property = str($property);
             // Check if the property contains a dot which means it is actually on a nested object like a FormObject
@@ -54,10 +55,10 @@ trait InteractsWithProperties
                 $propertyName = $property->afterLast('.');
                 $objectName = $property->before('.');
                 // form object reset
-                if (is_subclass_of($this->{$objectName}, Form::class)) {
-                    $this->{$objectName}->reset($propertyName);
-                    continue;
-                }
+                //                if (is_subclass_of($this->{$objectName}, Form::class)) {
+                //                    $this->{$objectName}->reset($propertyName);
+                //                    continue;
+                //                }
                 $object = data_get($freshInstance, $objectName, null);
                 if (is_object($object)) {
                     $isInitialized = (new \ReflectionProperty($object, (string) $propertyName))->isInitialized($object);

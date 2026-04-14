@@ -65,21 +65,27 @@ class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
             $currentDispatches = $effects->getData('dispatches') ?? [];
             $newDispatches = $this->supportEvents->getServerDispatchedEvents($component);
 
-            if (empty($currentDispatches)) {
-                $currentDispatches = $newDispatches;
-            } else {
-                foreach ($currentDispatches as $current) {
-                    foreach ($newDispatches as $new) {
-                        if ($current['name'] === $new['name']) {
-                            continue;
-                        }
+            foreach ($newDispatches as $key => $dispatch) {
+                $name = $dispatch['name'] ?? false;
 
-                        $currentDispatches[] = $new;
+                if ($name) {
+                    foreach ($currentDispatches as $currentDispatch) {
+                        $nameForCurrent = $currentDispatch['name'] ?? false;
+
+                        if ($nameForCurrent) {
+                            if ($name === $nameForCurrent) {
+                                unset($newDispatches[$key]);
+                            }
+                        }
                     }
                 }
             }
 
-            $context->addEffect('dispatches', $currentDispatches);
+            $currentDispatches = array_merge($currentDispatches, $newDispatches);
+
+            if (! empty($currentDispatches)) {
+                $context->addEffect('dispatches', $currentDispatches);
+            }
         });
     }
 
@@ -105,8 +111,8 @@ class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
         }
 
         try {
-            $backwardsCompatibilityActive = $this->component
-                ? store($this->component)->get('magewire:bc')
+            $backwardsCompatibilityActive = $this->component()
+                ? store($this->component())->get('magewire:bc')
                 : false;
 
             // When still null, a Magewire component is dynamically injected onto the page via a subsequent
@@ -139,8 +145,8 @@ class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
             $this->logger->critical($exception->getMessage(), ['exception' => $exception]);
         }
 
-        $backwardsCompatibilityActive = $this->component
-            ? store($this->component)->get('magewire:bc')
+        $backwardsCompatibilityActive = $this->component()
+            ? store($this->component())->get('magewire:bc')
             : false;
 
         $context->pushMemo('bc', $backwardsCompatibilityActive ?? false, 'enabled');
