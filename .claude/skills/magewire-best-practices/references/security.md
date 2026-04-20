@@ -54,7 +54,7 @@ public function processWithSecret(): void
 
 ## Escape Output in Templates
 
-Use Magento's `$escaper` for every context. See `rules/templates.md` for the full pattern.
+Use Magento's `$escaper` for every context. See `references/templates.md` for the full pattern.
 
 | Context | Escaper | Example |
 |---------|---------|---------|

@@ -2,21 +2,9 @@
 
 ## CSP-Compatible Scripts Only
 
-All inline JavaScript must use the fragment utility. Never write raw `<script>` tags — they violate Magento's Content Security Policy.
+All inline JavaScript must use the fragment utility (`$magewireFragment->make()->script()->start()/end()`). Never write raw `<script>` tags — they violate Magento's Content Security Policy. The fragment mechanism handles CSP nonce/hash injection automatically.
 
-```php
-<?php
-$magewireViewModel = $block->getData('view_model');
-$magewireFragment  = $magewireViewModel->utils()->fragment();
-?>
-<?php $script = $magewireFragment->make()->script()->start() ?>
-<script>
-    // Your JS here
-</script>
-<?php $script->end() ?>
-```
-
-The fragment mechanism handles CSP nonce/hash injection automatically.
+For the full PHP boilerplate and the reasons behind each step, see the `magewire-javascript` skill.
 
 ## Use the Correct Event for Registration
 

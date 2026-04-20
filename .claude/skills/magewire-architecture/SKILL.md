@@ -1,12 +1,6 @@
 ---
 name: magewire-architecture
-description: >
-  Internals and extension guide for the Magewire framework: directory layout
-  (src/lib/dist/portman), Mechanisms vs Features, area-scoped DI
-  (frontend/adminhtml), snapshot/state flow, layout containers, JS extension
-  points, and Facades. Use when extending Magewire, creating custom Features
-  or Mechanisms, debugging the framework itself, or understanding how the
-  codebase is structured.
+description: "Internals and extension guide for the Magewire framework: directory layout (src/lib/dist/portman), Mechanisms vs Features, area-scoped DI (frontend/adminhtml), snapshot/state flow, layout containers, JS extension points, and Facades. Use when extending Magewire, creating custom Features or Mechanisms, debugging the framework itself, or understanding how the codebase is structured."
 license: MIT
 metadata:
   author: Willem Poortman
@@ -218,9 +212,7 @@ class SupportMyFeature extends ComponentHook
 
 Place feature PHP code in `src/Features/SupportMyFeature/` and any JS in its corresponding `view/` subfolder.
 
-**Feature template locations differ by context:**
-- **Core framework features** (in the Magewire module): JS lives in `view/{area}/templates/js/magewire/features/{feature-name}/`
-- **Theme compatibility features** (in theme modules like Hyvä): all feature-related templates (JS, UI, etc.) are bundled in `view/{area}/templates/magewire-features/{feature-name}/` — keeping everything related to a feature in one place for readability
+**Feature templates live at:** `view/{area}/templates/magewire-features/{feature-name}/` — the same convention applies to core framework features (in the Magewire module) and to theme compatibility features (in theme modules like Hyvä). Keeping JS, UI, and other feature-related PHTMLs co-located in a single folder per feature makes ownership and overrides easy to reason about.
 
 ---
 
@@ -495,7 +487,7 @@ All Magewire layout output is organized in named containers. Extend via standard
 
 ```xml
 <referenceContainer name="magewire.features">
-    <block name="my.feature.js" template="Vendor_Module::js/magewire/features/my-feature/my-feature.phtml"/>
+    <block name="my.feature.js" template="Vendor_Module::magewire-features/my-feature/my-feature.phtml"/>
 </referenceContainer>
 ```
 

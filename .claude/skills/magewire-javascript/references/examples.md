@@ -333,7 +333,7 @@ public function dehydrate(ComponentContext $context): void
 }
 ```
 
-**`src/view/base/templates/js/magewire/features/support-magewire-poll/support-magewire-poll.phtml`**
+**`src/view/base/templates/magewire-features/support-magewire-poll/support-magewire-poll.phtml`**
 
 ```php
 <?php
@@ -378,7 +378,7 @@ $magewireFragment  = $magewireViewModel->utils()->fragment();
 
 ```xml
 <block name="magewire.features.support-magewire-poll"
-       template="Magewirephp_Magewire::js/magewire/features/support-magewire-poll/support-magewire-poll.phtml"
+       template="Magewirephp_Magewire::magewire-features/support-magewire-poll/support-magewire-poll.phtml"
 />
 ```
 

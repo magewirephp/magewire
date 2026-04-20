@@ -1,12 +1,6 @@
 ---
 name: magewire-javascript
-description: >
-  Use this skill whenever writing JavaScript for Magento 2 themes that are not RequireJS-driven.
-  This includes any frontend JS task involving Magewire, AlpineJS, or both together — such as building CSP-compatible components,
-  enabling PHP-driven reactivity via Magewire, integrating AlpineJS with Magewire lifecycle hooks,
-  or structuring reusable multi-theme JavaScript with clear separation of concerns.
-  Always apply this skill as the default JS convention for non-RequireJS Magento 2 themes, regardless of complexity.
-  Do NOT use for RequireJS-driven Magento 2 themes or server-side PHP Magewire component logic.
+description: "Use this skill whenever writing JavaScript for Magento 2 themes that are not RequireJS-driven. Covers CSP-compatible components, PHP-driven reactivity via Magewire, AlpineJS integration with Magewire lifecycle hooks, and reusable multi-theme JavaScript structure. Always apply as the default JS convention for non-RequireJS Magento 2 themes. Do NOT use for RequireJS-driven themes or server-side PHP Magewire component logic."
 allowed-tools: ["Bash", "Read", "Write"]
 ---
 
@@ -31,37 +25,41 @@ the root, and must always be chosen deliberately:
 | `adminhtml` | `src/view/adminhtml/templates/js/` | Magento admin only |
 
 Inside `js/`, files are grouped by JavaScript framework and then by category. The same structure is mirrored
-across all view areas.
+across all view areas. Feature PHTMLs live **outside** `js/`, in a sibling `magewire-features/` directory.
 
 ```
-js/
-├── alpinejs/                   # AlpineJS-specific code
-│   ├── magewire.phtml          # Global — sits directly at the framework root
-│   ├── components/             # Alpine components (x-data) — standalone only
-│   │   └── magewire-notifier.phtml
-│   └── directives/             # Custom Alpine directives (x-on, x-bind wrappers)
-└── magewire/                   # Magewire-specific code
-    ├── global.phtml            # Global — sits directly at the framework root
-    ├── addons/                 # Reusable plain-JS APIs — standalone only
-    │   └── notifier.phtml
-    ├── directives/             # Custom Magewire directives (mage:*)
-    │   ├── throttle.phtml
-    │   └── notify.phtml
-    ├── features/               # All JS belonging to a Support* feature
-    │   └── support-magewire-loaders/
-    │       └── support-magewire-loaders.phtml
-    └── utilities/              # Single-responsibility helper functions
-        ├── dom.phtml
-        ├── loader.phtml
-        └── str.phtml
+templates/
+├── js/                         # Script templates (wrapped in CSP fragments)
+│   ├── alpinejs/               # AlpineJS-specific code
+│   │   ├── magewire.phtml      # Global — sits directly at the framework root
+│   │   ├── components/         # Alpine components (x-data) — standalone only
+│   │   │   └── magewire-notifier.phtml
+│   │   └── directives/         # Custom Alpine directives (x-on, x-bind wrappers)
+│   └── magewire/               # Magewire-specific code
+│       ├── global.phtml        # Global — sits directly at the framework root
+│       ├── addons/             # Reusable plain-JS APIs — standalone only
+│       │   └── notifier.phtml
+│       ├── directives/         # Custom Magewire directives (mage:*)
+│       │   ├── throttle.phtml
+│       │   └── notify.phtml
+│       └── utilities/          # Single-responsibility helper functions
+│           ├── dom.phtml
+│           ├── loader.phtml
+│           └── str.phtml
+└── magewire-features/          # All PHTMLs belonging to a Support* feature
+    └── support-magewire-loaders/
+        ├── support-magewire-loaders.phtml   # Primary bridge script
+        ├── addon.phtml                      # Optional feature-owned addon
+        └── component.phtml                  # Optional feature-owned Alpine component
 ```
 
 **Rules:**
 - Global code that applies to an entire framework goes directly at the framework root (e.g., `alpinejs/magewire.phtml`).
 - Category-specific code goes in its named subfolder.
-- Features always get their own subfolder named after the feature class, with a same-named PHTML inside.
-- `addons/` and `alpinejs/components/` are for **standalone** components only — things reusable outside Magewire. If an addon or Alpine component belongs exclusively to a `Support*` feature, it lives inside that feature's folder instead.
-- The directory structure under `js/` must be identical across all view areas.
+- **Feature PHTMLs live in `magewire-features/{feature-name}/`** — a sibling of `js/`, not nested inside it. This applies to core features and theme compatibility features alike.
+- Each feature gets its own subfolder named after the feature class, with a same-named primary PHTML inside.
+- `addons/` and `alpinejs/components/` are for **standalone** components only — things reusable outside Magewire. If an addon or Alpine component belongs exclusively to a `Support*` feature, it lives inside that feature's folder under `magewire-features/` instead.
+- The directory structure under `templates/` must be identical across all view areas.
 
 ---
 
@@ -402,12 +400,13 @@ A feature's folder is the home for **all** JS and HTML that exclusively belongs 
 feature class. This includes the lifecycle bridge script, but also any addon, Alpine component, or HTML
 template that only makes sense in the context of that feature.
 
-**File placement:**
+**File placement:** all PHTMLs for a feature (bridge script, addon, Alpine component, HTML template) live together in a single folder:
 
-| What | Where |
-|---|---|
-| JS (bridge, addon, Alpine component) | `js/magewire/features/support-{name}/` |
-| HTML template | `magewire/features/support-{name}/` |
+```
+view/{area}/templates/magewire-features/support-{name}/
+```
+
+This location applies to **both** core framework features (in the Magewire module) and theme compatibility features (in theme modules like Hyvä).
 
 The primary JS file is named after the feature class (`support-magewire-loaders.phtml`). Additional
 sub-PHPTMLs within the same folder (e.g. `addon.phtml`, `component.phtml`) are fine when the feature
@@ -422,15 +421,15 @@ owns an addon or Alpine component.
 
 ```xml
 <block name="magewire.features.support-{name}"
-       template="Magewirephp_Magewire::js/magewire/features/support-{name}/support-{name}.phtml"
+       template="Magewirephp_Magewire::magewire-features/support-{name}/support-{name}.phtml"
 >
     <block name="magewire.features.support-{name}.addon"
            as="addon"
-           template="Magewirephp_Magewire::js/magewire/features/support-{name}/addon.phtml"
+           template="Magewirephp_Magewire::magewire-features/support-{name}/addon.phtml"
     />
     <block name="magewire.features.support-{name}.component"
            as="component"
-           template="Magewirephp_Magewire::js/magewire/features/support-{name}/component.phtml"
+           template="Magewirephp_Magewire::magewire-features/support-{name}/component.phtml"
     />
 </block>
 ```

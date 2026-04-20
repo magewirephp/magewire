@@ -353,14 +353,14 @@ Do not add it in layout XML.
 - [ ] Block placed in `magewire.features` container
 
 **Feature-owned addon / Alpine component**
-- [ ] Lives in `js/magewire/features/support-{name}/` — NOT in `addons/` or `alpinejs/components/`
+- [ ] Lives in `templates/magewire-features/support-{name}/` — NOT in `addons/` or `alpinejs/components/`
 - [ ] Follows same patterns as standalone addon/Alpine component
 - [ ] Registered as **child blocks** of the primary feature block (with `as="addon"`, `as="component"`)
 - [ ] Primary PHTML renders them via `$block->getChildHtml('addon')`, `$block->getChildHtml('component')` — in that order, before the bridge script
 - [ ] Only ONE block for the feature sits directly in `magewire.features` — never sibling blocks
 
 **Feature-owned HTML template**
-- [ ] Lives at `templates/magewire/features/support-{name}/{name}.phtml`
+- [ ] Lives at `templates/magewire-features/support-{name}/{name}.phtml`
 - [ ] Block placed in `magewire.after` container — NOT `magewire.ui-components`
 
 **Standalone component (UI template)**

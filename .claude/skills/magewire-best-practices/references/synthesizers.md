@@ -80,21 +80,7 @@ class MoneySynth extends Synth
 
 ## Register in Area-Scoped DI
 
-Synthesizers are registered on `HandleComponents` with a sort order. First matching synthesizer wins.
-
-```xml
-<!-- etc/frontend/di.xml -->
-<type name="Magewirephp\Magewire\Mechanisms\HandleComponents\HandleComponents">
-    <arguments>
-        <argument name="synthesizers" xsi:type="array">
-            <item name="money" xsi:type="array">
-                <item name="type" xsi:type="string">Vendor\Module\Synthesizers\MoneySynth</item>
-                <item name="sort_order" xsi:type="number">500</item>
-            </item>
-        </argument>
-    </arguments>
-</type>
-```
+Synthesizers are registered on the `HandleComponents` mechanism with a sort order — first matching synthesizer wins. Follow the area-scoped DI rule: `etc/frontend/di.xml` or `etc/adminhtml/di.xml`, never global `etc/di.xml`. See `references/di.md` for the XML format.
 
 ## Ensure Round-Trip Fidelity
 

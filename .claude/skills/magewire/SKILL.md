@@ -1,10 +1,7 @@
 ---
 name: magewire
-description: >
-  Reference for Magewire — Magento 2's reactive component framework inspired by Laravel Livewire v3.
-  Use when building, debugging, or explaining Magewire components, wire:* directives, lifecycle hooks,
-  events, loading states, or any PHP/JS component API.
-  Auto-load when working in a Magewire component class or PHTML template.
+description: "Reference for Magewire — Magento 2's reactive component framework inspired by Laravel Livewire v3. Use when building, debugging, or explaining Magewire components, wire:* directives, lifecycle hooks, events, loading states, or any PHP/JS component API. Auto-load when working in a Magewire component class or PHTML template."
+requires: magewire-portman
 ---
 
 # Magewire
@@ -164,11 +161,7 @@ public function onCartUpdated(int $itemCount): void
 }
 ```
 
-Or via a layout-level listener:
-
-```php
-protected $listeners = ['cart-updated' => 'onCartUpdated'];
-```
+The `#[On]` attribute is the preferred listener API. A `protected $listeners = [...]` array on the component is also supported (legacy v1 style) but discouraged for new code.
 
 Dispatch to self:
 

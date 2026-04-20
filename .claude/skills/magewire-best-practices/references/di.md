@@ -6,21 +6,7 @@ Features and Mechanisms must be registered in area-scoped DI files — `etc/fron
 
 **Why:** Magento merges global DI config into every area. A Feature registered globally cannot be selectively disabled or replaced per area. Area-scoped registration allows frontend and admin to have different Feature sets, and lets theme compatibility modules override Features cleanly.
 
-```xml
-<!-- Correct — etc/frontend/di.xml -->
-<type name="Magewirephp\Magewire\Features">
-    <arguments>
-        <argument name="items" xsi:type="array">
-            <item name="my_feature" xsi:type="array">
-                <item name="type" xsi:type="string">Vendor\Module\Magewire\Features\SupportMyFeature</item>
-                <item name="sort_order" xsi:type="number">5050</item>
-            </item>
-        </argument>
-    </arguments>
-</type>
-
-<!-- Wrong — etc/di.xml (global) -->
-```
+For the DI XML registration format, see the **Adding a Custom Feature** section in the `magewire-architecture` skill.
 
 ## Choose Sort Order Carefully
 
@@ -93,20 +79,6 @@ When you need the same Feature class with different configuration, use Magento v
 
 ## Register Synthesizers in Area-Scoped DI
 
-Custom synthesizers follow the same area-scoped rule. Register them under the `HandleComponents` mechanism config.
+Custom synthesizers follow the same area-scoped rule. Register them under the `HandleComponents` mechanism config. Sort order matters — the first synthesizer whose `match()` returns true wins.
 
-```xml
-<!-- etc/frontend/di.xml -->
-<type name="Magewirephp\Magewire\Mechanisms\HandleComponents\HandleComponents">
-    <arguments>
-        <argument name="synthesizers" xsi:type="array">
-            <item name="my_type" xsi:type="array">
-                <item name="type" xsi:type="string">Vendor\Module\Synthesizers\MyTypeSynth</item>
-                <item name="sort_order" xsi:type="number">500</item>
-            </item>
-        </argument>
-    </arguments>
-</type>
-```
-
-Sort order matters — the first synthesizer whose `match()` returns true wins.
+See `references/synthesizers.md` and the `magewire-architecture` skill for the registration format.

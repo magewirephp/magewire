@@ -1,12 +1,6 @@
 ---
 name: magewire-backwards-compatibility
-description: >
-  Reference for Magewire's backwards compatibility system. Use when migrating
-  Magewire v1 (Livewire v2) code to v3, enabling BC for existing components,
-  understanding wire:model / entangle behavioral changes, or working with the
-  BC memo flag, JS hooks, event mappings, and component proxying.
-  Triggers for: BC migration, wire:model.defer, wire:model.lazy, entangle .live,
-  deprecated hooks, Hyvä Checkout v1 components, #[HandleBackwardsCompatibility].
+description: "Reference for Magewire's backwards compatibility system. Use when migrating Magewire v1 (Livewire v2) code to v3, enabling BC for existing components, understanding wire:model / entangle behavioral changes, or working with the BC memo flag, JS hooks, event mappings, and component proxying. Triggers for: BC migration, wire:model.defer, wire:model.lazy, entangle .live, deprecated hooks, Hyvä Checkout v1 components, #[HandleBackwardsCompatibility]."
 license: MIT
 metadata:
   author: Willem Poortman

@@ -2,30 +2,9 @@
 
 ## Extend `ComponentHook`
 
-Every Feature is a `ComponentHook` subclass that hooks into the component lifecycle via `provide()`. Implement only the hooks you need.
+Every Feature is a `ComponentHook` subclass that hooks into the component lifecycle via `provide()`. Implement only the hooks you need — don't stub hooks you won't use.
 
-```php
-namespace Vendor\Module\Magewire\Features;
-
-use Magewirephp\Magewire\ComponentHook;
-use function Magewirephp\Magewire\on;
-
-class SupportMyFeature extends ComponentHook
-{
-    public static function provide(): void
-    {
-        on('mount', function ($params) {
-            // Access component via $this->component
-            // Return a callback for post-processing, or nothing
-        });
-
-        on('dehydrate', function ($context) {
-            // Push effects to the frontend
-            $context->pushEffect('myEffect', $this->collectData());
-        });
-    }
-}
-```
+For the full class boilerplate, middleware-pattern hooks, and the list of available lifecycle signals, see the **Features** section in the `magewire-architecture` skill.
 
 ## Follow Naming Conventions
 
@@ -85,7 +64,7 @@ Magewire.hook('commit', function({ succeed }) {
 When a Feature has its own JavaScript, Alpine component, or HTML template, place them inside the feature's directory — not in the global `addons/`, `components/`, or `ui-components/` directories.
 
 ```
-js/magewire/features/support-my-feature/
+view/{area}/templates/magewire-features/support-my-feature/
 ├── support-my-feature.phtml      ← Primary bridge script
 ├── addon.phtml                   ← Feature-owned addon (if needed)
 └── component.phtml               ← Feature-owned Alpine component (if needed)
@@ -100,10 +79,10 @@ Feature scripts go in the `magewire.features` container. If a feature has multip
 ```xml
 <referenceContainer name="magewire.features">
     <block name="magewire.features.support-my-feature"
-           template="Vendor_Module::js/magewire/features/support-my-feature/support-my-feature.phtml">
+           template="Vendor_Module::magewire-features/support-my-feature/support-my-feature.phtml">
         <block name="magewire.features.support-my-feature.addon"
                as="addon"
-               template="Vendor_Module::js/magewire/features/support-my-feature/addon.phtml"/>
+               template="Vendor_Module::magewire-features/support-my-feature/addon.phtml"/>
     </block>
 </referenceContainer>
 ```

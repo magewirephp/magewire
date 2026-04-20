@@ -1,6 +1,7 @@
 ---
 name: magewire-best-practices
-description: "Apply this skill whenever writing, reviewing, or refactoring Magewire code for Magento 2. This includes creating or modifying components, PHTML templates, layout XML, DI configuration, Features, Mechanisms, synthesizers, lifecycle hooks, event handling, and JavaScript integration. Triggers for component design, property handling, security patterns, template rendering, DI registration, snapshot serialization, state management, and architectural decisions. Also use for Magewire code reviews and refactoring existing Magewire code to follow best practices. Covers any task involving Magewire PHP or JS patterns within Magento 2."
+description: "Use when writing, reviewing, or refactoring Magewire code for Magento 2 — components, PHTML templates, layout XML, DI configuration, Features, Mechanisms, synthesizers, lifecycle hooks, event handling, and JavaScript integration. Trigger phrases include: component design, property handling, security patterns, template rendering, DI registration, snapshot serialization, state management, architectural decisions. Also use for Magewire code reviews and refactoring. Covers any task involving Magewire PHP or JS patterns within Magento 2."
+requires: magewire, magewire-architecture, magewire-javascript
 license: MIT
 metadata:
   author: Willem Poortman
@@ -18,7 +19,7 @@ Check sibling components, related Features, existing DI config, and neighboring 
 
 ## Quick Reference
 
-### 1. Component Design → `rules/components.md`
+### 1. Component Design → `references/components.md`
 
 - Extend `Magewirephp\Magewire\Component`, not Magento block classes
 - Keep public properties serializable — scalars, arrays, or types with a registered synthesizer
@@ -27,7 +28,7 @@ Check sibling components, related Features, existing DI config, and neighboring 
 - Never query the database in the constructor — use `mount()` for initialization
 - Use `$this->skipRender()` when a method only changes state without needing a re-render
 
-### 2. Properties & State → `rules/properties.md`
+### 2. Properties & State → `references/properties.md`
 
 - Scalar types and arrays for public properties — complex objects need synthesizers
 - `wire:model` for form binding, `wire:model.live` only when instant feedback is required
@@ -36,7 +37,7 @@ Check sibling components, related Features, existing DI config, and neighboring 
 - Dot notation (`address.city`) for nested array/object properties
 - Never store sensitive data (passwords, tokens) in public properties — they travel to the client
 
-### 3. Lifecycle Hooks → `rules/lifecycle.md`
+### 3. Lifecycle Hooks → `references/lifecycle.md`
 
 - `mount()` for initial setup — runs once, receives layout XML arguments
 - `boot()` / `booted()` for every-request setup — use for authorization checks
@@ -45,7 +46,7 @@ Check sibling components, related Features, existing DI config, and neighboring 
 - Property-specific hooks (`updatingName`, `updatedName`) over generic hooks when targeting one property
 - Never call `$this->render()` manually — the framework handles the render cycle
 
-### 4. Templates & Views → `rules/templates.md`
+### 4. Templates & Views → `references/templates.md`
 
 - Single root element required in every component template
 - `$magewire` is the component instance — access properties and methods directly
@@ -54,14 +55,14 @@ Check sibling components, related Features, existing DI config, and neighboring 
 - Never echo raw user input — use Magento's escaper, not PHP's `htmlspecialchars()`
 - Keep templates thin — logic belongs in the component class, not in PHTML
 
-### 5. Layout XML & Block Registration → `rules/layout.md`
+### 5. Layout XML & Block Registration → `references/layout.md`
 
 - Component class goes in `<argument name="magewire">` — Magewire can be bound to any block class
 - Use `name` attribute for unique block identification — Magento merges by name
 - Template path uses module notation: `Vendor_Module::template.phtml`
 - Register blocks within the page layout handle where they're needed, not globally
 
-### 6. Dependency Injection → `rules/di.md`
+### 6. Dependency Injection → `references/di.md`
 
 - Features and Mechanisms in area-scoped DI only (`etc/frontend/di.xml`, `etc/adminhtml/di.xml`) — never global `etc/di.xml`
 - Sort order determines boot sequence — check existing registrations before choosing a number
@@ -69,7 +70,7 @@ Check sibling components, related Features, existing DI config, and neighboring 
 - Constructor injection via Magento DI for component dependencies — not `ObjectManager::getInstance()`
 - Virtual types for DI-only variations — don't create empty subclasses
 
-### 7. Security → `rules/security.md`
+### 7. Security → `references/security.md`
 
 - CSRF is automatic — Magewire uses Magento's FormKey, no manual token handling needed
 - Snapshot checksums prevent state tampering — never bypass checksum validation
@@ -78,7 +79,7 @@ Check sibling components, related Features, existing DI config, and neighboring 
 - Public properties are visible to the client — never store secrets, API keys, or session data
 - Rate limiting is handled by the `SupportMagewireRateLimiting` feature via configuration, not attributes
 
-### 8. Events & Communication → `rules/events.md`
+### 8. Events & Communication → `references/events.md`
 
 - `$this->dispatch('event-name')` for cross-component communication
 - `#[On('event-name')]` attribute for declarative listeners — preferred over `$listeners` array
@@ -87,7 +88,7 @@ Check sibling components, related Features, existing DI config, and neighboring 
 - Kebab-case event names (`cart-updated`, not `cartUpdated`)
 - Don't use events for parent-to-child — pass data via layout XML arguments or properties
 
-### 9. JavaScript Integration → `rules/javascript.md`
+### 9. JavaScript Integration → `references/javascript.md`
 
 - CSP-compatible scripts only — use `$magewireFragment->make()->script()->start()/end()`, never raw `<script>` tags
 - `magewire:init` for Magewire hooks, `alpine:init` for Alpine registrations, `magewire:initialized` for directives
@@ -96,7 +97,7 @@ Check sibling components, related Features, existing DI config, and neighboring 
 - Guard addon access with `addons.has('name')` — addons are optional
 - Never depend on `window.Magewire` at registration time — it may not exist yet
 
-### 10. Features & Extensions → `rules/features.md`
+### 10. Features & Extensions → `references/features.md`
 
 - Extend `ComponentHook` for lifecycle-based extensions — implement only the hooks you need
 - `SupportMagewire*` prefix for Magewire-specific features, `SupportMagento*` for Magento bridge features
@@ -105,7 +106,7 @@ Check sibling components, related Features, existing DI config, and neighboring 
 - Push side effects via `$context->pushEffect()` during `dehydrate()` — never echo output from features
 - Facades for public APIs — register with `facade` key in DI config
 
-### 11. Performance → `rules/performance.md`
+### 11. Performance → `references/performance.md`
 
 - `$this->skipRender()` when a method call doesn't need to update the DOM
 - Avoid `wire:model.live` on high-frequency inputs — use `wire:model.blur` or debounce
@@ -113,7 +114,7 @@ Check sibling components, related Features, existing DI config, and neighboring 
 - Lazy-load heavy dependencies — use `boot_mode: 10` for features not always needed
 - `wire:loading` for user feedback instead of polling or repeated requests
 
-### 12. Serialization & Synthesizers → `rules/synthesizers.md`
+### 12. Serialization & Synthesizers → `references/synthesizers.md`
 
 - Built-in synthesizers handle: arrays, stdClass, enums, floats, ints, DataObjects
 - Custom synthesizers for unsupported types — implement `match()`, `dehydrate()`, `hydrate()`
@@ -122,7 +123,7 @@ Check sibling components, related Features, existing DI config, and neighboring 
 - Test round-trip serialization: `hydrate(dehydrate($value))` must produce the original value
 - Avoid storing Magento models directly — extract needed data into scalar properties
 
-### 13. Conventions & Style → `rules/style.md`
+### 13. Conventions & Style → `references/style.md`
 
 - Component classes in `Vendor\Module\Magewire\` namespace — not in `Block\`, `Model\`, or `Controller\`
 - One component class per file, named after the component
@@ -133,8 +134,6 @@ Check sibling components, related Features, existing DI config, and neighboring 
 - Feature classes always prefixed with `Support`: `SupportMyFeature`
 
 ## How to Apply
-
-Always use a sub-agent to read rule files and explore this skill's content.
 
 1. Identify the file type and select relevant sections (e.g., component → 1, 2, 3; template → 4, 7; DI config → 6; JS → 9)
 2. Check sibling files for existing patterns — follow those first per Consistency First
