@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+      layout="1column"
+>
+    <body>
+        <referenceContainer name="content">
+            <container name="magewire.playwright.resolvers"
+                       htmlClass="grid grid-cols-1 gap-x-8 gap-y-16"
+                       htmlId="magewire-playwright-resolvers"
+                       htmlTag="div"
+            >
+                <block name="magewire.playwright.resolvers.layout.default"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/resolvers/default.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire" xsi:type="object" shared="false">
+                            Magewirephp\Magewire\Magewire\Playwright\Resolvers\Basic
+                        </argument>
+                    </arguments>
+                </block>
+
+                <block name="magewire.playwright.resolvers.layout.aliased"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/resolvers/aliased.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire" xsi:type="object" shared="false">
+                            Magewirephp\Magewire\Magewire\Playwright\Resolvers\Basic
+                        </argument>
+                        <argument name="magewire:alias" xsi:type="string">resolver-alias-example</argument>
+                    </arguments>
+                </block>
+
+                <block name="magewire.playwright.resolvers.layout.nested"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/resolvers/nested.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire" xsi:type="object" shared="false">
+                            Magewirephp\Magewire\Magewire\Playwright\Resolvers\Basic
+                        </argument>
+                    </arguments>
+
+                    <block name="magewire.playwright.resolvers.layout.nested.child"
+                           template="Magewirephp_Magewire::tests/magewire/playwright/resolvers/nested/child.phtml"
+                           as="child"
+                    >
+                        <arguments>
+                            <argument name="magewire" xsi:type="object" shared="false">
+                                Magewirephp\Magewire\Magewire\Playwright\Resolvers\Basic
+                            </argument>
+                        </arguments>
+                    </block>
+                </block>
+            </container>
+        </referenceContainer>
+    </body>
+</page>

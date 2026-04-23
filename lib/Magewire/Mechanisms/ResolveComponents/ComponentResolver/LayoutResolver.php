@@ -239,7 +239,10 @@ class LayoutResolver extends ComponentResolver
 
     protected function determineLayoutHandles(Component $component, ComponentContext $context): array
     {
-        return $context->getBlock()->getLayout()->getUpdate()->getHandles();
+        return array_diff(
+            $context->getBlock()->getLayout()->getUpdate()->getHandles(),
+            ['default']
+        );
     }
 
     protected function recoverLayoutHandles(Snapshot $snapshot): array

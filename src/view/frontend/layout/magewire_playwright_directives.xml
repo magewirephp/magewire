@@ -11,7 +11,7 @@
                        htmlTag="div"
             >
                 <block name="magewire.playwright.directives.base"
-                       template="Magewirephp_Magewire::magewire/tests/playwright/directives/base.phtml"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/directives/base.phtml"
                 >
                     <arguments>
                         <argument name="magewire" xsi:type="object">
@@ -21,7 +21,7 @@
                 </block>
 
                 <block name="magewire.playwright.directives.scope"
-                       template="Magewirephp_Magewire::magewire/tests/playwright/directives/scope.phtml"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/directives/scope.phtml"
                 >
                     <arguments>
                         <argument name="magewire" xsi:type="object">
@@ -37,7 +37,7 @@
                        htmlTag="div"
             >
                 <block name="magewire.playwright.directive.areas.escape"
-                       template="Magewirephp_Magewire::magewire/tests/playwright/directives/area/escape.phtml"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/directives/area/escape.phtml"
                 >
                     <arguments>
                         <argument name="magewire" xsi:type="object">
@@ -47,7 +47,7 @@
                 </block>
 
                 <block name="magewire.playwright.directive.areas.render"
-                       template="Magewirephp_Magewire::magewire/tests/playwright/directives/area/render.phtml"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/directives/area/render.phtml"
                 >
                     <arguments>
                         <argument name="magewire" xsi:type="object" shared="false">
@@ -56,7 +56,7 @@
                     </arguments>
 
                     <block name="magewire.playwright.directive.areas.render.child"
-                           template="Magewirephp_Magewire::magewire/tests/playwright/directives/area/render/child.phtml"
+                           template="Magewirephp_Magewire::tests/magewire/playwright/directives/area/render/child.phtml"
                            as="child"
                     >
                         <arguments>
@@ -66,7 +66,7 @@
                         </arguments>
 
                         <block name="magewire.playwright.directive.areas.render.child-child"
-                               template="Magewirephp_Magewire::magewire/tests/playwright/directives/area/render/child-child.phtml"
+                               template="Magewirephp_Magewire::tests/magewire/playwright/directives/area/render/child-child.phtml"
                                as="child-child"
                         >
                             <arguments>
