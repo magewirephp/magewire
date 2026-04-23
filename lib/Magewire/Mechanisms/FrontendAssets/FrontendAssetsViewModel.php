@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -20,20 +21,23 @@ class FrontendAssetsViewModel implements ArgumentInterface
         private readonly FrontendAssetsMechanism $frontendAssetsMechanism,
         private readonly Escaper $escaper
     ) {
-        //
     }
 
-    function getScriptPath(): string
+    public function getScriptPath(): string
     {
         return $this->frontendAssetsMechanism->returnJavaScriptAsFile();
     }
 
-    function getScriptAttributes(): string
+    public function getScriptAttributes(): string
     {
         $attributes = $this->frontendAssetsMechanism->getDataByPath('script.html_attributes', []);
 
-        return implode(' ', array_map(function ($attribute, ?string $expression) {
-            return $expression === null ? $attribute : sprintf('%s="%s"', $attribute, $this->escaper->escapeHtmlAttr($expression));
-        }, array_keys($attributes), array_values($attributes)));
+        return implode(' ', array_map(
+            function ($attribute, string|null $expression) {
+                return $expression === null ? $attribute : sprintf('%s="%s"', $attribute, $this->escaper->escapeHtmlAttr($expression));
+            },
+            array_keys($attributes),
+            array_values($attributes)
+        ));
     }
 }

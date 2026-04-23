@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -19,9 +20,7 @@ class CorruptComponentPayloadException extends Exception
 
     function __construct()
     {
-        parent::__construct(
-            "Magewire encountered corrupt data when trying to hydrate a component. \n".
-            "Ensure that the [name, id, data] of the Magewire component wasn't tampered with between requests."
-        );
+        parent::__construct("Magewire encountered corrupt data when trying to hydrate a component. \n"
+        . "Ensure that the [name, id, data] of the Magewire component wasn't tampered with between requests.");
     }
 }

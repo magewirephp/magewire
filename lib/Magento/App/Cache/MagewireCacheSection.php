@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -24,7 +25,6 @@ abstract class MagewireCacheSection
         private readonly MagewireCacheType $magewireCacheType,
         private readonly SerializerInterface $serializer
     ) {
-        //
     }
 
     public function save(array $data, int|null $ttl = null): bool

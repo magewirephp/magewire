@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -10,59 +11,51 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Action\Magewire;
 
-use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ViewAction as ViewAction;
-use Magewirephp\Magewire\Features\SupportMagewireFlakes\Mechanisms\ResolveComponent\ComponentResolver\FlakeResolver;
-use Magewirephp\Magewire\Support\DataArray;
+use Magewirephp\Magewire\Features\SupportMagewireFlakes\Component\FlakeFactory;
 use Magewirephp\Magewire\Support\DataArrayFactory;
+use RuntimeException;
 
 class FlakeViewAction extends ViewAction
 {
     public function __construct(
-        private readonly FlakeResolver $flakeResolver,
+        private readonly FlakeFactory $flakeFactory,
         private readonly DataArrayFactory $attributesFactory
     ) {
-        //
     }
 
     /**
-     * @throws LocalizedException
+     * @throws RuntimeException
      */
     public function create(
         string $flake,
         array $data = [],
         array $metadata = [],
         array $variables = []
-    ): string {
-        $data = $this->attributesFactory->create()->fill($data)
+    ): AbstractBlock {
+        $data = $this->attributesFactory->create()->fill($data);
 
-            ->each(function (DataArray $array, $value, $key) use ($variables) {
-                if (str_starts_with($value, '$')) {
-                    $value = trim($value, '$');
+        $data->each(static function (DataArray $array, $value, $key) use ($variables) {
+            if (str_starts_with($value, '$')) {
+                $value = trim($value, '$');
 
-                    if (array_key_exists($value, $variables)) {
-                        $array->put($key, $variables[$value]);
-                    }
+                if (array_key_exists($value, $variables)) {
+                    $array->put($key, $variables[$value]);
                 }
-            })->all();
+            }
+        });
 
-        $block = $this->flakeResolver->make($flake, $data);
+        $data = $data->all();
+        $block = $this->flakeFactory->createByName($flake, $data);
 
         if (! $block) {
-            return '<div></div>'; // TBD
+            throw new RuntimeException('Flake block can not be found.'); // @todo
         }
 
         $block->setData('magewire:alias', $flake);
 
-        // Flake metadata.
-        $block->setData('magewire:flake', [
-            'element' => [
-                'attributes' => $metadata['attributes'] ?? []
-            ]
-        ]);
-
         $block->setNameInLayout($data['magewire:name']);
-
-        return $block->toHtml();
+        return $block;
     }
 }

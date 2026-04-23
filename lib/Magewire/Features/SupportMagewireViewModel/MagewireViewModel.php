@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -10,18 +11,16 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireViewModel;
 
-use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magewirephp\Magewire\Model\View\Utils as ViewUtils;
 
-class MagewireViewModel implements ArgumentInterface
+class MagewireViewModel implements MagewireViewModelInterface
 {
     function __construct(
         private readonly ViewUtils $utils
     ) {
-        //
     }
 
-    public function utils(string $name = null, array $arguments = []): ViewUtils
+    public function utils(string|null $name = null, array $arguments = []): ViewUtils
     {
         return $name ? $this->utils->$name($arguments) : $this->utils;
     }

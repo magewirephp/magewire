@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -11,8 +12,6 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Observer;
 
 use Exception;
-use function Magewirephp\Magewire\store;
-use function Magewirephp\Magewire\trigger;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Exception\FileSystemException;
@@ -20,19 +19,24 @@ use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\Exception\RuntimeException;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Enums\RequestMode;
 use Magewirephp\Magewire\MagewireManager;
 use Magewirephp\Magewire\MagewireServiceProvider;
 use Magewirephp\Magewire\Mechanisms\HandleRequests\ComponentRequestContext;
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\LayoutLifecycleManager;
 use Magewirephp\Magewire\Model\App\ExceptionManager;
+
+use function Magewirephp\Magewire\store;
+use function Magewirephp\Magewire\trigger;
 
 class ViewBlockAbstractToHtmlBefore implements ObserverInterface
 {
     public function __construct(
         private readonly MagewireManager $magewireManager,
         private readonly MagewireServiceProvider $magewireServiceProvider,
-        private readonly ExceptionManager $exceptionManager
+        private readonly ExceptionManager $exceptionManager,
+        private readonly LayoutLifecycleManager $componentRenderLifecycleManager
     ) {
-        //
     }
 
     /**
@@ -40,12 +44,13 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
      */
     public function execute(Observer $observer): void
     {
-        $this->magewireServiceProvider->setup();
-
         /** @var AbstractBlock $block */
         $block = $observer->getData('block');
         /** @var mixed $magewire */
         $magewire = $block->getData('magewire');
+
+        $lifecycle = $this->componentRenderLifecycleManager->target('magewire')->push($block);
+        trigger('magento:block:render', $lifecycle, $block);
 
         if ($magewire) {
             try {
@@ -68,9 +73,9 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
                  *
                  * @see \Magewirephp\Magewire\Controller\Router
                  */
-                $this->magewireServiceProvider->boot();
+                $this->magewireServiceProvider->boot(RequestMode::PRECEDING);
 
-                $construct = trigger('magewire:construct', $block);
+                $construct = trigger('magewire:component:construct', $block);
                 $block = $construct();
 
                 $this->handleMount($block);
@@ -106,7 +111,7 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
 
         $this->magewireManager->mount(
             $component->getName(),
-            $component->resolver()->arguments()->forMount(),
+            $component->magewireResolver()->arguments()->forMount(),
             $block->getCacheKey(),
             $block,
             $component

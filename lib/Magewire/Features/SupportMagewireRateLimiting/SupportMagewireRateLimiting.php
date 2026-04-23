@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -10,11 +11,11 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireRateLimiting;
 
-use Magento\Framework\App\Response\HttpInterface as HttpResponseInterface;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\ComponentHook;
 use Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Exceptions\TooManyRequestsException;
+
 use function Magewirephp\Magewire\on;
 
 class SupportMagewireRateLimiting extends ComponentHook
@@ -23,7 +24,6 @@ class SupportMagewireRateLimiting extends ComponentHook
         private readonly UpdateRequestRateLimiter $rateLimiter,
         private readonly RateLimiterConfig $rateLimiterConfig
     ) {
-        //
     }
 
     public function provide(): void
@@ -38,7 +38,7 @@ class SupportMagewireRateLimiting extends ComponentHook
                 }
             });
         } elseif ($this->rateLimiterConfig->canRateLimitComponents()) {
-            on('magewire:reconstruct', function () {
+            on('magewire:component:reconstruct', function () {
                 return function (Template $block) {
                     $component = $block->getData('magewire');
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -11,17 +12,17 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Mechanisms\ResolveComponents;
 
 use Magento\Framework\View\Element\Block\ArgumentInterface;
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\LayoutLifecycleManager;
 
 class ResolveComponentsViewModel implements ArgumentInterface
 {
     public function __construct(
-        private readonly RenderLifecycleManager $renderLifecycleManager,
+        private readonly LayoutLifecycleManager $renderLifecycleManager
     ) {
-        //
     }
 
     public function doesPageHaveComponents(): bool
     {
-        return count($this->renderLifecycleManager->getLifecycle()) > 0;
+        return $this->renderLifecycleManager->target('magewire')->hasComponents();
     }
 }

@@ -4,24 +4,16 @@ declare(strict_types=1);
 
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
-use Magewirephp\Magewire\Model\Magewire\Notifier\NotificationStateEnum;
 
 /** @var Template $block */
 /** @var Escaper $escaper */
 
-$blockLoaderIcon = $block->getChildBlock('loader')
-?>
-<div class="inline-flex justify-center flex-shrink-0">
-    <div class="activity-state size-5">
-        <div class="relative" x-show="notification.loader">
-            <?php /* Stack items vertically to prevent layout shifting when hiding or disappearing, ensuring consistent visual layout. */ ?>
-            <?php if ($blockLoaderIcon): ?>
-            <div class="absolute"
-                 x-show="notification.state === '<?= NotificationStateEnum::RUNNING->getState() ?>'"
-            >
-                <?= $blockLoaderIcon->toHtml() ?>
-            </div>
-            <?php endif ?>
+$blockLoaderIcon = $block->getChildBlock('loader') ?>
+<div class="size-5" x-show="notification.loader.active">
+    <?php /* Stack items vertically to prevent layout shifting when hiding or disappearing, ensuring consistent visual layout. */ ?>
+    <?php if ($blockLoaderIcon): ?>
+        <div x-show="notification.state">
+            <?= $blockLoaderIcon->toHtml() ?>
         </div>
-    </div>
+    <?php endif ?>
 </div>

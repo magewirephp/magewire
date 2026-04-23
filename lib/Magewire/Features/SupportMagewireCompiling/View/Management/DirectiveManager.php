@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -21,7 +22,6 @@ class DirectiveManager
         private readonly DirectiveArea $directives,
         private array $areas = []
     ) {
-        //
     }
 
     public function area(string|null $name = null, DirectiveArea|null $area = null): DirectiveArea|null
@@ -43,6 +43,12 @@ class DirectiveManager
             if (str_starts_with($subject, $area)) {
                 return [$object, lcfirst(substr($subject, strlen($area)))];
             }
+        }
+
+        $object = $this->directives->responsibilities()->has($subject);
+
+        if ($object) {
+            return [$this->directives, $subject];
         }
 
         return [null, $subject];

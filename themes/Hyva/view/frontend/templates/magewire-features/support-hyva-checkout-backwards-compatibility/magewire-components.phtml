@@ -1,0 +1,107 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment = $magewireViewModel->utils()->fragment();
+
+/** @internal Do not modify to ensure Magewire continues to function correctly. */
+?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    document.addEventListener('magewire:init', event => {
+        const _find = Magewire.find.bind(Magewire);
+
+        Magewire.find = function(id) {
+            const wire = _find(id);
+
+            if (! wire) {
+                return wire;
+            }
+
+            return new Proxy(wire, {
+                get(target, prop, receiver) {
+                    if (prop === '__instance') {
+                        return magewireMakeComponentBackwardsCompatible(target.__instance);
+                    }
+
+                    return Reflect.get(target, prop, receiver);
+                }
+            });
+        };
+    });
+
+    const magewireIsComponentBackwardsCompatibilityEnabled = function(component) {
+        try {
+            return component.snapshot.memo.bc.enabled;
+        } catch (exception) {
+        }
+
+        return false;
+    }
+
+    const magewireMakeComponentBackwardsCompatible = function(component) {
+        if (! magewireIsComponentBackwardsCompatibilityEnabled(component)) {
+            return component;
+        }
+
+        const checksum = component.snapshot?.checksum;
+
+        if (component.magewire?.bc?.checksum === checksum) {
+            return component.magewire.bc.proxy;
+        }
+
+        const proxy = new Proxy(component, {
+            get(target, prop, receiver) {
+                <?php /* @deprecated 'component.call()' has been replaced with 'component.$wire.call()'. */ ?>
+                if (prop === 'call') {
+                    return (method, ...params) => target.$wire.call(method, ...params);
+                }
+
+                if ('bc' in target.effects) {
+                    const value = target.effects.bc[prop] !== undefined
+                        ? target.effects.bc[prop]
+                        : target.effects.bc.map?.[prop];
+
+                    if (value !== undefined) {
+                        if (typeof value === 'string' && value.startsWith('path:')) {
+                            return value.slice(5).split('.').reduce((obj, key) => obj?.[key], target);
+                        }
+
+                        return value;
+                    }
+                }
+
+                return Reflect.get(target, prop, receiver);
+            },
+
+            has(target, prop) {
+                if ('bc' in target.effects) {
+                    const value = target.effects.bc[prop] !== undefined
+                        ? target.effects.bc[prop]
+                        : target.effects.bc.map?.[prop];
+
+                    if (value !== undefined) {
+                        return true;
+                    }
+                }
+
+                return Reflect.has(target, prop);
+            }
+        });
+
+        component.magewire ??= {};
+        component.magewire.bc = { checksum, proxy };
+
+        return proxy;
+    };
+</script>
+<?php $script->end() ?>

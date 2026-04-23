@@ -1,4 +1,5 @@
-<?php declare(strict_types=1);
+<?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -6,10 +7,15 @@
  * details on copyrights and license information.
  */
 
+declare(strict_types=1);
+
 namespace Magewirephp\Magewire\Exception;
 
 use Magento\Framework\Exception\LocalizedException;
 
+/**
+ * @deprecated TBD
+ */
 class MagewireException extends LocalizedException
 {
 }

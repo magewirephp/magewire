@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -16,7 +17,7 @@ class Csp
 {
     const HASH_ALGORITHM = 'sha256';
 
-    private null|false|object $nonceProvider = null;
+    private false|object|null $nonceProvider = null;
 
     public function getMagentoCspNonceProvider(): object|bool
     {
@@ -29,9 +30,7 @@ class Csp
          * the CspNonceProvider class, allowing projects to upgrade Magewire without issues.
          */
         if ($this->nonceProvider === null) {
-            $this->nonceProvider = $this->isCspAvailable()
-                ? ObjectManager::getInstance()->get('Magento\Csp\Helper\CspNonceProvider')
-                : false;
+            $this->nonceProvider = $this->isCspAvailable() ? ObjectManager::getInstance()->get('Magento\Csp\Helper\CspNonceProvider') : false;
         }
 
         return $this->nonceProvider;
@@ -39,8 +38,7 @@ class Csp
 
     public function isCspAvailable(): bool
     {
-        return ($this->nonceProvider !== false && class_exists('Magento\Csp\Helper\CspNonceProvider'))
-            || (is_object($this->nonceProvider) && method_exists($this->nonceProvider, 'generateNonce'));
+        return $this->nonceProvider !== false && class_exists('Magento\Csp\Helper\CspNonceProvider') || is_object($this->nonceProvider) && method_exists($this->nonceProvider, 'generateNonce');
     }
 
     public function generateHash(string $content): string

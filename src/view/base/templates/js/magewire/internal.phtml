@@ -24,79 +24,8 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
         }
 
         window.Magewire = window.Livewire;
-
-        window.Magewire.utilities = window.Magewire.utilities || {};
-        window.Magewire.addons = window.Magewire.addons || {};
-
-        function magewireRegisterNamespace(namespace, name, callback, reactive = false) {
-            let type = namespace.slice(0, -1);
-            type = type.endsWith('ie') ? type.slice(0, -2) + 'y' : type;
-
-            if (typeof name !== 'string' || name.trim() === '') {
-                throw new Error(`Magewire: ${type} name must be a non-empty string`);
-            }
-            if (typeof callback !== 'function') {
-                throw new Error(`Magewire: ${type} callback must be a function`);
-            }
-
-            const target = Magewire[namespace];
-
-            if (target.hasOwnProperty(name)) {
-                console.warn(`Magewire: ${type} "${name}" is already registered. Overwriting existing ${type}.`);
-            }
-
-            try {
-                const result  = callback({ magewire: window.Magewire });
-                const subject = reactive ? Alpine.reactive(result) : result;
-
-                target[name] = subject;
-                window.Magewire[namespace][name] = subject;
-
-                return subject;
-            } catch (error) {
-                throw new Error(`Magewire: Failed to register ${type} "${name}": ${error.message}`);
-            }
-        }
-
-        window.Magewire.utility = function(name, callback) {
-            return magewireRegisterNamespace('utilities', name, callback);
-        };
-        window.Magewire.addon = function(name, callback, reactive = false) {
-            return magewireRegisterNamespace('addons', name, callback, reactive);
-        };
-
-        const EVENTS = [
-            { from: 'init', to: 'init', magewire: { ...window.Magewire } },
-            { from: 'initialized', to: 'initialized', magewire: { ...window.Magewire } }
-        ];
-
-        EVENTS.forEach(({ from, to, magewire }) => {
-            document.addEventListener(`livewire:${from}`, original => {
-                const kebabCaseEvent = to.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase();
-
-                document.dispatchEvent(new CustomEvent(`magewire:${kebabCaseEvent}`, {
-                    detail: { ...original.detail, magewire: magewire },
-                    bubbles: original.bubbles,
-                    cancelable: original.cancelable
-                }));
-            });
-        });
-
-        /** @deprecated: Both :load and :available will be removed. **/
-        const EVENTS_LEGACY = [
-            { from: 'magewire:init', to: 'magewire:load' },
-            { from: 'magewire:initialized', to: 'magewire:available' }
-        ];
-
-        EVENTS_LEGACY.forEach(({ from, to }) => {
-            document.addEventListener(from, event => {
-                document.dispatchEvent(new CustomEvent(to, {
-                    detail: event.detail,
-                    bubbles: event.bubbles,
-                    cancelable: event.cancelable
-                }));
-            });
-        });
     })();
 </script>
 <?php $script->end() ?>
+
+<?= $block->getChildHtml('internal.backwards-compatibility') ?>

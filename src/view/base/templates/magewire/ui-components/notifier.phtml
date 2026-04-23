@@ -13,8 +13,6 @@ use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
 /** @var AbstractBlock|false $notificationsBeforeBlock */
 /** @var AbstractBlock|false $notificationsAfterBlock */
 
-/** @purge: bottom-4, left-6, top-4, right-6 */
-
 $notificationsBeforeBlock = $block->getChildBlock('notification.before');
 $notificationsAfterBlock = $block->getChildBlock('notification.after');
 
@@ -23,50 +21,43 @@ $templateUtil = $magewireViewModel->utils()->template();
 $layoutUtil = $magewireViewModel->utils()->layout();
 ?>
 <?= $templateUtil->echoCodeComment('notifier', false, 'UI Component') ?>
-<div
-    class="magewire-notifier"
-    x-data="magewireNotifier"
-    x-bind="magewireNotifierBindings"
->
+<div x-data="magewireNotifier" x-bind="magewireNotifierBindings">
     <template x-for="notification in notifications">
         <div
-            class="magewire-notifier__notification"
             aria-busy="true"
             aria-label="off"
             role="status"
             x-show="notification.active"
-            x-transition.duration.500ms
+            x-transition:enter.duration.400ms
+            x-transition:leave.duration.100ms
             x-bind="bindings.notification.item.root"
         >
-            <div class="magewire-notifier__notification-content">
-                <?php if ($layoutUtil->canContainerizeBlock($notificationsBeforeBlock)): ?>
-                <div class="magewire-notifier__notification-before">
+            <?php if ($layoutUtil->canContainerizeBlock($notificationsBeforeBlock)): ?>
+                <div class="magewire-notifier-before">
                     <?= $layoutUtil->renderBlockAsContainer($notificationsBeforeBlock) ?>
                 </div>
-                <?php endif ?>
+            <?php endif ?>
 
-                <div>
-                    <div class="magewire-notifier__notification-title"
-                         x-text="notification.title"
-                         x-show="notification.title"
-                    >
+            <div class="magewire-notifier-body">
+                <p class="magewire-notifier-title" x-show="notification.title">
+                    <strong x-text="notification.title">
                         <!-- Notification title placeholder. -->
-                    </div>
+                    </strong>
+                </p>
 
-                    <p class="magewire-notifier__notification-message"
-                       x-text="notification.message"
-                       x-show="notification.message"
-                    >
-                        <!-- Notification message placeholder. -->
-                    </p>
-                </div>
+                <p class="magewire-notifier-message"
+                   x-text="notification.message"
+                   x-show="notification.message"
+                >
+                    <!-- Notification message placeholder. -->
+                </p>
+            </div>
 
-                <?php if ($layoutUtil->canContainerizeBlock($notificationsAfterBlock)): ?>
-                <div class="magewire-notifier__notification-after">
+            <?php if ($layoutUtil->canContainerizeBlock($notificationsAfterBlock)): ?>
+                <div class="magewire-notifier-after">
                     <?= $layoutUtil->renderBlockAsContainer($notificationsAfterBlock) ?>
                 </div>
-                <?php endif ?>
-            </div>
+            <?php endif ?>
         </div>
     </template>
 </div>

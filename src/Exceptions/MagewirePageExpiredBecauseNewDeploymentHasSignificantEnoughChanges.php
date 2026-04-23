@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -16,9 +17,6 @@ class MagewirePageExpiredBecauseNewDeploymentHasSignificantEnoughChanges extends
 {
     function __construct()
     {
-        parent::__construct(
-            419,
-            'New deployment contains changes to Magewire that have invalidated currently open browser pages.'
-        );
+        parent::__construct(419, 'New deployment contains changes to Magewire that have invalidated currently open browser pages.');
     }
 }

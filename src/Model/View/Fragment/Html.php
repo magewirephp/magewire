@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -20,18 +21,11 @@ class Html extends Fragment
     protected array $attributes = [];
 
     public function __construct(
-        private readonly LoggerInterface $logger,
-        private readonly Escaper $escaper,
-        private readonly array $modifiers = []
+        LoggerInterface $logger,
+        Escaper $escaper,
+        array $modifiers = []
     ) {
-        parent::__construct($this->logger, $this->modifiers);
-    }
-
-    public function start(): static
-    {
-        $this->withValidator(static fn ($html) => str_starts_with($html, '<'));
-
-        return parent::start();
+        parent::__construct($logger, $escaper, $modifiers);
     }
 
     /**
@@ -48,7 +42,11 @@ class Html extends Fragment
         $this->raw = $input;
 
         try {
-            return $this->start()->render();
+            $this->start();
+            $output = $this->render();
+            $this->end();
+
+            return $output;
         } catch (Throwable $exception) {
             return $this->handleRenderException($exception);
         }
@@ -102,6 +100,13 @@ class Html extends Fragment
 
     protected function getAreaAttributes(string $area): array
     {
+        if ($area === 'root') {
+            // Filter those who are not an 'area' (an array value).
+            $attributes = array_filter($this->attributes, static fn ($value) => ! is_array($value));
+
+            return array_merge($this->attributes[$area] ?? [], $attributes);
+        }
+
         return $this->attributes[$area] ?? [];
     }
 }

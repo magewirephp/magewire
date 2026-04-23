@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -11,11 +12,11 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Component;
 
 use Exception;
-use Magewirephp\Magewire\Exception\AcceptableException;
-use Rakit\Validation\Validator;
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Exception\AcceptableException;
 use Magewirephp\Magewire\Exception\ValidationException;
 use Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\HandlesFormComponentBackwardsCompatibility;
+use Rakit\Validation\Validator;
 
 abstract class Form extends Component
 {
@@ -52,16 +53,19 @@ abstract class Form extends Component
     public function validate(
         array $rules = [],
         array $messages = [],
-        array $data = null,
+        array|null $data = null,
         array $aliases = [],
         bool $mergeWithClassProperties = true
     ): bool {
         $rules = $mergeWithClassProperties ? array_merge($this->rules, $rules) : $rules;
-        $data = $data ?? $this->getPublicProperties(true);
+        $data ??= $this->getPublicProperties(true);
 
-        $messages = array_map(static function ($message) {
-            return __($message);
-        }, $mergeWithClassProperties ? array_merge($this->messages, $messages) : $messages);
+        $messages = array_map(
+            static function ($message) {
+                return __($message);
+            },
+            $mergeWithClassProperties ? array_merge($this->messages, $messages) : $messages
+        );
 
         try {
             $validation = $this->validator->make($data, $rules, $messages);
@@ -97,7 +101,7 @@ abstract class Form extends Component
     /**
      * @throws AcceptableException
      */
-    public function validateOnly(array $rules = [], array $messages = [], array $data = null): bool
+    public function validateOnly(array $rules = [], array $messages = [], array|null $data = null): bool
     {
         return $this->validate($rules, $messages, $data, [], false);
     }

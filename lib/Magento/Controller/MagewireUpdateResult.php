@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -14,6 +15,7 @@ use Closure;
 use Magento\Framework\App\Response\HttpInterface as HttpResponseInterface;
 use Magento\Framework\Controller\AbstractResult;
 use Magento\Framework\Serialize\Serializer\Json as JsonSerializer;
+
 use function Magewirephp\Magewire\trigger;
 
 class MagewireUpdateResult extends AbstractResult
@@ -26,7 +28,6 @@ class MagewireUpdateResult extends AbstractResult
         private readonly array $components = [],
         private readonly array $assets = []
     ) {
-        //
     }
 
     public function renderWith(Closure $renderer): self
@@ -53,12 +54,10 @@ class MagewireUpdateResult extends AbstractResult
     public function render(HttpResponseInterface $response): self
     {
         $this->renderer ??= function (HttpResponseInterface $response, MagewireUpdateResult $result): HttpResponseInterface {
-            return $response->setBody(
-                $this->jsonSerializer->serialize([
-                    'components' => $result->getComponents(),
-                    'assets' => $result->getAssets()
-                ])
-            );
+            return $response->setBody($this->jsonSerializer->serialize([
+                'components' => $result->getComponents(),
+                'assets' => $result->getAssets()
+            ]));
         };
 
         call_user_func($this->renderer, $response, $this);

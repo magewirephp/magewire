@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -10,12 +11,13 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Model\View\Utils;
 
-use Magewirephp\Magewire\MagewireServiceProvider;
+use BadMethodCallException;
 use Magewirephp\Magewire\Model\Magento\System\ConfigMagewire as MagewireSystemConfig;
 use Magewirephp\Magewire\Model\View\Utils\Magewire\Builder;
 use Magewirephp\Magewire\Model\View\Utils\Magewire\Features as FeaturesViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Magewire\Mechanisms as MechanismsViewUtil;
 use Magewirephp\Magewire\Model\View\UtilsInterface;
+use Psr\Log\LoggerInterface;
 
 class Magewire implements UtilsInterface
 {
@@ -23,10 +25,9 @@ class Magewire implements UtilsInterface
         private readonly Builder $builder,
         private readonly FeaturesViewUtil $features,
         private readonly MechanismsViewUtil $mechanisms,
-        private readonly MagewireServiceProvider $magewireServiceProvider,
-        private readonly MagewireSystemConfig $config
+        private readonly MagewireSystemConfig $config,
+        private readonly LoggerInterface $logger
     ) {
-        //
     }
 
     public function features(): FeaturesViewUtil
@@ -44,13 +45,32 @@ class Magewire implements UtilsInterface
         return $this->config;
     }
 
-    public function build(): Builder
-    {
-        return $this->builder;
-    }
-
     public function getUpdateUri(): string
     {
         return '/magewire/update';
+    }
+
+    public function logger(): LoggerInterface
+    {
+        return $this->logger;
+    }
+
+    public function canRequireMagewireJsLibrary(): bool
+    {
+        try {
+            return $this->mechanisms()->resolveComponents()->doesPageHaveComponents();
+        } catch (BadMethodCallException $exception) {
+            $this->logger()->critical($exception->getMessage(), ['exception' => $exception]);
+        }
+
+        return false;
+    }
+
+    /**
+     * @deprecated Work in Progress.
+     */
+    public function build(): Builder
+    {
+        return $this->builder;
     }
 }

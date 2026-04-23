@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -15,7 +16,6 @@ abstract class ConfigMagewireGroup
     public function __construct(
         private readonly ConfigMagewire $config
     ) {
-        //
     }
 
     public function config(): ConfigMagewire

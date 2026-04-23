@@ -1,0 +1,86 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment = $magewireViewModel->utils()->fragment();
+?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    (() => {
+        'use strict';
+
+        document.addEventListener('magewire:init', event => {
+            Magewire.directive('select', ({ el, directive, component, cleanup }) => {
+                if (el.tagName !== 'SELECT') {
+                    console.error('Magewire: [wire:select] can only be applied on elements of type select.', el)
+                    return
+                }
+                if (directive.expression) {
+                    console.error('Magewire: [wire:select] shouldn\'t have a value.', el)
+                    return
+                }
+                if (! el.hasAttribute('wire:model')) {
+                    console.error('Magewire: [wire:select] requires a [wire:model] attribute to function properly.', el)
+                    return
+                }
+
+                let useDuration = directive.modifiers
+                    .filter(item => typeof item === 'string' && item.endsWith('ms') && /^\d/.test(item))
+                    .map(item => parseInt(item.slice(0, -2), 10))
+
+                let changed = false,
+                    timeout = null
+
+                const sync = () => {
+                    clearTimeout(timeout)
+
+                    if (changed) {
+                        changed = false
+
+                        component.$wire.$commit()
+                    }
+                }
+
+                const debounce = () => {
+                    if (directive.modifiers.includes('debounce')) {
+                        clearTimeout(timeout)
+
+                        timeout = setTimeout(() => sync(), useDuration.length ? useDuration[0] : 1500)
+                    }
+                }
+
+                const change = () => {
+                    changed = true
+
+                    debounce()
+                }
+
+                el.addEventListener('keydown', debounce)
+                el.addEventListener('change', change)
+
+                cleanup(() => {
+                    clearTimeout(timeout)
+
+                    el.removeEventListener('keydown', debounce)
+                    el.removeEventListener('change', change)
+                })
+
+                if (directive.modifiers.includes('blur')) {
+                    const blurHandler = () => sync()
+
+                    el.addEventListener('blur', blurHandler)
+
+                    cleanup(() => el.removeEventListener('blur', blurHandler))
+                }
+            })
+        })
+    })();
+</script>
+<?php $script->end() ?>

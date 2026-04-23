@@ -1,4 +1,4 @@
-/*! tailwindcss v4.1.8 | MIT License | https://tailwindcss.com */
+/*! tailwindcss v4.1.18 | MIT License | https://tailwindcss.com */
 @layer properties {
   @supports (((-webkit-hyphens: none)) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {
     *, :before, :after, ::backdrop {
@@ -37,7 +37,13 @@
       --tw-drop-shadow-alpha: 100%;
       --tw-drop-shadow-size: initial;
       --tw-space-y-reverse: 0;
-      --tw-space-x-reverse: 0;
+      --tw-translate-x: 0;
+      --tw-translate-y: 0;
+      --tw-translate-z: 0;
+      --tw-outline-style: solid;
+      --tw-duration: initial;
+      --tw-ease: initial;
+      --tw-leading: initial;
     }
   }
 }
@@ -47,21 +53,35 @@
     :root, :host {
       --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
       --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --color-red-50: oklch(97.1% .013 17.38);
       --color-red-600: oklch(57.7% .245 27.325);
+      --color-red-700: oklch(50.5% .213 27.518);
+      --color-yellow-50: oklch(98.7% .026 102.212);
+      --color-yellow-600: oklch(68.1% .162 75.834);
+      --color-yellow-700: oklch(55.4% .135 66.442);
+      --color-green-50: oklch(98.2% .018 155.826);
+      --color-green-600: oklch(62.7% .194 149.214);
+      --color-green-700: oklch(52.7% .154 150.069);
+      --color-blue-50: oklch(97% .014 254.604);
+      --color-blue-600: oklch(54.6% .245 262.881);
+      --color-blue-700: oklch(48.8% .243 264.376);
+      --color-gray-400: oklch(70.7% .022 261.325);
       --color-gray-600: oklch(44.6% .03 256.802);
+      --color-gray-700: oklch(37.3% .034 259.733);
+      --color-black: #000;
       --color-white: #fff;
       --spacing: .25rem;
       --container-xs: 20rem;
-      --container-sm: 24rem;
       --text-xs: .75rem;
       --text-xs--line-height: calc(1 / .75);
       --text-sm: .875rem;
       --text-sm--line-height: calc(1.25 / .875);
       --text-lg: 1.125rem;
       --text-lg--line-height: calc(1.75 / 1.125);
+      --font-weight-semibold: 600;
       --font-weight-bold: 700;
-      --radius-lg: .5rem;
-      --drop-shadow-md: 0 3px 3px #0000001f;
+      --radius-md: .375rem;
+      --ease-out: cubic-bezier(0, 0, .2, 1);
       --animate-spin: spin 1s linear infinite;
       --default-transition-duration: .15s;
       --default-transition-timing-function: cubic-bezier(.4, 0, .2, 1);
@@ -288,6 +308,10 @@
       padding-block: 0;
     }
 
+    ::-webkit-calendar-picker-indicator {
+      line-height: 1;
+    }
+
     :-moz-ui-invalid {
       box-shadow: none;
     }
@@ -342,10 +366,6 @@
 
     .static {
       position: static;
-    }
-
-    .right-6 {
-      right: calc(var(--spacing) * 6);
     }
 
     .isolate {
@@ -556,6 +576,10 @@
       text-transform: capitalize;
     }
 
+    .lowercase {
+      text-transform: lowercase;
+    }
+
     .uppercase {
       text-transform: uppercase;
     }
@@ -592,7 +616,7 @@
     }
 
     .transition {
-      transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter, display, visibility, content-visibility, overlay, pointer-events;
+      transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter, display, content-visibility, overlay, pointer-events;
       transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
       transition-duration: var(--tw-duration, var(--default-transition-duration));
     }
@@ -612,13 +636,11 @@
 }
 
 .magewire-notifier {
-  bottom: calc(var(--spacing) * 4);
-  left: calc(var(--spacing) * 6);
+  right: calc(var(--spacing) * 3);
+  bottom: calc(var(--spacing) * 3);
+  left: calc(var(--spacing) * 3);
   z-index: 50;
-  margin-bottom: calc(var(--spacing) * 2);
-  margin-left: calc(var(--spacing) * 2);
   flex-direction: column;
-  width: 100%;
   display: flex;
   position: fixed;
 }
@@ -629,55 +651,151 @@
   margin-block-end: calc(calc(var(--spacing) * 2) * calc(1 - var(--tw-space-y-reverse)));
 }
 
-@media (min-width: 48rem) {
+@media (min-width: 40rem) {
   .magewire-notifier {
+    right: auto;
+    bottom: calc(var(--spacing) * 4);
+    left: calc(var(--spacing) * 4);
+    width: 100%;
     max-width: var(--container-xs);
   }
 }
 
 .magewire-notifier__notification {
-  pointer-events: auto;
-  width: 100%;
-  max-width: var(--container-sm);
-  border-radius: var(--radius-lg);
+  --tw-translate-y: calc(var(--spacing) * 0);
+  translate: var(--tw-translate-x) var(--tw-translate-y);
+  border-radius: var(--radius-md);
   border-left-style: var(--tw-border-style);
+  opacity: 1;
+  --tw-shadow: 0 10px 15px -3px var(--tw-shadow-color, #0000001a), 0 4px 6px -4px var(--tw-shadow-color, #0000001a);
+  box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  outline-style: var(--tw-outline-style);
   border-left-width: 6px;
-  border-left-color: var(--color-gray-600);
-  background-color: var(--color-white);
-  padding-inline: calc(var(--spacing) * 5);
-  padding-block: calc(var(--spacing) * 2);
-  --tw-drop-shadow-size: drop-shadow(0 3px 3px var(--tw-drop-shadow-color, #0000001f));
-  --tw-drop-shadow: drop-shadow(var(--drop-shadow-md));
-  filter: var(--tw-blur, ) var(--tw-brightness, ) var(--tw-contrast, ) var(--tw-grayscale, ) var(--tw-hue-rotate, ) var(--tw-invert, ) var(--tw-saturate, ) var(--tw-sepia, ) var(--tw-drop-shadow, );
-  position: relative;
+  outline-width: 1px;
+  outline-color: #0000000d;
+}
+
+@supports (color: color-mix(in lab, red, red)) {
+  .magewire-notifier__notification {
+    outline-color: color-mix(in oklab, var(--color-black) 5%, transparent);
+  }
+}
+
+.magewire-notifier__notification {
+  transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter, display, content-visibility, overlay, pointer-events;
+  transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+  transition-duration: var(--tw-duration, var(--default-transition-duration));
+  --tw-duration: .3s;
+  --tw-ease: var(--ease-out);
+  transition-duration: .3s;
+  transition-timing-function: var(--ease-out);
+}
+
+@media (min-width: 40rem) {
+  .magewire-notifier__notification {
+    --tw-translate-x: calc(var(--spacing) * 0);
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+}
+
+@starting-style {
+  .magewire-notifier__notification {
+    --tw-translate-y: calc(var(--spacing) * 2);
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
+}
+
+@starting-style {
+  .magewire-notifier__notification {
+    opacity: 0;
+  }
+}
+
+@media (min-width: 40rem) {
+  @starting-style {
+    .magewire-notifier__notification {
+      --tw-translate-x: calc(var(--spacing) * -2);
+      translate: var(--tw-translate-x) var(--tw-translate-y);
+    }
+  }
+
+  @starting-style {
+    .magewire-notifier__notification {
+      --tw-translate-y: calc(var(--spacing) * 0);
+      translate: var(--tw-translate-x) var(--tw-translate-y);
+    }
+  }
+}
+
+.magewire-notifier__notification {
+  background-color: var(--notifier-bg, var(--color-white));
+  border-left-color: var(--notifier-border, var(--color-gray-400));
 }
 
 .magewire-notifier__notification-content {
-  justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
+  gap: calc(var(--spacing) * 3);
+  padding: calc(var(--spacing) * 4);
   display: flex;
 }
 
 .magewire-notifier__notification-before {
+  flex-shrink: 0;
   align-items: center;
   display: flex;
 }
 
-:where(.magewire-notifier__notification-before > :not(:last-child)) {
-  --tw-space-x-reverse: 0;
-  margin-inline-start: calc(calc(var(--spacing) * 3) * var(--tw-space-x-reverse));
-  margin-inline-end: calc(calc(var(--spacing) * 3) * calc(1 - var(--tw-space-x-reverse)));
+.magewire-notifier__notification-body {
+  min-width: calc(var(--spacing) * 0);
+  flex: 1;
+}
+
+.magewire-notifier__notification-title {
+  font-size: var(--text-sm);
+  line-height: var(--tw-leading, var(--text-sm--line-height));
+  --tw-leading: calc(var(--spacing) * 5);
+  line-height: calc(var(--spacing) * 5);
+  --tw-font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-semibold);
+  color: var(--notifier-title, var(--color-gray-700));
+}
+
+.magewire-notifier__notification-message {
+  margin-top: calc(var(--spacing) * .5);
+  font-size: var(--text-sm);
+  line-height: var(--tw-leading, var(--text-sm--line-height));
+  color: var(--color-gray-600);
 }
 
 .magewire-notifier__notification-after {
   align-items: center;
+  gap: calc(var(--spacing) * 2);
+  flex-shrink: 0;
   display: flex;
 }
 
-:where(.magewire-notifier__notification-after > :not(:last-child)) {
-  --tw-space-x-reverse: 0;
-  margin-inline-start: calc(calc(var(--spacing) * 3) * var(--tw-space-x-reverse));
-  margin-inline-end: calc(calc(var(--spacing) * 3) * calc(1 - var(--tw-space-x-reverse)));
+.magewire-notifier__notification--success {
+  --notifier-bg: var(--color-green-50);
+  --notifier-border: var(--color-green-600);
+  --notifier-title: var(--color-green-700);
+}
+
+.magewire-notifier__notification--error {
+  --notifier-bg: var(--color-red-50);
+  --notifier-border: var(--color-red-600);
+  --notifier-title: var(--color-red-700);
+}
+
+.magewire-notifier__notification--warning {
+  --notifier-bg: var(--color-yellow-50);
+  --notifier-border: var(--color-yellow-600);
+  --notifier-title: var(--color-yellow-700);
+}
+
+.magewire-notifier__notification--info {
+  --notifier-bg: var(--color-blue-50);
+  --notifier-border: var(--color-blue-600);
+  --notifier-title: var(--color-blue-700);
 }
 
 @property --tw-rotate-x {
@@ -867,10 +985,43 @@
   initial-value: 0;
 }
 
-@property --tw-space-x-reverse {
+@property --tw-translate-x {
   syntax: "*";
   inherits: false;
   initial-value: 0;
+}
+
+@property --tw-translate-y {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --tw-translate-z {
+  syntax: "*";
+  inherits: false;
+  initial-value: 0;
+}
+
+@property --tw-outline-style {
+  syntax: "*";
+  inherits: false;
+  initial-value: solid;
+}
+
+@property --tw-duration {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-ease {
+  syntax: "*";
+  inherits: false
+}
+
+@property --tw-leading {
+  syntax: "*";
+  inherits: false
 }
 
 @keyframes spin {

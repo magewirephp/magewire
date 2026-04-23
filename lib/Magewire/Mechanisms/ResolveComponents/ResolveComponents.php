@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -12,23 +13,43 @@ namespace Magewirephp\Magewire\Mechanisms\ResolveComponents;
 
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Component;
-use Magewirephp\Magewire\Mechanisms\HandleRequests\ComponentRequestContext;
 use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
+use Magewirephp\Magewire\MagewireServiceProvider;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
+use Magewirephp\Magewire\Mechanisms\HandleRequests\ComponentRequestContext;
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\ComponentResolverManager;
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\LayoutManager;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+
 use function Magewirephp\Magewire\on;
+use function Magewirephp\Magewire\trigger;
 
 class ResolveComponents
 {
     public function __construct(
-        private readonly ComponentResolverManagement $componentResolverManagement
+        private readonly ComponentResolverManager $componentResolverManagement,
+        private readonly MagewireServiceProvider $magewireServiceProvider,
+        private readonly LayoutManager $layoutManager
     ) {
-        //
     }
 
     public function boot(): void
     {
-        on('magewire:construct', function (AbstractBlock $block) {
+        /*
+         * IMPORTANT: by default, the layout singleton is bound onto a page by the given route. This singleton pattern
+         * is being used systemwide throughout Magento (opinions aside).
+         *
+         * The problem here is, Magewire needs to be able to tell the layout singleton that it is allowed to fetch
+         * dynamic, page unrelated, blocks based on any given layout handle(s).
+         *
+         * This means, unless there is a better way that it needs a customized Generator Pool and a
+         * new builder that can make sure this is available only during subsequent Magewire requests.
+         */
+        if ($this->magewireServiceProvider->runtime()->mode()->isSubsequent()) {
+            $this->layoutManager->decorator()->decorateForPagelessBlockFetching($this->layoutManager->singleton());
+        }
+
+        on('magewire:component:construct', function (AbstractBlock $block) {
             return $this->build(function () use ($block): array {
                 $resolver = $this->componentResolverManagement->resolve($block);
                 $block = $resolver->construct($block);
@@ -37,7 +58,7 @@ class ResolveComponents
             });
         });
 
-        on('magewire:reconstruct', function (ComponentRequestContext $request) {
+        on('magewire:component:reconstruct', function (ComponentRequestContext $request) {
             if (! $this->componentResolverManagement->hasResolverClassInMapping($request->getSnapshot()->getMemoValue('resolver'))) {
                 throw new HttpException(400);
             }
@@ -51,8 +72,8 @@ class ResolveComponents
         });
 
         // Register a dehydrate listener to attach the used resolver accessor for easy reconstruction.
-        on('dehydrate', function ($component, ComponentContext $context) {
-            $context->addMemo('resolver', $component->resolver()->getAccessor());
+        on('dehydrate', static function (Component $component, ComponentContext $context) {
+            $context->addMemo('resolver', $component->magewireResolver()->getAccessor());
         });
     }
 
@@ -61,24 +82,27 @@ class ResolveComponents
      */
     protected function build(callable $builder): callable
     {
+        $lifecycle = $this->layoutManager->lifecycle();
         [$resolver, $block] = $builder();
 
         if (! $block->getData('magewire') instanceof Component) {
-            throw new ComponentNotFoundException(
-                sprintf('Resolver "%s" failed to construct a Magewire component.', $resolver->getAccessor())
-            );
+            throw new ComponentNotFoundException(sprintf('Resolver "%s" failed to construct a Magewire component.', $resolver->getAccessor()));
         }
 
-        return function () use ($resolver, $block) {
+        return static function () use ($resolver, $block, $lifecycle) {
             $resolver->arguments()->assemble($block, true);
 
             /** @var Component $component */
             $component = $block->getData('magewire');
 
-            $component->block($block);
-            $component->resolver($resolver);
+            $component->magewireBlock($block);
+            $component->magewireResolver($resolver);
+            $component->magewireLayoutLifecycle($lifecycle);
 
-            return $resolver->assemble($block, $component);
+            $assembly = $resolver->assemble($block, $component);
+            trigger('magewire:component:build', $assembly, $component, $resolver);
+
+            return $assembly;
         };
     }
 }

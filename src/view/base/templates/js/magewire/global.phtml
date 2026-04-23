@@ -1,0 +1,139 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment = $magewireViewModel->utils()->fragment();
+$templateUtil = $magewireViewModel->utils()->template();
+
+/** @internal Do not modify to ensure Magewire continues to function correctly. */
+?>
+<?= $block->getChildHtml('before') ?>
+
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    (() => {
+        'use strict';
+
+        class MagewireResource extends Map {
+            constructor(namespace) {
+                super();
+
+                this.namespace = namespace;
+                this._queue = [];
+
+                return new Proxy(this, {
+                    get(target, prop) {
+                        if (prop in target) {
+                            const value = target[prop];
+
+                            if (typeof value === 'function') {
+                                return value.bind(target);
+                            }
+
+                            return value;
+                        }
+
+                        if (Map.prototype.has.call(target, prop)) {
+                            return target.get(prop);
+                        }
+
+                        return undefined;
+                    }
+                });
+            }
+
+            has(name) {
+                return super.has(name) || this._queue.some(item => item.name === name);
+            }
+
+            call(key, ...args) {
+                if (typeof this[key] === 'function') {
+                    return this[key](...args);
+                }
+
+                if (this.has(key)) {
+                    const value = this.get(key);
+
+                    if (typeof value === 'function') {
+                        return value(...args);
+                    }
+
+                    return value;
+                }
+
+                return undefined;
+            }
+
+            register(name, callback, reactive) {
+                if (! name || typeof name !== 'string') {
+                    throw new Error('Magewire: Name must be a non-empty string');
+                }
+                if (name === 'magewire') {
+                    throw new Error('Magewire: namespace "magewire" is a reserved name.');
+                }
+                if (typeof callback !== 'function') {
+                    throw new Error('Magewire: Callback must be a function');
+                }
+
+                let result;
+
+                try {
+                    result = callback({ magewire: window.Magewire });
+                } catch (error) {
+                    throw new Error(`Magewire: Failed to register "${name}": ${error.message}`);
+                }
+
+                if (result === undefined) {
+                    throw new Error(`Magewire: Callback for "${name}" must return a value`);
+                }
+
+                if (reactive && ! window.Alpine) {
+                    if (this._queue.length === 0) {
+                        window.addEventListener('alpine:init', () => this._processQueue(), { once: true });
+                    }
+
+                    this._queue.push({ name, result });
+                    return;
+                }
+
+                const subject = reactive ? Alpine.reactive(result) : result;
+                super.set(name, subject);
+
+                if (typeof subject.init === 'function') {
+                    subject.init();
+                }
+
+                return subject;
+            }
+
+            _processQueue() {
+                while (this._queue.length > 0) {
+                    const { name, result } = this._queue.shift();
+                    const subject = Alpine.reactive(result);
+                    super.set(name, subject);
+
+                    if (typeof subject.init === 'function') {
+                        subject.init();
+                    }
+                }
+            }
+        }
+
+        window.MagewireAddons = new MagewireResource('addons');
+        window.MagewireUtilities = new MagewireResource('utilities');
+    })();
+</script>
+<?php $script->end() ?>
+
+<?= $templateUtil->echoCodeComment('utilities', false, 'container') ?>
+<?= $block->getChildHtml('utilities') ?>
+<?= $templateUtil->echoCodeComment('addons', false, 'container') ?>
+<?= $block->getChildHtml('addons') ?>
+<?= $block->getChildHtml('after') ?>

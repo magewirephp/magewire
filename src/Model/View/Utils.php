@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -11,7 +12,6 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Model\View;
 
 use BadMethodCallException;
-use Magento\Framework\App\ObjectManager;
 use Magewirephp\Magewire\Model\View\Utils\Alpine as AlpineViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Application as ApplicationViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Csp as CspViewUtil;
@@ -22,7 +22,11 @@ use Magewirephp\Magewire\Model\View\Utils\Magewire as MagewireViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Security as SecurityViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Tailwind as TailwindViewUtil;
 use Magewirephp\Magewire\Model\View\Utils\Template as TemplateViewUtil;
+use Magewirephp\Magewire\Support\Factory;
 
+/**
+ * @method UtilsInterface __call(string $utility, array $arguments = [])
+ */
 class Utils
 {
     /**
@@ -30,19 +34,18 @@ class Utils
      * @param array<string, T> $utilities
      */
     public function __construct(
-        private readonly AlpineViewUtil $alpine,
-        private readonly ApplicationViewUtil $application,
-        private readonly EnvironmentViewUtil $environment,
-        private readonly FragmentViewUtil $fragment,
-        private readonly LayoutViewUtil $layout,
-        private readonly MagewireViewUtil $magewire,
-        private readonly SecurityViewUtil $security,
-        private readonly TailwindViewUtil $tailwind,
-        private readonly TemplateViewUtil $template,
-        private readonly CspViewUtil $csp,
-        private readonly array $utilities = []
+        private AlpineViewUtil $alpine,
+        private ApplicationViewUtil $application,
+        private EnvironmentViewUtil $environment,
+        private FragmentViewUtil $fragment,
+        private LayoutViewUtil $layout,
+        private MagewireViewUtil $magewire,
+        private SecurityViewUtil $security,
+        private TailwindViewUtil $tailwind,
+        private TemplateViewUtil $template,
+        private CspViewUtil $csp,
+        private array $utilities = []
     ) {
-        //
     }
 
     public function alpinejs(): AlpineViewUtil
@@ -108,12 +111,14 @@ class Utils
                     return $subject;
                 }
 
-                return ObjectManager::getInstance()->create($subject::class, $arguments);
+                if (empty($arguments)) {
+                    return $this->utilities[$utility] = Factory::get($subject::class);
+                }
+
+                return Factory::create($subject::class, $arguments);
             }
         }
 
-        throw new BadMethodCallException(
-            sprintf('Invalid utility "%s"', $utility)
-        );
+        throw new BadMethodCallException(sprintf('Utility "%s" was called but does not exist.', $utility));
     }
 }

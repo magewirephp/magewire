@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -19,20 +20,15 @@ class Csp implements UtilsInterface
         private readonly Escaper $escaper,
         private readonly \Magewirephp\Magewire\Model\Csp $csp
     ) {
-        //
     }
 
     public function generateNonce(): string
     {
-        return $this->csp->isCspAvailable()
-            ? $this->csp->getMagentoCspNonceProvider()->generateNonce()
-            : '';
+        return $this->csp->isCspAvailable() ? $this->csp->getMagentoCspNonceProvider()->generateNonce() : '';
     }
 
     public function generateNonceAttribute(string $format = ' %s'): string
     {
-        return $this->csp->isCspAvailable()
-            ? sprintf(sprintf($format, 'nonce="%s"'), $this->escaper->escapeHtmlAttr($this->generateNonce()))
-            : '';
+        return $this->csp->isCspAvailable() ? sprintf(sprintf($format, 'nonce="%s"'), $this->escaper->escapeHtmlAttr($this->generateNonce())) : '';
     }
 }

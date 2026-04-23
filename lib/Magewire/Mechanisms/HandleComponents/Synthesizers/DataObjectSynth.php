@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -12,7 +13,6 @@ namespace Magewirephp\Magewire\Mechanisms\HandleComponents\Synthesizers;
 
 use Magento\Framework\DataObject;
 use Magento\Framework\DataObjectFactory;
-use Magewirephp\Magewire\Mechanisms\HandleComponents\Synthesizers\Synth;
 
 class DataObjectSynth extends Synth
 {

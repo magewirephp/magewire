@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -14,9 +15,6 @@ class RootTagMissingFromViewException extends \Exception
 {
     public function __construct()
     {
-        parent::__construct(
-            "Magewire encountered a missing root tag when trying to render a " .
-            "component. \n When rendering a view, make sure it contains a root HTML tag."
-        );
+        parent::__construct('Magewire encountered a missing root tag when trying to render a ' . "component. \n When rendering a view, make sure it contains a root HTML tag.");
     }
 }

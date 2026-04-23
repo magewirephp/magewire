@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -10,9 +11,10 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Exceptions;
 
+use Exception;
 use Livewire\Exceptions\BypassViewHandler;
 
-class ComponentNotFoundException extends \Exception
+class ComponentNotFoundException extends Exception
 {
     use BypassViewHandler;
 }

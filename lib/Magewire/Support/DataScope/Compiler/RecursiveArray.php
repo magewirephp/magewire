@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -32,11 +33,7 @@ class RecursiveArray extends DataScope\Compiler
                 $result[$key] = $this->compile($value);
             } elseif (is_callable($value)) {
                 try {
-                    $result[$key] = $value(
-                        array_reverse(
-                            array_values($this->uses())
-                        )
-                    );
+                    $result[$key] = $value(array_reverse(array_values($this->uses())));
                 } catch (Exception $exception) {
                     // WIP: logging needs to be implemented in a way...
                 }

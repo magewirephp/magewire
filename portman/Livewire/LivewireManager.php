@@ -36,7 +36,7 @@ class LivewireManager extends \Livewire\LivewireManager
     /**
      * @throws NotFoundException
      */
-    public function mount($name, $params = [], $key = null, AbstractBlock $block = null, Component $component = null): void
+    public function mount($name, $params = [], $key = null, AbstractBlock|null $block = null, Component|null $component = null): void
     {
         /** @var HandleComponentsFacade $handleComponentsMechanismFacade */
         $handleComponentsMechanismFacade = $this->magewireServiceProvider->getHandleComponentsMechanismFacade();
@@ -50,7 +50,7 @@ class LivewireManager extends \Livewire\LivewireManager
      * @throws RuntimeException
      * @throws NotFoundException
      */
-    public function update($snapshot, $diff, $calls, AbstractBlock $block = null): void
+    public function update($snapshot, $diff, $calls, AbstractBlock|null $block = null): void
     {
         /** @var HandleComponentsFacade $handleComponentsMechanismFacade */
         $handleComponentsMechanismFacade = $this->magewireServiceProvider->getHandleComponentsMechanismFacade();

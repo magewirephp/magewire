@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -70,9 +71,7 @@ abstract class MagewireArguments extends DataObject
                 return isset($this->_data[$key]);
         }
 
-        throw new LocalizedException(
-            new Phrase('Invalid method %1::%2', [get_class($this), $method])
-        );
+        throw new LocalizedException(new Phrase('Invalid method %1::%2', [get_class($this), $method]));
     }
 
     /**
@@ -108,26 +107,36 @@ abstract class MagewireArguments extends DataObject
 
     protected function assemblePublicArguments(AbstractBlock $block): array
     {
-        $arguments = array_filter($block->getData(), function ($key) {
-            return str_starts_with($key, 'magewire.');
-        }, ARRAY_FILTER_USE_KEY);
+        $arguments = array_filter(
+            $block->getData(),
+            static function ($key) {
+                return str_starts_with($key, 'magewire.');
+            },
+            ARRAY_FILTER_USE_KEY
+        );
 
         // Remove the "magewire." prefix and convert a kebab-case to camelCase
-        return array_combine(array_map(function ($key) {
+        return array_combine(array_map(static function ($key) {
             return Str::camel(substr($key, 9));
         }, array_keys($arguments)), array_values($arguments));
     }
 
     protected function assembleGroupArguments(AbstractBlock $block): array
     {
-        $arguments = array_filter($block->getData(), function ($key) {
-            return str_starts_with($key, 'magewire:');
-        }, ARRAY_FILTER_USE_KEY);
+        $arguments = array_filter(
+            $block->getData(),
+            static function ($key) {
+                return str_starts_with($key, 'magewire:');
+            },
+            ARRAY_FILTER_USE_KEY
+        );
 
         foreach ($arguments as $key => $value) {
-            if (preg_match('/^magewire:([^:]+):([^:]+)/', $key, $matches)) {
-                $groups[$matches[1]][Str::camel($matches[2])] = $value;
+            if (! preg_match('/^magewire:([^:]+):([^:]+)/', $key, $matches)) {
+                continue;
             }
+
+            $groups[$matches[1]][Str::camel($matches[2])] = $value;
         }
 
         return $groups ?? [];

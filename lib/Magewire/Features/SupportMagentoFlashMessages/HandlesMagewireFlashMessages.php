@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -10,48 +11,95 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagentoFlashMessages;
 
+use Magewirephp\Magewire\Support\Factory;
+use Magewirephp\Magewire\Features\SupportMagentoFlashMessages\FlashMessage as FlashMessageElement;
+
 trait HandlesMagewireFlashMessages
 {
-    /** @var FlashMessage[] $flashMessage */
-    private array $flashMessage = [];
+    private MagewireFlashMessages|null $magewireFlashMessages = null;
 
-    function dispatchErrorMessage($message): FlashMessage
+    public function magewireFlashMessages(): MagewireFlashMessages
     {
-        return $this->dispatchMessage(FlashMessageType::Error, $message);
+        return $this->magewireFlashMessages ??= Factory::create(MagewireFlashMessages::class);
     }
 
-    function dispatchWarningMessage($message): FlashMessage
+    /**
+     * @deprecated Flash Messages have been moved into their own object. Chain the magewireFlashMessages method instead.
+     * @see static::magewireFlashMessages()
+     */
+    public function dispatchErrorMessage($message): FlashMessageElement
     {
-        return $this->dispatchMessage(FlashMessageType::Warning, $message);
+        return $this->magewireFlashMessages()->make($message, FlashMessageType::Error);
     }
 
-    function dispatchNoticeMessage($message): FlashMessage
+    /**
+     * @deprecated Flash Messages have been moved into their own object. Chain the magewireFlashMessages method instead.
+     * @see static::magewireFlashMessages()
+     */
+    public function dispatchWarningMessage($message): FlashMessageElement
     {
-        return $this->dispatchMessage(FlashMessageType::Notice, $message);
+        return $this->magewireFlashMessages()->make($message, FlashMessageType::Warning);
     }
 
-    function dispatchSuccessMessage($message): FlashMessage
+    /**
+     * @deprecated Flash Messages have been moved into their own object. Chain the magewireFlashMessages method instead.
+     * @see static::magewireFlashMessages()
+     */
+    public function dispatchNoticeMessage($message): FlashMessageElement
     {
-        return $this->dispatchMessage(FlashMessageType::Success, $message);
+        return $this->magewireFlashMessages()->make($message, FlashMessageType::Notice);
     }
 
-    function dispatchMessage(FlashMessageType $type, $message): FlashMessage
+    /**
+     * @deprecated Flash Messages have been moved into their own object. Chain the magewireFlashMessages method instead.
+     * @see static::magewireFlashMessages()
+     */
+    public function dispatchSuccessMessage($message): FlashMessageElement
     {
-        return $this->flashMessage[] = new FlashMessage($message, $type);
+        return $this->magewireFlashMessages()->make($message, FlashMessageType::Success);
     }
 
-    function hasFlashMessages(): bool
+    /**
+     * @deprecated Flash Messages have been moved into their own object. Chain the magewireFlashMessages method instead.
+     * @see static::magewireFlashMessages()
+     */
+    public function dispatchMessage(string $type, $message): FlashMessageElement
     {
-        return count($this->flashMessage) !== 0;
+        $type = match ($type) {
+            FlashMessageType::Error->value   => FlashMessageType::Error,
+            FlashMessageType::Warning->value => FlashMessageType::Warning,
+            FlashMessageType::Success->value => FlashMessageType::Success,
+
+            default => FlashMessageType::Notice
+        };
+
+        return $this->magewireFlashMessages()->make($message, $type);
     }
 
-    function getFlashMessages(): array
+    /**
+     * @deprecated Flash Messages have been moved into their own object. Chain the magewireFlashMessages method instead.
+     * @see static::magewireFlashMessages()
+     */
+    public function hasFlashMessages(): bool
     {
-        return $this->flashMessage;
+        return $this->magewireFlashMessages()->count() > 0;
     }
 
-    function clearFlashMessages(): void
+    /**
+     * @deprecated Flash Messages have been moved into their own object. Chain the magewireFlashMessages method instead.
+     * @see static::magewireFlashMessages()
+     */
+    public function getFlashMessages(): array
     {
-        $this->flashMessage = [];
+        return $this->magewireFlashMessages()->fetch();
+    }
+
+    /**
+     * @deprecated Clearing all messages at once is not advisable. Use the unset method instead.
+     * @see MagewireFlashMessages::unset()
+     */
+    public function clearFlashMessages(): void
+    {
+        $this->magewireFlashMessages()->clear();
     }
 }

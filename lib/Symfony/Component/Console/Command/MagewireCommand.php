@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -14,7 +15,7 @@ use Symfony\Component\Console\Command\Command;
 
 class MagewireCommand extends Command
 {
-    public function setName($name)
+    public function setName($name): static
     {
         return parent::setName('magewire:' . $name);
     }

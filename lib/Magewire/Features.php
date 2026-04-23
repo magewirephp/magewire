@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -10,6 +11,8 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire;
 
+use Magewirephp\Magewire\Enums\ServiceTypeItemBootMode;
+
 class Features extends ServiceType
 {
     function __construct(
@@ -19,15 +22,26 @@ class Features extends ServiceType
         parent::__construct($items);
     }
 
-    function boot() : ServiceType
+    function boot(ServiceTypeItemBootMode|null $mode = null): bool
     {
-        parent::boot();
+        $booted = parent::boot($mode);
 
-        foreach ($this->items as $accessor => $feature) {
-            $this->componentHookRegistry::register($this->items[$accessor]['type']);
+        if ($booted) {
+            $this->componentHookRegistry::boot();
         }
 
-        $this->componentHookRegistry::boot();
-        return $this;
+        return $booted;
+    }
+
+    protected function callback(): callable
+    {
+        return function (object $type) {
+            $this->componentHookRegistry::register($type);
+        };
+    }
+
+    protected function getBootModeFallback(): ServiceTypeItemBootMode
+    {
+        return ServiceTypeItemBootMode::LAZY;
     }
 }

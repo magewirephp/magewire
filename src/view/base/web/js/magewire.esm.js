@@ -11143,4 +11143,4 @@ focus-trap/dist/focus-trap.js:
   * @license MIT, https://github.com/focus-trap/focus-trap/blob/master/LICENSE
   *)
 */
-//# sourceMappingURL=livewire.esm.js.map
+//# sourceMappingURL=magewire.esm.js.map

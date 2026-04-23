@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -27,13 +28,9 @@ class StubCollector extends BaseCollector
         private readonly DirSearch $dirSearch,
         private readonly FileFactory $fileFactory,
         private readonly DesignInterface $design,
-        private readonly ViewStubFactory $viewStubFactory,
+        private readonly ViewStubFactory $viewStubFactory
     ) {
-        parent::__construct(
-            $this->dirSearch,
-            $this->fileFactory,
-            'stubs'
-        );
+        parent::__construct($this->dirSearch, $this->fileFactory, 'stubs');
     }
 
     public function collect(): array

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -17,17 +18,25 @@ class Conditions
     /** @var array<int|string, callable|array<int|string, callable>> */
     private array $conditions = [];
 
-    /**
-     * @alias validate
-     */
+    public function validate(callable $condition, string|null $name = null): static
+    {
+        return $this->if($condition, $name);
+    }
+
     public function if(callable $condition, string|null $name = null): static
     {
         return $this->set($condition, ConditionEnum::AND, $name);
     }
 
-    public function validate(callable $condition, string|null $name = null): static
+    /**
+     * @alias if
+     */
+    private function set(callable $condition, ConditionEnum $type, string|null $name = null): static
     {
-        return $this->if($condition, $name);
+        $name ?? count($this->get($type));
+        $this->conditions[$type->value][$name] = $condition;
+
+        return $this;
     }
 
     public function and(callable $condition, string|null $name = null): static
@@ -38,7 +47,7 @@ class Conditions
     public function or(callable|array $alternative, string|null $name = null): static
     {
         if (is_array($alternative)) {
-            $alternative = array_filter($alternative, fn ($item) => is_callable($item));
+            $alternative = array_filter($alternative, static fn ($item) => is_callable($item));
         }
 
         return $this->set($alternative, ConditionEnum::OR, $name);
@@ -81,17 +90,19 @@ class Conditions
     public function evaluate(...$args): bool
     {
         foreach ($this->get(ConditionEnum::AND) as $condition) {
-            if (! $condition(...$args)) {
-                foreach ($this->get(ConditionEnum::OR) as $alternative) {
-                    if (is_array($alternative) && $this->evaluateGroup($alternative, ...$args)) {
-                        return true;
-                    } else {
-                        return $alternative(...$args);
-                    }
-                }
-
-                return false;
+            if ($condition(...$args)) {
+                continue;
             }
+
+            foreach ($this->get(ConditionEnum::OR) as $alternative) {
+                if (is_array($alternative) && $this->evaluateGroup($alternative, ...$args)) {
+                    return true;
+                } else {
+                    return $alternative(...$args);
+                }
+            }
+
+            return false;
         }
 
         return true;
@@ -107,19 +118,8 @@ class Conditions
         return $name ? $type[$name] : $type;
     }
 
-    /**
-     * @alias if
-     */
-    private function set(callable $condition, ConditionEnum $type, string|null $name = null): static
-    {
-        $name ?? count($this->get($type));
-        $this->conditions[$type->value][$name] = $condition;
-
-        return $this;
-    }
-
     private function evaluateGroup(array $group, ...$args): bool
     {
-        return array_reduce($group, fn ($carry, $item) => $carry && $item(...$args), true);
+        return array_reduce($group, static fn ($carry, $item) => $carry && $item(...$args), true);
     }
 }

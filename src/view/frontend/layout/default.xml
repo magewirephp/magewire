@@ -9,7 +9,7 @@
 
         <!-- REFERENCES -->
         <referenceContainer name="magewire.alpinejs">
-            <!-- Intended to hold custom AlpineJS re-usable data components. -->
+            <!-- Intended to hold custom Alpine JS re-usable data components. -->
             <referenceContainer name="magewire.alpinejs.components">
                 <!-- Magewire Script -->
                 <block name="magewire.alpinejs.components.magewire-script"
@@ -18,11 +18,16 @@
             </referenceContainer>
         </referenceContainer>
 
-        <referenceContainer name="magewire.disabled">
-            <!-- Fallback: Loads AlpineJS when Magewire is disabled. -->
-            <block name="magewire.alpinejs.script"
-                   template="Magewirephp_Magewire::js/alpinejs.phtml"
-            />
+        <referenceContainer name="after.body.start">
+            <block name="magewire.object-proxy"
+                   template="Magewirephp_Magewire::js/magewire/object-proxy.phtml"
+            >
+                <arguments>
+                    <argument name="view_model" xsi:type="object">
+                        Magewirephp\Magewire\Features\SupportMagewireViewModel\MagewireViewModelInterface
+                    </argument>
+                </arguments>
+            </block>
         </referenceContainer>
     </body>
 </page>

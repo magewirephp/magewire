@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -18,9 +19,8 @@ class RateLimiterCacheStorage implements RateLimiterStorageInterface
     const CACHE_TAG = 'rate_limiter';
 
     public function __construct(
-        private readonly RateLimiterCache $cache,
+        private readonly RateLimiterCache $cache
     ) {
-        //
     }
 
     public function get(string $key): array

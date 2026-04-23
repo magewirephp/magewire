@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -21,7 +22,6 @@ class Config
         private readonly SystemConfig $systemConfig,
         private readonly array $paths = []
     ) {
-        //
     }
 
     /**
@@ -41,7 +41,6 @@ class Config
             $path = $this->paths[$path];
         }
 
-        return $this->systemConfig->getValue($path, $scope, $scopeCode)
-            ?? ($this->environmentConfig->isAvailable() ? $this->environmentConfig->get($path) : null);
+        return $this->systemConfig->getValue($path, $scope, $scopeCode) ?? ( $this->environmentConfig->isAvailable() ? $this->environmentConfig->get($path) : null );
     }
 }

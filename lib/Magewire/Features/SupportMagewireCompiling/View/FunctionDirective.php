@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -10,8 +11,8 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View;
 
-use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Parser\FunctionExpressionParser;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Parser\ExpressionParserType;
+use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Parser\FunctionExpressionParser;
 
 abstract class FunctionDirective extends Directive
 {

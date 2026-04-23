@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -26,8 +27,8 @@ use Magewirephp\Magento\Controller\MagewireUpdateResult;
 use Magewirephp\Magento\Controller\MagewireUpdateResultFactory;
 use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
 use Magewirephp\Magewire\Facade\HandleRequestFacade;
-use Magewirephp\Magewire\Model\App\ExceptionManager;
 use Magewirephp\Magewire\MagewireServiceProvider;
+use Magewirephp\Magewire\Model\App\ExceptionManager;
 
 class Update implements HttpPostActionInterface, CsrfAwareActionInterface
 {
@@ -39,7 +40,6 @@ class Update implements HttpPostActionInterface, CsrfAwareActionInterface
         private readonly MagewireUpdateResultFactory $updateResultFactory,
         private readonly FormKey $formKey
     ) {
-        //
     }
 
     /**
@@ -59,9 +59,7 @@ class Update implements HttpPostActionInterface, CsrfAwareActionInterface
             /** @var HandleRequestFacade $handleRequestsMechanismFacade */
             $handleRequestsMechanismFacade = $this->magewireServiceProvider->getHandleRequestsMechanismFacade();
 
-            return $this->updateResultFactory->create(
-                $handleRequestsMechanismFacade->update()
-            );
+            return $this->updateResultFactory->create($handleRequestsMechanismFacade->update());
         } catch (Exception $exception) {
             try {
                 $handler = $this->exceptionManager->handle($exception);
@@ -80,14 +78,14 @@ class Update implements HttpPostActionInterface, CsrfAwareActionInterface
                     throw $exception;
                 }
 
-                return $this->magewireUpdateResultFactory->create()->renderWith(
-                    static function (HttpResponseInterface $response) use ($exception) {
+                return $this->magewireUpdateResultFactory
+                    ->create()
+                    ->renderWith(static function (HttpResponseInterface $response) use ($exception) {
                         $response->setBody($exception->getMessage());
                         $response->setHttpResponseCode(500);
 
                         return $response;
-                    }
-                );
+                    });
             }
         }
     }
@@ -100,7 +98,7 @@ class Update implements HttpPostActionInterface, CsrfAwareActionInterface
         return Security::compareStrings($request->getParam('token'), $this->formKey->getFormKey());
     }
 
-    public function createCsrfValidationException(RequestInterface $request): ?InvalidRequestException
+    public function createCsrfValidationException(RequestInterface $request): InvalidRequestException|null
     {
         return null;
     }

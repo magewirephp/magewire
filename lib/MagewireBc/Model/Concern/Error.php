@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -12,6 +13,9 @@ namespace Magewirephp\Magewire\Model\Concern;
 
 use Magento\Framework\Phrase;
 
+/**
+ * @deprecated TBD
+ */
 trait Error
 {
     /** @var Phrase[] */
@@ -47,7 +51,7 @@ trait Error
 
     public function hasErrors(array $targets = []): bool
     {
-        return !empty($this->getErrors($targets));
+        return ! empty($this->getErrors($targets));
     }
 
     public function hasError(string $property): bool

@@ -41,7 +41,7 @@ class HandleComponents extends Mechanism
             array_unshift($this->propertySynthesizers, $class);
         }
     }
-    public function mount($name, $params = [], $key = null, AbstractBlock $block = null, Component $component = null)
+    public function mount($name, $params = [], $key = null, AbstractBlock|null $block = null, Component|null $component = null)
     {
         $parent = last(self::$componentStack);
         if ($html = $this->shortCircuitMount($name, $params, $key, $parent)) {
@@ -105,7 +105,7 @@ class HandleComponents extends Mechanism
      * @throws MethodNotFoundException
      * @throws RuntimeException
      */
-    public function update($snapshot, $updates, $calls, AbstractBlock $block = null)
+    public function update($snapshot, $updates, $calls, AbstractBlock|null $block = null)
     {
         if ($block === null) {
             throw new InvalidArgumentException('Argument $block can not be of type null.');
@@ -158,7 +158,7 @@ class HandleComponents extends Mechanism
      * @throws RuntimeException
      * @throws Exception
      */
-    public function fromSnapshot($snapshot, AbstractBlock $block = null)
+    public function fromSnapshot($snapshot, AbstractBlock|null $block = null)
     {
         if (!$block instanceof AbstractBlock) {
             throw new Exception(sprintf('Invalid block type: %s', is_object($block) ? get_class($block) : 'Unknown'));
@@ -227,7 +227,7 @@ class HandleComponents extends Mechanism
             return $this->hydrate($child, $context, "{$path}.{$name}");
         });
     }
-    protected function hydratePropertyUpdate($valueOrTuple, $context, $path, $raw)
+    protected function hydratePropertyUpdate($valueOrTuple, $context, $path)
     {
         if (!Utils::isSyntheticTuple($value = $tuple = $valueOrTuple)) {
             return $value;
@@ -238,11 +238,11 @@ class HandleComponents extends Mechanism
             return $value;
         }
         $synth = $this->propertySynth($meta['s'], $context, $path);
-        return $synth->hydrate($value, $meta, function ($name, $child) use ($context, $path, $raw) {
-            return $this->hydrateForUpdate($raw, "{$path}.{$name}", $child, $context);
+        return $synth->hydrate($value, $meta, function ($name, $child) {
+            return $child;
         });
     }
-    protected function render($component, $default = null, string $html = null)
+    protected function render($component, $default = null, string|null $html = null)
     {
         $replace = store($component)->get('skipRender', false);
         if ($replace) {

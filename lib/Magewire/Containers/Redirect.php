@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -19,17 +20,14 @@ class Redirect
 
     public function to($path, $status = 302, $headers = [], $secure = null)
     {
-        //
     }
 
     public function away($path, $status = 302, $headers = [])
     {
-        //
     }
 
     public function with($key, $value = null)
     {
-        //
     }
 
     public function component(\Magewirephp\Magewire\Component $component)
@@ -41,6 +39,5 @@ class Redirect
 
     public function response($to)
     {
-        //
     }
 }
