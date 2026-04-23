@@ -131,9 +131,11 @@ class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
                 }
             }
 
-            store($this->component())->set('magewire:bc', is_bool($backwardsCompatibilityActive)
-                ? $backwardsCompatibilityActive
-                : false
+            store($this->component())->set(
+                'magewire:bc',
+                is_bool($backwardsCompatibilityActive)
+                    ? $backwardsCompatibilityActive
+                    : false
             );
         } catch (ReflectionException $exception) {
             $this->logger->critical($exception->getMessage(), ['exception' => $exception]);
