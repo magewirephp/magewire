@@ -11,8 +11,6 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Model\Concern;
 
-
-
 use Magewirephp\Magewire\Model\RequestInterface;
 use Magewirephp\Magewire\Support\Factory;
 

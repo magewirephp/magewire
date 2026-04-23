@@ -24,8 +24,7 @@ class MagewireFlashMessages
         string|Phrase $message,
         FlashMessageType $type = FlashMessageType::Notice,
         string|null $name = null
-    ): FlashMessage
-    {
+    ): FlashMessage {
         return $this->messages[$name ?? Random::string()] ??= Factory::create(FlashMessage::class, [
             'message' => is_string($message) ? __($message) : $message,
             'type' => $type
