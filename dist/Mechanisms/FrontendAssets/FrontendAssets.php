@@ -11,8 +11,9 @@ namespace Magewirephp\Magewire\Mechanisms\FrontendAssets;
 
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\View\Asset\Repository as AssetsRepository;
-use Magewirephp\Magewire\Concerns\AsDataObject;
+use Magewirephp\Magewire\Support\Concerns\AsDataObject;
 use function Magewirephp\Magewire\on;
+use Illuminate\Support\Facades\Vite;
 use Magewirephp\Magewire\Drawer\Utils;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Blade;
@@ -66,10 +67,14 @@ class FrontendAssets extends Mechanism
     {
         return Utils::pretendResponseIsFile(__DIR__ . '/../../../dist/livewire.min.js.map');
     }
+    /**
+     * @return string
+     */
     public static function styles($options = [])
     {
         app(static::class)->hasRenderedStyles = true;
-        $nonce = isset($options['nonce']) ? "nonce=\"{$options['nonce']}\" data-livewire-style" : '';
+        $nonce = static::nonce($options);
+        $nonce = $nonce ? "{$nonce} data-livewire-style" : '';
         $progressBarColor = config('livewire.navigate.progress_bar_color', '#2299dd');
         // Note: the attribute selectors are "doubled" so that they don't get overriden when Tailwind's CDN loads a script tag
         // BELOW the one Livewire injects...
@@ -103,10 +108,17 @@ class FrontendAssets extends Mechanism
             [wire\\:cloak] {
                 display: none !important;
             }
+        
+            dialog#livewire-error::backdrop {
+                background-color: rgba(0, 0, 0, .6);
+            }
         </style>
         HTML;
         return static::minify($html);
     }
+    /**
+     * @return string
+     */
     public static function scripts($options = [])
     {
         app(static::class)->hasRenderedScripts = true;
@@ -135,7 +147,7 @@ class FrontendAssets extends Mechanism
         $url = "{$url}?id={$versionHash}";
         $token = app()->has('session.store') ? csrf_token() : '';
         $assetWarning = null;
-        $nonce = isset($options['nonce']) ? "nonce=\"{$options['nonce']}\"" : '';
+        $nonce = static::nonce($options);
         [$url, $assetWarning] = static::usePublishedAssetsIfAvailable($url, $manifest, $nonce);
         $progressBar = config('livewire.navigate.show_progress_bar', true) ? '' : 'data-no-progress-bar';
         $updateUri = app('livewire')->getUpdateUri();
@@ -147,11 +159,11 @@ class FrontendAssets extends Mechanism
     public static function scriptConfig($options = [])
     {
         app(static::class)->hasRenderedScripts = true;
-        $nonce = isset($options['nonce']) ? " nonce=\"{$options['nonce']}\"" : '';
+        $nonce = static::nonce($options);
         $progressBar = config('livewire.navigate.show_progress_bar', true) ? '' : 'data-no-progress-bar';
         $attributes = json_encode(['csrf' => app()->has('session.store') ? csrf_token() : '', 'uri' => app('livewire')->getUpdateUri(), 'progressBar' => $progressBar, 'nonce' => isset($options['nonce']) ? $options['nonce'] : '']);
         return <<<HTML
-        <script{$nonce} data-navigate-once="true">window.livewireScriptConfig = {$attributes};</script>
+        <script {$nonce} data-navigate-once="true">window.livewireScriptConfig = {$attributes};</script>
         HTML;
     }
     protected static function usePublishedAssetsIfAvailable($url, $manifest, $nonce)
@@ -180,6 +192,11 @@ class FrontendAssets extends Mechanism
     protected static function minify($subject)
     {
         return preg_replace('~(\v|\t|\s{2,})~m', '', $subject);
+    }
+    protected static function nonce($options = [])
+    {
+        $nonce = $options['nonce'] ?? Vite::cspNonce();
+        return $nonce ? "nonce=\"{$nonce}\"" : '';
     }
     function __construct(private readonly AssetsRepository $assetsRepository, private readonly RequestInterface $request)
     {

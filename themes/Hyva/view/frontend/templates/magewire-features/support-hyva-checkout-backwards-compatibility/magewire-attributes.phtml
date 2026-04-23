@@ -1,0 +1,66 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment = $magewireViewModel->utils()->fragment();
+
+/** @internal Do not modify to ensure Magewire continues to function correctly. */
+?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    function migrateWireModelAttributes(el, component) {
+        if (! ('bc' in component.snapshot.memo)) {
+            return;
+        }
+        if (! component.snapshot.memo.bc['enabled']) {
+            return;
+        }
+
+        if (el.hasAttribute('wire:model')) {
+            const prop = el.getAttribute('wire:model');
+
+            el.removeAttribute('wire:model');
+            el.setAttribute('wire:model.live', prop);
+        }
+        if (el.hasAttribute('wire:model.defer')) {
+            const prop = el.getAttribute('wire:model.defer');
+
+            el.removeAttribute('wire:model.defer');
+            el.setAttribute('wire:model', prop);
+        }
+        if (el.hasAttribute('wire:model.lazy')) {
+            const prop = el.getAttribute('wire:model.lazy');
+
+            el.removeAttribute('wire:model.lazy');
+            el.setAttribute('wire:model.blur', prop);
+        }
+
+        Array.from(el.attributes).forEach(attr => {
+            const match = attr.name.match(/^wire:model\.delay\.(.+)$/);
+
+            if (match) {
+                const prop = attr.value;
+
+                el.removeAttribute(attr.name);
+                el.setAttribute(`wire:model.live.debounce.${match[1]}`, prop);
+            }
+        });
+    }
+
+    Magewire.hook('element.init', ({ el, component }) => {
+        migrateWireModelAttributes(el, component);
+    });
+    Magewire.hook('morph.updating', ({ el, toEl, component }) => {
+        migrateWireModelAttributes(toEl, component);
+    });
+</script>
+<?php $script->end() ?>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -10,9 +11,10 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire;
 
-use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
+use Magewirephp\Magewire\Enums\ServiceTypeItemBootMode;
+use Magewirephp\Magewire\Support\Factory;
 
 /**
  * The ServiceType class provides a structured way to manage and organize different operation types
@@ -21,27 +23,38 @@ use Magento\Framework\View\Element\Block\ArgumentInterface;
  */
 abstract class ServiceType
 {
-    private bool $booted = false;
+    protected bool $assembled = false;
+    protected bool $sorted = false;
+
+    private int $sortOrder = 0;
+
+    /** @var ServiceTypeBooter|null $booter */
+    private ServiceTypeBooter|null $booter = null;
 
     /**
      * @param array<string, string|array> $items
      */
     public function __construct(
-        protected array $items = []
+        private array $items = []
     ) {
-        //
     }
 
-    public function boot(): self
+    /**
+     * Returns true when fully booted, false when only partially booted.
+     */
+    public function boot(ServiceTypeItemBootMode|null $mode = null): bool
     {
-        if ($this->booted) {
-            return $this;
+        // Short circuit when the service is fully booted.
+        if ($this->items()->booted()) {
+            return true;
         }
 
-        $this->assemble()->sort();
-        $this->booted = true;
+        return $this->items()->boot($mode, $this->callback())->booted();
+    }
 
-        return $this;
+    public function booter(): ServiceTypeBooter
+    {
+        return $this->booter ??= Factory::create(ServiceTypeBooter::class);
     }
 
     /**
@@ -57,11 +70,9 @@ abstract class ServiceType
         $facade = $this->items[$for]['facade'];
 
         if (is_string($facade)) {
-            $this->items[$for]['facade'] = ObjectManager::getInstance()->get($facade);
+            $this->items[$for]['facade'] = Factory::get($facade);
         } elseif (! is_object($facade)) {
-            throw new NotFoundException(
-                __('Operation type facade "%1" could not be found.', $for)
-            );
+            throw new NotFoundException(__('Operation type facade "%1" could not be found.', $for));
         }
 
         return $this->items[$for]['facade'];
@@ -78,70 +89,92 @@ abstract class ServiceType
             return $this->items[$name]['type'];
         }
 
-        throw new NotFoundException(
-            __('Operation type item "%1" could not be found.', $name)
-        );
+        throw new NotFoundException(__('Operation type item "%1" could not be found.', $name));
     }
 
     /**
      * @throws NotFoundException
      */
-    public function viewModel(string $name): object
+    public function viewModel(string $name): ArgumentInterface
     {
         $name = preg_replace('/(?<!^)[A-Z]/', '_$0', $name);
 
-        // WIP: could maybe be made a little more strict checking ArgumentInterface?
+        // @todo Could maybe be made a little more strict checking ArgumentInterface?
         if (isset($this->items[$name]['view_model'])) {
             return $this->items[$name]['view_model'];
         }
 
-        throw new NotFoundException(
-            __('Operation view model "%1" could not be found.', $name)
-        );
+        throw new NotFoundException(__('Operation view model "%1" could not be found.', $name));
     }
 
-    private function assemble(): self
+    private function assemble(): static
     {
-        $this->items = array_map(function (string|array $item) {
+        if ($this->assembled) {
+            return $this;
+        }
+
+        $assembled = [];
+
+        foreach (array_filter($this->items, static fn ($value) => is_string($value) || is_array($value)) as $key => $item) {
             if (is_string($item)) {
                 $item = ['type' => $item];
             }
             if (is_object($item['type'])) {
-                return $item;
+                $assembled[$key] = $item;
+                continue;
             }
 
-            $item['type'] = ObjectManager::getInstance()->get($item['type']);
+            $item['type'] = Factory::get($item['type']);
 
             // Injects data if a `setData()` method is present in the operation type item class.
             if (method_exists($item['type'], 'setData')) {
-                foreach ($item['data'] ?? [] as $key => $value) {
-                    $item['type']->setData($key, $value);
+                foreach ($item['data'] ?? [] as $dataKey => $value) {
+                    $item['type']->setData($dataKey, $value);
                 }
+            }
+
+            if ($item['sort_order'] ?? false) {
+                $this->sortOrder = (int) $item['sort_order'];
+            } else {
+                $this->sortOrder++;
+                $item['sort_order'] = $this->sortOrder;
             }
 
             // Ensure the facade key exists, defaulting to null if not set.
             $item['facade'] ??= null;
-            // Ensure each item has a numeric sort order, defaulting to 0.
-            $item['sort_order'] = (int) ($item['sort_order'] ?? 0);
             // Keep only active sequences (where the value is true).
-            $item['sequence'] = array_filter($item['sequence'] ?? [], fn ($item) => $item === true);
+            $item['sequence'] = array_filter($item['sequence'] ?? [], static fn ($item) => $item === true);
             // Ensure the view model key exists, defaulting to null if not set.
             $item['view_model'] ??= null;
+            // Ensure the config key exists, defaulting to null if not set.
+            $item['config'] ??= null;
+            // Use the array key as the item name if not explicitly defined.
+            $item['name'] ??= $key;
 
-            return $item;
-        }, array_filter($this->items, fn ($value) => is_string($value) || is_array($value)));
+            // Ensure the boot mode exists, or set the default if not set.
+            $item['boot_mode'] = ServiceTypeItemBootMode::try($item['boot_mode'] ?? null, $this->getBootModeFallback());
 
+            $assembled[$key] = $item;
+        }
+
+        $this->items = $assembled;
+
+        $this->assembled = true;
         return $this;
     }
 
-    private function sort(): self
+    private function sort(): array
     {
-        uasort($this->items, function ($a, $b) {
+        if ($this->sorted) {
+            return $this->items;
+        }
+
+        uasort($this->items, static function ($a, $b) {
             if ($a['sort_order'] == $b['sort_order']) {
                 if (isset($a['sequence'])) {
                     foreach ($a['sequence'] as $dependency) {
                         if ($dependency == $b['type']) {
-                            return 1;  // $a should come after $b
+                            return 1; // $a should come after $b
                         }
                     }
                 }
@@ -157,9 +190,25 @@ abstract class ServiceType
                 return 0;
             }
 
-            return ($a['sort_order'] ?? 0 < $b['sort_order'] ?? 0) ? -1 : 1;
+            return ( $a['sort_order'] ?? 0 ) < ( $b['sort_order'] ?? 0 ) ? -1 : 1;
         });
 
-        return $this;
+        $this->sorted = true;
+        return $this->items;
     }
+
+    protected function items(): ServiceTypeBooter
+    {
+        return $this->booter()->setup($this->assemble()->sort());
+    }
+
+    protected function getBootModeFallback(): ServiceTypeItemBootMode
+    {
+        return ServiceTypeItemBootMode::lowest();
+    }
+
+    /**
+     * Callback ran during a booting process of a service type item.
+     */
+    abstract protected function callback(): callable;
 }

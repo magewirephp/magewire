@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -10,25 +11,33 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Model\View;
 
+use Magento\Framework\Escaper;
+use Magewirephp\Magewire\Concerns\WithTagging;
 use Magewirephp\Magewire\Model\View\Fragment\Exceptions\EmptyFragmentException;
 use Magewirephp\Magewire\Model\View\Fragment\Exceptions\FragmentValidationException;
+use Magewirephp\Magewire\Support\Random;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
 abstract class Fragment
 {
+    use WithTagging {
+        withTag as private withTagOrigin;
+    }
+
+    protected string $id;
     // Unchanged raw buffer output, if any.
     protected string|bool $raw = false;
+    // The final rendered buffer output.
+    protected string $output = '';
     // Flag to indicate whether the fragment is currently buffering output.
     protected bool $buffering = false;
     // Indicates whether the fragment is allowed to be modified.
     protected bool $mutable = true;
     // Indicated whether the fragment should skip echoing.
-    protected bool $render = true;
+    protected bool $echo = true;
     // The current output buffer level, if any.
     protected int|null $level = null;
-    // Fragment alias for better identification.
-    protected string|null $alias = null;
 
     /** @var array<int, callable> $validators */
     private array $validators = [];
@@ -37,10 +46,16 @@ abstract class Fragment
      * @param array<int|string, FragmentModifier|callable> $modifiers
      */
     public function __construct(
-        private readonly LoggerInterface $logger,
+        protected LoggerInterface $logger,
+        protected Escaper $escaper,
         private array $modifiers = []
     ) {
-        //
+        $this->id = Random::alphabetical(10);
+    }
+
+    public function id(): string
+    {
+        return $this->id;
     }
 
     /**
@@ -58,7 +73,7 @@ abstract class Fragment
         ob_start();
 
         $this->buffering = true;
-        $this->level = $this->level ?? ob_get_level();
+        $this->level ??= ob_get_level();
 
         return $this;
     }
@@ -69,10 +84,10 @@ abstract class Fragment
      * Retrieves the buffered output as raw content, applies an optional transformation
      * to produce the final content, and triggers the inspection process.
      */
-    public function end(): void
+    public function end(): static
     {
         if (! $this->buffering || ob_get_level() !== $this->level) {
-            return;
+            return $this;
         }
 
         // Stores the output to be able to flag buffering as false.
@@ -80,12 +95,15 @@ abstract class Fragment
         $this->buffering = false;
 
         try {
-            $output = $this->render();
+            $this->output = $this->render();
         } catch (EmptyFragmentException $exception) {
             // Unreachable: fragment buffering state verified in method preconditions.
         }
 
-        echo $this->render ? ($output ?? '') : '';
+        // Echo result (hide content when not allowed to render).
+        echo $this->echo ? $this->output : '';
+
+        return $this;
     }
 
     /**
@@ -98,25 +116,20 @@ abstract class Fragment
     }
 
     /**
-     * Flag the fragment with a alias for better identification.
-     */
-    public function withAlias(string $alias): static
-    {
-        // Silently avoid an alias is set on certain circumstances.
-        if (! $this->mutable || $this->buffering || is_string($this->alias) || is_string($this->raw)) {
-            return $this;
-        }
-
-        $this->alias = $alias;
-        return $this;
-    }
-
-    /**
      * Avoid output echoing.
      */
     public function mute(): static
     {
-        $this->render = false;
+        $this->echo = false;
+        return $this;
+    }
+
+    public function withTag(string $tag): static
+    {
+        if ($this->canTagFragment($tag)) {
+            return $this->withTagOrigin($tag);
+        }
+
         return $this;
     }
 
@@ -126,14 +139,6 @@ abstract class Fragment
     protected function getRawOutput(): string
     {
         return $this->raw === false ? '' : $this->raw;
-    }
-
-    /**
-     * Retrieve the fragment alias (if set).
-     */
-    protected function getAlias(): string|null
-    {
-        return $this->alias;
     }
 
     /**
@@ -159,11 +164,9 @@ abstract class Fragment
     /**
      * Sets a validation callback who can only return true or false.
      */
-    protected function withValidator(callable $callback, string|null $name = null): static
+    protected function withValidator(callable $callback): static
     {
-        // We can be sure all validator callback keys are integers.
-        $key = $name ?? key($this->validators) + 1;
-        $this->validators[$key] = $callback;
+        $this->validators[] = $callback;
 
         return $this;
     }
@@ -195,7 +198,7 @@ abstract class Fragment
         $message = 'A validation exception occurred while processing the fragment.';
         $this->logger->critical($message, ['exception' => $exception]);
 
-        return $this->raw ?? '';
+        return $this->raw ?: '';
     }
 
     protected function handleRenderException(Throwable $exception): string
@@ -227,9 +230,7 @@ abstract class Fragment
             }
 
             if ($this->buffering) {
-                throw new EmptyFragmentException(
-                    'Unclosed output buffer detected. Fragment buffering must be properly terminated.'
-                );
+                throw new EmptyFragmentException('Unclosed output buffer detected. Fragment buffering must be properly terminated.');
             }
         } catch (Throwable $exception) {
             return $this->handleRenderException($exception);
@@ -260,5 +261,17 @@ abstract class Fragment
         }
 
         return $this;
+    }
+
+    private function canTagFragment(string|null $tag = null): bool
+    {
+        if (is_string($tag) && $this->hasTags([$tag])) {
+            return false;
+        }
+        if (! $this->mutable || $this->buffering || is_string($this->raw)) {
+            return false;
+        }
+
+        return true;
     }
 }

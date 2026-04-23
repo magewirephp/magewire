@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -10,7 +11,17 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire;
 
+use Magewirephp\Magewire\Enums\ServiceTypeItemBootMode;
+
 class Containers extends ServiceType
 {
-    //
+    protected function callback(): callable
+    {
+        return static fn () => true;
+    }
+
+    protected function getBootModeFallback(): ServiceTypeItemBootMode
+    {
+        return ServiceTypeItemBootMode::ALWAYS;
+    }
 }

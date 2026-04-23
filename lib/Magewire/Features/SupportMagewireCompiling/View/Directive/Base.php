@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -20,9 +21,15 @@ class Base extends FunctionDirective
     public function translate(string $value, bool $escape = true): string
     {
         if ($escape) {
-            return "<?= \$escaper->escapeHtml(__({$value})) ?>";
+            return "<?= \$escaper->escapeHtml(__('{$value}')) ?>";
         }
 
-        return "<?= __({$value}) ?>";
+        return "<?= __('{$value}') ?>";
+    }
+
+    #[ScopeDirectiveParser(ExpressionParserType::FUNCTION_ARGUMENTS)]
+    public function child(string $alias): string
+    {
+        return "<?= \$block->getChildHtml('{$alias}') ?>";
     }
 }

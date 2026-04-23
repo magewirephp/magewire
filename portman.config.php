@@ -2,11 +2,11 @@
 return [
     'directories'=> [
         'source' => [
-            'lib/Livewire' => [
+            'portman/lib/Livewire' => [
                 'composer' => [
                     'name'   => 'livewire/livewire',
-                    'version'   => '~3.6.4',
-                    'version-lock'   => '3.6.4',
+                    'version'   => '~3.7.11',
+                    'version-lock'   => '3.7.11',
                     'base-path'   => 'src'
                 ],
                 'glob' => '**/*.php',
@@ -27,7 +27,8 @@ return [
                     'Mechanisms/HandleComponents/{BaseRenderless,CorruptComponent,ViewContext}*',
                     'Mechanisms/RenderComponent.php',
                     'Component.php',
-                    'LivewireServiceProvider.php'
+                    'LivewireServiceProvider.php',
+                    'Features/SupportRedirects/Redirector.php'
                 ]
             ]
         ],
@@ -41,7 +42,48 @@ return [
             'rename' => 'Magewirephp\\Magewire\\',
             'children' => [
                 'LivewireManager' => [
-                    'rename' => 'MagewireManager'
+                    'rename' => 'MagewireManager',
+                    'remove-methods' => [
+                        'setProvider',
+                        'provide',
+                        'component',
+                        'componentHook',
+                        'propertySynthesizer',
+                        'directive',
+                        'precompiler',
+                        'new',
+                        'isDiscoverable',
+                        'resolveMissingComponent',
+                        'snapshot',
+                        'fromSnapshot',
+                        'listen',
+                        'current',
+                        'findSynth',
+                        'updateProperty',
+                        'isLivewireRequest',
+                        'componentHasBeenRendered',
+                        'forceAssetInjection',
+                        'setUpdateRoute',
+                        'getUpdateUri',
+                        'setScriptRoute',
+                        'useScriptTagAttributes',
+                        'withUrlParams',
+                        'withQueryParams',
+                        'withCookie',
+                        'withCookies',
+                        'withHeaders',
+                        'withoutLazyLoading',
+                        'test',
+                        'visit',
+                        'actingAs',
+                        'isRunningServerless',
+                        'addPersistentMiddleware',
+                        'setPersistentMiddleware',
+                        'getPersistentMiddleware',
+                        'originalUrl',
+                        'originalPath',
+                        'originalMethod'
+                    ]
                 ],
                 'LivewireServiceProvider' => [
                     'rename' => 'MagewireServiceProvider'
@@ -67,7 +109,7 @@ return [
         ]
     ],
     'post-processors' => [
-        'rector' => true,
-        'php-cs-fixer' => true
+        'rector' => false,
+        'php-cs-fixer' => false
     ]
 ];

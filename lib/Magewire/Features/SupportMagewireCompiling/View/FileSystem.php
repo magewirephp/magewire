@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -17,16 +18,31 @@ use Psr\Log\LoggerInterface;
 class FileSystem
 {
     public function __construct(
-        private readonly File $magentoFilesystemDriver,
+        private readonly File $magentoFileSystemDriver,
         private readonly LoggerInterface $logger
     ) {
-        //
+    }
+
+    /**
+     * @throws FileSystemException
+     */
+    public function read(string $from): string
+    {
+        return $this->magentoFileSystemDriver->fileGetContents($from);
+    }
+
+    /**
+     * @throws FileSystemException
+     */
+    public function write(string $content, string $to, int|string $mode = 0): void
+    {
+        $this->magentoFileSystemDriver->filePutContents($to, $content, $mode);
     }
 
     public function exists(string $path): bool
     {
         try {
-            return $this->magentoFilesystemDriver->isExists($path);
+            return $this->magentoFileSystemDriver->isExists($path);
         } catch (FileSystemException $exception) {
             $this->logger->critical($exception->getMessage(), ['exception' => $exception]);
         }
@@ -37,40 +53,38 @@ class FileSystem
     /**
      * @throws FileSystemException
      */
-    public function makeDirectory(string $path, int $mode = 0755, bool $recursive = false): void
+    public function stats(string $path): array
     {
-        $this->magentoFilesystemDriver->createDirectory($path, $mode);
+        return $this->magentoFileSystemDriver->stat($path);
     }
 
+    /**
+     * @throws FileSystemException
+     */
+    public function makeDirectory(string $path, int $mode = 0o755, bool $recursive = false): void
+    {
+        $this->magentoFileSystemDriver->createDirectory($path, $mode);
+    }
+
+    /**
+     * @throws FileSystemException
+     */
     public function lastModified(string $path): int
     {
-        $stat = $this->magentoFilesystemDriver->stat($path);
+        $stat = $this->stats($path);
 
-        return $stat['mtime'];
+        return $stat['mtime'] ?? time();
     }
 
     /**
      * @throws FileSystemException
      */
-    public function get(string $path): string
-    {
-        return $this->magentoFilesystemDriver->fileGetContents($path);
-    }
-
-    /**
-     * @throws FileSystemException
-     */
-    public function put(string $path, string $contents): void
-    {
-        $this->magentoFilesystemDriver->filePutContents($path, $contents);
-    }
-
     public function ensureDirectoryExists(string $path): void
     {
         if ($this->exists(dirname($path))) {
             return;
         }
 
-        $this->makeDirectory(dirname($path), 0777, true);
+        $this->makeDirectory(dirname($path), 0o777, true);
     }
 }

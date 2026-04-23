@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -64,7 +65,7 @@ interface RequestInterface
      * @param string $section
      * @return array|null
      */
-    public function getSectionByName(string $section): ?array;
+    public function getSectionByName(string $section): array|null;
 
     /**
      * Check if request is an component update request.
@@ -73,7 +74,7 @@ interface RequestInterface
      * @param bool $force
      * @return \Magewirephp\Magewire\Model\RequestInterface|bool
      */
-    public function isSubsequent(bool $flag = null, bool $force = false);
+    public function isSubsequent(bool|null $flag = null, bool $force = false);
 
     /**
      * Check if on a component initialization request.
@@ -88,7 +89,7 @@ interface RequestInterface
      * @param bool|null $flag
      * @return \Magewirephp\Magewire\Model\RequestInterface|bool
      */
-    public function isRefreshing(bool $flag = null);
+    public function isRefreshing(bool|null $flag = null);
 
     /**
      * @return array

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -15,26 +16,25 @@ use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
 
 class SupportMagentoFlashMessages extends ComponentHook
 {
-    function dehydrate(ComponentContext $context): void
+    public function dehydrate(ComponentContext $context): void
     {
-        if ($this->component->hasFlashMessages()) {
+        $component = $this->component();
+
+        if ($component && $component->magewireFlashMessages()->count() > 0) {
             $context->pushEffect('dispatches', [
                 'name' => 'magewire:flash-messages:dispatch',
-                'params' => $this->mapFlashMessages($this->component->getFlashMessages())
+                'params' => $this->mapFlashMessages($component->magewireFlashMessages())
             ]);
         }
     }
 
-    /**
-     * @param array<int, FlashMessage> $messages
-     */
-    private function mapFlashMessages(array $messages): array
+    private function mapFlashMessages(MagewireFlashMessages $messages): array
     {
         return array_map(static function (FlashMessage $message) {
             return [
-                'text' => $message->getMessage()->render(),
-                'type' => $message->getType()
+                'text' => $message->message()->render(),
+                'type' => $message->type()
             ];
-        }, $messages);
+        }, $messages->fetch());
     }
 }

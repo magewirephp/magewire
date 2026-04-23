@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -19,6 +20,5 @@ class ScopeDirectiveParser
     public function __construct(
         public ExpressionParserType $expressionParserType
     ) {
-        //
     }
 }

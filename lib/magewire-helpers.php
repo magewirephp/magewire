@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -43,7 +44,7 @@ function invade($obj)
 
         public function __construct($obj)
         {
-            $this->obj       = $obj;
+            $this->obj = $obj;
             $this->reflected = new ReflectionClass($obj);
         }
 
@@ -155,7 +156,7 @@ function memoize($target)
     return new class($target, $memo) {
         public function __construct(
             protected $target,
-            protected &$memo,
+            protected &$memo
         ) {
         }
 
@@ -165,57 +166,51 @@ function memoize($target)
 
             $signature = $method . crc32(json_encode($params));
 
-            return $this->memo[$this->target][$signature]
-                ??= $this->target->$method(...$params);
+            return $this->memo[$this->target][$signature] ??= $this->target->$method(...$params);
         }
     };
 }
 
 function store($instance = null)
 {
-    if (!$instance) {
+    if (! $instance) {
         $instance = ObjectManager::getInstance()->get(\Magewirephp\Magewire\Mechanisms\DataStore::class);
     }
 
     return new class($instance) {
-        public function __construct(protected $instance)
-        {
+        public function __construct(
+            protected $instance
+        ) {
         }
 
         public function get($key, $default = null)
         {
-            return ObjectManager::getInstance()->get(\Magewirephp\Magewire\Mechanisms\DataStore::class)
-                ->get($this->instance, $key, $default);
+            return ObjectManager::getInstance()->get(\Magewirephp\Magewire\Mechanisms\DataStore::class)->get($this->instance, $key, $default);
         }
 
         public function set($key, $value): void
         {
-            ObjectManager::getInstance()->get(\Magewirephp\Magewire\Mechanisms\DataStore::class)
-                ->set($this->instance, $key, $value);
+            ObjectManager::getInstance()->get(\Magewirephp\Magewire\Mechanisms\DataStore::class)->set($this->instance, $key, $value);
         }
 
         public function push($key, $value, $iKey = null): void
         {
-            ObjectManager::getInstance()->get(\Magewirephp\Magewire\Mechanisms\DataStore::class)
-                ->push($this->instance, $key, $value, $iKey);
+            ObjectManager::getInstance()->get(\Magewirephp\Magewire\Mechanisms\DataStore::class)->push($this->instance, $key, $value, $iKey);
         }
 
         public function find($key, $iKey = null, $default = null)
         {
-            return ObjectManager::getInstance()->get(\Magewirephp\Magewire\Mechanisms\DataStore::class)
-                ->find($this->instance, $key, $iKey, $default);
+            return ObjectManager::getInstance()->get(\Magewirephp\Magewire\Mechanisms\DataStore::class)->find($this->instance, $key, $iKey, $default);
         }
 
         public function has($key, $iKey = null)
         {
-            return ObjectManager::getInstance()->get(\Magewirephp\Magewire\Mechanisms\DataStore::class)
-                ->has($this->instance, $key, $iKey);
+            return ObjectManager::getInstance()->get(\Magewirephp\Magewire\Mechanisms\DataStore::class)->has($this->instance, $key, $iKey);
         }
 
         public function unset($key, $iKey = null)
         {
-            return ObjectManager::getInstance()->get(\Magewirephp\Magewire\Mechanisms\DataStore::class)
-                ->unset($this->instance, $key, $iKey);
+            return ObjectManager::getInstance()->get(\Magewirephp\Magewire\Mechanisms\DataStore::class)->unset($this->instance, $key, $iKey);
         }
     };
 }
@@ -293,7 +288,7 @@ function data_get($target, $key, $default = null)
         }
 
         if ($segment === '*') {
-            if (!is_iterable($target)) {
+            if (! is_iterable($target)) {
                 return value($default);
             }
 
@@ -312,7 +307,7 @@ function data_get($target, $key, $default = null)
             '{first}' => array_key_first(is_array($target) ? $target : collect($target)->all()),
             '\{last}' => '{last}',
             '{last}' => array_key_last(is_array($target) ? $target : collect($target)->all()),
-            default => $segment,
+            default => $segment
         };
 
         if (Arr::accessible($target) && Arr::exists($target, $segment)) {
@@ -340,7 +335,7 @@ function response($content = '', $status = 200, array $headers = [])
 
 function map(callable $callback, array $data): array
 {
-    $keys  = array_keys($data);
+    $keys = array_keys($data);
     $items = array_map($callback, $data, $keys);
 
     return array_combine($keys, $items);

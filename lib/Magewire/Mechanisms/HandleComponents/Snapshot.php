@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -33,7 +34,6 @@ class Snapshot
         private mixed $memo = [],
         private string $checksum = ''
     ) {
-        //
     }
 
     /**
@@ -80,9 +80,7 @@ class Snapshot
      */
     function generateChecksum(): self
     {
-        $this->checksum = $this->checksumHandler->generate(
-            $this->toArray(['checksum'])
-        );
+        $this->checksum = $this->checksumHandler->generate($this->toArray(['checksum']));
 
         return $this;
     }

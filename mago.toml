@@ -1,0 +1,59 @@
+php-version = "8.2.0"
+
+[source]
+workspace = "."
+paths = ["lib/", "src/", "themes/"]
+includes = ["../../vendor/magento"]
+excludes = ["dist/**", "node_modules/**", "lib/Livewire"]
+extensions = ["php", "phtml"]
+
+[formatter]
+preset = "psr-12"
+print-width = 200
+use-tabs = false
+tab-width = 4
+single-quote = true
+trailing-comma = false
+sort-uses = true
+separate-use-types = true
+expand-use-groups = true
+method-brace-style = "next-line"
+function-brace-style = "next-line"
+following-clause-on-newline = false
+first-method-chain-on-new-line = false
+method-chain-semicolon-on-next-line = false
+space-before-closure-parameter-list-parenthesis = true
+space-before-arrow-function-parameter-list-parenthesis = true
+space-after-logical-not-unary-prefix-operator = true
+space-around-concatenation-binary-operator = true
+space-within-grouping-parenthesis = true
+null-type-hint = "null_pipe_last"
+align-assignment-like = false
+preserve-breaking-array-like = true
+empty-line-before-return = false
+empty-line-after-method = true
+remove-trailing-close-tag = true
+space-around-assignment-in-declare = false
+
+[linter]
+integrations = []
+
+[linter.rules]
+ambiguous-function-call = { enabled = false }
+literal-named-argument = { enabled = false }
+halstead = { effort-threshold = 7000 }
+excessive-parameter-list = { threshold = 8 }
+
+[analyzer]
+# Magento 2 DI: classes wired via di.xml appear unused to static analysis.
+find-unused-definitions = false
+
+# Magento 2 DI: array arguments injected via di.xml have no statically-known shape.
+allow-possibly-undefined-array-keys = true
+strict-list-index-checks = false
+
+# Magento 2 DI: code paths reachable only through DI-resolved calls appear dead.
+analyze-dead-code = false
+check-throws = true
+
+excludes = ["lib/Magewire/Features/SupportMagewireFlakes/View/Compiler/FlakeCompilerBu.php"]

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -10,15 +11,24 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireViewModel;
 
-use Magento\Framework\App\ObjectManager;
+use Magewirephp\Magewire\Support\Factory;
 use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
 
 trait HandlesMagewireViewModel
 {
-    protected MagewireViewModel|null $viewModel = null;
+    protected MagewireViewModel|null $magewireViewModel = null;
 
-    public function viewModel()
+    /**
+     * Returns the view model for the current Magewire instance.
+     *
+     * During the deprecation period, the legacy view model is returned — extended by the
+     * feature-driven implementation to maintain backwards compatibility. Once the legacy
+     * version is removed, only the feature-driven model will be returned.
+     *
+     * @see \Magewirephp\Magewire\Features\SupportMagewireViewModel\MagewireViewModel
+     */
+    public function magewireViewModel(): MagewireViewModel
     {
-        return $this->viewModel ??= ObjectManager::getInstance()->get(MagewireViewModel::class);
+        return $this->magewireViewModel ??= Factory::get(MagewireViewModel::class);
     }
 }

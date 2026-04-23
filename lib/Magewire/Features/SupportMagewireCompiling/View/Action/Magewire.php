@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -14,5 +15,4 @@ use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ViewAction as Vi
 
 class Magewire extends ViewAction
 {
-    //
 }

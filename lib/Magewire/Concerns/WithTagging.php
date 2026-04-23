@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -13,17 +14,17 @@ namespace Magewirephp\Magewire\Concerns;
 trait WithTagging
 {
     /** @var array<int, string> */
-    private array $tags = [];
+    protected array $withTags = [];
 
     /**
      * Tag a fragment with a recognizable name.
      */
-    public function tag(string $name): static
+    public function withTag(string $tag): static
     {
-        $sanitized = preg_replace('/[^a-z0-9]/', '', strtolower($name));
+        $sanitized = preg_replace('/[^a-z0-9]/', '', strtolower($tag));
 
         if ($sanitized !== '') {
-            $this->tags[] = $sanitized;
+            $this->withTags[] = $sanitized;
         }
 
         return $this;
@@ -34,24 +35,47 @@ trait WithTagging
      */
     public function clearTags(callable|null $filter = null): static
     {
-        $this->tags = $filter ? array_filter($this->tags, $filter) : [];
+        $this->withTags = $filter ? array_filter($this->withTags, $filter) : [];
 
         return $this;
     }
 
     /**
-     * Returns if the given tag exists.
+     * Define multiple tags.
      */
-    public function hasTag(string $name): bool
+    public function withTags(array $tags): static
     {
-        return is_string($this->tags[$name] ?? null);
+        foreach ($tags as $tag) {
+            if ($this->hasTags([$tag])) {
+                continue;
+            }
+
+            $this->withTag($tag);
+        }
+
+        return $this;
     }
 
     /**
-     * Returns if any tags were set.
+     * Retrieve the fragment alias (if set).
      */
-    public function hasTags(): bool
+    public function getWithTags(): array
     {
-        return count($this->tags) > 0;
+        return $this->withTags;
+    }
+
+    /**
+     * Retrieve if the fragment possesses an alias.
+     */
+    public function hasTags(array $tags = [], bool $strict = false): bool
+    {
+        if (empty($tags)) {
+            return false;
+        }
+        if ($strict) {
+            return empty(array_diff($tags, $this->withTags));
+        }
+
+        return ! empty(array_intersect($this->withTags, $tags));
     }
 }

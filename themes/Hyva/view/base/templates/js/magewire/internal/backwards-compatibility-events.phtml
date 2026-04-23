@@ -1,0 +1,38 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment = $magewireViewModel->utils()->fragment();
+?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    (() => {
+        'use strict';
+        const magewireBcEventsMapping = [
+            { from: 'livewire:init', to: 'magewire:init', once: true },
+            { from: 'livewire:initialized', to: 'magewire:initialized', once: true },
+
+            <?php /* To support legacy V1 events. */ ?>
+            { from: 'magewire:init', to: 'magewire:load', once: true, legacy: true },
+            { from: 'magewire:initialized', to: 'magewire:available', once: true, legacy: true }
+        ];
+
+        magewireBcEventsMapping.forEach(({ from, to, once, legacy }) => {
+            document.addEventListener(from, original => {
+                document.dispatchEvent(new CustomEvent(to, {
+                    detail: { ...original.detail },
+                    bubbles: original.bubbles,
+                    cancelable: original.cancelable
+                }));
+            }, once ? { once: true } : undefined);
+        });
+    })();
+</script>
+<?php $script->end() ?>

@@ -20,7 +20,7 @@ class ComponentContext
 {
     public $effects = [];
     public $memo = [];
-    function __construct(public $block, public $component, public $mounting = false, $effects = null, $memo = null)
+    public function __construct(public $block, public $component, public $mounting = false, $effects = null, $memo = null)
     {
         $this->effects = $effects instanceof Effects ? $effects : null ?? ObjectManager::getInstance()->create(Effects::class);
         $this->memo = $memo instanceof Memo ? $memo : null ?? ObjectManager::getInstance()->create(Memo::class);
@@ -29,11 +29,11 @@ class ComponentContext
     {
         return $this->mounting;
     }
-    function addEffect($key, $value)
+    public function addEffect($key, $value)
     {
         $this->getEffects()->setData($key, $value);
     }
-    function pushEffect($key, $value, $iKey = null)
+    public function pushEffect($key, $value, $iKey = null)
     {
         $effects = $this->getEffects()->getData();
         if (!is_array($effects)) {
@@ -47,11 +47,11 @@ class ComponentContext
         $this->getEffects()->setData($effects);
         return $this;
     }
-    function addMemo($key, $value)
+    public function addMemo($key, $value)
     {
         $this->getMemo()->setData($key, $value);
     }
-    function pushMemo($key, $value, $iKey = null)
+    public function pushMemo($key, $value, $iKey = null)
     {
         $memo = $this->getMemo()->getData();
         if (!is_array($memo)) {
@@ -65,30 +65,54 @@ class ComponentContext
         $this->getMemo()->setData($memo);
         return $this;
     }
-    function setEffects(Effects $effects)
+    public function setEffects(Effects $effects)
     {
         $this->effects = $effects;
         return $this;
     }
-    function setMemo(Memo $memo)
+    public function setMemo(Memo $memo)
     {
         $this->memo = $memo;
         return $this;
     }
-    function getEffects(): Effects
+    public function getEffects(): Effects
     {
         return $this->effects;
     }
-    function getMemo(): Memo
+    public function getMemo(): Memo
     {
         return $this->memo;
     }
-    function getComponent(): Component
+    public function getComponent(): Component
     {
         return $this->component;
     }
-    function getBlock(): AbstractBlock
+    public function getBlock(): AbstractBlock
     {
         return $this->block;
+    }
+    public function hasEffect($key, $iKey = null): bool
+    {
+        $has = $this->getEffects()->hasData($key);
+        if ($has && $iKey) {
+            $data = $this->getEffects()->getData($key);
+            if (is_array($data)) {
+                return isset($data[$iKey]);
+            }
+            return false;
+        }
+        return $has;
+    }
+    public function hasMemo($key, $iKey = null)
+    {
+        $has = $this->getMemo()->hasData($key);
+        if ($has && $iKey) {
+            $data = $this->getMemo()->getData($key);
+            if (is_array($data)) {
+                return isset($data[$iKey]);
+            }
+            return false;
+        }
+        return $has;
     }
 }

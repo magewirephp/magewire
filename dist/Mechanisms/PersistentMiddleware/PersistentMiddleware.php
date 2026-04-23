@@ -17,6 +17,7 @@ use Magento\Framework\App\Request\Http as Request;
 use function Magewirephp\Magewire\on;
 use Illuminate\Routing\Router;
 use Magewirephp\Magewire\Mechanisms\Mechanism;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Support\Str;
 use Magewirephp\Magewire\Drawer\Utils;
 use Magewirephp\Magewire\Mechanisms\HandleRequests\HandleRequests;
@@ -115,8 +116,12 @@ class PersistentMiddleware extends Mechanism
     }
     protected function getRouteFromRequest($request)
     {
-        $route = app('router')->getRoutes()->match($request);
-        $request->setRouteResolver(fn() => $route);
+        try {
+            $route = app('router')->getRoutes()->match($request);
+            $request->setRouteResolver(fn() => $route);
+        } catch (NotFoundHttpException $e) {
+            return null;
+        }
         return $route;
     }
     protected function filterMiddlewareByPersistentMiddleware($middleware)

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -14,5 +15,4 @@ use Exception;
 
 class ComponentResolverNotFoundException extends Exception
 {
-    //
 }

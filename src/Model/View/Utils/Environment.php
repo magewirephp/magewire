@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -18,7 +19,6 @@ class Environment implements UtilsInterface
     function __construct(
         private readonly ApplicationState $applicationState
     ) {
-        //
     }
 
     public function isDeveloperMode(): bool

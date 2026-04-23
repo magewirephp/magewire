@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -13,6 +14,9 @@ namespace Magewirephp\Magewire\Model\Concern;
 use Magewirephp\Magewire\Features\SupportEvents\Event;
 use Magewirephp\Magewire\Features\SupportEvents\HandlesEvents;
 
+/**
+ * @deprecated TBD
+ */
 trait Emit
 {
     use HandlesEvents;
@@ -30,7 +34,6 @@ trait Emit
      */
     public function emitUp(string $event, $params = []): Event
     {
-        //
     }
 
     /**
@@ -40,7 +43,6 @@ trait Emit
      */
     public function emitSelf(string $event, $params = []): Event
     {
-        //
     }
 
     /**
@@ -60,7 +62,6 @@ trait Emit
      */
     public function emitToRefresh(string $name, $params = []): Event
     {
-        //
     }
 
     /**
@@ -70,6 +71,5 @@ trait Emit
      */
     public function emitToRefreshUp($params = []): Event
     {
-        //
     }
 }

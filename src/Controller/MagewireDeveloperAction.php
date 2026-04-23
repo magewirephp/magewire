@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -28,7 +29,6 @@ abstract class MagewireDeveloperAction
         private readonly ForwardFactory $resultForwardFactory,
         private readonly ApplicationState $applicationState
     ) {
-        //
     }
 
     public function execute()

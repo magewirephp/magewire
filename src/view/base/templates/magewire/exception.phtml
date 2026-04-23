@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -23,7 +24,7 @@ $exception = $block->getData('exception');
 <?php if ($state instanceof ApplicationState && $state->getMode() === ApplicationState::MODE_DEVELOPER): ?>
 <div class="magewire-exception">
     <pre class="whitespace-pre-line text-sm text-gray-600 border rounded border-gray-600 p-4 overflow-auto">
-        <span class="text-red-600 font-bold">Exception:</span> <?= $exception->getMessage() ?>
+        <span class="text-red-600 font-bold">Exception:</span> <?= $escaper->escapeHtml($exception->getMessage()) ?>
     </pre>
 
     <p class="text-xs mt-2 italic">
@@ -37,7 +38,7 @@ $exception = $block->getData('exception');
 <?php endif ?>
 
 <?php if (strlen($id) === 0): ?>
-    <!-- Magewire exception: <?= $id ?> -->
+    <!-- Magewire exception: <?= $escaper->escapeHtml($id) ?> -->
 <?php else: ?>
     <!-- Magewire exception -->
 <?php endif ?>

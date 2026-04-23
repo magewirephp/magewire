@@ -35,54 +35,15 @@ MagewirePHP helps you deliver modern UX experiences in Magento—faster, cleaner
 
 |   |   |
 |---|---|
-|<a align="center" href="https://vendic.nl/" title="Vendic" target="_blank"><img width="64" alt="Vendic" src="https://user-images.githubusercontent.com/5383956/228823594-d3344d87-dadc-4c36-a212-89cba8c7340b.jpg"/></a>|<a align="center" href="https://www.zero1.co.uk/" title="Zero 1" target="_blank"><img width="64" alt="Zero 1" src="https://github.com/magewirephp/magewire/assets/5383956/6f385d3c-87c9-433d-8921-c40de0f00573"/></a>|
+|<a align="center" href="https://hyva.io/" title="Hyvä" target="_blank"><img width="64" alt="Hyvä" src="https://github.com/user-attachments/assets/4b22d11f-9afd-4604-8ed2-8cccceb13542"/></a>|<a align="center" href="https://vendic.nl/" title="Vendic" target="_blank"><img width="64" alt="Vendic" src="https://user-images.githubusercontent.com/5383956/228823594-d3344d87-dadc-4c36-a212-89cba8c7340b.jpg"/></a>|
 
 Click [here](https://github.com/sponsors/wpoortman) to start sponsoring.
 
-## Installation
+## Supported Themes
 
-To install Magewire in your Magento 2 project, follow these steps:
-
-1. Require Magewire via Composer:
-   ```shell
-   composer require magewirephp/magewire
-   ```
-2. Enable the module:
-   ```shell
-   bin/magento module:enable Magewirephp_Magewire
-   ```
-3. Enable the theme compatibility module (determined per theme, in this case Hyvä):
-   ```shell
-   bin/magento module:enable Magewirephp_MagewireCompatibilityWithHyva
-   ```
-4. Run the setup upgrade command:
-   ```shell
-   bin/magento setup:upgrade
-   ```
-5. Deploy static content (when in production mode):
-   ```shell
-   bin/magento setup:static-content:deploy
-   ```
-6. Flush the cache:
-   ```shell
-   bin/magento cache:flush
-   ```
-
-## Code
-
-### Styles
-
-To run styles, follow these steps:
-
-1. Install packages:
-  ```shell
-  npm ci
-  ```
-2. Run styles:
-  ```shell
-  npx @tailwindcss/cli -i ./styles/magewire.css -o ./src/view/base/web/css/magewire.css --optimize
-  ```
-Use the `--watch` flag to re-compile on template changes.
+- ✅ Hyvä
+- ✅ Magento Admin
+- :sparkles: Yours? Reach out!
 
 ## Contributing
 Thank you for considering contributing to Magewire! Please read the [contribution guide](https://github.com/magewirephp/magewire/blob/main/CONTRIBUTING.md) to know how to behave, install and use Magewire for contributors.

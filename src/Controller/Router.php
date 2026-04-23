@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -24,7 +25,6 @@ class Router implements RouterInterface
         private readonly MagewireRouteValidator $magewireRouteValidator,
         private readonly array $routes = []
     ) {
-        //
     }
 
     public function match(RequestInterface $request)

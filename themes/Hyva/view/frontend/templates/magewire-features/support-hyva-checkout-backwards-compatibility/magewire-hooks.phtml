@@ -1,0 +1,75 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment = $magewireViewModel->utils()->fragment();
+
+/** @internal Do not modify to ensure Magewire continues to function correctly. */
+?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    let magewireBcHooksReady = false;
+    let magewireBcHooksResolver = null;
+    let magewireBcHooksNotifications = new Set();
+
+    <?php /* A mapping for what the old event became 'old' => 'new'. */ ?>
+    const magewireBcHooksReplacementMapping = {
+        'component.initialized': 'component.init',
+        'element.initialized': 'element.init',
+        'element.removed': 'morph.removed',
+        'element.updating': 'morph.updating',
+        'message.sent': 'commit',
+        'message.failed': 'commit',
+        'message.received': 'commit',
+        'message.processed': 'commit'
+    };
+
+    <?php /* Create a promise that resolves when Magewire is available. */ ?>
+    const magewireBcReady = new Promise(resolve => {
+        magewireBcHooksResolver = resolve;
+    });
+
+    <?php /* Function to run a hook when ready. */ ?>
+    const runMagewireBackwardsCompatibleHook = async function(hook, callable) {
+        if (! magewireBcHooksNotifications.has(hook)) {
+            const replacement = magewireBcHooksReplacementMapping[hook] || 'TBD';
+
+            <?php if ($magewireViewModel->utils()->magewire()->config()->isInDebugMode()): ?>
+            console.warn(`Magewire: Somewhere within your code, you are using a Magewire hook "${hook}". This hook is no longer supported and will eventually be removed. Please upgrade to use "${replacement}" instead. This message is only shown in developer mode.`);
+            <?php endif ?>
+        }
+
+        magewireBcHooksNotifications.add(hook);
+
+        if (! callable) {
+            return;
+        }
+
+        <?php /* Wait for Magewire to be ready. */ ?>
+        await magewireBcReady;
+        <?php /* Execute the callable. */ ?>
+        callable();
+    };
+
+    <?php /* Resolve the promise when magewire:available fires. */ ?>
+    document.addEventListener('magewire:available', () => {
+        if (! magewireBcHooksReady) {
+            magewireBcHooksReady = true;
+
+            <?php /* Resolve the promise to release all waiting hooks. */ ?>
+            if (magewireBcHooksResolver) {
+                magewireBcHooksResolver();
+            }
+        }
+    });
+</script>
+<?php $script->end() ?>

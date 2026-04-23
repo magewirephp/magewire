@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -40,8 +41,6 @@ class UpdateRequestRateLimiter extends RateLimiter
     public function validateWithComponent(Component $component): bool
     {
         $key = $this->generateKeyByComponent($component);
-
-        $component->tap();
 
         if ($result = $this->validate($key, 4, 5)) {
             $this->hit($key);

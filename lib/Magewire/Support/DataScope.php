@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -13,7 +14,7 @@ namespace Magewirephp\Magewire\Support;
 use Magento\Framework\App\ObjectManager;
 
 /**
- * @deprecated work in progress.
+ * @deprecated This is still a proof of concept and should not be used in a production environment.
  */
 class DataScope
 {
@@ -22,9 +23,8 @@ class DataScope
 
     public function __construct(
         private readonly DataScope|null $root = null,
-        protected array $data = [],
+        protected array $data = []
     ) {
-        //
     }
 
     /**

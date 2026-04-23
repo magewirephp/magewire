@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -11,7 +12,6 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View;
 
 use Magento\Framework\View\File;
-use Magento\Tests\NamingConvention\true\string;
 
 class ViewStub
 {
@@ -20,7 +20,6 @@ class ViewStub
     public function __construct(
         private readonly File $stub
     ) {
-        //
     }
 
     public function getNamespace(): string

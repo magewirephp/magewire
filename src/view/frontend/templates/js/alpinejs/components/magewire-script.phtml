@@ -18,31 +18,17 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
 <script>
     function magewireScript() {
         return {
-
-        }
+            //
+        };
     }
 
-    function magewireScriptBindings(options) {
-        options = { ...{
-                csrfToken: null,
-                updateUri: '<?= $escaper->escapeJs($magewireUtility->getUpdateUri()) ?>',
-            }, ...options }
-
-        Object.keys(options).forEach(option => {
-            if (options[option] === null) {
-                console.error(`Magewire script option "${ option }" can not be null.`);
-            }
-            if (option[option] === '') {
-                console.error(`Magewire script option "${ option }" can not be empty.`);
-            }
-        });
-
+    function magewireScriptBindings() {
         return {
-            ':data-csrf'() {
-                return options.csrfToken
+            'x-bind:data-update-uri'() {
+                return '<?= $escaper->escapeJs($magewireUtility->getUpdateUri()) ?>';
             },
-            ':data-update-uri'() {
-                return options.updateUri
+            'x-bind:data-csrf'() {
+                return window.MagewireUtilities.cookie.getFormKey()
             }
         };
     }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © W. Poortman 2021-present. All rights reserved.
  *
@@ -10,11 +11,7 @@ declare(strict_types=1);
 
 use Magento\Framework\Component\ComponentRegistrar;
 
-ComponentRegistrar::register(
-    ComponentRegistrar::MODULE,
-    'Magewirephp_Magewire',
-    __DIR__
-);
+ComponentRegistrar::register(ComponentRegistrar::MODULE, 'Magewirephp_Magewire', __DIR__);
 
 ComponentRegistrar::register(
     ComponentRegistrar::LIBRARY,
@@ -22,7 +19,7 @@ ComponentRegistrar::register(
 
     /*
      * At the time of writing, the `dist` folder was manually added as the `path` for the library registration.
-     * Naturally, this is variable thanks to the  portman.config.php configuration.
+     * Naturally, this is a variable thanks to the  portman.config.php configuration.
      *
      * Therefore, it is important to be aware that if the `directories.output` path changes, the path here must
      * also be updated. The same applies to the fact that if the module path changes, this must also be taken

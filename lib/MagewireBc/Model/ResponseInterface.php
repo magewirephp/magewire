@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -61,7 +62,7 @@ interface ResponseInterface
      * @param string $section
      * @return array|null
      */
-    public function getSectionByName(string $section): ?array;
+    public function getSectionByName(string $section): array|null;
 
     /**
      * Renders the effects html with additional root attribute(s).

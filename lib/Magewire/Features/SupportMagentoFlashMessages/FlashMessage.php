@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -14,18 +15,72 @@ use Magento\Framework\Phrase;
 
 class FlashMessage
 {
+    private FlashMessageType $type = FlashMessageType::Notice;
+
     function __construct(
-        private readonly string $message,
-        private readonly FlashMessageType $type
+        private Phrase $message
     ) {
-        //
     }
 
+    public function withMessage(string|Phrase $message): static
+    {
+        if (is_string($message)) {
+            $message = __($message);
+        }
+
+        $this->message = $message;
+        return $this;
+    }
+
+    public function asSuccess(): static
+    {
+        return $this->as(FlashMessageType::Success);
+    }
+
+    public function asError(): static
+    {
+        return $this->as(FlashMessageType::Error);
+    }
+
+    public function asWarning(): static
+    {
+        return $this->as(FlashMessageType::Warning);
+    }
+
+    public function asNotice(): static
+    {
+        return $this->as(FlashMessageType::Notice);
+    }
+
+    public function as(FlashMessageType $type): static
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    public function message(): Phrase
+    {
+        return $this->message;
+    }
+
+    public function type(): FlashMessageType
+    {
+        return $this->type;
+    }
+
+    /**
+     * @deprecated Use the message() method instead.
+     * @see static::message()
+     */
     function getMessage(): Phrase
     {
-        return __($this->message);
+        return $this->message;
     }
 
+    /**
+     * @deprecated Use the type() method instead.
+     * @see static::type()
+     */
     function getType(): FlashMessageType
     {
         return $this->type;

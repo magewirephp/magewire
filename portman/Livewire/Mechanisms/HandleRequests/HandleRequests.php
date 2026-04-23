@@ -15,9 +15,9 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magewirephp\Magento\Controller\MagewireUpdateResult;
 use Magewirephp\Magewire\Component;
-use Magewirephp\Magewire\Controller\MagewireUpdateRouteFrontend;
 use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
 use Magewirephp\Magewire\LivewireManager;
+use Magewirephp\Magewire\MagewireServiceProvider;
 use function Magewirephp\Magewire\store;
 use function Magewirephp\Magewire\trigger;
 
@@ -26,7 +26,8 @@ class HandleRequests extends \Livewire\Mechanisms\HandleRequests\HandleRequests
     public function __construct(
         private readonly Http $request,
         private readonly LivewireManager $magewireManager,
-        private readonly SerializerInterface $serializer
+        private readonly SerializerInterface $serializer,
+        private readonly MagewireServiceProvider $magewireServiceProvider
     ) {
         //
     }
@@ -43,7 +44,12 @@ class HandleRequests extends \Livewire\Mechanisms\HandleRequests\HandleRequests
 
     public function isMagewireRequest()
     {
-        return $this->request->getParam(MagewireUpdateRouteFrontend::PARAM_IS_SUBSEQUENT) ?? false;
+        return $this->magewireServiceProvider->runtime()->mode()->isSubsequent();
+    }
+
+    public function request(): Http
+    {
+        return $this->request;
     }
 
     /**
@@ -63,7 +69,7 @@ class HandleRequests extends \Livewire\Mechanisms\HandleRequests\HandleRequests
         $componentResponses = [];
 
         foreach ($requestPayload as $componentPayload) {
-            $reconstruct = trigger('magewire:reconstruct', $componentPayload);
+            $reconstruct = trigger('magewire:component:reconstruct', $componentPayload);
 
             $block = $reconstruct();
             $component = $block->getData('magewire');

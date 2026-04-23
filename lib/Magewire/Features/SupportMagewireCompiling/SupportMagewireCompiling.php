@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -10,41 +11,147 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireCompiling;
 
-use Magento\Framework\View\Element\AbstractBlock;
+use DateTime;
+use Magento\Framework\DataObject;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magento\Framework\View\TemplateEngine\Php\TemplateRenderDataTransferObject;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\ComponentHook;
-use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\MagewireCompilerFactory;
+use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler;
+use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\CompilerManager;
+use Magewirephp\Magewire\Model\View\SlotsRegistry;
+
+use function Magewirephp\Magewire\before;
 use function Magewirephp\Magewire\on;
+use function Magewirephp\Magewire\trigger;
 
 class SupportMagewireCompiling extends ComponentHook
 {
     public function __construct(
-        private readonly MagewireCompilerFactory $compilerFactory,
-        private readonly MagewireUnderscoreViewModelFactory $underscoreViewModelFactory
+        private MagewireUnderscoreViewModelFactory $underscoreViewModelFactory,
+        private CompilerManager $compilerManager,
+        private SlotsRegistry $slotsRegistry
     ) {
-        //
     }
 
     public function provide(): void
     {
-        on('magewire:precompile', function (AbstractBlock $block, string $filename, array $dictionary, Component $magewire) {
-            $compiler = $magewire->compiler() ?? $magewire->compiler($this->compilerFactory->create());
+        on('magento:template:render', function (TemplateRenderDataTransferObject $dto) {
+            if (! $dto->block() instanceof DataObject) {
+                return;
+            }
 
-            return function (array $result) use ($magewire, $compiler) {
-                // Although named "filename", this actually represents the full file path,
-                // including the filename and its extension.
-                $path = $result['filename'];
+            $component = $dto->block()->getData('magewire');
 
-                if ($magewire->compiler()->canCompile()) {
-                    // Compiles the final HTML, puts it into a resource, and returns its new file path.
-                    $result['filename'] = $compiler->requiresCompilation($path) ? $compiler->compile($path) : $compiler->generateFilePath($path);
+            if (! $component instanceof Component) {
+                return;
+            }
+
+            $compiler = $component->magewireCompiler() ?? $component->magewireCompiler(
+                $this->compilerManager->factory()->newCompilerInstance()
+            );
+
+            $dto->dictionary(['magewire' => $component]);
+
+            if ($component->magewireCompiler()->canCompile()) {
+                $compiledPath = $compiler->management()->file()->generateFilePath($dto->filename());
+
+                if ($compiler->requiresRecompile($dto->filename())) {
+                    trigger('magewire:view:compile', $compiler, $component, $dto->block());
+                    $compiler->compile($dto->filename(), $compiledPath);
                 }
 
-                // Include the Magewire underscore object optionally required by compiled views.
-                $result['dictionary']['__magewire'] = $this->underscoreViewModelFactory->create();
+                $dto->filename($compiledPath);
+            }
 
-                return $result;
-            };
+            // Concept: Include the Magewire underscore object optionally required by compiled views.
+            $dto->dictionary(['__magewire' => $dto->dictionary()['__magewire'] ?? $this->underscoreViewModelFactory->create()]);
+
+            // Currently only for dev-purposes, will change over time and shouldn't be used.
+            if ($this->slotsRegistry->hasAreas()) {
+                $dto->dictionary([
+                    '__slot' => $dto->dictionary()['__slot'] ?? $this->slotsRegistry->snapshot(),
+                    '__el' => $this->slotsRegistry->element(),
+                ]);
+            }
         });
+
+        before('magewire:view:compile', static function (Compiler $compiler) {
+            $runs['html'] = 0;
+
+            $compiler
+                ->pipelines()
+                ->html()
+                ->middleware()
+                ->group('first-line', 2)
+                ->pipe(static function (string $throughput, callable $next) use (&$runs, $compiler) {
+                    $runs['html']++;
+
+                    if ($runs['html'] === 1) {
+                        return '@template()' . PHP_EOL . $next($throughput);
+                    }
+
+                    return $next($throughput);
+                });
+
+            $compiler
+                ->pipelines()
+                ->template()
+                ->middleware()
+                ->group('last')
+                ->pipe(static function (string $throughput, callable $next): string {
+                    return $next($throughput) . '@endtemplate';
+                });
+
+            $compiler
+                ->pipelines()
+                ->template()
+                ->middleware()
+                ->group('last')
+                ->pipe(static function (string $throughput, callable $next): string {
+                    $result = $next($throughput);
+                    $date = new DateTime();
+
+                    return $result . sprintf('<?php /** Compile Date/Time: %s **/ ?>' . PHP_EOL, $date->format('Y-m-d H:i:s.u'));
+                })
+                ->pipe(static function (string $throughput, callable $next) use ($compiler): string {
+                    $result = $next($throughput);
+
+                    return $result . sprintf('<?php /** Template Basepath: %s **/ ?>' . PHP_EOL, $compiler->basePath());
+                })
+                ->pipe(static function (string $throughput, callable $next) use ($compiler): string {
+                    $start = $compiler->compileStartTime();
+                    $result = $next($throughput);
+
+                    $durationMs = round(( microtime(true) - $start ) * 1000, 2);
+                    $durationSec = round($durationMs / 1000, 4);
+
+                    return $result . sprintf('<?php /** Compile Duration: %.2f ms (%.4f s) **/ ?>' . PHP_EOL, $durationMs, $durationSec);
+                });
+        });
+    }
+
+    /**
+     * WIP
+     *
+     * Generate a readable file structure for generated files.
+     *
+     * Instead of unreadable filenames, create organized directories that map to source files,
+     * making it easier for developers to locate and debug generated output.
+     *
+     * TODO: Consider enabling this only in development mode.
+     */
+    private function transformToViewPath(Template $block): string
+    {
+        $template = $block->getTemplate();
+        $parts = explode('::', $template);
+
+        if (count($parts) === 2) {
+            $parts[0] = str_replace('_', '/', $parts[0]);
+
+            return implode('/', $parts);
+        }
+
+        return $block->getTemplateFile();
     }
 }

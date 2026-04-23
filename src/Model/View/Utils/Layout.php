@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -20,7 +21,6 @@ class Layout implements UtilsInterface
     public function __construct(
         private readonly LoggerInterface $logger
     ) {
-        //
     }
 
     /**
@@ -28,7 +28,7 @@ class Layout implements UtilsInterface
      *
      * @return array<int, AbstractBlock>
      */
-    function containerizeBlock(AbstractBlock|false $block): array
+    public function containerizeBlock(AbstractBlock|false $block): array
     {
         if ($block) {
             return array_filter(array_map(function (string $child) use ($block) {
@@ -48,7 +48,7 @@ class Layout implements UtilsInterface
     /**
      * Determines whether the current block can be containerized.
      */
-    function canContainerizeBlock(AbstractBlock|false $block): bool
+    public function canContainerizeBlock(AbstractBlock|false $block): bool
     {
         if ($block) {
             return count($this->containerizeBlock($block)) !== 0;
@@ -60,14 +60,38 @@ class Layout implements UtilsInterface
     /**
      * Renders all child blocks of the given block.
      */
-    function renderBlockAsContainer(AbstractBlock|false $block): string
+    public function renderBlockAsContainer(AbstractBlock|false $block): string
     {
         if ($block) {
-            return implode('', array_map(function (object $child) {
-                return ($child instanceof AbstractBlock ? $child->toHtml() : '') . PHP_EOL;
+            return implode('', array_map(static function (object $child) {
+                return ( $child instanceof AbstractBlock ? $child->toHtml() : '' ) . PHP_EOL;
             }, $this->containerizeBlock($block)));
         }
 
         return '';
+    }
+
+    public function getChild(AbstractBlock|false $block, string $alias, array $data = []): AbstractBlock|null
+    {
+        if ($block) {
+            $child = $block->getChildBlock($alias);
+
+            if ($child instanceof AbstractBlock) {
+                if (! empty($data)) {
+                    $child->addData($data);
+                }
+
+                return $child;
+            }
+        }
+
+        return null;
+    }
+
+    public function getChildHtml(AbstractBlock|false $block, string $alias, array $data = []): string
+    {
+        $child = $this->getChild($block, $alias, $data);
+
+        return $child ? $child->toHtml() : '';
     }
 }

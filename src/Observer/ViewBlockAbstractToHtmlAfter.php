@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -11,22 +12,26 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Observer;
 
 use Exception;
-use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
-use Magewirephp\Magewire\Component;
+use Magento\Framework\DataObject;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\View\Element\AbstractBlock;
-use Magewirephp\Magewire\Model\App\ExceptionManager;
+use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
 use Magewirephp\Magewire\MagewireManager;
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\LayoutLifecycleManager;
+use Magewirephp\Magewire\Model\App\ExceptionManager;
+
 use function Magewirephp\Magewire\store;
+use function Magewirephp\Magewire\trigger;
 
 class ViewBlockAbstractToHtmlAfter implements ObserverInterface
 {
     public function __construct(
-        private readonly MagewireManager  $magewireManager,
-        private readonly ExceptionManager $exceptionManager
+        private readonly MagewireManager $magewireManager,
+        private readonly ExceptionManager $exceptionManager,
+        private readonly LayoutLifecycleManager $componentRenderLifecycleManager
     ) {
-        //
     }
 
     /**
@@ -38,9 +43,10 @@ class ViewBlockAbstractToHtmlAfter implements ObserverInterface
         $block = $observer->getData('block');
         /** @var Component|mixed $magewire */
         $magewire = $block->getData('magewire');
+        /** @var DataObject $transport */
+        $transport = $observer->getData('transport');
 
         if ($magewire) {
-            $transport = $observer->getData('transport');
             $html = $transport->getHtml();
 
             try {
@@ -62,5 +68,8 @@ class ViewBlockAbstractToHtmlAfter implements ObserverInterface
 
             $transport->setHtml($html);
         }
+
+        $lifecycle = $this->componentRenderLifecycleManager->target('magewire')->pop();
+        trigger('magento:block:rendered', $lifecycle, $block);
     }
 }

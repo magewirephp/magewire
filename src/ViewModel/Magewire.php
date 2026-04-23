@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -11,9 +12,15 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\ViewModel;
 
 use Magewirephp\Magewire\Features\SupportMagewireViewModel\MagewireViewModel;
+use Magewirephp\Magewire\Features\SupportMagewireViewModel\MagewireViewModelInterface;
 use Magewirephp\Magewire\Model\Magento\System\ConfigMagewire as MagewireSystemConfig;
 use Magewirephp\Magewire\Model\View\Utils as ViewUtils;
 
+/**
+ * @deprecated Been replaced running via a feature.
+ * @see MagewireViewModel
+ * @see MagewireViewModelInterface
+ */
 class Magewire extends MagewireViewModel
 {
     /**
@@ -49,7 +56,11 @@ class Magewire extends MagewireViewModel
      */
     function pageRequiresMagewire(): bool
     {
-        return $this->utils()->magewire()->mechanisms()->resolveComponents()->doesPageHaveComponents();
+        return $this->utils()
+            ->magewire()
+            ->mechanisms()
+            ->resolveComponents()
+            ->doesPageHaveComponents();
     }
 
     /**
@@ -67,6 +78,10 @@ class Magewire extends MagewireViewModel
      */
     function getScriptPath(): string
     {
-        return $this->utils()->magewire()->mechanisms()->frontendAssets()->getScriptPath();
+        return $this->utils()
+            ->magewire()
+            ->mechanisms()
+            ->frontendAssets()
+            ->getScriptPath();
     }
 }

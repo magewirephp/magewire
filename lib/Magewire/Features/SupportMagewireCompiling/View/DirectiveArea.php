@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -10,7 +11,7 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View;
 
-use Magento\Framework\App\ObjectManager;
+use Magewirephp\Magewire\Support\Factory;
 
 /**
  * A directive area represents a technology-specific collection of directives grouped under a
@@ -22,7 +23,7 @@ use Magento\Framework\App\ObjectManager;
  */
 class DirectiveArea
 {
-    private array $scopes = [];
+    private DirectiveResponsibilities|null $responsibilities = null;
 
     /**
      * @param array<string, Directive|class-string> $directives
@@ -30,7 +31,6 @@ class DirectiveArea
     public function __construct(
         private array $directives = []
     ) {
-        //
     }
 
     public function set(string $name, Directive $directive, bool $force = false): Directive
@@ -51,45 +51,38 @@ class DirectiveArea
         return $this;
     }
 
-    public function replace(string $name, Directive $directive): Directive
-    {
-        if ($this->has($name)) {
-            return $this->directives[$name] = $directive;
-        }
-
-        return $this->set($name, $directive);
-    }
-
     public function has(string $directive): bool
     {
         return array_key_exists($directive, $this->directives);
     }
 
+    public function responsibilities(): DirectiveResponsibilities
+    {
+        return $this->responsibilities ??= Factory::create(DirectiveResponsibilities::class);
+    }
+
     public function get(string $directive): Directive|null
     {
-        /*
-         * Reuse the most recent scoped directive instance if one exists.
-         *
-         * Chained and ending directives (like @endforeach, @else) must execute
-         * within the same class instance as their opening directive to maintain
-         * proper state and context.
-         */
-        if (is_array($this->scopes[$directive] ?? null) && count($this->scopes[$directive]) !== 0) {
-            return array_pop($this->scopes[$directive]);
-        }
-
         $type = $this->directives[$directive] ?? null;
         $standalone = is_string($type);
 
         if ($standalone) {
-            $type = ObjectManager::getInstance()->create($type);
+            $type = Factory::create($type);
         }
 
+        /*
+         * On a scoped directive, we need to make sure it closing or chaining responsibilities are
+         * being memorized for when a directive
+         */
         if ($type instanceof ScopeDirective) {
-            $type = $standalone ? $type : ObjectManager::getInstance()->create($type::class);
+            $type = $standalone ? $type : Factory::create($type::class);
 
             foreach ($type->getResponsibilitiesFor($directive) as $responsibility) {
-                $this->scopes[$responsibility][] = $type;
+                if ($responsibility === $directive) {
+                    continue;
+                }
+
+                $this->responsibilities()->push($responsibility, $type);
             }
         }
 

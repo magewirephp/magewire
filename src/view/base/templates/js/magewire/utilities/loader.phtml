@@ -79,6 +79,6 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
     }
 
     <?php /* Register as Magewire utility. */ ?>
-    document.addEventListener('magewire:init', () => Magewire.utility('loader', magewireLoaderUtility), { once: true });
+    document.addEventListener('alpine:init', () => window.MagewireUtilities.register('loader', magewireLoaderUtility), { once: true });
 </script>
 <?php $script->end() ?>

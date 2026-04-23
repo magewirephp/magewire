@@ -43,6 +43,6 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
     }
 
     <?php /* Register as Magewire utility. */ ?>
-    document.addEventListener('magewire:init', () => Magewire.utility('str', magewireStrUtility), { once: true });
+    document.addEventListener('alpine:init', () => window.MagewireUtilities.register('str', magewireStrUtility), { once: true });
 </script>
 <?php $script->end() ?>

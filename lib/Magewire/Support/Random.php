@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -12,13 +13,22 @@ namespace Magewirephp\Magewire\Support;
 
 class Random
 {
-    static public function string(int $length = 6): string
+    public static function string(int $length = 10, bool $uppercased = true): string
     {
-        return strtolower(bin2hex(random_bytes($length)));
+        $characters = self::alphabetical((int) ceil($length / 2), $uppercased) . self::integer($length);
+        $characters = str_shuffle(str_repeat($characters, (int) ceil($length / strlen($characters))));
+
+        return substr($characters, 0, $length);
     }
 
-    static public function integer(int $min = 00001, int $max = 99999): int
+    public static function integer(int $min = 0o0001, int $max = 99_999): int
     {
         return mt_rand($min, $max <= $min ? $min * 10 : $max);
+    }
+
+    public static function alphabetical(int $length = 6, bool $uppercased = false): string
+    {
+        $characters = $uppercased ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' : 'abcdefghijklmnopqrstuvwxyz';
+        return substr(str_shuffle(str_repeat($characters, (int) ceil($length / 52))), 0, $length);
     }
 }
