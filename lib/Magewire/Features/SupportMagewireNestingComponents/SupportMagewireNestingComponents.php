@@ -40,7 +40,7 @@ class SupportMagewireNestingComponents extends ComponentHook
                 $dto->dictionary(['magewire' => $closest]);
             }
 
-            return function ($html) {
+            return static function ($html) {
                 return $html;
             };
         });

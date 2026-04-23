@@ -13,6 +13,7 @@ use Magewirephp\Magewire\MagewireServiceProvider;
 
 /**
  * @deprecated
+ * @mago-expect lint:too-many-methods
  */
 class Request implements RequestInterface
 {

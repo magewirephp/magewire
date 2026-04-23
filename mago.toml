@@ -42,6 +42,7 @@ integrations = []
 ambiguous-function-call = { enabled = false }
 literal-named-argument = { enabled = false }
 halstead = { effort-threshold = 7000 }
+excessive-parameter-list = { threshold = 8 }
 
 [analyzer]
 # Magento 2 DI: classes wired via di.xml appear unused to static analysis.

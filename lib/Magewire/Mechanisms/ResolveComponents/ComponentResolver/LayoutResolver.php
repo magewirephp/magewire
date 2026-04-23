@@ -35,6 +35,10 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use function Magewirephp\Magewire\on;
 use function Magewirephp\Magewire\store;
 
+/**
+ * @mago-expect lint:too-many-methods
+ * @mago-expect lint:cyclomatic-complexity
+ */
 class LayoutResolver extends ComponentResolver
 {
     protected string $accessor = 'layout';

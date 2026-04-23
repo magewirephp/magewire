@@ -249,7 +249,7 @@ class LayoutLifecycle
 
         $children = array_values(array_filter(
             $this->components,
-            fn (Component $c, string $r) => str_starts_with($r, $prefix),
+            static fn (Component $c, string $r) => str_starts_with($r, $prefix),
             ARRAY_FILTER_USE_BOTH
         ));
 

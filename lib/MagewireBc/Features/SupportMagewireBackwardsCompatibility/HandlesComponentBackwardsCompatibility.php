@@ -44,6 +44,7 @@ trait HandlesComponentBackwardsCompatibility
 
     /**
      * @deprecated Use all() instead, which is the v2 equivalent.
+     * @mago-expect lint:no-boolean-flag-parameter
      */
     public function getPublicProperties(bool $refresh = false, bool $origin = false): array
     {

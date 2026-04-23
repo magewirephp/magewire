@@ -37,6 +37,7 @@ use function Magewirephp\Magewire\trigger;
 abstract class MagewireUpdateRoute extends MagewireRoute
 {
     public const PARAM_IS_SUBSEQUENT = 'is_magewire_subsequent';
+    /** @mago-expect lint:no-literal-password */
     public const PARAM_TOKEN = 'token';
     public const PARAM_COMPONENTS = 'components';
 
