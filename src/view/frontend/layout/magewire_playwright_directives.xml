@@ -50,7 +50,7 @@
                        template="Magewirephp_Magewire::magewire/tests/playwright/directives/area/render.phtml"
                 >
                     <arguments>
-                        <argument name="magewire" xsi:type="object">
+                        <argument name="magewire" xsi:type="object" shared="false">
                             Magewirephp\Magewire\Magewire\Playwright\Directives\Render
                         </argument>
                     </arguments>
@@ -60,7 +60,7 @@
                            as="child"
                     >
                         <arguments>
-                            <argument name="magewire" xsi:type="object">
+                            <argument name="magewire" xsi:type="object" shared="false">
                                 Magewirephp\Magewire\Magewire\Playwright\Directives\Render
                             </argument>
                         </arguments>
@@ -70,7 +70,7 @@
                                as="child-child"
                         >
                             <arguments>
-                                <argument name="magewire" xsi:type="object">
+                                <argument name="magewire" xsi:type="object" shared="false">
                                     Magewirephp\Magewire\Magewire\Playwright\Directives\Render
                                 </argument>
                             </arguments>

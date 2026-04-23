@@ -181,11 +181,18 @@ To update to a new Livewire version, change `version-lock` in `portman.config.ph
 
 ## Skills
 
-Six `.claude/skills/` files provide deep context — use the Skill tool to load them when relevant:
+Skill files provide deep context — use the Skill tool to load them when relevant. Core skills live under `.claude/skills/`; theme-specific skills live under `themes/{Theme}/.claude/skills/`.
+
+Core (theme-agnostic):
 
 - `magewire` — component API, lifecycle hooks, `wire:*` directives
 - `magewire-architecture` — internals: Mechanisms, Features, snapshot flow, DI patterns
 - `magewire-javascript` — CSP-compatible JS, Alpine.js integration, multi-theme patterns
 - `magewire-portman` — Portman CLI: porting workflow, augmentation files, rebuilding dist/
 - `magewire-best-practices` — coding rules for components, properties, templates, DI, events, security, performance
-- `magewire-backwards-compatibility` — v1→v3 migration, BC memo flag, wire:model/entangle behavioral changes
+- `magewire-theming` — building theme compatibility modules under `themes/`
+- `magewire-backwards-compatibility` — v1→v3 framework-level BC, BC memo flag, wire:model/entangle behavioral changes
+
+Theme-specific:
+
+- `magewire-hyva-checkout-backwards-compatibility` (`themes/Hyva/.claude/skills/`) — Hyvä Checkout JS BC layer, `hyva-checkout-main` auto-enable rule, `SupportHyvaCheckoutBackwardsCompatibility` Feature

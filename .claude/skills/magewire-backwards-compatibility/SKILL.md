@@ -1,6 +1,6 @@
 ---
 name: magewire-backwards-compatibility
-description: "Reference for Magewire's backwards compatibility system. Use when migrating Magewire v1 (Livewire v2) code to v3, enabling BC for existing components, understanding wire:model / entangle behavioral changes, or working with the BC memo flag, JS hooks, event mappings, and component proxying. Triggers for: BC migration, wire:model.defer, wire:model.lazy, entangle .live, deprecated hooks, Hyvä Checkout v1 components, #[HandleBackwardsCompatibility]."
+description: "Reference for Magewire's framework-level backwards compatibility system. Use when migrating Magewire v1 (Livewire v2) code to v3, enabling BC on components, understanding wire:model / entangle / hook behavioral changes between v2 and v3, or working with the BC memo flag, deprecated v1 component APIs, and the #[HandleBackwardsCompatibility] attribute. Theme-agnostic — BC applies to any Magewire component in any Magento theme. For theme-specific BC JS implementations (e.g. Hyvä Checkout), see the matching theme's BC skill."
 license: MIT
 metadata:
   author: Willem Poortman
@@ -8,13 +8,15 @@ metadata:
 
 # Magewire Backwards Compatibility
 
-Magewire v3 is built on Livewire v3, which introduced breaking changes from v2. The BC system allows existing v1 components (particularly those built for Hyvä Checkout) to keep working without code changes while providing a migration path to v3 conventions.
+Magewire v3 is built on Livewire v3, which introduced breaking changes from v2. The BC system lets existing v1 components keep working without code changes while providing a migration path to v3 conventions.
+
+Magewire is **not tied to any specific theme**. The BC system is a framework concern — any component, in any theme, can opt into BC. Individual themes may ship their own JS-layer BC implementations on top of this core (see the theme's BC skill for details).
 
 ---
 
 ## The Two BC Layers
 
-### 1. Core BC (`lib/MagewireBc/`)
+### 1. Core BC (`lib/MagewireBc/`) — theme-agnostic
 
 Framework-level compatibility that applies to all Magewire components regardless of theme.
 
@@ -24,26 +26,25 @@ Framework-level compatibility that applies to all Magewire components regardless
 - Pushes BC effects into the snapshot during `dehydrate()`: property path mappings (`data` → `$wire`, `__livewire` → `queuedUpdates`) and preferences
 - These effects are read by JS to proxy old property access patterns
 
-### 2. Hyvä Checkout BC (`themes/Hyva/`)
+### 2. Theme-specific BC layers
 
-Theme-specific compatibility for components living inside the Hyvä Checkout layout. This is where the wire directive and entangle migrations happen.
+Some themes need additional BC on top of core — wire directive rewriting, entangle live-by-default, deprecated JS hook/event re-triggering. Those live in the theme's own module under `themes/{Theme}/` and are documented in that theme's BC skill. The pattern is always the same:
 
-**Feature** — `SupportHyvaCheckoutBackwardsCompatibility`:
-- Pushes `memo.bc.enabled` flag into the snapshot during `dehydrate()`
-- Flag resolution (priority order):
-  1. `#[HandleBackwardsCompatibility]` attribute on the component class
-  2. Previously hydrated value from the component's data store
-  3. Whether the component lives inside the `hyva-checkout-main` layout container
-- On `hydrate()`, restores the flag from memo into the component's data store
+- A theme-scoped Feature manages a `memo.bc.enabled` flag on the snapshot
+- JS templates read the flag and apply migrations to components that have it set
+- The flag is resolvable per-component via the `#[HandleBackwardsCompatibility]` attribute, data store, or theme-defined layout rules
 
-**JS templates** — four PHTML files in `themes/Hyva/view/frontend/templates/magewire-features/support-hyva-checkout-backwards-compatibility/`:
+---
 
-| File | Purpose |
-|------|---------|
-| `magewire-hooks.phtml` | Promise-based hook runner, deprecation warnings, replacement mapping |
-| `magewire-events.phtml` | Maps deprecated event names to v3 hooks, proxies component properties |
-| `magewire-attributes.phtml` | Migrates wire:model directives on BC-enabled components |
-| `magewire-components.phtml` | Proxies `Magewire.find()` and `$wire.entangle()` for BC components |
+## The `memo.bc.enabled` Flag
+
+The BC flag is the single signal a theme's BC JS uses to decide whether to apply v2→v3 shims to a component. Resolution priority:
+
+1. `#[HandleBackwardsCompatibility]` attribute on the component class
+2. Previously hydrated value from the component's data store
+3. Theme-specific defaults (e.g. "all components under layout container X")
+
+On `hydrate()`, the flag is restored from memo into the component's data store. On `dehydrate()`, it is pushed back into the snapshot memo.
 
 ---
 
@@ -54,16 +55,6 @@ Theme-specific compatibility for components living inside the Hyvä Checkout lay
 | `wire:model` | `wire:model.live` | Syncs on every input change (instant) |
 | `wire:model.defer` | `wire:model` | Syncs on form submit / next request (now the default) |
 | `wire:model.lazy` | `wire:model.blur` | Syncs when the field loses focus |
-
-### How BC handles this (`magewire-attributes.phtml`)
-
-For components with `memo.bc.enabled`, the JS intercepts `element.init` and `morph.updating` hooks and migrates attributes. Each transformation runs independently:
-
-```javascript
-// wire:model → wire:model.live (v2 instant → v3 live)
-// wire:model.defer → wire:model (v2 deferred → v3 default)
-// wire:model.lazy → wire:model.blur (v2 lazy → v3 blur)
-```
 
 ### Migrating your own code
 
@@ -81,6 +72,8 @@ Remove the old modifiers and use v3 syntax:
 <input wire:model.blur="phone">        <!-- on blur -->
 ```
 
+A theme's BC JS may rewrite these directives automatically for components with `memo.bc.enabled` — see that theme's BC skill.
+
 ---
 
 ## Entangle Changes (v2 → v3)
@@ -89,19 +82,6 @@ Remove the old modifiers and use v3 syntax:
 |---|---|
 | `$wire.entangle('prop')` — **live** by default | `$wire.entangle('prop')` — **deferred** by default |
 | N/A | `$wire.entangle('prop').live` — opt-in to live |
-
-### How BC handles this (`magewire-components.phtml`)
-
-The `makeComponentBackwardsCompatible()` function wraps `component.$wire` in a Proxy. When `entangle` or `$entangle` is accessed, the returned function's `live` parameter defaults to `true` instead of `false`:
-
-```javascript
-// For BC components, this:
-this.$wire.entangle('couponCode')
-// behaves like:
-this.$wire.entangle('couponCode').live
-```
-
-The wire proxy is created once per component and cached on `component.__bcWire`.
 
 ### Migrating your own code
 
@@ -118,6 +98,8 @@ couponCode: this.$wire.entangle('couponCode').live,
 couponCode: this.$wire.entangle('couponCode'),
 ```
 
+A theme's BC JS may restore the v2 live-by-default semantic for BC-enabled components via a `$wire` proxy — see that theme's BC skill.
+
 ---
 
 ## Hook / Event Changes (v2 → v3)
@@ -133,14 +115,9 @@ couponCode: this.$wire.entangle('couponCode'),
 | `message.received` | `commit` → `succeed()` |
 | `message.processed` | `commit` → `succeed()` → `queueMicrotask` |
 
-### How BC handles this (`magewire-hooks.phtml` + `magewire-events.phtml`)
+### Component property aliases
 
-- `magewire-hooks.phtml` defines `runMagewireBackwardsCompatibleHook()` — a promise-based runner that waits for `magewire:available` before executing. In debug mode, logs deprecation warnings with the replacement hook name.
-- `magewire-events.phtml` hooks into each v3 event and re-triggers the deprecated v2 event name via `Magewire.trigger()`.
-
-### Component property aliases (`magewire-events.phtml`)
-
-Old property names are aliased on the component object:
+Old property names aliased on the component object by BC JS layers:
 
 ```javascript
 // component.deferredActions → component.queuedUpdates
@@ -149,22 +126,7 @@ Old property names are aliased on the component object:
 
 ---
 
-## Component Proxy (`magewire-components.phtml`)
-
-`Magewire.find(id)` is wrapped to return a Proxy. Accessing `.__instance` returns a BC-proxied component via `makeComponentBackwardsCompatible()`.
-
-The BC component proxy intercepts property access to:
-1. Return a cached `$wire` proxy with live-by-default entangle
-2. Resolve BC effect mappings (e.g., `component.data` → `component.$wire` via `effects.bc.map`)
-3. Support path-based resolution (`path:property.nested.value`)
-
----
-
 ## Enabling BC for a Component
-
-### Automatic (Hyvä Checkout)
-
-Any component rendered inside the `hyva-checkout-main` layout container is automatically BC-enabled. No code changes needed.
 
 ### Explicit via PHP attribute
 
@@ -174,13 +136,13 @@ use Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\HandleBa
 #[HandleBackwardsCompatibility]
 class MyLegacyComponent extends Component
 {
-    // This component gets BC behavior regardless of layout position
+    // This component gets BC behavior
 }
 
 #[HandleBackwardsCompatibility(enabled: false)]
 class MyModernComponent extends Component
 {
-    // Explicitly opt out, even if inside hyva-checkout-main
+    // Explicitly opt out, even if a theme would normally enable it
 }
 ```
 
@@ -193,27 +155,19 @@ use function Magewirephp\Magewire\store;
 store($component)->set('bc.enabled', true);
 ```
 
+### Via theme defaults
+
+A theme can decide to BC-enable components automatically based on its own rules (e.g. layout container membership). See the target theme's BC skill.
+
 ---
 
 ## Key Files
-
-### PHP
 
 | File | Purpose |
 |------|---------|
 | `lib/MagewireBc/Features/SupportMagewireBackwardsCompatibility/SupportMagewireBackwardsCompatibility.php` | Core BC feature — pushes path mappings into effects |
 | `lib/MagewireBc/Features/SupportMagewireBackwardsCompatibility/HandleBackwardsCompatibility.php` | PHP attribute for explicit BC opt-in/out |
 | `lib/MagewireBc/Features/SupportMagewireBackwardsCompatibility/HandlesComponentBackwardsCompatibility.php` | Trait with deprecated v1 component APIs |
-| `themes/Hyva/Magewire/Features/SupportHyvaCheckoutBackwardsCompatibility/SupportHyvaCheckoutBackwardsCompatibility.php` | Hyvä-specific BC — manages `memo.bc.enabled` flag |
-
-### JavaScript (PHTML)
-
-| File | Purpose |
-|------|---------|
-| `themes/Hyva/view/frontend/templates/magewire-features/support-hyva-checkout-backwards-compatibility/magewire-hooks.phtml` | Promise runner, deprecation warnings, hook replacement mapping |
-| `themes/Hyva/view/frontend/templates/magewire-features/support-hyva-checkout-backwards-compatibility/magewire-events.phtml` | Deprecated event re-triggering, property aliases |
-| `themes/Hyva/view/frontend/templates/magewire-features/support-hyva-checkout-backwards-compatibility/magewire-attributes.phtml` | wire:model directive migration |
-| `themes/Hyva/view/frontend/templates/magewire-features/support-hyva-checkout-backwards-compatibility/magewire-components.phtml` | $wire proxy, entangle live default, component BC proxy |
 
 ---
 

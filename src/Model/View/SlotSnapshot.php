@@ -25,13 +25,13 @@ use Stringable;
  *
  * @deprecated Work in progress, do not use in production.
  */
-readonly class SlotSnapshot implements Stringable
+class SlotSnapshot implements Stringable
 {
     /**
      * @param array<string, Slot> $slots
      */
     public function __construct(
-        private array $slots = []
+        private readonly array $slots = []
     ) {
     }
 

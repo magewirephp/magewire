@@ -21,10 +21,10 @@ class Base extends FunctionDirective
     public function translate(string $value, bool $escape = true): string
     {
         if ($escape) {
-            return "<?= \$escaper->escapeHtml(__({$value})) ?>";
+            return "<?= \$escaper->escapeHtml(__('{$value}')) ?>";
         }
 
-        return "<?= __({$value}) ?>";
+        return "<?= __('{$value}') ?>";
     }
 
     #[ScopeDirectiveParser(ExpressionParserType::FUNCTION_ARGUMENTS)]

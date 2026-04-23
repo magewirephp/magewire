@@ -20,6 +20,6 @@ class Block extends FunctionDirective
     #[ScopeDirectiveParser(ExpressionParserType::FUNCTION_ARGUMENTS)]
     public function child(string $alias): string
     {
-        return "<?php echo \$block->getChildBlock({$alias}) ? \$block->getChildBlock({$alias})->toHtml() : '' ?>";
+        return "<?php echo \$block->getChildBlock('{$alias}') ? \$block->getChildBlock('{$alias}')->toHtml() : '' ?>";
     }
 }
