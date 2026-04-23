@@ -1,10 +1,9 @@
-# Magewire PHP - BETA
+# Magewire PHP
 
-> **⚠️ BETA WARNING:** The main branch contains the beta version of MagewirePHP v3. For stable v1 documentation and releases, please switch to the [1.x branch]([../../tree/1.x](https://github.com/magewirephp/magewire/tree/1.x)).
+> Looking for v1? See the [1.x branch](https://github.com/magewirephp/magewire/tree/1.x).
 
 [![Latest Stable Version](http://poser.pugx.org/magewirephp/magewire/v)](https://packagist.org/packages/magewirephp/magewire)
 [![Total Downloads](http://poser.pugx.org/magewirephp/magewire/downloads)](https://packagist.org/packages/magewirephp/magewire)
-[![style CI](https://github.styleci.io/repos/414967404/shield?style=flat&branch=main)](https://github.styleci.io/repos/414967404/shield?style=flat&branch=main)
 [![License](http://poser.pugx.org/magewirephp/magewire/license)](https://packagist.org/packages/magewirephp/magewire)
 
 MagewirePHP brings the power of reactive, server-driven UI development to Magento 2—without writing JavaScript.
@@ -43,19 +42,21 @@ Click [here](https://github.com/sponsors/wpoortman) to start sponsoring.
 
 - ✅ Hyvä
 - ✅ Magento Admin
+- 🧪 Luma (experimental)
+- 🧪 Breeze (experimental)
 - :sparkles: Yours? Reach out!
 
+## Upgrading from 1.x
+See [UPGRADING.md](UPGRADING.md) for migration notes — dependency changes, the `#[HandleBackwardsCompatibility]` opt-in, and `wire:model` semantics.
+
 ## Contributing
-Thank you for considering contributing to Magewire! Please read the [contribution guide](https://github.com/magewirephp/magewire/blob/main/CONTRIBUTING.md) to know how to behave, install and use Magewire for contributors.
+Thank you for considering contributing to Magewire! Please read the [contribution guide](CONTRIBUTING.md) to know how to behave, install and use Magewire for contributors.
 
 ## Code of Conduct
 In order to ensure that the Magewire is welcoming to all, please review and abide by the [Code of Conduct](https://github.com/magewirephp/magewire/blob/main/CODE_OF_CONDUCT.md).
 
 ## Security Vulnerabilities
-If you discover a security vulnerability within Magewire, please create a
-[merge request](https://github.com/magewirephp/magewire/pulls) or an
-[discussion](https://github.com/magewirephp/magewire/discussions). All security vulnerabilities will be promptly
-addressed.
+**Please do not report security issues publicly.** Email `magewirephp@wpoortman.nl` with a private report — see [SECURITY.md](SECURITY.md) for the full policy. All vulnerabilities will be promptly addressed and [responsibly disclosed](https://en.wikipedia.org/wiki/Responsible_disclosure).
 
 ## License
 Copyright © [Willem Poortman](https://github.com/wpoortman)

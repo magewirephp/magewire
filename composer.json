@@ -2,11 +2,13 @@
     "name": "magewirephp/magewire",
     "description": "A framework that makes building reactive and dynamic interfaces simple in Magento 2",
     "type": "magento2-module",
+    "keywords": ["magento", "magento2", "livewire", "reactive", "hyva", "alpinejs", "frontend", "component"],
+    "homepage": "https://magewirephp.github.io/magewire-docs/",
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.2",
         "magento/framework": "*",
         "illuminate/support": "^10.48",
-        "rakit/validation": "^1.0"
+        "magewirephp/validation": "^1.0"
     },
     "require-dev": {
         "magewirephp/portman": "^0.5.10",
@@ -17,7 +19,9 @@
         "captainhook/hook-installer": "^1.0"
     },
     "support": {
-        "issues": "https://github.com/magewirephp/magewire/discussions"
+        "issues": "https://github.com/magewirephp/magewire/discussions",
+        "source": "https://github.com/magewirephp/magewire",
+        "docs": "https://magewirephp.github.io/magewire-docs/"
     },
     "authors": [
         {

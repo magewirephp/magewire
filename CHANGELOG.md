@@ -17,7 +17,8 @@ replaces the hand-written v1 runtime with a formalised Mechanisms and Features p
 and introduces a template compiler, a snapshot-based state flow,
 and a first-class backwards compatibility layer for v1 components.
 
-More details can be found inside the [docs](https://magewirephp.github.io/magewire-docs/).
+Upgrading from 1.x? See [UPGRADING.md](UPGRADING.md).
+Full reference in the [docs](https://magewirephp.github.io/magewire-docs/).
 
 ### Added
 
