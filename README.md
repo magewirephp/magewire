@@ -19,7 +19,8 @@ component-based approach that stays true to Magento’s conventions while simpli
 
 MagewirePHP helps you deliver modern UX experiences in Magento—faster, cleaner, and with less frontend overhead.
 
-[![Discord](https://dcbadge.vercel.app/api/server/RM5nnK5wxj)](https://discord.gg/zS7z7rmH)
+- [![Discord](https://dcbadge.vercel.app/api/server/RM5nnK5wxj)](https://discord.gg/zS7z7rmH)
+- [Admin Compatibility](https://github.com/magewirephp/magewire-admin)
 
 ## Documentation
 
