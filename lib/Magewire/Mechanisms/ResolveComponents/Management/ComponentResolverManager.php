@@ -71,7 +71,7 @@ class ComponentResolverManager
             if ($this->hasResolverClassInMapping($resolver)) {
                 try {
                     return $this->createResolverByAccessor($resolver);
-                } catch (NotFoundException $exception) {
+                } catch (ComponentResolverNotFoundException $exception) {
                     $this->logger->info($exception->getMessage(), ['exception' => $exception]);
                 }
             }
@@ -80,7 +80,7 @@ class ComponentResolverManager
             // attempt to resolve the class dynamically and instantiate it if successful.
             try {
                 return $this->createResolverByType($this->getResolverClass($resolver));
-            } catch (NotFoundException $exception) {
+            } catch (ComponentResolverNotFoundException $exception) {
                 $this->logger->info(sprintf('Magewire resolver data value found on block, but "%s" can not be resolved.', $resolver), ['exception' => $exception]);
             }
         }
