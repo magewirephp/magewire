@@ -20,4 +20,5 @@ enum Hook: string
     case PUSH = 'push';
     case RESET = 'reset';
     case CLEAR = 'clear';
+    case SUBSET = 'subset';
 }
