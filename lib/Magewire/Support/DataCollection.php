@@ -38,6 +38,7 @@ abstract class DataCollection implements Countable, IteratorAggregate
         private readonly string|int $name = 'root',
         private readonly DataCollection|null $parent = null
     ) {
+        $this->setup();
     }
 
     public function map(array $map): static
@@ -135,13 +136,13 @@ abstract class DataCollection implements Countable, IteratorAggregate
             'name'   => $name ?? Random::string(),
         ]);
 
-        if ($name === null) {
-            return $this->newTypeInstance($type ?? static::class, $arguments);
+        $instance = $this->newTypeInstance($type ?? static::class, $arguments);
+
+        if ($name) {
+            $this->subsets()->set($name, $instance);
         }
 
-        $instance = $this->newTypeInstance($type ?? static::class, $arguments);
-        $this->subsets()->set($name, $instance);
-
+        $this->dispatch(Hook::SUBSET, $instance);
         return $instance;
     }
 
@@ -448,6 +449,10 @@ abstract class DataCollection implements Countable, IteratorAggregate
     public function getIterator(): Traversable
     {
         return $this->newTypeInstance(ArrayIterator::class, ['array' => $this->all()]);
+    }
+
+    protected function setup(): void
+    {
     }
 
     /**
