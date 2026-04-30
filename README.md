@@ -42,9 +42,9 @@ Click [here](https://github.com/sponsors/wpoortman) to start sponsoring.
 ## Supported Themes
 
 - ✅ Hyvä
-- ✅ Magento Admin
-- 🧪 Luma (experimental)
-- 🧪 Breeze (experimental)
+- ✅ [Magento Admin](https://github.com/magewirephp/magewire-admin)
+- 🧪 Luma (uncertain)
+- 🧪 Breeze (community-driven, uncertain)
 - :sparkles: Yours? Reach out!
 
 ## Upgrading from 1.x
