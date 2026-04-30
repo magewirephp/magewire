@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+>
+    <body>
+        <!-- Injecting a Breeze specific way of loading the Magewire JS-lib. -->
+        <referenceBlock name="magewire.script"
+                        template="Magewirephp_MagewireCompatibilityWithBreeze::js/magewire/script.phtml"
+        />
+
+        <referenceContainer name="magewire.features">
+            <!-- Make the flash messages feature compatible with the Breeze theme. -->
+            <block name="magewire.features.support-magento-flash-messages"
+                   template="Magewirephp_MagewireCompatibilityWithBreeze::js/magewire/features/support-magento-flash-messages/support-magento-flash-messages.phtml"
+            />
+        </referenceContainer>
+
+        <referenceBlock name="breeze.scrollReveal">
+            <block name="magewire.features.support-scroll-reveal"
+                   template="Magewirephp_MagewireCompatibilityWithBreeze::js/magewire/features/support-scroll-reveal/scroll-reveal.phtml"
+            />
+        </referenceBlock>
+    </body>
+</page>
