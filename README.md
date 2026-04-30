@@ -33,9 +33,9 @@ MagewirePHP helps you deliver modern UX experiences in Magento—faster, cleaner
 
 ## Sponsors
 
-|   |   |
-|---|---|
-|<a align="center" href="https://hyva.io/" title="Hyvä" target="_blank"><img width="64" alt="Hyvä" src="https://github.com/user-attachments/assets/4b22d11f-9afd-4604-8ed2-8cccceb13542"/></a>|<a align="center" href="https://vendic.nl/" title="Vendic" target="_blank"><img width="64" alt="Vendic" src="https://user-images.githubusercontent.com/5383956/228823594-d3344d87-dadc-4c36-a212-89cba8c7340b.jpg"/></a>|
+|   |   |   |
+|---|---|---|
+|<a align="center" href="https://hyva.io/" title="Hyvä" target="_blank"><img width="64" alt="Hyvä" src="https://github.com/user-attachments/assets/4b22d11f-9afd-4604-8ed2-8cccceb13542"/></a>|<a align="center" href="https://vendic.nl/" title="Vendic" target="_blank"><img width="64" alt="Vendic" src="https://user-images.githubusercontent.com/5383956/228823594-d3344d87-dadc-4c36-a212-89cba8c7340b.jpg"/></a>|<a align="center" href="https://www.zero1.co.uk/" title="ZERO-1" target="_blank"><img width="64" alt="ZERO-1" src="https://github.com/user-attachments/assets/df1e0e2b-96e9-49e2-a6f4-1ee0aafaf0cc"/></a>|
 
 Click [here](https://github.com/sponsors/wpoortman) to start sponsoring.
 
