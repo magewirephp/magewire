@@ -49,10 +49,6 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
     }
 
     const magewireMakeComponentBackwardsCompatible = function(component) {
-        if (! magewireIsComponentBackwardsCompatibilityEnabled(component)) {
-            return component;
-        }
-
         const checksum = component.snapshot?.checksum;
 
         if (component.magewire?.bc?.checksum === checksum) {
