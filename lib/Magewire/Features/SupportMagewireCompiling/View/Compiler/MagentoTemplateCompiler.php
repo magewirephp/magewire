@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler;
 
+use Magewirephp\Magewire\Features\SupportMagewireCompiling\Contracts\ViewCompilerInterface;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\CompilerPipelines;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\CompilerPipelinesFactory;
@@ -18,27 +19,28 @@ use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\Compi
 
 class MagentoTemplateCompiler extends Compiler
 {
+    /**
+     * @param array<string|int, ViewCompilerInterface> $middleware
+     */
     public function __construct(
-        private Compiler\Middleware\Blade $bladeMiddleware,
         CompilerManager $manager,
-        CompilerPipelinesFactory $compilerPipelinesFactory
+        CompilerPipelinesFactory $compilerPipelinesFactory,
+        private array $middleware = []
     ) {
         parent::__construct($manager, $compilerPipelinesFactory);
     }
 
     protected function newCompilerPipelineDistributorInstance(): CompilerPipelines
     {
-        // Create the initial pipeline.
         $pipeline = parent::newCompilerPipelineDistributorInstance();
 
-        // Blade-like template precompiler middleware.
-        $pipeline
-            ->template()
-            ->middleware()
-            ->group('blade', 25)
-            ->pipe(function (string $throughput, callable $next) {
-                return $next($this->bladeMiddleware->compile($throughput));
-            });
+        foreach ($this->middleware as $group => $middleware) {
+            $pipeline
+                ->template()
+                ->middleware()
+                ->group($group)
+                ->pipe(fn (string $throughput, callable $next): mixed => $next($middleware->compile($throughput)));
+        }
 
         return $pipeline;
     }

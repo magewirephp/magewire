@@ -9,10 +9,8 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\Component;
+namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Fragment\Element;
 
-use Magewirephp\Magewire\Component;
-
-class Flake extends Component
+class Flux extends Flake
 {
 }

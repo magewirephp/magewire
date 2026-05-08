@@ -256,6 +256,22 @@
         </arguments>
     </type>
 
+    <type name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\MagentoTemplateCompiler">
+        <arguments>
+            <argument name="middleware" xsi:type="array">
+                <item name="slots" xsi:type="object" sortOrder="10">
+                    Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\Middleware\Slots\Proxy
+                </item>
+                <item name="flux" xsi:type="object" sortOrder="20">
+                    Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\Middleware\Flux\Proxy
+                </item>
+                <item name="blade" xsi:type="object" sortOrder="30">
+                    Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\Middleware\Blade\Proxy
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
     <!-- Directive area: Global (no prefix) -->
     <virtualType name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\BaseDirectiveArea"
                  type="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\DirectiveArea"
@@ -440,7 +456,20 @@
                 <item name="slot" xsi:type="string">Magewirephp\Magewire\Model\View\Fragment\Element\Slot</item>
                 <!-- <magewire-flake:{variant}... -->
                 <item name="flake" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Fragment\Element\Flake</item>
+                <!-- <flux:{variant}... — resolved by the FluxTagCompiler middleware. -->
+                <item name="flux" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Fragment\Element\Flux</item>
             </argument>
+        </arguments>
+    </type>
+
+    <!-- Flux fragment element pulls the Flux-specific flake factory so its
+         createByName() loads the `magewire_flux` layout handle (resolver `flux`)
+         instead of the default `magewire_flakes` handle. Without this override
+         a `<flux:button>` would render whatever block is defined in
+         `magewire_flakes.xml` rather than `magewire_flux.xml`. -->
+    <type name="Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Fragment\Element\Flux">
+        <arguments>
+            <argument name="flakeFactory" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireFlakes\Component\FluxFactory</argument>
         </arguments>
     </type>
 
@@ -455,7 +484,11 @@
         <arguments>
             <!-- Component resolver registration. -->
             <argument name="resolvers" xsi:type="array">
-                <item name="flake" xsi:type="object" sortOrder="98900">Magewirephp\Magewire\Features\SupportMagewireFlakes\Mechanisms\ResolveComponent\ComponentResolver\FlakeResolver</item>
+                <!-- No sort order needed, only dynamically determined so never needs to sit in a specific order. -->
+                <item name="flake" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireFlakes\Mechanisms\ResolveComponent\ComponentResolver\FlakeResolver</item>
+                <!-- No sort order needed, only dynamically determined so never needs to sit in a specific order. -->
+                <item name="flux" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireFlakes\Mechanisms\ResolveComponent\ComponentResolver\FluxResolver</item>
+
                 <item name="layout" xsi:type="object" sortOrder="99900">Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolver\LayoutResolver</item>
             </argument>
         </arguments>

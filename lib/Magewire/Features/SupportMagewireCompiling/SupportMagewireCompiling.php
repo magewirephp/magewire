@@ -47,9 +47,7 @@ class SupportMagewireCompiling extends ComponentHook
                 return;
             }
 
-            $compiler = $component->magewireCompiler() ?? $component->magewireCompiler(
-                $this->compilerManager->factory()->newCompilerInstance()
-            );
+            $compiler = $component->magewireCompiler() ?? $component->magewireCompiler($this->compilerManager->factory()->newCompilerInstance());
 
             $dto->dictionary(['magewire' => $component]);
 
@@ -71,7 +69,7 @@ class SupportMagewireCompiling extends ComponentHook
             if ($this->slotsRegistry->hasAreas()) {
                 $dto->dictionary([
                     '__slot' => $dto->dictionary()['__slot'] ?? $this->slotsRegistry->snapshot(),
-                    '__el' => $this->slotsRegistry->element(),
+                    '__el' => $this->slotsRegistry->element()
                 ]);
             }
         });
@@ -129,29 +127,5 @@ class SupportMagewireCompiling extends ComponentHook
                     return $result . sprintf('<?php /** Compile Duration: %.2f ms (%.4f s) **/ ?>' . PHP_EOL, $durationMs, $durationSec);
                 });
         });
-    }
-
-    /**
-     * WIP
-     *
-     * Generate a readable file structure for generated files.
-     *
-     * Instead of unreadable filenames, create organized directories that map to source files,
-     * making it easier for developers to locate and debug generated output.
-     *
-     * TODO: Consider enabling this only in development mode.
-     */
-    private function transformToViewPath(Template $block): string
-    {
-        $template = $block->getTemplate();
-        $parts = explode('::', $template);
-
-        if (count($parts) === 2) {
-            $parts[0] = str_replace('_', '/', $parts[0]);
-
-            return implode('/', $parts);
-        }
-
-        return $block->getTemplateFile();
     }
 }

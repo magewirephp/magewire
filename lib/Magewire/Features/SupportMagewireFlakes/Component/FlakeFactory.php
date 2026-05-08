@@ -12,21 +12,25 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\Component;
 
 use Magento\Framework\View\Element\AbstractBlock;
+use Magento\Framework\View\LayoutInterface;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\LayoutManager;
 use Magewirephp\Magewire\Support\Factory;
 
 class FlakeFactory
 {
+    protected string|array $handles = 'magewire_flakes';
+
+    private LayoutInterface|null $layout = null;
+
     public function __construct(
-        private LayoutManager $layoutManager,
-        private string $type = Flake::class
+        protected readonly LayoutManager $layoutManager
     ) {
     }
 
     public function create(array $arguments = []): Component
     {
-        return Factory::create($this->type, $arguments);
+        return Factory::create(Flake::class, $arguments);
     }
 
     /**
@@ -35,10 +39,7 @@ class FlakeFactory
      */
     public function createByName(string $name, array $data = []): AbstractBlock|false
     {
-        $layout = $this->layoutManager->decorator()->decorateForPagelessBlockFetching($this->layoutManager->factory()->create());
-
-        $layout->getUpdate()->addHandle('magewire_flakes');
-        $block = $layout->getBlock($name);
+        $block = $this->layout()->getBlock($name);
 
         if ($block instanceof AbstractBlock) {
             $data['magewire'] ??= $this->create();
@@ -49,5 +50,18 @@ class FlakeFactory
         }
 
         return $block;
+    }
+
+    protected function layout(): LayoutInterface
+    {
+        if ($this->layout === null) {
+            $this->layout = $this->layoutManager->decorator()->decorateForPagelessBlockFetching(
+                $this->layoutManager->factory()->create()
+            );
+
+            $this->layout->getUpdate()->addHandle($this->handles);
+        }
+
+        return $this->layout;
     }
 }

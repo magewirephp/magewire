@@ -32,42 +32,51 @@ class Flake extends Fragment\Element
         private FlakeFactory $flakeFactory,
         private ApplicationState $applicationState,
         string $variant,
+        string $id,
         AbstractBlock $block,
         SlotsRegistry $slotsRegistry,
         LoggerInterface $logger,
         Escaper $escaper,
         array $modifiers = []
     ) {
-        parent::__construct($variant, $block, $slotsRegistry, $logger, $escaper, $modifiers);
+        parent::__construct($variant, $block, $slotsRegistry, $logger, $escaper, $id, $modifiers);
     }
 
     public function end(): static
     {
         // Finalize fragment buffering to capture all output.
         parent::end();
-        // Register any content outside of named slots as the 'default' slot.
-        $this->slotsRegistry->update('default', $this->output);
+
+        $this->slots()->default()->push($this->output);
 
         try {
-            $flake = $this->flakeFactory->createByName($this->variant, [
-                'magewire:id' => Random::alphabetical(4),
-                'magewire:name' => Random::alphabetical(4)
-            ]);
+            $flake = $this->createFlakeByName($this->id());
 
             if ($flake === false) {
-                throw new ComponentNotFoundException(sprintf('Magewire: Flake "%s" could not be found or doesnt exist.', $this->variant));
+                throw new ComponentNotFoundException(
+                    sprintf('Magewire: Flake "%s" could not be found or doesnt exist', $this->variant)
+                );
             }
 
-            // Render the final Flake component.
-            echo $flake->toHtml();
+            $this->echo($flake->toHtml());
         } catch (Throwable $exception) {
             $this->logger->critical($exception->getMessage(), ['exception' => $exception]);
 
             if ($this->applicationState->getMode() !== ApplicationState::MODE_PRODUCTION) {
-                echo '<!-- ' . $exception->getMessage() . ' -->';
+                echo '<!-- Flake exception: ' . $exception->getMessage() . '. -->';
+            } else {
+                echo '<!-- Flake exception: hidden. -->';
             }
         }
 
         return $this;
+    }
+
+    protected function createFlakeByName(string $name): AbstractBlock|false
+    {
+        return $this->flakeFactory->createByName($this->variant, [
+            'magewire:id' => Random::alphabetical(10),
+            'magewire:name' => $name
+        ]);
     }
 }

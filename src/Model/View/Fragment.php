@@ -25,7 +25,6 @@ abstract class Fragment
         withTag as private withTagOrigin;
     }
 
-    protected string $id;
     // Unchanged raw buffer output, if any.
     protected string|bool $raw = false;
     // The final rendered buffer output.
@@ -48,14 +47,14 @@ abstract class Fragment
     public function __construct(
         protected LoggerInterface $logger,
         protected Escaper $escaper,
-        private array $modifiers = []
+        private array $modifiers = [],
+        private string|null $id = null
     ) {
-        $this->id = Random::alphabetical(10);
     }
 
     public function id(): string
     {
-        return $this->id;
+        return $this->id ??= Random::alphabetical(10);
     }
 
     /**
@@ -100,10 +99,25 @@ abstract class Fragment
             // Unreachable: fragment buffering state verified in method preconditions.
         }
 
-        // Echo result (hide content when not allowed to render).
-        echo $this->echo ? $this->output : '';
+        // Dispatch the render to the echo() method so subclasses (e.g. Element)
+        // can intercept and redirect output — for example, into a parent slot —
+        // instead of writing to the surrounding output buffer.
+        if ($this->echo) {
+            $this->echo($this->output);
+        }
 
         return $this;
+    }
+
+    /**
+     * Default sink for finalized fragment output.
+     *
+     * Subclasses override this to redirect output (e.g. into a slot) instead
+     * of letting it flow into the surrounding output buffer.
+     */
+    protected function echo(string $output): void
+    {
+        echo $output;
     }
 
     /**

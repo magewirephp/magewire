@@ -29,7 +29,7 @@ use Stringable;
  */
 class Slot implements Stringable
 {
-    private string|null $content = null;
+    private array $content = [];
 
     public function __construct(
         private readonly string $name,
@@ -53,9 +53,35 @@ class Slot implements Stringable
      */
     public function update(string $content): static
     {
-        $this->content = $content;
+        $this->content = [$content];
 
         return $this;
+    }
+
+    /**
+     * Append content to the slot.
+     *
+     * Used by Element::echo() to accumulate sibling child renders into the
+     * parent area's default slot — multiple children inside the same body
+     * concatenate in source order rather than overwriting each other.
+     */
+    public function append(string|Slot $content): static
+    {
+        if ($content instanceof Slot) {
+            $content = $content->__toString();
+        }
+
+        if (strlen($content) === 0) {
+            return $this;
+        }
+
+        array_unshift($this->content, $content);
+        return $this;
+    }
+
+    public function push(string|Slot $content)
+    {
+        $this->content[] = $content;
     }
 
     /**
@@ -97,11 +123,16 @@ class Slot implements Stringable
         return $this->element;
     }
 
+    public function isEmpty(): bool
+    {
+        return empty($this->content);
+    }
+
     /**
      * Convert the slot to its string representation.
      */
     public function __toString(): string
     {
-        return $this->content ??= sprintf('<!-- __MAGEWIRE_SLOT_%s__ -->', $this->name);
+        return implode('', $this->content);
     }
 }

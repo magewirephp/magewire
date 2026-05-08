@@ -28,8 +28,8 @@ abstract class Compiler
     protected CompilerPipelines|null $compilerPipelines = null;
 
     public function __construct(
-        private CompilerManager $manager,
-        private CompilerPipelinesFactory $compilerPipelinesFactory
+        private readonly CompilerManager $manager,
+        private readonly CompilerPipelinesFactory $compilerPipelinesFactory
     ) {
     }
 

@@ -41,7 +41,7 @@ class Slot extends Fragment\Element
     public function start(): static
     {
         // Start a new slot named by the variant.
-        $this->slotsRegistry->register($this->variant, $this);
+        $this->slots()->register($this->variant, $this);
 
         return parent::start();
     }
@@ -58,9 +58,12 @@ class Slot extends Fragment\Element
         // First, complete the fragment rendering to ensure output is fully buffered.
         parent::end();
 
-        // Register the captured output as the content for this named slot (identified by variant).
-        // This makes it available in the component view as a slot variable (e.g., $header).
-        $this->slotsRegistry->update($this->variant, $this->output);
+        // Append the captured inline body text to this named slot. APPEND,
+        // not overwrite — child elements rendered during the slot body have
+        // already bubbled their renders into the same slot via Element::echo()
+        // (SlotsRegistry::parent() detects this slot as the active one in the
+        // surrounding area). Overwriting here would discard those.
+        $this->slots()->get($this->variant)->append($this->output);
 
         return $this;
     }
