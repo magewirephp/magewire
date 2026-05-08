@@ -13,41 +13,45 @@ namespace Magewirephp\Magewire\Model\View;
 
 use LogicException;
 use Magento\Framework\View\Element\AbstractBlock;
-use Magewirephp\Magewire\Model\View\Fragment\Element;
+use Magewirephp\Magewire\Model\View\Fragment\Component;
+use Magewirephp\Magewire\Model\View\Fragment\Component\Unknown;
 use Magewirephp\Magewire\Support\Factory;
 use Magewirephp\Magewire\Support\Random;
 
-class FragmentElementFactory
+class FragmentComponentFactory
 {
     public function __construct(
-        private array $elements = []
+        private array $components = []
     ) {
+
     }
 
     /**
-     * Alias for creating slot elements.
+     * Alias for creating slot component.
      *
      * `$target` is the slot name and must be passed as the element's `variant`
      * — that is what `Slot::start()` reads when registering the slot in the
      * SlotsRegistry. The id is a fresh random per slot instance and is purely
      * a uniqueness handle (not the slot name).
      */
-    public function slot(string $target, AbstractBlock $block): Element\Slot
+    public function slot(string $target, AbstractBlock $block): \Magewirephp\Magewire\Model\View\Fragment\Slot
     {
-        return $this->element('slot', $block, Random::alphabetical(10), $target);
+        return $this->create(\Magewirephp\Magewire\Model\View\Fragment\Slot::class, [
+            'id' => Random::alphabetical(10),
+            'variant' => $target,
+            'block' => $block
+        ]);
     }
 
     /**
-     * @template T of Element
+     * @template T of Component
      * @param class-string<T> $type
      * @return T
      * @throws LogicException
      */
-    public function element(string $type, AbstractBlock $block, string $id, string $variant = 'default'): Element
+    public function component(string $type, AbstractBlock $block, string $id, string $variant = 'default'): Component
     {
-        $type = $this->elements[$type] ?? Element\Unknown::class;
-
-        return $this->create($type, ['id' => $id, 'variant' => $variant, 'block' => $block]);
+        return $this->create($this->components[$type] ?? Unknown::class, ['id' => $id, 'variant' => $variant, 'block' => $block]);
     }
 
     /**
@@ -56,14 +60,14 @@ class FragmentElementFactory
      * @return T
      * @throws LogicException
      */
-    private function create(string $type, array $arguments = []): Fragment
+    private function create(string $type, array $arguments = []): Component
     {
         $fragment = Factory::create($type, $arguments);
 
-        if ($fragment instanceof Fragment) {
+        if ($fragment instanceof Component) {
             return $fragment;
         }
 
-        throw new LogicException(sprintf('Class "%s" does not implement Fragment interface. Expected Fragment, got %s.', $type, get_debug_type($fragment)));
+        throw new LogicException(sprintf('Class "%s" does not extend Component. Expected Component, got %s.', $type, get_debug_type($fragment)));
     }
 }

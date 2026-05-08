@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Fragment\Element;
+namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Fragment\Component;
 
 use Magento\Framework\App\State as ApplicationState;
 use Magento\Framework\Escaper;
@@ -22,15 +22,15 @@ use Magewirephp\Magewire\Support\Random;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
-class Flake extends Fragment\Element
+class Flake extends Fragment\Component
 {
     // Prevent the slot's captured output from being directly echoed.
     // Slots are buffered internally and registered for later use in the component template.
     protected bool $echo = false;
 
     public function __construct(
-        private FlakeFactory $flakeFactory,
-        private ApplicationState $applicationState,
+        private readonly FlakeFactory $flakeFactory,
+        private readonly ApplicationState $applicationState,
         string $variant,
         string $id,
         AbstractBlock $block,
@@ -54,7 +54,7 @@ class Flake extends Fragment\Element
 
             if ($flake === false) {
                 throw new ComponentNotFoundException(
-                    sprintf('Magewire: Flake "%s" could not be found or doesnt exist', $this->variant)
+                    sprintf('Magewire: Flake "%s" could not be found or doesnt exist', $this->variant())
                 );
             }
 
@@ -64,8 +64,6 @@ class Flake extends Fragment\Element
 
             if ($this->applicationState->getMode() !== ApplicationState::MODE_PRODUCTION) {
                 echo '<!-- Flake exception: ' . $exception->getMessage() . '. -->';
-            } else {
-                echo '<!-- Flake exception: hidden. -->';
             }
         }
 
@@ -74,7 +72,7 @@ class Flake extends Fragment\Element
 
     protected function createFlakeByName(string $name): AbstractBlock|false
     {
-        return $this->flakeFactory->createByName($this->variant, [
+        return $this->flakeFactory->createByName($this->variant(), [
             'magewire:id' => Random::alphabetical(10),
             'magewire:name' => $name
         ]);

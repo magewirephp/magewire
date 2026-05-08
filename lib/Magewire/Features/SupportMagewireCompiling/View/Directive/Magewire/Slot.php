@@ -20,11 +20,11 @@ class Slot extends ScopeDirective
 {
     #[ScopeDirectiveChain(methods: ['endSlot'])]
     #[ScopeDirectiveParser(ExpressionParserType::FUNCTION_ARGUMENTS)]
-    public function slot(string $target, string $id): string
+    public function slot(string $target, string $variable): string
     {
-        $var = $this->variableScopeStart($id);
+        $var = $this->variableScopeStart($variable);
 
-        return "<?php \${$var} = \$__magewire->factory()->elements()->slot('{$target}', \$block) ?>";
+        return "<?php \${$var} = \$__magewire->factory()->components()->slot('{$target}', \$block) ?>";
     }
 
     public function endSlot(): string

@@ -14,20 +14,22 @@ namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\M
 use Magewirephp\Magewire\Support\Random;
 
 /**
- * `<magewire:variant>` tag compiler.
+ * `<flake:variant>` tag compiler.
  *
- * Migrated from the legacy two-segment `<magewire-{component}:{variant}>`
- * shape to the unified one-segment form so all built-in compilers share a
- * single tag pattern. Templates that used the old dash form must be updated
- * to drop the `-{component}` suffix.
+ * Routes matched tags through the default `flake` Fragment Element which is
+ * backed by the stock `FlakeFactory` (layout handle `magewire_flakes`). Use
+ * this for component blocks defined in `view/.../layout/magewire_flakes.xml`.
  *
- * Emits the standard `@magewireComponent` directive with `type='magewire'`.
+ * Sibling of {@see Flux} — same emission shape with `type='flake'` instead of
+ * `type='flux'`. The split exists so each prefix can map to its own layout
+ * handle and resolver, keeping flake-vs-flux components distinct during
+ * AJAX rehydrate.
  */
-class Blade extends AbstractTagCompiler
+class Flake extends AbstractTagCompiler
 {
     protected function prefix(): string
     {
-        return 'magewire';
+        return 'flake';
     }
 
     protected function emitOpening(array $matches): string

@@ -25,7 +25,7 @@ class MagentoTemplateCompiler extends Compiler
     public function __construct(
         CompilerManager $manager,
         CompilerPipelinesFactory $compilerPipelinesFactory,
-        private array $middleware = []
+        private readonly array $middleware = []
     ) {
         parent::__construct($manager, $compilerPipelinesFactory);
     }

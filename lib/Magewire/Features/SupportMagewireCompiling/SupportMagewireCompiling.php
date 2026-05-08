@@ -69,7 +69,7 @@ class SupportMagewireCompiling extends ComponentHook
             if ($this->slotsRegistry->hasAreas()) {
                 $dto->dictionary([
                     '__slot' => $dto->dictionary()['__slot'] ?? $this->slotsRegistry->snapshot(),
-                    '__el' => $this->slotsRegistry->element()
+                    '__el' => $this->slotsRegistry->component()
                 ]);
             }
         });

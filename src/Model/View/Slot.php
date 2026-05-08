@@ -11,29 +11,40 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Model\View;
 
-use Magewirephp\Magewire\Model\View\Fragment\Element;
+use ArrayIterator;
+use Countable;
+use IteratorAggregate;
+use Magewirephp\Magewire\Model\View\Fragment\Component;
 use Stringable;
+use Traversable;
 
 /**
  * Represents a named slot within a template fragment.
  *
  * Slots act as placeholders for content that can be filled during template rendering.
- * Each slot is associated with an element and can store content along with properties
- * and attributes from its parent element.
+ * Each slot is associated with an component and can store content along with properties
+ * and attributes from its parent component.
  *
  * @todo Needs to become lockable after the content has been updated with the final output buffer/content.
  *       This should maybe be done with a generic WithLockable trait sitting in the Magewire/Support namespace.
  *       Read-only for the class is not sufficient, since the content has to be updated.
- *
- * @deprecated Work in progress, do not use in production.
  */
-class Slot implements Stringable
+class Slot implements Stringable, IteratorAggregate, Countable
 {
+    /**
+     * Ordered list of entries written to this slot. Each `push()` adds a new
+     * entry; `append()` extends the latest entry. `__toString()` returns the
+     * latest entry only — so a re-assigned slot echoes the most recent value
+     * — while iteration yields every entry in source order so a developer
+     * can `foreach ($slot as $entry)` over previous assignments.
+     *
+     * @var array<int, string>
+     */
     private array $content = [];
 
     public function __construct(
         private readonly string $name,
-        private readonly Element $element
+        private readonly Component $component
     ) {
     }
 
@@ -46,10 +57,11 @@ class Slot implements Stringable
     }
 
     /**
-     * Update the slot's content.
+     * Replace the slot's history with a single entry.
      *
-     * Sets the rendered content for this slot. Once set, this content will be
-     * returned when the slot is cast to a string.
+     * Wipes any previously stored entries and seeds a fresh history of one.
+     * Use sparingly — most callers should prefer `push()` (new entry) or
+     * `append()` (extend latest) so the iteration history stays intact.
      */
     public function update(string $content): static
     {
@@ -59,11 +71,15 @@ class Slot implements Stringable
     }
 
     /**
-     * Append content to the slot.
+     * Extend the latest entry with additional content.
      *
-     * Used by Element::echo() to accumulate sibling child renders into the
-     * parent area's default slot — multiple children inside the same body
-     * concatenate in source order rather than overwriting each other.
+     * Used by `Component::echo()` to accumulate sibling child renders within
+     * the parent area's default slot — multiple unbound children inside the
+     * same body concatenate in source order into a single logical entry
+     * rather than producing one entry per child.
+     *
+     * If the slot has no entries yet, the appended content seeds the first
+     * entry.
      */
     public function append(string|Slot $content): static
     {
@@ -75,64 +91,125 @@ class Slot implements Stringable
             return $this;
         }
 
-        array_unshift($this->content, $content);
+        if ($this->content === []) {
+            $this->content[] = $content;
+            return $this;
+        }
+
+        $last = array_key_last($this->content);
+        $this->content[$last] .= $content;
+
         return $this;
     }
 
-    public function push(string|Slot $content)
+    /**
+     * Push a new entry onto the slot's history.
+     *
+     * Each `<slot:name>...</slot:name>` re-assignment calls this so previous
+     * values stay accessible via iteration (`foreach ($slot as $entry)`).
+     * `__toString()` continues to return only the latest entry, matching
+     * the natural "last write wins" expectation when echoing a slot.
+     */
+    public function push(string|Slot $content): static
     {
+        if ($content instanceof Slot) {
+            $content = $content->__toString();
+        }
+
         $this->content[] = $content;
+
+        return $this;
     }
 
     /**
-     * Retrieve a property value from the slot's element.
+     * Retrieve a property value from the slot's component.
      *
-     * Properties are custom data attributes associated with the element
+     * Properties are custom data attributes associated with the component
      * that owns this slot.
      */
     public function prop(string $name, mixed $default = null)
     {
-        return $this->element
-            ->data()
-            ->properties()
-            ->get($name, $default);
+        return $this->component->data()->properties()->get($name, $default);
     }
 
     /**
-     * Retrieve an HTML attribute value from the slot's element.
+     * Retrieve an HTML attribute value from the slot's component.
      *
      * Attributes are standard HTML attributes (class, id, data-*, etc.)
-     * associated with the element that owns this slot.
+     * associated with the component that owns this slot.
      */
     public function attr(string $name, mixed $default = '')
     {
-        return $this->element
-            ->data()
-            ->attributes()
-            ->get($name, $default);
+        return $this->component->data()->attributes()->get($name, $default);
     }
 
     /**
-     * Get the element that owns this slot.
+     * Get the component that owns this slot.
      *
-     * Provides access to the parent fragment element for retrieving additional
-     * context, data, or performing element-level operations.
+     * Provides access to the parent fragment component for retrieving additional
+     * context, data, or performing component-level operations.
      */
-    public function element(): Element
+    public function component(): Component
     {
-        return $this->element;
+        return $this->component;
     }
 
     public function isEmpty(): bool
     {
-        return empty($this->content);
+        return $this->content === [];
     }
 
     /**
-     * Convert the slot to its string representation.
+     * Get every entry that's been pushed/appended to this slot, in source
+     * order. Returns an empty array when the slot has no content.
+     *
+     * @return array<int, string>
+     */
+    public function all(): array
+    {
+        return $this->content;
+    }
+
+    /**
+     * Number of entries currently held by the slot. Useful for templates
+     * that need to special-case "single value" vs "multiple values" without
+     * triggering iteration.
+     */
+    public function count(): int
+    {
+        return count($this->content);
+    }
+
+
+    public function iterable(): bool
+    {
+        return $this->count() > 0;
+    }
+
+    /**
+     * Iterate every entry in source order. Lets templates foreach over the
+     * slot to render each prior assignment as its own item — echoing the
+     * slot directly still returns only the latest entry via __toString().
+     *
+     * @return Traversable<int, string>
+     */
+    public function getIterator(): Traversable
+    {
+        return new ArrayIterator($this->content);
+    }
+
+    /**
+     * Returns the slot's most recent entry. "Last write wins" for the common
+     * echo pattern — re-assigning the slot via a second `<slot:test>` block
+     * displays the new value while still preserving the previous one for
+     * iteration via getIterator().
      */
     public function __toString(): string
     {
-        return implode('', $this->content);
+        if ($this->content === []) {
+            return '';
+        }
+
+        return $this->content[array_key_last($this->content)];
     }
 }
