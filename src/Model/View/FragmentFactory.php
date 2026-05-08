@@ -14,7 +14,7 @@ namespace Magewirephp\Magewire\Model\View;
 use InvalidArgumentException;
 use LogicException;
 use Magento\Framework\View\Element\AbstractBlock;
-use Magewirephp\Magewire\Model\View\Fragment\Component;
+use Magewirephp\Magewire\Model\View\Fragment\Template;
 use Magewirephp\Magewire\Model\View\Fragment\Html;
 use Magewirephp\Magewire\Model\View\Fragment\Javascript;
 use Magewirephp\Magewire\Model\View\Fragment\Script;
@@ -27,7 +27,7 @@ class FragmentFactory
      * @param array<string, class-string<Fragment> $types
      */
     public function __construct(
-        private FragmentElementFactory $elementFactory,
+        private FragmentComponentFactory $componentFactory,
         private array $types = []
     ) {
     }
@@ -52,14 +52,14 @@ class FragmentFactory
         return $this->create(Style::class);
     }
 
-    public function elements(): FragmentElementFactory
+    public function components(): FragmentComponentFactory
     {
-        return $this->elementFactory;
+        return $this->componentFactory;
     }
 
-    public function component(AbstractBlock $block): Component
+    public function component(AbstractBlock $block): Template
     {
-        return $this->create(Component::class, ['block' => $block]);
+        return $this->create(Template::class, ['block' => $block]);
     }
 
     /**

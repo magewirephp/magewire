@@ -25,7 +25,7 @@ class Component extends ScopeDirective
         $var = $this->variableScopeStart($variable);
         $variant ??= 'default';
 
-        return "<?php \${$var} = \$__magewire->factory()->elements()->element(type: '{$type}', block: \$block, variant: '{$variant}', id: '{$id}')->track() ?>";
+        return "<?php \${$var} = \$__magewire->factory()->components()->component(type: '{$type}', block: \$block, variant: '{$variant}', id: '{$id}')->track() ?>";
     }
 
     public function endComponent(): string

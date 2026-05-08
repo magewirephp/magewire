@@ -9,12 +9,10 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Magewire\Model\View\Fragment\Element;
-
-use Magewirephp\Magewire\Model\View\Fragment;
+namespace Magewirephp\Magewire\Model\View\Fragment;
 
 /**
- * Fragment element representing a named slot within a template.
+ * Fragment component representing a named slot within a template.
  *
  * Slots capture content during template rendering without immediately echoing it.
  * Instead, the content is registered in the SlotsRegistry under the slot's variant
@@ -23,14 +21,13 @@ use Magewirephp\Magewire\Model\View\Fragment;
  * Unlike standard fragments, slots do not create nested tracking contexts - they
  * simply register their content as a named slot in the current area's registry.
  * The slot's name is determined by its variant property.
- *
- * @deprecated Work in progress, do not use in production.
  */
-class Slot extends Fragment\Element
+class Slot extends Component
 {
     // Prevent the slot's captured output from being directly echoed.
     // Slots are buffered internally and registered for later use in the component template.
     protected bool $echo = false;
+    protected bool $trackable = false;
 
     /**
      * Begin slot content capture.
@@ -40,8 +37,7 @@ class Slot extends Fragment\Element
      */
     public function start(): static
     {
-        // Start a new slot named by the variant.
-        $this->slots()->register($this->variant, $this);
+        $this->slots()->register($this->variant(), $this);
 
         return parent::start();
     }
@@ -58,38 +54,13 @@ class Slot extends Fragment\Element
         // First, complete the fragment rendering to ensure output is fully buffered.
         parent::end();
 
-        // Append the captured inline body text to this named slot. APPEND,
-        // not overwrite — child elements rendered during the slot body have
-        // already bubbled their renders into the same slot via Element::echo()
-        // (SlotsRegistry::parent() detects this slot as the active one in the
-        // surrounding area). Overwriting here would discard those.
-        $this->slots()->get($this->variant)->append($this->output);
+        // Push as a new entry — every `<slot:name>` block is one logical
+        // value. Multiple re-assignments stack as separate entries so the
+        // template can iterate previous values via foreach, while echoing
+        // the snapshot still returns only the latest (Slot::__toString
+        // returns the last component).
+        $this->slots()->get($this->variant())->push($this->output);
 
-        return $this;
-    }
-
-    /**
-     * Override to prevent slot area tracking.
-     *
-     * Slots do not create nested tracking contexts in the registry since they
-     * simply register content as named slots rather than managing their own
-     * slot collections. This no-op implementation ensures track() calls are
-     * safely ignored.
-     */
-    public function track(): static
-    {
-        return $this;
-    }
-
-    /**
-     * Override to prevent slot area untracking.
-     *
-     * Slots do not manage tracking contexts. This no-op implementation ensures
-     * untrack() calls are safely ignored, maintaining the current area's tracking
-     * state without interfering with the parent fragment's lifecycle.
-     */
-    public function untrack(): static
-    {
         return $this;
     }
 }

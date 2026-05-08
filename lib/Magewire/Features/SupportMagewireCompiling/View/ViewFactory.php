@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View;
 
-use Magewirephp\Magewire\Model\View\FragmentElementFactory;
+use Magewirephp\Magewire\Model\View\FragmentComponentFactory;
 use Magewirephp\Magewire\Model\View\FragmentFactory;
 
 class ViewFactory
@@ -26,8 +26,8 @@ class ViewFactory
         return $this->fragmentFactory;
     }
 
-    public function elements(): FragmentElementFactory
+    public function components(): FragmentComponentFactory
     {
-        return $this->fragments()->elements();
+        return $this->fragments()->components();
     }
 }

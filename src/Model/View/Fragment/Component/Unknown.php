@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Magewire\Model\View\Fragment\Element;
+namespace Magewirephp\Magewire\Model\View\Fragment\Component;
 
 use Magento\Framework\App\State as ApplicationState;
 use Magento\Framework\Escaper;
@@ -18,10 +18,7 @@ use Magewirephp\Magewire\Model\View\Fragment;
 use Magewirephp\Magewire\Model\View\SlotsRegistry;
 use Psr\Log\LoggerInterface;
 
-/**
- * @deprecated Work in progress, do not use in production.
- */
-class Unknown extends Fragment\Element
+class Unknown extends Fragment\Component
 {
     public function __construct(
         private ApplicationState $applicationState,
@@ -30,9 +27,10 @@ class Unknown extends Fragment\Element
         SlotsRegistry $slotsRegistry,
         LoggerInterface $logger,
         Escaper $escaper,
+        string $id,
         array $modifiers = []
     ) {
-        parent::__construct($variant, $block, $slotsRegistry, $logger, $escaper, $modifiers);
+        parent::__construct($variant, $block, $slotsRegistry, $logger, $escaper, $id, $modifiers);
     }
 
     public function render(): string
