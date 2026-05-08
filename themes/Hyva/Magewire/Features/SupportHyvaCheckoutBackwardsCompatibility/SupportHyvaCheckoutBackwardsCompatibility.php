@@ -61,6 +61,11 @@ class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
                 return;
             }
 
+            /*
+             * Temporary guard against duplicate event dispatches.
+             * This is a minimal implementation, logic should be revisited
+             * to ensure correctness across all edge cases.
+             */
             $effects = $context->getEffects();
             $currentDispatches = $effects->getData('dispatches') ?? [];
             $newDispatches = $this->supportEvents->getServerDispatchedEvents($component);
