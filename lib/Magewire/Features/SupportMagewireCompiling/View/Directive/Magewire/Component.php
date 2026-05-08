@@ -20,12 +20,12 @@ class Component extends ScopeDirective
 {
     #[ScopeDirectiveChain(methods: ['endComponent'])]
     #[ScopeDirectiveParser(ExpressionParserType::FUNCTION_ARGUMENTS)]
-    public function component(string $type, string $id, string|null $variant = null): string
+    public function component(string $type, string $id, string $variable, string|null $variant = null): string
     {
-        $var = $this->variableScopeStart($id);
+        $var = $this->variableScopeStart($variable);
         $variant ??= 'default';
 
-        return "<?php \${$var} = \$__magewire->factory()->elements()->element('{$type}', \$block, '{$variant}')->track() ?>";
+        return "<?php \${$var} = \$__magewire->factory()->elements()->element(type: '{$type}', block: \$block, variant: '{$variant}', id: '{$id}')->track() ?>";
     }
 
     public function endComponent(): string

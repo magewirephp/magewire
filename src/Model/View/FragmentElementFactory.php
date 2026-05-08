@@ -15,6 +15,7 @@ use LogicException;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Model\View\Fragment\Element;
 use Magewirephp\Magewire\Support\Factory;
+use Magewirephp\Magewire\Support\Random;
 
 class FragmentElementFactory
 {
@@ -25,10 +26,15 @@ class FragmentElementFactory
 
     /**
      * Alias for creating slot elements.
+     *
+     * `$target` is the slot name and must be passed as the element's `variant`
+     * — that is what `Slot::start()` reads when registering the slot in the
+     * SlotsRegistry. The id is a fresh random per slot instance and is purely
+     * a uniqueness handle (not the slot name).
      */
     public function slot(string $target, AbstractBlock $block): Element\Slot
     {
-        return $this->element('slot', $block, $target);
+        return $this->element('slot', $block, Random::alphabetical(10), $target);
     }
 
     /**
@@ -37,11 +43,11 @@ class FragmentElementFactory
      * @return T
      * @throws LogicException
      */
-    public function element(string $type, AbstractBlock $block, string $variant = 'default'): Element
+    public function element(string $type, AbstractBlock $block, string $id, string $variant = 'default'): Element
     {
         $type = $this->elements[$type] ?? Element\Unknown::class;
 
-        return $this->create($type, ['variant' => $variant, 'block' => $block]);
+        return $this->create($type, ['id' => $id, 'variant' => $variant, 'block' => $block]);
     }
 
     /**

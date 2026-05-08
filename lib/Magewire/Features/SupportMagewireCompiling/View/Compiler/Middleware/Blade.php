@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\Middleware;
 
+use Magewirephp\Magewire\Features\SupportMagewireCompiling\Contracts\ViewCompilerInterface;
 use Magewirephp\Magewire\Support\Random;
 
 /**
@@ -27,7 +28,7 @@ use Magewirephp\Magewire\Support\Random;
  * @todo Decouple middleware from compilation concerns for better testability and reusability
  * @todo Maybe make this compiler a separate package with only the compiling methods, excluding file system features.
  */
-class Blade
+class Blade implements ViewCompilerInterface
 {
     /**
      * Compile the component and slot tags within the given string.
@@ -35,8 +36,8 @@ class Blade
     public function compile(string $value): string
     {
         $value = $this->compileSelfClosingTags($value);
-        $value = $this->compileSlots($value);
         $value = $this->compileOpeningTags($value);
+
         return $this->compileClosingTags($value);
     }
 
@@ -147,9 +148,11 @@ class Blade
     protected function componentString(string $component, string $attributes = '[]', string|null $variant = 'default'): string
     {
         $variant ??= 'default';
-        $var = 'component' . ucfirst(strtolower($variant)) . ucfirst(Random::alphabetical(5, true));
 
-        return "@magewireComponent(type: '{$component}', id: '{$var}', variant: '{$variant}')
+        $id = Random::alphabetical(5, true);
+        $var = 'component' . ucfirst(strtolower($variant)) . ucfirst($id);
+
+        return "@magewireComponent(type: '{$component}', id: '{$id}', variant: '{$variant}')
         <?php if (isset(\${$var})): ?>
         <?php \${$var}->dictionary()->fill(get_defined_vars()) ?>
         <?php \${$var}->data()->distribute({$attributes}) ?>
@@ -163,76 +166,6 @@ class Blade
     protected function compileClosingTags(string $value): string
     {
         return preg_replace("/<\/\s*magewire-[\:]?[\w\-\:\.]*\s*>/", ' @magewireEndComponent', $value);
-    }
-
-    /**
-     * Compile the slot tags within the given string.
-     */
-    public function compileSlots(string $value): string
-    {
-        $pattern = "/
-            <
-                \s*
-                magewire-slot
-                (?:\:(?<inlineName>\w+(?:-\w+)*))?
-                (?:\s+name=(?<name>(\"[^\"]+\"|\\\'[^\\\']+\\\'|[^\s>]+)))?
-                (?:\s+\:name=(?<boundName>(\"[^\"]+\"|\\\'[^\\\']+\\\'|[^\s>]+)))?
-                (?<attributes>
-                    (?:
-                        \s+
-                        (?:
-                            (?:
-                                @(?:class)(\( (?: (?>[^()]+) | (?-1) )* \))
-                            )
-                            |
-                            (?:
-                                @(?:style)(\( (?: (?>[^()]+) | (?-1) )* \))
-                            )
-                            |
-                            (?:
-                                \{\{\s*\\\$attributes(?:[^}]+?)?\s*\}\}
-                            )
-                            |
-                            (?:
-                                [\w\-:.@]+
-                                (
-                                    =
-                                    (?:
-                                        \\\"[^\\\"]*\\\"
-                                        |
-                                        \'[^\']*\'
-                                        |
-                                        [^\'\\\"=<>]+
-                                    )
-                                )?
-                            )
-                        )
-                    )*
-                    \s*
-                )
-                (?<![\/=\-])
-            >
-        /x";
-
-        $value = preg_replace_callback(
-            $pattern,
-            function ($matches) {
-                $name = $this->stripQuotes($matches['inlineName'] ?: $matches['name'] ?: $matches['boundName']) ?: "'slot'";
-
-                $attributes = $this->parseParams($matches['attributes']);
-                $var = 'slot' . ucfirst(strtolower($name)) . ucfirst(Random::alphabetical(5, true));
-
-                return "@magewireSlot(target: '{$name}', id: '{$var}')
-            <?php if (isset(\${$var})): ?>
-            <?php \${$var}->dictionary()->fill(get_defined_vars()) ?>
-            <?php \${$var}->data()->distribute({$attributes}) ?>
-            <?php \${$var}->start() ?>
-            <?php endif ?>";
-            },
-            $value
-        );
-
-        return preg_replace('/<\/\s*magewire-slot[^>]*>/', ' @magewireEndSlot', $value);
     }
 
     /**

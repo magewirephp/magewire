@@ -9,10 +9,9 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\Component;
+namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\Contracts;
 
-use Magewirephp\Magewire\Component;
-
-class Flake extends Component
+interface ViewCompilerInterface
 {
+    public function compile(string $value): string;
 }

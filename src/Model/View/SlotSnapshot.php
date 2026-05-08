@@ -56,4 +56,9 @@ class SlotSnapshot implements Stringable
     {
         return $this->slots['default']->__toString();
     }
+
+    public function has(string $name = 'default'): bool
+    {
+        return isset($this->slots[$name]) && ! $this->slots[$name]->isEmpty();
+    }
 }

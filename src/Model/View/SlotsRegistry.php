@@ -36,6 +36,8 @@ class SlotsRegistry
     /** @var array<string, Element> */
     private array $elements = [];
 
+    private array $completed = [];
+
     private string $area = 'root-0';
 
     /**
@@ -79,11 +81,12 @@ class SlotsRegistry
     {
         $area ??= $this->area;
 
-        // Get the slots for this area (not array_pop)
+        $this->completed[$area] = $this->slots[$area];
+        // Get the slots for this area (not array_pop).
         $slots = $this->slots[$area] ?? [];
-        // Remove this area from the slots tracking
+        // Remove this area from the slots tracking.
         unset($this->slots[$area]);
-        // Set the current area to the last remaining area
+        // Set the current area to the last remaining area.
         $this->area = array_key_last($this->slots) ?? 'root-0';
 
         return $slots;
@@ -102,6 +105,11 @@ class SlotsRegistry
         return $current[$name] ?? null;
     }
 
+    public function default(): Slot
+    {
+        return $this->get('default');
+    }
+
     /**
      * Create and register a new slot in the current area.
      *
@@ -117,19 +125,6 @@ class SlotsRegistry
     }
 
     /**
-     * Update the content of an existing slot.
-     *
-     * Retrieves the slot by name and updates its content. The slot must
-     * already exist in the current area.
-     */
-    public function update(string $name, string $content): static
-    {
-        $this->get($name)->update($content);
-
-        return $this;
-    }
-
-    /**
      * Render a slot's content as a string.
      *
      * Convenience method that retrieves a slot and returns its string
@@ -138,6 +133,50 @@ class SlotsRegistry
     public function print(string $name): string
     {
         return $this->get($name)->__toString();
+    }
+
+    /**
+     * Retrieve the currently active slot in the current area.
+     *
+     * The "current" slot is the most recently registered one in the active area —
+     * since slots register on `Slot::start()` and append to the area bag in order,
+     * the last bag entry is the slot whose buffer is presently open. Returns null
+     * when the current area has no slots registered yet.
+     */
+    public function current(): Slot|null
+    {
+        $slots = $this->slots();
+        $key = array_key_last($slots);
+
+        return $key === null ? null : $slots[$key];
+    }
+
+    /**
+     * Retrieve a slot from the parent area.
+     *
+     * Walks one level up the area stack. Resolution rules:
+     *
+     *   1. Explicit `$name` given — look up that slot by name in the parent
+     *      area; return null if missing.
+     *   2. No name — return the parent area's *active* slot: the one whose
+     *      output buffer is currently open. Used to detect the case where
+     *      a child element is authored inside `<slot:foo>...</slot:foo>` so
+     *      its render binds into `foo` rather than the area's `default`.
+     *   3. No active slot — fall back to the parent area's `default` slot.
+     *
+     * Returns null when the current area has no parent (root area).
+     */
+    public function parent(string|null $name = null): Slot|null
+    {
+        $a = array_values($this->slots);
+        $b = array_keys($this->slots);
+        $c = array_search($this->area, $b, true);
+
+        if ($c > 0) {
+            return $a[$c - 1]['default'];
+        }
+
+        return null;
     }
 
     /**
