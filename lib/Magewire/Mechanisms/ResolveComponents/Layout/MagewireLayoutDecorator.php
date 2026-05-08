@@ -24,12 +24,21 @@ class MagewireLayoutDecorator extends LayoutDecorator
     ) {
     }
 
+    /**
+     * Decorates the given layout to support block loading without a page root.
+     *
+     * Normally a block structure requires a page as its root parent to bind upon.
+     * This decorator simulates that relationship by introducing a fictional container,
+     * allowing blocks to resolve their parent without an actual page being present.
+     */
     public function decorateForPagelessBlockFetching(LayoutInterface $layout): LayoutInterface
     {
         if ($layout instanceof Layout) {
             $builder = $this->dynamicLayoutBuilder->newInstance(['layout' => $layout]);
 
+            // Custom generator pool limiting the allowed generators to only blocks and containers.
             $layout->setGeneratorPool($this->generatorPool);
+            // Custom builder to limit the amount of rebuild for repetitive layouts.
             $layout->setBuilder($builder);
         }
 

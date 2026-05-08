@@ -17,6 +17,7 @@ use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
 use Magewirephp\Magewire\MagewireServiceProvider;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
 use Magewirephp\Magewire\Mechanisms\HandleRequests\ComponentRequestContext;
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolver\ComponentResolver;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\ComponentResolverManager;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\LayoutManager;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -83,6 +84,7 @@ class ResolveComponents
     protected function build(callable $builder): callable
     {
         $lifecycle = $this->layoutManager->lifecycle();
+        /** @var ComponentResolver $resolver */
         [$resolver, $block] = $builder();
 
         if (! $block->getData('magewire') instanceof Component) {
@@ -90,11 +92,12 @@ class ResolveComponents
         }
 
         return static function () use ($resolver, $block, $lifecycle) {
-            $resolver->arguments()->assemble($block, true);
+            $resolver->arguments()->reassemble($block);
 
             /** @var Component $component */
             $component = $block->getData('magewire');
 
+            // Set Magewire specific instances onto the component.
             $component->magewireBlock($block);
             $component->magewireResolver($resolver);
             $component->magewireLayoutLifecycle($lifecycle);

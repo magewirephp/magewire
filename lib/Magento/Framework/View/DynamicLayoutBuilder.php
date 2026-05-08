@@ -41,7 +41,7 @@ class DynamicLayoutBuilder implements BuilderInterface
         $hash = hash('xxh3', json_encode($handles));
 
         // Early return when a version with the identical handles already exists.
-        if ($force === false && array_key_exists($hash, $this->builds)) {
+        if (! $force && array_key_exists($hash, $this->builds)) {
             return $this->builds[$hash];
         }
 

@@ -13,18 +13,19 @@ namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\Mechanisms\Resolve
 
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Features\SupportMagewireFlakes\Component\FlakeFactory;
+use Magewirephp\Magewire\Features\SupportMagewireFlakes\Component\FluxFactory;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\Snapshot;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\LayoutBlockArgumentsFactory;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolver\LayoutResolver;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\LayoutManager;
 use Magewirephp\Magewire\Support\Conditions;
 
-class FlakeResolver extends LayoutResolver
+class FluxResolver extends LayoutResolver
 {
-    protected string $accessor = 'flake';
+    protected string $accessor = 'flux';
 
     public function __construct(
-        protected readonly FlakeFactory $flakeFactory,
+        protected readonly FluxFactory $fluxFactory,
         Conditions $conditions,
         LayoutBlockArgumentsFactory $layoutBlockArgumentsFactory,
         LayoutManager $layoutManager
@@ -49,7 +50,7 @@ class FlakeResolver extends LayoutResolver
          * it will become an empty Magewire Flake component to at least give it all it's powers.
          */
         if ($block->hasData('magewire:alias') && ! $block->hasData('magewire')) {
-            $block->setData('magewire', $this->flakeFactory->create());
+            $block->setData('magewire', $this->fluxFactory->create());
         }
 
         return parent::construct($block);
@@ -62,6 +63,6 @@ class FlakeResolver extends LayoutResolver
 
     protected function recoverLayoutHandles(Snapshot $snapshot): array
     {
-        return ['magewire_flakes'];
+        return ['magewire_flux'];
     }
 }
