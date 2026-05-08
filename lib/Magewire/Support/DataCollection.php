@@ -334,7 +334,7 @@ abstract class DataCollection implements Countable, IteratorAggregate
     public function destroy(): static
     {
         foreach ($this->subsets !== null ? $this->subsets->raw() : [] as $subset) {
-            if (!($subset instanceof DataCollection)) {
+            if (! ($subset instanceof DataCollection)) {
                 continue;
             }
 

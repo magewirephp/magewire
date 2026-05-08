@@ -40,6 +40,8 @@ class Middleware extends Pipeline
 
     /**
      * Create or retrieve a middleware group with execution position.
+     *
+     * Returns the group pipeline.
      */
     public function group(string $name, int $position = 500): Pipeline
     {

@@ -21,16 +21,24 @@ abstract class Filter
     /** @var array<string, callable> $presets */
     private array $presets = [];
 
+    /**
+     * @throws InvalidArgumentException
+     */
     public function with(callable|TypeFilter|string $filter): static
     {
         if (is_string($filter)) {
-            $filter = $this->presets[$filter] ?? throw new InvalidArgumentException(sprintf('Data array filter preset "%s" does not exist.', $filter));
+            $filter = $this->presets[$filter] ?? throw new InvalidArgumentException(sprintf('Collection filter preset "%s" does not exist.', $filter));
         }
         if (is_callable($filter)) {
             return $this->byClosure($filter);
         }
 
         return $this->byType($filter);
+    }
+
+    public function byPreset(string $preset): static
+    {
+        return $this->with($preset);
     }
 
     public function byType(TypeFilter $filter): static
