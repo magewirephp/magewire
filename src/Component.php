@@ -50,7 +50,7 @@ abstract class Component implements ArgumentInterface
     protected $__id;
     protected $__name;
 
-    protected string|null $__alias = null;
+    protected string|null $__magewireAlias = null;
 
     function id()
     {
@@ -80,19 +80,19 @@ abstract class Component implements ArgumentInterface
         return $this->__name;
     }
 
-    public function setAlias(string|null $alias): void
+    public function setMagewireAlias(string|null $alias): void
     {
-        $this->__alias = $alias;
+        $this->__magewireAlias = $alias;
     }
 
-    public function getAlias(): string|null
+    public function getMagewireAlias(): string|null
     {
-        return $this->__alias;
+        return $this->__magewireAlias;
     }
 
-    public function hasAlias(): bool
+    public function hasMagewireAlias(): bool
     {
-        return $this->__alias !== null;
+        return $this->__magewireAlias !== null;
     }
 
     public function skipRender($html = null): void
@@ -118,7 +118,7 @@ abstract class Component implements ArgumentInterface
             if (isset($value)) {
                 return true;
             }
-        } catch (\Magewirephp\Magewire\Exceptions\PropertyNotFoundException $exception) {
+        } catch (PropertyNotFoundException $exception) {
         }
 
         return false;

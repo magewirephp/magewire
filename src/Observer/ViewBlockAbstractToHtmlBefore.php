@@ -111,7 +111,7 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
 
         $this->magewireManager->mount(
             $component->getName(),
-            $component->magewireResolver()->arguments()->forMount(),
+            $component->magewireResolver()->arguments()->forMount()->all(),
             $block->getCacheKey(),
             $block,
             $component

@@ -11,20 +11,15 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments;
 
-use Magento\Framework\DataObject;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Phrase;
 use Magento\Framework\View\Element\AbstractBlock;
+use Magewirephp\Magewire\Support\DataCollection;
 use Magewirephp\Magewire\Support\Str;
 
-/**
- * @todo DataObject needs to be replaced with our own DataArray.
- */
-abstract class MagewireArguments extends DataObject
+abstract class MagewireArguments extends DataCollection
 {
     private bool $assembled = false;
-
-    private array $groups = [];
 
     /**
      * Argument assembly is based on a pattern where only values prefixed with "magewire." are accepted.
@@ -37,13 +32,13 @@ abstract class MagewireArguments extends DataObject
             return $this;
         }
 
-        // Assemble public arguments.
-        $this->addData($this->assemblePublicArguments($block));
-        // Assemble private group arguments.
-        $this->groups = $this->assembleGroupArguments($block);
+        $this->destroy();
+
+        $this->assembleComponentArguments($block);
+        $this->assemblePublicArguments($block);
+        $this->assembleGroupArguments($block);
 
         $this->assembled = true;
-
         return $this;
     }
 
@@ -52,32 +47,10 @@ abstract class MagewireArguments extends DataObject
         return $this->assemble($block, true);
     }
 
-    public function __call($method, $args)
-    {
-        switch (substr((string) $method, 0, 3)) {
-            case 'get':
-                $key = $this->_underscore(substr($method, 3));
-                $index = $args[0] ?? null;
-
-                return $this->getData($key, $index);
-            case 'set':
-                $key = $this->_underscore(substr($method, 3));
-                $value = $args[0] ?? null;
-
-                return $this->setData($key, $value);
-            case 'has':
-                $key = $this->_underscore(substr($method, 3));
-
-                return isset($this->_data[$key]);
-        }
-
-        throw new LocalizedException(new Phrase('Invalid method %1::%2', [get_class($this), $method]));
-    }
-
     /**
      * Returns mount arguments.
      */
-    public function forMount(): array
+    public function forMount(): DataCollection
     {
         return $this->forGroup('mount');
     }
@@ -85,9 +58,9 @@ abstract class MagewireArguments extends DataObject
     /**
      * Returns arguments for the given group.
      */
-    public function forGroup(string $name, array $default = []): array
+    public function forGroup(string $name): DataCollection
     {
-        return $this->groups[$name] ?? $default;
+        return $this->subset('groups')->subset($name);
     }
 
     /**
@@ -97,15 +70,35 @@ abstract class MagewireArguments extends DataObject
      */
     public function toParams(): array
     {
-        return $this->toArray();
+        return $this->all();
     }
 
     public function isLazy(): bool
     {
-        return (bool) $this->getData('lazy');
+        return (bool) $this->forGroup('component')->get('lazy', false);
     }
 
-    protected function assemblePublicArguments(AbstractBlock $block): array
+    protected function assembleComponentArguments(AbstractBlock $block): static
+    {
+        $arguments = array_filter(
+            $block->getData(),
+            static function ($key) {
+                return str_starts_with($key, 'magewire:')
+                    && substr_count($key, ':') === 1;
+            },
+            ARRAY_FILTER_USE_KEY
+        );
+
+        foreach ($arguments as $key => $value) {
+            $name = explode(':', $key, 2)[1];
+
+            $this->set(Str::camel($name), $value);
+        }
+
+        return $this;
+    }
+
+    protected function assemblePublicArguments(AbstractBlock $block): static
     {
         $arguments = array_filter(
             $block->getData(),
@@ -116,12 +109,15 @@ abstract class MagewireArguments extends DataObject
         );
 
         // Remove the "magewire." prefix and convert a kebab-case to camelCase
-        return array_combine(array_map(static function ($key) {
+        $arguments = array_combine(array_map(static function ($key) {
             return Str::camel(substr($key, 9));
         }, array_keys($arguments)), array_values($arguments));
+
+        $this->subset('public')->fill($arguments);
+        return $this;
     }
 
-    protected function assembleGroupArguments(AbstractBlock $block): array
+    protected function assembleGroupArguments(AbstractBlock $block): static
     {
         $arguments = array_filter(
             $block->getData(),
@@ -136,9 +132,11 @@ abstract class MagewireArguments extends DataObject
                 continue;
             }
 
-            $groups[$matches[1]][Str::camel($matches[2])] = $value;
+            $this->subset('groups')
+                 ->subset($matches[1])
+                 ->set(Str::camel($matches[2]), $value);
         }
 
-        return $groups ?? [];
+        return $this;
     }
 }

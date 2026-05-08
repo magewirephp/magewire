@@ -90,14 +90,15 @@ class LayoutResolver extends ComponentResolver
             throw new ComponentNotFoundException(sprintf('No component object found for "%s"', $block->getNameInLayout()));
         }
 
-        // Magewire block can be directly passed as an argument or nested within a type argument.
+        /** @deprecated type should not longer be used now arguments are all prefixed with 'magewire:'. */
         $component = is_array($magewire) ? $magewire['type'] : $magewire;
 
         if (! $component instanceof Component) {
             throw new ComponentNotFoundException(sprintf('Component "%s" could not be constructed', $block->getNameInLayout()));
         }
 
-        $this->handleBackwardsCompatibilityForComponent($magewire);
+        // Temporary solution to keep components backwards compatible when needed.
+        $component = $this->handleBackwardsCompatibilityForComponent($magewire);
         // Fulfill the main promise to establish or reset a Component instance within the block.
         $block->setData('magewire', $component);
 
@@ -169,16 +170,22 @@ class LayoutResolver extends ComponentResolver
      */
     public function assemble(AbstractBlock $block, Component $component): AbstractBlock
     {
+        $arguments = $this->arguments();
+
+        $id    = $arguments->get('id', $block->getNameInLayout(), true);
+        $name  = $arguments->get('name', $block->getNameInLayout(), true);
+        $alias = $component->getMagewireAlias() ?? $block->getData('magewire:alias') ?? $arguments->get('alias');
+
         /*
          * The block assembly occurs after the component is constructed, finalizing it with
          * necessary attributes such as name and ID. For the layout, the block's name and ID
          * are derived from the block itself, using the nameInLayout method provided by Layout XML.
          */
-        $component->setName($block->getNameInLayout());
-        $component->setId($block->getNameInLayout());
-        $component->setAlias($component->getAlias() ?? $block->getData('magewire:alias'));
+        $component->setName($id);
+        $component->setId($name);
+        $component->setMagewireAlias($alias);
 
-        $this->determineTemplate($block, $component);
+        $this->resolveTemplate($block, $component);
 
         return parent::assemble($block, $component);
     }
@@ -193,8 +200,10 @@ class LayoutResolver extends ComponentResolver
      * when the path is not defined within the layout.
      *
      * Convention: {Vendor_Module::magewire/dashed-class-name.phtml}
+     *
+     * @todo Should go into its own class where after this method can become deprecated.
      */
-    protected function determineTemplate(AbstractBlock $block, Component $component): void
+    protected function resolveTemplate(AbstractBlock $block, Component $component): void
     {
         if ($block->getTemplate() !== null) {
             return;
@@ -263,7 +272,11 @@ class LayoutResolver extends ComponentResolver
         return true;
     }
 
-    protected function handleBackwardsCompatibilityForComponent(Component $component): void
+    /**
+     * @deprecated Retained for backwards compatibility with Magewire components resolved via the
+     *             layout resolver that still depend entirely on V1 behaviour, particularly on the JS side.
+     */
+    protected function handleBackwardsCompatibilityForComponent(Component $component): Component
     {
         $bc = store($component)->get('magewire:bc');
 
@@ -278,5 +291,7 @@ class LayoutResolver extends ComponentResolver
         }
 
         store($component)->set('magewire:bc', $bc ?? false);
+
+        return $component;
     }
 }
