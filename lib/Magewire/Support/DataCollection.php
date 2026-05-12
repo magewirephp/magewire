@@ -34,7 +34,6 @@ abstract class DataCollection implements Countable, IteratorAggregate
     public function __construct(
         private readonly Filter $filter,
         private array $items = [],
-        private readonly int $level = 0,
         private readonly string|int $name = 'root',
         private readonly DataCollection|null $parent = null
     ) {
@@ -61,13 +60,10 @@ abstract class DataCollection implements Countable, IteratorAggregate
 
     public function each(callable $callback, callable|TypeFilter $filter = TypeFilter::ALL): static
     {
-        $items = $this->filter()
-            ->with($filter)
-            ->return()
-            ->all();
+        $items = $filter === TypeFilter::ALL ? $this->all() : $this->filter()->with($filter)->return()->all();
 
         foreach ($items as $key => $value) {
-            $callback($this, $value, $key);
+            $callback($value, $key);
         }
 
         return $this;
@@ -101,9 +97,9 @@ abstract class DataCollection implements Countable, IteratorAggregate
         return $this;
     }
 
-    public function set(string|int $name, $value): static
+    public function set(string|int $name, $value, bool $force = false): static
     {
-        if ($this->isset($name)) {
+        if ($this->isset($name) && ! $force) {
             return $this;
         }
 
@@ -123,8 +119,7 @@ abstract class DataCollection implements Countable, IteratorAggregate
 
     public function subset(string|int|null $name = null, string|null $type = null, array $arguments = []): DataCollection
     {
-        $level = $name !== null ? $this->level + 1 : 0;
-        $name  = is_string($name) ? Str::snake($name) : $name;
+        $name = is_string($name) ? Str::snake($name) : $name;
 
         if ($name !== null && $this->subsets()->has($name)) {
             return $this->subsets()->get($name);
@@ -132,8 +127,7 @@ abstract class DataCollection implements Countable, IteratorAggregate
 
         $arguments = array_merge($arguments, [
             'parent' => $this,
-            'level'  => $level,
-            'name'   => $name ?? Random::string(),
+            'name' => $name ?? Random::string(),
         ]);
 
         $instance = $this->newTypeInstance($type ?? static::class, $arguments);
@@ -155,26 +149,6 @@ abstract class DataCollection implements Countable, IteratorAggregate
             'parent' => $this,
             'name' => 'subsets'
         ]);
-    }
-
-    /**
-     * @deprecated Has been replaced using $this->subsets()->count()
-     * @param array<string|int, string|int> $names
-     */
-    public function hasSubsets(array $names, bool $strict = true): bool
-    {
-        $expected = count($names);
-        $found = 0;
-
-        foreach ($names as $name) {
-            if (! ($this->subsets()->has($name))) {
-                continue;
-            }
-
-            $found++;
-        }
-
-        return $strict ? ($found === $expected) : ($found > 0);
     }
 
     /**
@@ -225,8 +199,13 @@ abstract class DataCollection implements Countable, IteratorAggregate
         return $this->isset($name);
     }
 
+    public function hasnt(string|int $name): bool
+    {
+        return ! $this->has($name);
+    }
+
     /**
-     * Check if all given props are set within the collection.
+     * Check if all given items exist within the collection.
      */
     public function contains(array $names, bool $strict = true): bool
     {
@@ -313,6 +292,36 @@ abstract class DataCollection implements Countable, IteratorAggregate
 
         $this->dispatch(Hook::GET, $name, $value);
         return $value;
+    }
+
+    public function target(string $name): DataCollection
+    {
+        if ($name === $this->name()) {
+            return $this;
+        }
+
+        return $this->subset($name);
+    }
+
+    /**
+     * Transfer items from this collection into the given target collection.
+     *
+     * Existing entries on the target are updated in place. When $force is true,
+     * missing entries are created as well; otherwise they are skipped.
+     *
+     * Default values applied during creation can be configured via default() / defaults().
+     *
+     * @see static::default()
+     * @see static::defaults()
+     */
+    public function transfer(array $items, DataCollection $target, bool $force = false): static
+    {
+        foreach ($items as $item) {
+            $target->set($item, $this->get($item), $force);
+        }
+
+        $this->unset(...$items);
+        return $this;
     }
 
     /**
@@ -422,7 +431,7 @@ abstract class DataCollection implements Countable, IteratorAggregate
 
     public function level(): int
     {
-        return $this->level;
+        return $this->parent() ? $this->parent()->level() + 1 : 0;
     }
 
     public function name(): string|int

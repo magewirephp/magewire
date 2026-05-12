@@ -30,36 +30,25 @@ abstract class AbstractTagCompiler implements ViewCompilerInterface
     /**
      * Atomic-quote attribute matcher shared by every tag-compiler middleware.
      *
-     * Matches whitespace-separated `key`, `key="value"`, `key='value'`, raw
-     * `@class(...)` / `@style(...)` directives, and `{{ $attributes }}`
-     * spreads. Quoted values consume their surrounding quotes atomically so
-     * spaces and embedded quotes survive the capture.
+     * Matches whitespace-separated `key`, `key="value"`, `key='value'`. Quoted
+     * values consume their surrounding quotes atomically so spaces and embedded
+     * quotes survive the capture.
      */
     protected const ATTRIBUTES_PATTERN = <<<'REGEX'
         (?<attributes>
             (?:
                 \s+
-                (?:
-                    @(?:class)\( (?: (?>[^()]+) | (?-1) )* \)
-                    |
-                    @(?:style)\( (?: (?>[^()]+) | (?-1) )* \)
-                    |
-                    \{\{\s*\$attributes(?:[^}]+?)?\s*\}\}
-                    |
-                    (:\$)(\w+)
-                    |
-                    [\w\-:.@%]+
-                    (
-                        =
-                        (?:
-                            "[^"]*"
-                            |
-                            '[^']*'
-                            |
-                            [^'"=<>]+
-                        )
-                    )?
-                )
+                [\w\-:.@%]+
+                (
+                    =
+                    (?:
+                        "[^"]*"
+                        |
+                        '[^']*'
+                        |
+                        [^'"=<>]+
+                    )
+                )?
             )*
             \s*
         )
@@ -75,7 +64,7 @@ abstract class AbstractTagCompiler implements ViewCompilerInterface
     /**
      * Emit the compiled opening sequence for a matched tag.
      *
-     * `$matches` carries the named captures (`variant`, `attributes`, plus
+     * `$matches` carries the named captures (`type`, `attributes`, plus
      * any subclass-specific extras). Implementations build their directive
      * call (`@magewireComponent(...)`, `@magewireSlot(...)`) and concatenate
      * with `$this->preamble(...)` for the shared `if isset → fill → distribute
@@ -88,9 +77,9 @@ abstract class AbstractTagCompiler implements ViewCompilerInterface
      * attributes block. Subclasses can narrow the alphabet — e.g. forbid
      * dots if the prefix doesn't allow dotted variants.
      */
-    protected function variantPattern(): string
+    protected function typePattern(): string
     {
-        return '(?<variant>[\w\-.]+)';
+        return '(?<type>[\w\-.]+)';
     }
 
     /**
@@ -136,26 +125,38 @@ abstract class AbstractTagCompiler implements ViewCompilerInterface
     {
         return "<?php if (isset(\${$var})): ?>
         <?php \${$var}->dictionary()->fill(get_defined_vars()) ?>
-        <?php \${$var}->data()->distribute({$attributes}) ?>
+        <?php \${$var}->distribute({$attributes}) ?>
         <?php \${$var}->start() ?>
         <?php endif ?>";
     }
 
     /**
-     * Parse the captured attribute string into a PHP array literal mapping
-     * to the `data()->distribute(...)` shape the Fragment expects. Quoted
-     * values are captured atomically so spaces and embedded quotes survive;
-     * non-prefixed string values are re-escaped via addcslashes when emitted
-     * so the generated PHP is valid.
+     * Parse the captured attribute string into a structured array literal
+     * mapping to the `distribute(...)` shape the component expects.
      *
-     * Conventions:
-     *   key="v"            → properties[key] = "v"
-     *   :key="$expr"       → properties[key] = $expr
-     *   bind:key="$expr"   → properties[key] = $expr
-     *   ::key="v"          → attributes[key] = "v"   (literal HTML attr passthrough)
-     *   magewire:foo="v"   → magewire["magewire:foo"] = "v"
-     *   :magewire:foo=$x   → magewire["magewire:foo"] = $x
-     *   bind:magewire:f=$x → magewire["magewire:f"] = $x
+     * The attribute name carries two orthogonal prefixes:
+     *
+     *   OUTER PREFIX (emission mode):
+     *     (none)     → literal string
+     *     :foo       → bound PHP expression — value emitted raw
+     *     ::foo      → literal string, HTML-escaped at compile time
+     *
+     *   INNER PREFIX (routing target):
+     *     (none)     → attributes bag (DOM)
+     *     prop:foo   → properties bag (component settings)
+     *     magewire:k → magewire bag (framework metadata)
+     *
+     * The two prefixes compose. All nine combinations are valid:
+     *
+     *   foo="v"               → attributes[foo]   = "v"
+     *   :foo="$x"             → attributes[foo]   = $x
+     *   ::foo="v"             → attributes[foo]   = htmlspecialchars("v", ...)
+     *   prop:foo="v"          → properties[foo]   = "v"
+     *   :prop:foo="$x"        → properties[foo]   = $x
+     *   ::prop:foo="v"        → properties[foo]   = htmlspecialchars("v", ...)
+     *   magewire:foo="v"      → magewire[foo]     = "v"
+     *   :magewire:foo="$x"    → magewire[foo]     = $x
+     *   ::magewire:foo="v"    → magewire[foo]     = htmlspecialchars("v", ...)
      */
     protected function parseParams(string $params): string
     {
@@ -165,58 +166,51 @@ abstract class AbstractTagCompiler implements ViewCompilerInterface
             $matches
         );
 
-        $bag = [];
+        $bags = [
+            'attributes' => [],
+            'properties' => [],
+            'magewire'   => [],
+        ];
 
         foreach ($matches['key'] as $i => $key) {
             $value = $this->stripQuotes($matches['value'][$i]);
 
-            $boolValue = match ($value) {
-                'false' => false,
-                'true'  => true,
-                default => null,
-            };
-
-            if (str_starts_with($key, ':magewire:')) {
-                $bag['magewire'][] = '"' . substr($key, 1) . '" => ' . $value;
-                continue;
-            }
-            if (str_starts_with($key, 'bind:magewire:')) {
-                $bag['magewire'][] = '"' . substr($key, 5) . '" => ' . $value;
-                continue;
-            }
-            if (str_starts_with($key, 'magewire:')) {
-                $bag['magewire'][] = '"' . $key . '" => ' . $this->phpString($value);
-                continue;
-            }
+            // Outer prefix — emission mode.
+            $mode = 'literal';
             if (str_starts_with($key, '::')) {
-                $bag['attributes'][] = '"' . substr($key, 2) . '" => ' . $this->phpString($value);
-                continue;
-            }
-            if (str_starts_with($key, ':')) {
-                $bag['properties'][] = '"' . substr($key, 1) . '" => ' . $value;
-                continue;
-            }
-            if (str_starts_with($key, 'bind:')) {
-                $bag['properties'][] = '"' . substr($key, 5) . '" => ' . $value;
-                continue;
+                $mode = 'escaped';
+                $key = substr($key, 2);
+            } elseif (str_starts_with($key, ':')) {
+                $mode = 'bound';
+                $key = substr($key, 1);
             }
 
-            $filling = match ($boolValue) {
-                true    => 'true',
-                false   => 'false',
-                default => $this->phpString($value),
+            // Inner prefix — routing target.
+            $target = 'attributes';
+            if (str_starts_with($key, 'prop:')) {
+                $target = 'properties';
+                $key = substr($key, 5);
+            } elseif (str_starts_with($key, 'magewire:')) {
+                $target = 'magewire';
+                $key = substr($key, 9);
+            }
+
+            // Emit value per mode.
+            $emission = match ($mode) {
+                'bound'   => $value,
+                'escaped' => $this->phpString(htmlspecialchars($value, ENT_QUOTES, 'UTF-8')),
+                default   => $this->phpString($value),
             };
 
-            $bag['properties'][] = '"' . $key . '" => ' . $filling;
+            $bags[$target][] = '"' . $key . '" => ' . $emission;
         }
 
-        $result = '[';
-
-        foreach ($bag as $key => $value) {
-            $result .= '"' . $key . '" => [' . implode(', ', $value) . '], ';
-        }
-
-        return rtrim($result, ', ') . ']';
+        return sprintf(
+            "['attributes' => [%s], 'properties' => [%s], 'magewire' => [%s]]",
+            implode(', ', $bags['attributes']),
+            implode(', ', $bags['properties']),
+            implode(', ', $bags['magewire']),
+        );
     }
 
     protected function stripQuotes(string $value): string
@@ -255,14 +249,14 @@ abstract class AbstractTagCompiler implements ViewCompilerInterface
     }
 
     /**
-     * Assemble the matching regex from prefix() and variantPattern().
+     * Assemble the matching regex from prefix() and typePattern().
      * `$closing=true` adds the self-closing `\/>` suffix; otherwise the bare
      * `>` suffix matches an opening tag.
      */
     private function buildPattern(bool $closing): string
     {
         $prefix = preg_quote($this->prefix(), '/');
-        $variant = $this->variantPattern();
+        $type = $this->typePattern();
         $attributes = self::ATTRIBUTES_PATTERN;
         $tail = $closing ? '\/>' : '>';
 
@@ -270,7 +264,7 @@ abstract class AbstractTagCompiler implements ViewCompilerInterface
             <\\s*
             {$prefix}
             :
-            {$variant}
+            {$type}
             {$attributes}
             (?<![\\/=\\-])
             {$tail}

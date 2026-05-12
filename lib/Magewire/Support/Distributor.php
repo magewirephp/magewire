@@ -38,6 +38,13 @@ abstract class Distributor
     ) {
     }
 
+    public function map(string $name, string $type): static
+    {
+        $this->mapping[$name] = $type;
+
+        return $this;
+    }
+
     /**
      * @return object<T>
      */

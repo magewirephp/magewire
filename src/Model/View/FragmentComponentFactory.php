@@ -31,27 +31,27 @@ class FragmentComponentFactory
      *
      * `$target` is the slot name and must be passed as the element's `variant`
      * — that is what `Slot::start()` reads when registering the slot in the
-     * SlotsRegistry. The id is a fresh random per slot instance and is purely
+     * Slots tracker. The id is a fresh random per slot instance and is purely
      * a uniqueness handle (not the slot name).
      */
     public function slot(string $target, AbstractBlock $block): \Magewirephp\Magewire\Model\View\Fragment\Slot
     {
         return $this->create(\Magewirephp\Magewire\Model\View\Fragment\Slot::class, [
             'id' => Random::alphabetical(10),
-            'variant' => $target,
+            'type' => $target,
             'block' => $block
         ]);
     }
 
     /**
      * @template T of Component
-     * @param class-string<T> $type
+     * @param class-string<T> $prefix
      * @return T
      * @throws LogicException
      */
-    public function component(string $type, AbstractBlock $block, string $id, string $variant = 'default'): Component
+    public function component(string $prefix, AbstractBlock $block, string $id, string $type = 'default'): Component
     {
-        return $this->create($this->components[$type] ?? Unknown::class, ['id' => $id, 'variant' => $variant, 'block' => $block]);
+        return $this->create($this->components[$prefix] ?? Unknown::class, ['id' => $id, 'type' => $type, 'block' => $block]);
     }
 
     /**

@@ -23,13 +23,13 @@ use Stringable;
  * This is useful for passing slot collections between template layers
  * or storing slot states for later rendering.
  */
-class SlotSnapshot implements Stringable
+readonly class SlotSnapshot implements Stringable
 {
     /**
      * @param array<string, Slot> $slots
      */
     public function __construct(
-        private readonly array $slots = []
+        private array $slots = []
     ) {
     }
 
@@ -52,7 +52,9 @@ class SlotSnapshot implements Stringable
      */
     public function __toString()
     {
-        return $this->slots['default']->__toString();
+        return isset($this->slots['default'])
+            ? $this->slots['default']->__toString()
+            : '';
     }
 
     public function has(string $name = 'default'): bool

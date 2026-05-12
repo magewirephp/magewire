@@ -14,7 +14,7 @@ namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\M
 use Magewirephp\Magewire\Support\Random;
 
 /**
- * `<flake:variant>` tag compiler.
+ * `<flake:type>` tag compiler.
  *
  * Routes matched tags through the default `flake` Fragment Element which is
  * backed by the stock `FlakeFactory` (layout handle `magewire_flakes`). Use
@@ -34,16 +34,16 @@ class Flake extends AbstractTagCompiler
 
     protected function emitOpening(array $matches): string
     {
-        $variant = $matches['variant'];
+        $type = $matches['type'];
         $attributes = $this->parseParams($matches['attributes'] ?? '');
         $id = Random::alphabetical(5, true);
         $var = preg_replace(
             '/[^a-zA-Z0-9]/',
             '_',
-            $this->prefix() . ucfirst(strtolower($variant)) . ucfirst($id)
+            $this->prefix() . ucfirst(strtolower($type)) . ucfirst($id)
         );
 
-        return "@magewireComponent(type: '{$this->prefix()}', id: '{$id}', variable: '{$var}', variant: '{$variant}')\n        "
+        return "@magewireComponent(prefix: '{$this->prefix()}', id: '{$id}', variable: '{$var}', type: '{$type}')\n        "
             . $this->preamble($var, $attributes);
     }
 }

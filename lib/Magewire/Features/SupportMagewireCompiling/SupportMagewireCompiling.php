@@ -13,13 +13,12 @@ namespace Magewirephp\Magewire\Features\SupportMagewireCompiling;
 
 use DateTime;
 use Magento\Framework\DataObject;
-use Magento\Framework\View\Element\Template;
 use Magewirephp\Magento\Framework\View\TemplateEngine\Php\TemplateRenderDataTransferObject;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\ComponentHook;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\CompilerManager;
-use Magewirephp\Magewire\Model\View\SlotsRegistry;
+use Magewirephp\Magewire\Model\View\Management\SlotsManager;
 
 use function Magewirephp\Magewire\before;
 use function Magewirephp\Magewire\on;
@@ -30,7 +29,7 @@ class SupportMagewireCompiling extends ComponentHook
     public function __construct(
         private MagewireUnderscoreViewModelFactory $underscoreViewModelFactory,
         private CompilerManager $compilerManager,
-        private SlotsRegistry $slotsRegistry
+        private SlotsManager $slotsManager
     ) {
     }
 
@@ -47,7 +46,9 @@ class SupportMagewireCompiling extends ComponentHook
                 return;
             }
 
-            $compiler = $component->magewireCompiler() ?? $component->magewireCompiler($this->compilerManager->factory()->newCompilerInstance());
+            $compiler = $component->magewireCompiler() ?? $component->magewireCompiler(
+                $this->compilerManager->factory()->newCompilerInstance()
+            );
 
             $dto->dictionary(['magewire' => $component]);
 
@@ -65,11 +66,13 @@ class SupportMagewireCompiling extends ComponentHook
             // Concept: Include the Magewire underscore object optionally required by compiled views.
             $dto->dictionary(['__magewire' => $dto->dictionary()['__magewire'] ?? $this->underscoreViewModelFactory->create()]);
 
-            // Currently only for dev-purposes, will change over time and shouldn't be used.
-            if ($this->slotsRegistry->hasAreas()) {
+            if ($this->slotsManager->registry()->hasAreas()) {
+                $snapshot = $this->slotsManager->registry()->makeSnapshot();
+
                 $dto->dictionary([
-                    '__slot' => $dto->dictionary()['__slot'] ?? $this->slotsRegistry->snapshot(),
-                    '__el' => $this->slotsRegistry->component()
+                    '__slot' => $snapshot,
+                    '__component' => $snapshot()->component(),
+                    '__attributes' => $snapshot()->component()->attrs()
                 ]);
             }
         });

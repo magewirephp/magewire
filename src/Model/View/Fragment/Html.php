@@ -11,23 +11,13 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Model\View\Fragment;
 
-use Magento\Framework\Escaper;
+use Magewirephp\Magewire\Model\View\ComponentAttributeBag;
 use Magewirephp\Magewire\Model\View\Fragment;
-use Psr\Log\LoggerInterface;
+use Magewirephp\Magewire\Support\DataCollection;
 use Throwable;
 
 class Html extends Fragment
 {
-    protected array $attributes = [];
-
-    public function __construct(
-        LoggerInterface $logger,
-        Escaper $escaper,
-        array $modifiers = []
-    ) {
-        parent::__construct($logger, $escaper, $modifiers);
-    }
-
     /**
      * Wraps pre-rendered content in a fragment container.
      *
@@ -54,59 +44,29 @@ class Html extends Fragment
 
     public function withAttribute(string $name, string|float|int|null $value = null, string $area = 'root'): static
     {
-        if ($value === null) {
-            $this->attributes[$area][] = $name;
-        } else {
-            $this->attributes[$area][$name] = $value;
-        }
+        $attributes = $this->attributes()->target($area);
+        $value ? $attributes->set($name, $value, true) : $attributes->push($value);
 
         return $this;
     }
 
     public function withAttributes(array $attributes, string $area = 'root'): static
     {
-        foreach ($attributes as $name => $value) {
-            $this->withAttribute($name, $value, $area);
-        }
+        $this->attributes()->target($area)->fill($attributes);
 
         return $this;
     }
 
-    protected function render(): string
+    protected function attributes(): DataCollection
     {
-        $render = parent::render();
-        $attributes = $this->getAreaAttributes('root');
-
-        if (! empty($attributes)) {
-            $attributeStrings = [];
-
-            foreach ($attributes as $attribute => $value) {
-                $attributeStrings[] = is_numeric($attribute) ? $value : $attribute . '="' . $this->escaper->escapeHtmlAttr($value) . '"';
-            }
-
-            if (! empty($attributeStrings)) {
-                $attributeString = ' ' . implode(' ', $attributeStrings);
-                $render = preg_replace('/^(<[^>\s]+)/', '$1' . $attributeString, $render, 1);
-            }
-        }
-
-        return trim($render);
+        return $this->properties()->target('attributes');
     }
 
-    protected function getAttributes(): array
+    protected function properties(): DataCollection
     {
-        return $this->attributes;
-    }
+        $properties = parent::properties();
+        $properties->subset('attributes', ComponentAttributeBag::class);
 
-    protected function getAreaAttributes(string $area): array
-    {
-        if ($area === 'root') {
-            // Filter those who are not an 'area' (an array value).
-            $attributes = array_filter($this->attributes, static fn ($value) => ! is_array($value));
-
-            return array_merge($this->attributes[$area] ?? [], $attributes);
-        }
-
-        return $this->attributes[$area] ?? [];
+        return $properties;
     }
 }
