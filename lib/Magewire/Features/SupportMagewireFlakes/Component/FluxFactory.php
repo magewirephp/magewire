@@ -10,6 +10,7 @@
 declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\Component;
+
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Support\Factory;
