@@ -13,21 +13,23 @@ namespace Magewirephp\Magewire\Model\View\Fragment;
 
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\AbstractBlock;
-use Magewirephp\Magewire\Model\View\Fragment;
+use Magewirephp\Magewire\Model\View\Management\SlotsManager;
 use Magewirephp\Magewire\Model\View\SlotsRegistry;
-use Magewirephp\Magewire\Model\View\Concerns\WithDomNodeData;
+use Magewirephp\Magewire\Support\DataCollection;
+use Magewirephp\Magewire\Support\Factory;
 use Psr\Log\LoggerInterface;
 
-abstract class Component extends Fragment
+abstract class Component extends Html
 {
-    use WithDomNodeData;
-
+    // Flag to make the component be aware of its surrounding and vice versa.
     protected bool $trackable = true;
 
+    private DataCollection|null $dictionary = null;
+
     public function __construct(
-        private readonly string $variant,
+        private readonly string $type,
         private readonly AbstractBlock $block,
-        private readonly SlotsRegistry $slotsRegistry,
+        private readonly SlotsManager $slotsManager,
         LoggerInterface $logger,
         Escaper $escaper,
         string $id,
@@ -36,44 +38,88 @@ abstract class Component extends Fragment
         parent::__construct($logger, $escaper, $modifiers, $id);
     }
 
-    public function track(): static
+    public function dictionary(): DataCollection
     {
-        if ($this->trackable) {
-            $this->slots()->track($this);
+        return $this->dictionary ??= Factory::create(DataCollection::class);
+    }
+
+    /**
+     * Public component properties entry point.
+     */
+    public function props(): DataCollection
+    {
+        return $this->properties();
+    }
+
+    /**
+     * Public component attributes entry point.
+     */
+    public function attrs(): DataCollection
+    {
+        return $this->attributes();
+    }
+
+    /**
+     * Public component property entry point.
+     */
+    public function prop(string $name, mixed $default = null): mixed
+    {
+        return $this->properties()->get($name, $default);
+    }
+
+    /**
+     * Fan the compiler-emitted bag into the three target collections —
+     * attributes (DOM-bound), properties (component settings), magewire
+     * (framework metadata). Called from the directive preamble emitted by
+     * AbstractTagCompiler. Each sub-bag is optional; missing keys are
+     * tolerated as empty arrays.
+     */
+    public function distribute(array $data): static
+    {
+        foreach ($data as $name => $value) {
+            if (is_array($value)) {
+                $this->properties()->target($name)->fill($value);
+            }
         }
 
+        return $this;
+    }
+
+    public function track(): static
+    {
+        $this->slots()->register($this);
         return $this;
     }
 
     public function untrack(): static
     {
-        if ($this->trackable) {
-            $this->slots()->untrack();
-        }
-
+        $this->slots()->unregister();
         return $this;
     }
 
     /**
-     * Bubble the finalized render output up the area stack.
+     * Sink for finalized component output.
      *
-     * If this element is nested inside another element, its render does NOT
-     * hit the surrounding output buffer — it appends to the parent area's
-     * `default` slot instead. The parent then reads that slot when its own
-     * template renders, producing nested HTML naturally.
+     * Two effects, both intentional:
      *
-     * The same rule applies as the parent itself finishes: if it too is
-     * nested, its render bubbles up another level. Eventually the chain
-     * reaches an element with no enclosing area — that's the top-level
-     * render, which echoes to Magento's surrounding output buffer.
+     *   1. Append `$output` to this area's `default` slot. Components that
+     *      author markup never read this back — Flake::end pushes the body
+     *      content into the default slot BEFORE its template renders. The
+     *      append here keeps the slot in sync with what was emitted, useful
+     *      for diagnostics and any consumer that inspects the area after
+     *      the render pass.
      *
-     * This sidesteps PHP ob_start nesting entirely for inter-element flow:
-     * children never write to the buffer, so buffer-level mismatches caused
-     * by nested template engines cannot drop or reorder output.
+     *   2. Echo `$output` to the surrounding output buffer. When this
+     *      component is nested, the enclosing component's ob_start captures
+     *      the echo and folds it into its own buffered body. When the
+     *      component is top-level (no enclosing area), the echo reaches
+     *      Magento's surrounding render buffer directly.
+     *
+     * Inter-component nesting still relies on PHP ob_start chains — this
+     * does NOT replace the buffer with a pure slot-bubble model.
      */
     protected function echo(string $output): void
     {
-        // Append the current output onto the area's default slot.
         $this->slots()->default()->append($output);
 
         echo $output;
@@ -81,19 +127,29 @@ abstract class Component extends Fragment
 
     protected function slots(): SlotsRegistry
     {
-        return $this->slotsRegistry;
+        return $this->slotsManager->registry();
     }
 
-    protected function variant(): string
+    protected function slotsManager(): SlotsManager
     {
-        return $this->variant;
+        return $this->slotsManager;
     }
 
-    /**
-     * Returns the elements parent block.
-     */
+    protected function type(): string
+    {
+        return $this->type;
+    }
+
     protected function block(): AbstractBlock
     {
         return $this->block;
+    }
+
+    protected function properties(): DataCollection
+    {
+        $properties = parent::properties();
+        $properties->subset('attributes');
+
+        return $properties;
     }
 }

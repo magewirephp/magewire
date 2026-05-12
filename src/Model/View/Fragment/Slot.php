@@ -15,8 +15,8 @@ namespace Magewirephp\Magewire\Model\View\Fragment;
  * Fragment component representing a named slot within a template.
  *
  * Slots capture content during template rendering without immediately echoing it.
- * Instead, the content is registered in the SlotsRegistry under the slot's variant
- * name, making it available for later retrieval and placement within parent templates.
+ * Instead, the content is registered in the slots tracker under the slot's type,
+ * making it available for later retrieval and placement within parent templates.
  *
  * Unlike standard fragments, slots do not create nested tracking contexts - they
  * simply register their content as a named slot in the current area's registry.
@@ -37,7 +37,7 @@ class Slot extends Component
      */
     public function start(): static
     {
-        $this->slots()->register($this->variant(), $this);
+        $this->slots()->add($this->type(), $this);
 
         return parent::start();
     }
@@ -46,8 +46,8 @@ class Slot extends Component
      * Complete slot content capture and register the output.
      *
      * Finalizes the fragment rendering to ensure all buffered output is captured,
-     * then registers the captured content with the SlotsRegistry under this slot's
-     * variant name, making it available for retrieval in parent templates.
+     * then registers the captured content with the slots tracker under this slot's
+     * variant, making it available for retrieval in parent templates.
      */
     public function end(): static
     {
@@ -59,7 +59,7 @@ class Slot extends Component
         // template can iterate previous values via foreach, while echoing
         // the snapshot still returns only the latest (Slot::__toString
         // returns the last component).
-        $this->slots()->get($this->variant())->push($this->output);
+        $this->slots()->get($this->type())->push($this->output);
 
         return $this;
     }

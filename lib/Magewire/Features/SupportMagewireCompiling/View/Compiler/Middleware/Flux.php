@@ -14,7 +14,7 @@ namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\M
 use Magewirephp\Magewire\Support\Random;
 
 /**
- * `<flux:variant>` tag compiler — Laravel-Flux-flavoured.
+ * `<flux:type>` tag compiler — Laravel-Flux-flavoured.
  *
  * Inherits regex assembly, attribute parsing, and the fragment-lifecycle
  * preamble from {@see AbstractTagCompiler}. The Flux-specific quirks live
@@ -33,7 +33,7 @@ class Flux extends AbstractTagCompiler
 
     protected function emitOpening(array $matches): string
     {
-        $variant = $matches['variant'];
+        $type = $matches['type'];
         $attributesRaw = $matches['attributes'] ?? '';
 
         // Strip a literal `slot="name"` so it doesn't end up as a regular
@@ -51,10 +51,10 @@ class Flux extends AbstractTagCompiler
         $var = preg_replace(
             '/[^a-zA-Z0-9]/',
             '_',
-            $this->prefix() . ucfirst(strtolower($variant)) . ucfirst($id)
+            $this->prefix() . ucfirst(strtolower($type)) . ucfirst($id)
         );
 
-        return "@magewireComponent(type: '{$this->prefix()}', id: '{$id}', variable: '{$var}', variant: '{$variant}')\n        "
+        return "@magewireComponent(prefix: '{$this->prefix()}', id: '{$id}', variable: '{$var}', type: '{$type}')\n        "
             . $this->preamble($var, $attributes);
     }
 }

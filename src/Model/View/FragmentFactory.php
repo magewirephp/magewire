@@ -57,7 +57,7 @@ class FragmentFactory
         return $this->componentFactory;
     }
 
-    public function component(AbstractBlock $block): Template
+    public function template(AbstractBlock $block): Template
     {
         return $this->create(Template::class, ['block' => $block]);
     }

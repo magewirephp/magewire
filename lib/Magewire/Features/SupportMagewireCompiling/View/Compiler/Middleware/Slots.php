@@ -46,7 +46,7 @@ class Slots extends AbstractTagCompiler
 
     protected function emitOpening(array $matches): string
     {
-        $name = $matches['variant'];
+        $name = $matches['type'];
         $attributes = $this->parseParams($matches['attributes'] ?? '');
         $var = 'slot' . ucfirst(strtolower($name)) . ucfirst(Random::alphabetical(5, true));
 

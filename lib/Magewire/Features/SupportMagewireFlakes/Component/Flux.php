@@ -12,7 +12,6 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\Component;
 
 use Magewirephp\Magewire\Component;
-use Magewirephp\Magewire\Features\SupportMagewireFlakes\Mechanisms\ResolveComponent\ComponentResolver\FlakeResolver;
 
 class Flux extends Component
 {

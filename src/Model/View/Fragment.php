@@ -15,6 +15,8 @@ use Magento\Framework\Escaper;
 use Magewirephp\Magewire\Concerns\WithTagging;
 use Magewirephp\Magewire\Model\View\Fragment\Exceptions\EmptyFragmentException;
 use Magewirephp\Magewire\Model\View\Fragment\Exceptions\FragmentValidationException;
+use Magewirephp\Magewire\Support\DataCollection;
+use Magewirephp\Magewire\Support\Factory;
 use Magewirephp\Magewire\Support\Random;
 use Psr\Log\LoggerInterface;
 use Throwable;
@@ -41,6 +43,8 @@ abstract class Fragment
     /** @var array<int, callable> $validators */
     private array $validators = [];
 
+    private DataCollection|null $properties = null;
+
     /**
      * @param array<int|string, FragmentModifier|callable> $modifiers
      */
@@ -54,7 +58,7 @@ abstract class Fragment
 
     public function id(): string
     {
-        return $this->id ??= Random::alphabetical(10);
+        return $this->id ??= Random::alphabetical(10, true);
     }
 
     /**
@@ -173,6 +177,11 @@ abstract class Fragment
         }
 
         return true;
+    }
+
+    protected function properties(): DataCollection
+    {
+        return $this->properties ??= Factory::create(DataCollection::class, ['name' => 'properties']);
     }
 
     /**

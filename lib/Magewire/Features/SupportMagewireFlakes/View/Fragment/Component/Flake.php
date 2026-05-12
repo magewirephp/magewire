@@ -17,7 +17,7 @@ use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
 use Magewirephp\Magewire\Features\SupportMagewireFlakes\Component\FlakeFactory;
 use Magewirephp\Magewire\Model\View\Fragment;
-use Magewirephp\Magewire\Model\View\SlotsRegistry;
+use Magewirephp\Magewire\Model\View\Management\SlotsManager;
 use Magewirephp\Magewire\Support\Random;
 use Psr\Log\LoggerInterface;
 use Throwable;
@@ -31,22 +31,22 @@ class Flake extends Fragment\Component
     public function __construct(
         private readonly FlakeFactory $flakeFactory,
         private readonly ApplicationState $applicationState,
-        string $variant,
+        string $type,
         string $id,
         AbstractBlock $block,
-        SlotsRegistry $slotsRegistry,
+        SlotsManager $slotsManager,
         LoggerInterface $logger,
         Escaper $escaper,
         array $modifiers = []
     ) {
-        parent::__construct($variant, $block, $slotsRegistry, $logger, $escaper, $id, $modifiers);
+        parent::__construct($type, $block, $slotsManager, $logger, $escaper, $id, $modifiers);
     }
 
     public function end(): static
     {
         // Finalize fragment buffering to capture all output.
         parent::end();
-
+        // Push the final output as the default slot content.
         $this->slots()->default()->push($this->output);
 
         try {
@@ -54,7 +54,7 @@ class Flake extends Fragment\Component
 
             if ($flake === false) {
                 throw new ComponentNotFoundException(
-                    sprintf('Magewire: Flake "%s" could not be found or doesnt exist', $this->variant())
+                    sprintf('Magewire: Flake "%s" could not be found or doesnt exist', $this->type())
                 );
             }
 
@@ -72,7 +72,7 @@ class Flake extends Fragment\Component
 
     protected function createFlakeByName(string $name): AbstractBlock|false
     {
-        return $this->flakeFactory->createByName($this->variant(), [
+        return $this->flakeFactory->createByName($this->type(), [
             'magewire:id' => Random::alphabetical(10),
             'magewire:name' => $name
         ]);

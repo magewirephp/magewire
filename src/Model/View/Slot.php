@@ -57,20 +57,6 @@ class Slot implements Stringable, IteratorAggregate, Countable
     }
 
     /**
-     * Replace the slot's history with a single entry.
-     *
-     * Wipes any previously stored entries and seeds a fresh history of one.
-     * Use sparingly — most callers should prefer `push()` (new entry) or
-     * `append()` (extend latest) so the iteration history stays intact.
-     */
-    public function update(string $content): static
-    {
-        $this->content = [$content];
-
-        return $this;
-    }
-
-    /**
      * Extend the latest entry with additional content.
      *
      * Used by `Component::echo()` to accumulate sibling child renders within
@@ -122,14 +108,32 @@ class Slot implements Stringable, IteratorAggregate, Countable
     }
 
     /**
-     * Retrieve a property value from the slot's component.
+     * Replace the slot's history with a single entry.
      *
-     * Properties are custom data attributes associated with the component
-     * that owns this slot.
+     * Wipes any previously stored entries and seeds a fresh history of one.
+     * Use sparingly — most callers should prefer `push()` (new entry) or
+     * `append()` (extend latest) so the iteration history stays intact.
+     */
+    public function replace(string $content): static
+    {
+        $this->content = [$content];
+
+        return $this;
+    }
+
+    public function empty(): static
+    {
+        $this->content = [];
+
+        return $this;
+    }
+
+    /**
+     * Retrieve a property value from the slot's component.
      */
     public function prop(string $name, mixed $default = null)
     {
-        return $this->component->data()->properties()->get($name, $default);
+        return $this->component->props()->get($name, $default);
     }
 
     /**
@@ -140,7 +144,7 @@ class Slot implements Stringable, IteratorAggregate, Countable
      */
     public function attr(string $name, mixed $default = '')
     {
-        return $this->component->data()->attributes()->get($name, $default);
+        return $this->component->attrs()->get($name, $default);
     }
 
     /**
@@ -180,10 +184,12 @@ class Slot implements Stringable, IteratorAggregate, Countable
         return count($this->content);
     }
 
-
+    /**
+     * Determines whether the slot contains multiple content items and should be iterated over.
+     */
     public function iterable(): bool
     {
-        return $this->count() > 0;
+        return $this->count() > 1;
     }
 
     /**

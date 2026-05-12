@@ -15,30 +15,30 @@ use Magento\Framework\App\State as ApplicationState;
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Model\View\Fragment;
-use Magewirephp\Magewire\Model\View\SlotsRegistry;
+use Magewirephp\Magewire\Model\View\Management\SlotsManager;
 use Psr\Log\LoggerInterface;
 
 class Unknown extends Fragment\Component
 {
     public function __construct(
         private ApplicationState $applicationState,
-        string $variant,
+        string $type,
         AbstractBlock $block,
-        SlotsRegistry $slotsRegistry,
+        SlotsManager $slotsManager,
         LoggerInterface $logger,
         Escaper $escaper,
         string $id,
         array $modifiers = []
     ) {
-        parent::__construct($variant, $block, $slotsRegistry, $logger, $escaper, $id, $modifiers);
+        parent::__construct($type, $block, $slotsManager, $logger, $escaper, $id, $modifiers);
     }
 
     public function render(): string
     {
-        $this->raw = sprintf('<!-- Unknown Magewire DOM element "%s". -->', $this->variant);
+        $this->raw = '';
 
-        if ($this->applicationState->getMode() === ApplicationState::MODE_PRODUCTION) {
-            $this->raw = '';
+        if ($this->applicationState->getMode() !== ApplicationState::MODE_PRODUCTION) {
+            $this->raw = sprintf('<!-- Unknown component "%s". -->', $this->type());
         }
 
         return parent::render();

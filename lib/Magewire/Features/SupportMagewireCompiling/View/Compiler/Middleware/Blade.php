@@ -14,9 +14,9 @@ namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\M
 use Magewirephp\Magewire\Support\Random;
 
 /**
- * `<magewire:variant>` tag compiler.
+ * `<magewire:type>` tag compiler.
  *
- * Migrated from the legacy two-segment `<magewire-{component}:{variant}>`
+ * Migrated from the legacy two-segment `<magewire-{component}:{type}>`
  * shape to the unified one-segment form so all built-in compilers share a
  * single tag pattern. Templates that used the old dash form must be updated
  * to drop the `-{component}` suffix.
@@ -32,16 +32,16 @@ class Blade extends AbstractTagCompiler
 
     protected function emitOpening(array $matches): string
     {
-        $variant = $matches['variant'];
+        $type = $matches['type'];
         $attributes = $this->parseParams($matches['attributes'] ?? '');
         $id = Random::alphabetical(5, true);
         $var = preg_replace(
             '/[^a-zA-Z0-9]/',
             '_',
-            $this->prefix() . ucfirst(strtolower($variant)) . ucfirst($id)
+            $this->prefix() . ucfirst(strtolower($type)) . ucfirst($id)
         );
 
-        return "@magewireComponent(type: '{$this->prefix()}', id: '{$id}', variable: '{$var}', variant: '{$variant}')\n        "
+        return "@magewireComponent(prefix: '{$this->prefix()}', id: '{$id}', variable: '{$var}', type: '{$type}')\n        "
             . $this->preamble($var, $attributes);
     }
 }
