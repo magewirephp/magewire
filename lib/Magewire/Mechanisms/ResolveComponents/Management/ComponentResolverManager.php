@@ -88,9 +88,16 @@ class ComponentResolverManager
         try {
             // Last resort: find a resolver that matches the given block.
             // @todo Consider prioritizing resolvers instead of always using the first match.
-            $resolver = array_key_first(array_filter($this->resolvers, static fn (ComponentResolver $resolver) => $resolver->complies($block, $block->getData('magewire'))));
+            $resolver = null;
 
-            $resolver = $this->createResolverByAccessor($resolver);
+            foreach ($this->resolvers as $key => $componentResolver) {
+                if ($componentResolver->complies($block, $block->getData('magewire'))) {
+                    $resolver = $key;
+                    break;
+                }
+            }
+
+            $resolver = $this->createResolverByAccessor($resolver ?? 'unknown');
         } catch (Exception $exception) {
             $this->logger->critical($exception->getMessage(), ['exception' => $exception]);
 
