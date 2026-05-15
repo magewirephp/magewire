@@ -57,6 +57,31 @@ class Html extends Fragment
         return $this;
     }
 
+    /**
+     * @todo needs change, since now attributes are automatically bound and rendered onto the root node,
+     *       which might not always be favorable for each fragment extending from this.
+     */
+    protected function render(): string
+    {
+        $render = parent::render();
+        $attributes = $this->attributes()->target('root');
+
+        if ($attributes->count() !== 0) {
+            $attributeStrings = [];
+
+            foreach ($attributes as $attribute => $value) {
+                $attributeStrings[] = is_numeric($attribute) ? $value : $attribute . '="' . $this->escaper->escapeHtmlAttr($value) . '"';
+            }
+
+            if (! empty($attributeStrings)) {
+                $attributeString = ' ' . implode(' ', $attributeStrings);
+                $render = preg_replace('/^(<[^>\s]+)/', '$1' . $attributeString, $render, 1);
+            }
+        }
+
+        return trim($render);
+    }
+
     protected function attributes(): DataCollection
     {
         return $this->properties()->target('attributes');
