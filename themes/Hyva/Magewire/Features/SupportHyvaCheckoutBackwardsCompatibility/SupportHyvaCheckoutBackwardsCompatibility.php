@@ -14,6 +14,7 @@ namespace Magewirephp\MagewireCompatibilityWithHyva\Magewire\Features\SupportHyv
 use Hyva\Checkout\Magewire\Checkout\AddressView\AbstractMagewireAddressForm;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\ComponentHook;
+use Magewirephp\Magewire\Features\SupportEvents\SupportEvents;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\LayoutLifecycleManager;
 use Psr\Log\LoggerInterface;
@@ -49,8 +50,7 @@ class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
     public function __construct(
         private readonly LayoutLifecycleManager $renderLifecycleManager,
         private readonly LoggerInterface $logger,
-        private readonly TemporaryHydrationRegistry $temporaryHydrationRegistry,
-        private readonly \Magewirephp\Magewire\Features\SupportEvents\SupportEvents $supportEvents
+        private readonly SupportEvents $supportEvents
     ) {
     }
 
@@ -90,11 +90,7 @@ class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
 
     public function hydrate($memo): void
     {
-        if (! isset($memo['bc']['enabled'])) {
-            return;
-        }
-
-        $this->temporaryHydrationRegistry->push($this->component()->id());
+        store($this->component())->set('magewire:bc', $memo['bc']['enabled'] ?? false);
     }
 
     public function dehydrate(ComponentContext $context): void
@@ -120,20 +116,7 @@ class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
             // any of the requested components, rendered this child component.
             if ($backwardsCompatibilityActive === false) {
                 // When still null, lets check if this component sits within the Hyvä Checkout Main component.
-                $backwardsCompatibilityActive = $this->renderLifecycleManager->target('magewire')
-                    ->within('hyva-checkout-main');
-
-                if ($backwardsCompatibilityActive === false) {
-                    foreach ($this->temporaryHydrationRegistry->list() as $value) {
-                        $this->temporaryHydrationRegistry->pop($value);
-
-                        // Found look upwards in the layout lifecycle, so flag it and break the current loop.
-                        if ($this->renderLifecycleManager->target('magewire')->within($value)) {
-                            $backwardsCompatibilityActive = true;
-                            break;
-                        }
-                    }
-                }
+                $backwardsCompatibilityActive = $this->renderLifecycleManager->target('magewire')->within('hyva-checkout-main');
             }
 
             store($this->component())->set(
