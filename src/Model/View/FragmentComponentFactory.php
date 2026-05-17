@@ -23,7 +23,6 @@ class FragmentComponentFactory
     public function __construct(
         private array $components = []
     ) {
-
     }
 
     /**
