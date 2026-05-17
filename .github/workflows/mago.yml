@@ -19,16 +19,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
-      - name: Setup php
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-
-      - name: Install composer
-        uses: ramsey/composer-install@v3
-        with:
-          composer-options: "--no-scripts"
-
       - name: Install Mago
         run: |
           curl --proto '=https' --tlsv1.2 -LsSf https://carthage.software/mago.sh | sh -s -- --to "$HOME/.local/bin"
