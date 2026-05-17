@@ -87,7 +87,6 @@ class ComponentResolverManager
 
         try {
             // Last resort: find a resolver that matches the given block.
-            // @todo Consider prioritizing resolvers instead of always using the first match.
             $resolver = null;
 
             foreach ($this->resolvers as $key => $componentResolver) {
@@ -194,14 +193,16 @@ class ComponentResolverManager
      */
     private function cache(AbstractBlock $block, ComponentResolver $resolver): void
     {
+        $accessor = $resolver->getAccessor();
         $cache = $this->resolversCache->fetch();
-        $cache['blocks'][$this->getBlockCacheKey($block)] = $resolver->getAccessor();
 
-        $resolvers = $cache['resolvers'] ?? [$resolver->getAccessor() => []];
+        $cache['blocks'][$this->getBlockCacheKey($block)] = $accessor;
 
-        $resolvers[$resolver->getAccessor()]['blocks'][] = $this->getBlockCacheKey($block);
-        $resolvers[$resolver->getAccessor()]['class'] ??= $resolver::class;
-        $resolvers[$resolver->getAccessor()]['name'] ??= $resolver->getAccessor();
+        $resolvers = $cache['resolvers'] ?? [$accessor => []];
+
+        $resolvers[$accessor]['blocks'][] = $this->getBlockCacheKey($block);
+        $resolvers[$accessor]['class'] ??= $resolver::class;
+        $resolvers[$accessor]['name'] ??= $accessor;
 
         $cache['resolvers'] = $resolvers;
 
