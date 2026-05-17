@@ -3,7 +3,6 @@ php-version = "8.2.0"
 [source]
 workspace = "."
 paths = ["lib/", "src/", "themes/"]
-includes = ["../../vendor/magento"]
 excludes = ["dist/**", "node_modules/**", "lib/Livewire"]
 extensions = ["php", "phtml"]
 
