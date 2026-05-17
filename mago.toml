@@ -3,7 +3,7 @@ php-version = "8.2.0"
 [source]
 workspace = "."
 paths = ["lib/", "src/", "themes/"]
-excludes = ["dist/**", "node_modules/**", "lib/Livewire"]
+excludes = ["dist/**", "node_modules/**", "lib/Livewire", "lib/Magewire/Features/SupportMagewireFlakes/View/Compiler/FlakeCompilerBu.php"]
 extensions = ["php", "phtml"]
 
 [formatter]
@@ -54,5 +54,3 @@ strict-list-index-checks = false
 # Magento 2 DI: code paths reachable only through DI-resolved calls appear dead.
 analyze-dead-code = false
 check-throws = true
-
-excludes = ["lib/Magewire/Features/SupportMagewireFlakes/View/Compiler/FlakeCompilerBu.php"]
