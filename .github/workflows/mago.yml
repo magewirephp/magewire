@@ -21,7 +21,7 @@ jobs:
 
       - name: Install Mago
         run: |
-          curl --proto '=https' --tlsv1.2 -LsSf https://carthage.software/mago.sh | sh -s -- --to "$HOME/.local/bin"
+          curl --proto '=https' --tlsv1.2 -LsSf https://carthage.software/mago.sh | bash -s -- --to "$HOME/.local/bin"
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Mago lint
