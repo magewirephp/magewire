@@ -17,11 +17,11 @@ class Base extends FunctionDirective
 {
     public function translate(string $expression): string
     {
-        return "<?php echo \\Magewirephp\\Magewire\\magewire_translate({$expression}) ?>";
+        return "<?php echo __({$expression}) ?>";
     }
 
     public function child(string $expression): string
     {
-        return "<?php echo \$block->getChildHtml({$expression}) ?>";
+        return "<?php echo (\$block && \$block->getChildBlock({$expression})) ? \$block->getChildBlock({$expression})->toHtml() : '' ?>";
     }
 }

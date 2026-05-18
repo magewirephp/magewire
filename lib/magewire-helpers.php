@@ -343,24 +343,6 @@ function map(callable $callback, array $data): array
     return array_combine($keys, $items);
 }
 
-function magewire_translate(string $value, bool $escape = true): string
-{
-    $translated = __($value);
-
-    if ($escape) {
-        return ObjectManager::getInstance()->get(\Magento\Framework\Escaper::class)->escapeHtml($translated);
-    }
-
-    return (string) $translated;
-}
-
-function magewire_block_child_html(\Magento\Framework\View\Element\AbstractBlock $block, string $alias): string
-{
-    $child = $block->getChildBlock($alias);
-
-    return $child ? $child->toHtml() : '';
-}
-
 function map_with_keys(callable $callback, array $data): array
 {
     $result = [];
