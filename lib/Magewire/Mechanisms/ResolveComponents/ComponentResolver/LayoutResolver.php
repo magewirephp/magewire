@@ -111,7 +111,9 @@ class LayoutResolver extends ComponentResolver
                     $context->addMemo('handles', array_values($this->determineLayoutHandles($component, $context)));
                 }
 
-                if ($alias = $component->magewireBlock()->getData('magewire:alias')) {
+                $alias = $component->magewireBlock()->getData('magewire:alias');
+
+                if ($alias) {
                     $context->addMemo('alias', $alias);
                 }
             }
@@ -172,8 +174,8 @@ class LayoutResolver extends ComponentResolver
     {
         $arguments = $this->arguments();
 
-        $id    = $arguments->get('id', $block->getNameInLayout(), true);
-        $name  = $arguments->get('name', $block->getNameInLayout(), true);
+        $id = $arguments->get('id', $block->getNameInLayout(), true);
+        $name = $arguments->get('name', $block->getNameInLayout(), true);
         $alias = $component->getMagewireAlias() ?? $block->getData('magewire:alias') ?? $arguments->get('alias');
 
         /*
@@ -209,12 +211,7 @@ class LayoutResolver extends ComponentResolver
             return;
         }
 
-        $classParts = array_values(
-            array_filter(
-                explode('\\', get_class($component)),
-                static fn (string $part) => $part !== 'Interceptor'
-            )
-        );
+        $classParts = array_values(array_filter(explode('\\', get_class($component)), static fn (string $part) => $part !== 'Interceptor'));
 
         $prefix = $classParts[0] . '_' . $classParts[1];
         $suffix = strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', end($classParts)));
@@ -252,10 +249,7 @@ class LayoutResolver extends ComponentResolver
 
     protected function determineLayoutHandles(Component $component, ComponentContext $context): array
     {
-        return array_diff(
-            $context->getBlock()->getLayout()->getUpdate()->getHandles(),
-            ['default']
-        );
+        return array_diff($context->getBlock()->getLayout()->getUpdate()->getHandles(), ['default']);
     }
 
     protected function recoverLayoutHandles(Snapshot $snapshot): array

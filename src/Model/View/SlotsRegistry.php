@@ -25,6 +25,8 @@ use RuntimeException;
  *
  * Areas are tracked and untracked as templates are rendered, creating isolated
  * slot contexts that prevent naming conflicts between nested components.
+ *
+ * @mago-expect lint:too-many-methods
  */
 class SlotsRegistry
 {
@@ -52,9 +54,7 @@ class SlotsRegistry
         $area ??= $component->id();
 
         // Initialize counter for this base key if it doesn't exist.
-        if (! isset($this->counters[$area])) {
-            $this->counters[$area] = -1;
-        }
+        $this->counters[$area] ??= -1;
 
         $this->counters[$area]++;
         // Register the latest area.
@@ -111,12 +111,13 @@ class SlotsRegistry
      * so the contract is non-nullable. Throws when no area is currently
      * registered: a missing area is a programmer error, not a runtime
      * recoverable condition.
+     *
+     * @mago-expect lint:no-isset
      */
     public function default(): Slot
     {
         if (! isset($this->slots[$this->area]['default'])) {
-            $component = $this->components[$this->area]
-                ?? throw new RuntimeException('No area is currently registered.');
+            $component = $this->components[$this->area] ?? throw new RuntimeException('No area is currently registered.');
 
             $this->add('default', $component);
         }
@@ -132,6 +133,8 @@ class SlotsRegistry
      * `<slot:name>` re-assignments. Only the first call for a name builds
      * a fresh Slot. The Component passed on subsequent calls is ignored —
      * the original owning Component is kept as metadata.
+     *
+     * @mago-expect lint:no-isset
      */
     public function add(string $name, Component $component): Slot
     {
@@ -177,6 +180,8 @@ class SlotsRegistry
 
     /**
      * Check if a slot exists in the current area.
+     *
+     * @mago-expect lint:no-isset
      */
     public function exists(string $name): bool
     {

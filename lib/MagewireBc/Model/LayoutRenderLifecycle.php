@@ -47,6 +47,8 @@ class LayoutRenderLifecycle
 
     /**
      * Marks view as 'stop rendering'.
+     *
+     * @mago-expect lint:no-isset
      */
     public function stop(string $parent): LayoutRenderLifecycle
     {

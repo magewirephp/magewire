@@ -11,15 +11,21 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Support;
 
+use ArrayIterator;
 use Countable;
 use IteratorAggregate;
-use ArrayIterator;
-use Traversable;
 use Magewirephp\Magewire\Support\Concerns\WithFactory;
 use Magewirephp\Magewire\Support\DataCollection\Filter;
 use Magewirephp\Magewire\Support\DataCollection\Hook;
 use Magewirephp\Magewire\Support\DataCollection\TypeFilter;
+use Traversable;
 
+/**
+ * @mago-expect lint:too-many-methods
+ * @mago-expect lint:cyclomatic-complexity
+ * @mago-expect lint:kan-defect
+ * @mago-expect lint:no-isset
+ */
 abstract class DataCollection implements Countable, IteratorAggregate
 {
     use WithFactory;
@@ -60,7 +66,12 @@ abstract class DataCollection implements Countable, IteratorAggregate
 
     public function each(callable $callback, callable|TypeFilter $filter = TypeFilter::ALL): static
     {
-        $items = $filter === TypeFilter::ALL ? $this->all() : $this->filter()->with($filter)->return()->all();
+        $items = $filter === TypeFilter::ALL
+            ? $this->all()
+            : $this->filter()
+                ->with($filter)
+                ->return()
+                ->all();
 
         foreach ($items as $key => $value) {
             $callback($value, $key);
@@ -127,7 +138,7 @@ abstract class DataCollection implements Countable, IteratorAggregate
 
         $arguments = array_merge($arguments, [
             'parent' => $this,
-            'name' => $name ?? Random::string(),
+            'name' => $name ?? Random::string()
         ]);
 
         $instance = $this->newTypeInstance($type ?? static::class, $arguments);
@@ -206,6 +217,8 @@ abstract class DataCollection implements Countable, IteratorAggregate
 
     /**
      * Check if all given items exist within the collection.
+     *
+     * @mago-expect lint:strict-behavior
      */
     public function contains(array $names, bool $strict = true): bool
     {
@@ -248,9 +261,16 @@ abstract class DataCollection implements Countable, IteratorAggregate
         $items = $this;
 
         if ($filter) {
-            $items = $this->subset()->fill(
-                $this->filter()->with(TypeFilter::JSON_ENCODABLE)->return()->all()
-            )->filter()->with($filter)->return();
+            $items = $this->subset()
+                ->fill(
+                    $this->filter()
+                        ->with(TypeFilter::JSON_ENCODABLE)
+                        ->return()
+                        ->all()
+                )
+                ->filter()
+                ->with($filter)
+                ->return();
         }
 
         return json_encode($items->all());
@@ -288,7 +308,7 @@ abstract class DataCollection implements Countable, IteratorAggregate
 
     public function get(string|int $name, $default = null, bool $set = false): mixed
     {
-        $value = $this->items[$name] ?? ($set ? $this->default($name, $default)->get($name) : $default);
+        $value = $this->items[$name] ?? ( $set ? $this->default($name, $default)->get($name) : $default );
 
         $this->dispatch(Hook::GET, $name, $value);
         return $value;
@@ -343,7 +363,7 @@ abstract class DataCollection implements Countable, IteratorAggregate
     public function destroy(): static
     {
         foreach ($this->subsets !== null ? $this->subsets->raw() : [] as $subset) {
-            if (! ($subset instanceof DataCollection)) {
+            if (! $subset instanceof DataCollection) {
                 continue;
             }
 
@@ -401,7 +421,7 @@ abstract class DataCollection implements Countable, IteratorAggregate
 
     public function walk(callable $callback): static
     {
-        $result  = $callback($this);
+        $result = $callback($this);
         $subsets = $this->subsets();
 
         // Callback returned nothing or this instance.

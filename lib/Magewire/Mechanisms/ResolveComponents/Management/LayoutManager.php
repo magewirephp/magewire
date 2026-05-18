@@ -22,7 +22,7 @@ class LayoutManager
         private readonly LayoutInterface $layout,
         private readonly LayoutFactory $factory,
         private readonly LayoutDecorator $decorator,
-        private readonly LayoutLifecycleManager $lifecycleManager,
+        private readonly LayoutLifecycleManager $lifecycleManager
     ) {
     }
 

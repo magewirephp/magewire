@@ -35,11 +35,7 @@ class MagentoTemplateCompiler extends Compiler
         $pipeline = parent::newCompilerPipelineDistributorInstance();
 
         foreach ($this->middleware as $group => $middleware) {
-            $pipeline
-                ->template()
-                ->middleware()
-                ->group($group)
-                ->pipe(fn (string $throughput, callable $next): mixed => $next($middleware->compile($throughput)));
+            $pipeline->template()->middleware()->group($group)->pipe(fn (string $throughput, callable $next): mixed => $next($middleware->compile($throughput)));
         }
 
         return $pipeline;

@@ -271,6 +271,8 @@ function app($abstract = null, array $arguments = []): mixed
  * @param mixed                 $default
  *
  * @return mixed
+ *
+ * @mago-expect lint:no-isset
  */
 function data_get($target, $key, $default = null)
 {
@@ -298,7 +300,7 @@ function data_get($target, $key, $default = null)
                 $result[] = data_get($item, $key);
             }
 
-            return in_array('*', $key) ? Arr::collapse($result) : $result;
+            return in_array('*', $key, true) ? Arr::collapse($result) : $result;
         }
 
         $segment = match ($segment) {
@@ -339,6 +341,24 @@ function map(callable $callback, array $data): array
     $items = array_map($callback, $data, $keys);
 
     return array_combine($keys, $items);
+}
+
+function magewire_translate(string $value, bool $escape = true): string
+{
+    $translated = __($value);
+
+    if ($escape) {
+        return ObjectManager::getInstance()->get(\Magento\Framework\Escaper::class)->escapeHtml($translated);
+    }
+
+    return (string) $translated;
+}
+
+function magewire_block_child_html(\Magento\Framework\View\Element\AbstractBlock $block, string $alias): string
+{
+    $child = $block->getChildBlock($alias);
+
+    return $child ? $child->toHtml() : '';
 }
 
 function map_with_keys(callable $callback, array $data): array

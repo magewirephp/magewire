@@ -14,6 +14,7 @@ use Magewirephp\Magewire\MagewireServiceProvider;
 /**
  * @deprecated
  * @mago-expect lint:too-many-methods
+ * @mago-expect lint:tagged-todo
  */
 class Request implements RequestInterface
 {

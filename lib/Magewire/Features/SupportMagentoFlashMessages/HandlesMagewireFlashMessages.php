@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagentoFlashMessages;
 
-use Magewirephp\Magewire\Support\Factory;
 use Magewirephp\Magewire\Features\SupportMagentoFlashMessages\FlashMessage as FlashMessageElement;
+use Magewirephp\Magewire\Support\Factory;
 
 trait HandlesMagewireFlashMessages
 {
@@ -66,10 +66,9 @@ trait HandlesMagewireFlashMessages
     public function dispatchMessage(string $type, $message): FlashMessageElement
     {
         $type = match ($type) {
-            FlashMessageType::Error->value   => FlashMessageType::Error,
+            FlashMessageType::Error->value => FlashMessageType::Error,
             FlashMessageType::Warning->value => FlashMessageType::Warning,
             FlashMessageType::Success->value => FlashMessageType::Success,
-
             default => FlashMessageType::Notice
         };
 

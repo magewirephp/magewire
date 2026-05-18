@@ -28,6 +28,8 @@ use Traversable;
  * @todo Needs to become lockable after the content has been updated with the final output buffer/content.
  *       This should maybe be done with a generic WithLockable trait sitting in the Magewire/Support namespace.
  *       Read-only for the class is not sufficient, since the content has to be updated.
+ *
+ * @mago-expect lint:too-many-methods
  */
 class Slot implements Stringable, IteratorAggregate, Countable
 {

@@ -44,6 +44,8 @@ use function Magewirephp\Magewire\store;
  * The frontend JS (in magewire-attributes.phtml and magewire-components.phtml) reads this
  * flag to automatically migrate wire:model directives and make entangle default to live,
  * so existing Hyvä Checkout components work without code changes.
+ *
+ * @mago-expect lint:cyclomatic-complexity
  */
 class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
 {
@@ -70,7 +72,7 @@ class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
             $currentDispatches = $effects->getData('dispatches') ?? [];
             $newDispatches = $this->supportEvents->getServerDispatchedEvents($component);
 
-            if (empty($currentDispatches)) {
+            if ($currentDispatches === []) {
                 $currentDispatches = $newDispatches;
             } else {
                 foreach ($currentDispatches as $current) {
@@ -106,9 +108,7 @@ class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
         }
 
         try {
-            $backwardsCompatibilityActive = $this->component()
-                ? store($this->component())->get('magewire:bc')
-                : false;
+            $backwardsCompatibilityActive = $this->component() ? store($this->component())->get('magewire:bc') : false;
 
             // When still null, a Magewire component is dynamically injected onto the page via a subsequent
             // Magewire request, it can not match any of the above use cases. Herefor, a unique
@@ -119,19 +119,12 @@ class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
                 $backwardsCompatibilityActive = $this->renderLifecycleManager->target('magewire')->within('hyva-checkout-main');
             }
 
-            store($this->component())->set(
-                'magewire:bc',
-                is_bool($backwardsCompatibilityActive)
-                    ? $backwardsCompatibilityActive
-                    : false
-            );
+            store($this->component())->set('magewire:bc', is_bool($backwardsCompatibilityActive) ? $backwardsCompatibilityActive : false);
         } catch (ReflectionException $exception) {
             $this->logger->critical($exception->getMessage(), ['exception' => $exception]);
         }
 
-        $backwardsCompatibilityActive = $this->component()
-            ? store($this->component())->get('magewire:bc')
-            : false;
+        $backwardsCompatibilityActive = $this->component() ? store($this->component())->get('magewire:bc') : false;
 
         $context->pushMemo('bc', $backwardsCompatibilityActive ?? false, 'enabled');
     }

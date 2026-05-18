@@ -16,6 +16,10 @@ use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\Compi
 use Magewirephp\Magewire\Support\Pipeline;
 use Throwable;
 
+/**
+ * @mago-expect lint:too-many-methods
+ * @mago-expect lint:cyclomatic-complexity
+ */
 abstract class Compiler
 {
     private bool $compile = true;
@@ -147,7 +151,7 @@ abstract class Compiler
     {
         [$id, $content] = $token;
 
-        if ($id == T_INLINE_HTML) {
+        if ($id === T_INLINE_HTML) {
             return $this->pipelines()->html()->run($content);
         }
 
@@ -156,6 +160,10 @@ abstract class Compiler
 
     /**
      * Compile directives starting with "@".
+     *
+     * @mago-expect lint:no-isset
+     * @mago-expect lint:halstead
+     * @mago-expect lint:no-shorthand-ternary
      */
     protected function compileDirectives(string $template): string
     {
@@ -206,6 +214,10 @@ abstract class Compiler
 
     /**
      * Compile a single "@" directive.
+     *
+     * @mago-expect lint:no-isset
+     * @mago-expect lint:halstead
+     * @mago-expect lint:no-assign-in-condition
      */
     protected function compileDirective(array $match): string
     {

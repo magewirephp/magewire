@@ -28,6 +28,7 @@ class Flake extends Fragment\Component
     // Slots are buffered internally and registered for later use in the component template.
     protected bool $echo = false;
 
+    /** @mago-expect lint:excessive-parameter-list */
     public function __construct(
         private readonly FlakeFactory $flakeFactory,
         private readonly ApplicationState $applicationState,
@@ -53,9 +54,7 @@ class Flake extends Fragment\Component
             $flake = $this->createFlakeByName($this->id());
 
             if ($flake === false) {
-                throw new ComponentNotFoundException(
-                    sprintf('Magewire: Flake "%s" could not be found or doesnt exist', $this->type())
-                );
+                throw new ComponentNotFoundException(sprintf('Magewire: Flake "%s" could not be found or doesnt exist', $this->type()));
             }
 
             $this->echo($flake->toHtml());

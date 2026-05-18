@@ -77,7 +77,7 @@ class Layout implements UtilsInterface
             $child = $block->getChildBlock($alias);
 
             if ($child instanceof AbstractBlock) {
-                if (! empty($data)) {
+                if ($data !== []) {
                     $child->addData($data);
                 }
 

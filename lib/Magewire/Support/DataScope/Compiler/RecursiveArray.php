@@ -16,6 +16,10 @@ use Magewirephp\Magewire\Support\DataScope;
 
 class RecursiveArray extends DataScope\Compiler
 {
+    /**
+     * @mago-expect lint:halstead
+     * @mago-expect lint:no-empty-catch-clause
+     */
     public function compile(DataScope $data): array
     {
         $result = [];

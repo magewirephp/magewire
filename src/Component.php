@@ -26,6 +26,7 @@ use Magewirephp\Magewire\Features\SupportMagewireViewModel\HandlesMagewireViewMo
 use Magewirephp\Magewire\Features\SupportRedirects\HandlesRedirects;
 use Magewirephp\Magewire\Features\SupportStreaming\HandlesStreaming;
 
+/** @mago-expect lint:too-many-methods */
 abstract class Component implements ArgumentInterface
 {
     use InteractsWithProperties;
@@ -95,6 +96,9 @@ abstract class Component implements ArgumentInterface
         return $this->__magewireAlias !== null;
     }
 
+    /**
+     * @mago-expect lint:no-shorthand-ternary
+     */
     public function skipRender($html = null): void
     {
         store($this)->set('skipRender', $html ?: true);
@@ -110,12 +114,15 @@ abstract class Component implements ArgumentInterface
         store($this)->set('skipHydrate', true);
     }
 
+    /**
+     * @mago-expect lint:no-empty-catch-clause
+     */
     public function __isset($property)
     {
         try {
             $value = $this->__get($property);
 
-            if (isset($value)) {
+            if ($value !== null) {
                 return true;
             }
         } catch (PropertyNotFoundException $exception) {

@@ -12,7 +12,6 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\Mechanisms\ResolveComponent\ComponentResolver;
 
 use Magento\Framework\View\Element\AbstractBlock;
-use Magewirephp\Magewire\Features\SupportMagewireFlakes\Component\FlakeFactory;
 use Magewirephp\Magewire\Features\SupportMagewireFlakes\Component\FluxFactory;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\Snapshot;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\LayoutBlockArgumentsFactory;
@@ -30,11 +29,7 @@ class FluxResolver extends LayoutResolver
         LayoutBlockArgumentsFactory $layoutBlockArgumentsFactory,
         LayoutManager $layoutManager
     ) {
-        parent::__construct(
-            $conditions,
-            $layoutBlockArgumentsFactory,
-            $layoutManager
-        );
+        parent::__construct($conditions, $layoutBlockArgumentsFactory, $layoutManager);
     }
 
     public function complies(mixed $block, mixed $magewire = null): bool

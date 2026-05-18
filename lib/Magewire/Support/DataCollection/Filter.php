@@ -15,6 +15,7 @@ use InvalidArgumentException;
 use Magewirephp\Magewire\Support\DataCollection;
 use RuntimeException;
 
+/** @mago-expect lint:too-many-methods */
 abstract class Filter
 {
     private DataCollection|null $collection = null;
@@ -118,11 +119,17 @@ abstract class Filter
         return $this->chain(array_unique($this->items(), SORT_REGULAR));
     }
 
+    /**
+     * @mago-expect lint:no-empty
+     */
     public function byEmpty(): static
     {
         return $this->chain(array_filter($this->items(), static fn ($value) => empty($value)));
     }
 
+    /**
+     * @mago-expect lint:no-empty
+     */
     public function byNotEmpty(): static
     {
         return $this->chain(array_filter($this->items(), static fn ($value) => ! empty($value)));
@@ -183,7 +190,7 @@ abstract class Filter
     {
         return $this->collection()
             ->newInstance([
-                'items'  => $result,
+                'items' => $result,
                 'filter' => $this
             ])
             ->filter();

@@ -7,10 +7,14 @@
  * details on copyrights and license information.
  */
 
+declare(strict_types=1);
+
 namespace Magewirephp\Magewire\Model;
 
 /**
  * @deprecated
+ *
+ * @mago-expect lint:too-many-methods
  */
 interface RequestInterface
 {

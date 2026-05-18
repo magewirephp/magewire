@@ -16,6 +16,9 @@ use Magento\Framework\View\Layout\ScheduledStructure;
 
 class Helper extends ScheduledStructure\Helper
 {
+    /**
+     * @mago-expect lint:no-isset
+     */
     public function scheduleElement(ScheduledStructure $scheduledStructure, Structure $structure, $key)
     {
         $row = $scheduledStructure->getStructureElement($key);

@@ -15,6 +15,7 @@ use Magento\Framework\View\Element\AbstractBlock;
 use Magento\Framework\View\TemplateEngine\Php as Subject;
 use Magewirephp\Magento\Framework\View\TemplateEngine\Php\TemplateRenderDataTransferObject;
 use Magewirephp\Magewire\Support\Factory;
+
 use function Magewirephp\Magewire\trigger;
 
 class Php
@@ -30,7 +31,7 @@ class Php
         $dto = Factory::create(TemplateRenderDataTransferObject::class, [
             'block' => $block,
             'filename' => $filename,
-            'dictionary' => $dictionary,
+            'dictionary' => $dictionary
         ]);
 
         $this->renderers[] = trigger('magento:template:render', $dto, $subject);

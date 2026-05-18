@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Enums;
 
+/** @mago-expect lint:too-many-methods */
 enum ServiceTypeItemBootMode: int
 {
     case LAZY = 10;

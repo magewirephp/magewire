@@ -16,6 +16,7 @@ use Magewirephp\Magento\Framework\View\TemplateEngine\Php\TemplateRenderDataTran
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\ComponentHook;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\LayoutLifecycleManager;
+
 use function Magewirephp\Magewire\on;
 
 class SupportMagewireNestingComponents extends ComponentHook
@@ -25,6 +26,9 @@ class SupportMagewireNestingComponents extends ComponentHook
     ) {
     }
 
+    /**
+     * @mago-expect lint:no-isset
+     */
     public function provide(): void
     {
         on('magento:template:render', function (TemplateRenderDataTransferObject $dto) {

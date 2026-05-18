@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -30,7 +31,10 @@ class ComponentFactory
         $this->layout = $layout;
     }
 
-    public function create(?Component $component = null, array $data = []): Component
+    /**
+     * @mago-expect lint:no-isset
+     */
+    public function create(Component|null $component = null, array $data = []): Component
     {
         $class = $component ? get_class($component) : Component::class;
 

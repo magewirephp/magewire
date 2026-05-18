@@ -20,6 +20,12 @@ use Magewirephp\Magewire\Support\Factory;
  * The ServiceType class provides a structured way to manage and organize different operation types
  * within an application. It handles the instantiation, sorting, and retrieval of these types while
  * ensuring dependencies are resolved and necessary data is injected.
+ *
+ * @mago-expect lint:too-many-methods
+ * @mago-expect lint:cyclomatic-complexity
+ * @mago-expect lint:kan-defect
+ * @mago-expect lint:no-isset
+ * @mago-expect lint:identity-comparison
  */
 abstract class ServiceType
 {

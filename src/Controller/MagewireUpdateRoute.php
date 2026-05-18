@@ -127,20 +127,20 @@ abstract class MagewireUpdateRoute extends MagewireRoute
              *
              * @see Magento_Framework::View/Layout/etc/elements.xsd
              */
-            if (! $resolver && (! $handle || preg_match('/^[a-zA-Z0-9][a-zA-Z\d\-_\.]*$/', $handle) !== 1)) {
+            if (! $resolver && ( ! $handle || preg_match('/^[a-zA-Z0-9][a-zA-Z\d\-_\.]*$/', $handle) !== 1 )) {
                 throw new RuntimeException('Base component prerequisites not satisfied.');
             }
 
             $snapshot = $this->snapshotFactory->create([
-                'data'     => $component['snapshot']['data'] ?? [],
-                'memo'     => $component['snapshot']['memo'] ?? [],
-                'checksum' => $component['snapshot']['checksum'] ?? '',
+                'data' => $component['snapshot']['data'] ?? [],
+                'memo' => $component['snapshot']['memo'] ?? [],
+                'checksum' => $component['snapshot']['checksum'] ?? ''
             ]);
 
             $input[self::PARAM_COMPONENTS][$key] = $this->componentRequestContextFactory->create([
                 'snapshot' => $snapshot,
-                'calls'    => $component['calls'] ?? [],
-                'updates'  => $component['updates'] ?? [],
+                'calls' => $component['calls'] ?? [],
+                'updates' => $component['updates'] ?? []
             ]);
         }
 

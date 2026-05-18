@@ -11,8 +11,6 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments;
 
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Phrase;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Support\DataCollection;
 use Magewirephp\Magewire\Support\Str;
@@ -83,8 +81,7 @@ abstract class MagewireArguments extends DataCollection
         $arguments = array_filter(
             $block->getData(),
             static function ($key) {
-                return str_starts_with($key, 'magewire:')
-                    && substr_count($key, ':') === 1;
+                return str_starts_with($key, 'magewire:') && substr_count($key, ':') === 1;
             },
             ARRAY_FILTER_USE_KEY
         );
@@ -132,9 +129,7 @@ abstract class MagewireArguments extends DataCollection
                 continue;
             }
 
-            $this->subset('groups')
-                 ->subset($matches[1])
-                 ->set(Str::camel($matches[2]), $value);
+            $this->subset('groups')->subset($matches[1])->set(Str::camel($matches[2]), $value);
         }
 
         return $this;

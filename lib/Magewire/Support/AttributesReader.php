@@ -67,7 +67,7 @@ class AttributesReader
     {
         $attrs = $this->target->getAttributes($attributeClass);
 
-        return ! empty($attrs) ? $attrs[0]->newInstance() : null;
+        return $attrs !== [] ? $attrs[0]->newInstance() : null;
     }
 
     /**
@@ -84,7 +84,7 @@ class AttributesReader
 
     public function has(string $attributeClass): bool
     {
-        return ! empty($this->target->getAttributes($attributeClass));
+        return $this->target->getAttributes($attributeClass) !== [];
     }
 
     /**
@@ -101,7 +101,7 @@ class AttributesReader
         foreach ($this->reflection->getProperties() as $property) {
             $attrs = $property->getAttributes($attributeClass);
 
-            if (! empty($attrs)) {
+            if ($attrs !== []) {
                 $result[$property->getName()] = $attrs[0]->newInstance();
             }
         }

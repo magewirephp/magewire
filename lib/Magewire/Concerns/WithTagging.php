@@ -69,13 +69,13 @@ trait WithTagging
      */
     public function hasTags(array $tags = [], bool $strict = false): bool
     {
-        if (empty($tags)) {
+        if ($tags === []) {
             return false;
         }
         if ($strict) {
-            return empty(array_diff($tags, $this->withTags));
+            return array_diff($tags, $this->withTags) === [];
         }
 
-        return ! empty(array_intersect($this->withTags, $tags));
+        return array_intersect($this->withTags, $tags) !== [];
     }
 }

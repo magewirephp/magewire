@@ -15,6 +15,7 @@ use InvalidArgumentException;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\ComponentHook;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\Layout\LayoutLifecycle;
+
 use function Magewirephp\Magewire\on;
 
 class SupportMagewireViewModel extends ComponentHook

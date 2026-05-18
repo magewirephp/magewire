@@ -20,6 +20,8 @@ use Throwable;
  *
  * Allows building a chain of callbacks (pipes) that process data sequentially,
  * with support for middleware, one-time execution and event handlers for error handling and cleanup.
+ *
+ * @mago-expect lint:too-many-methods
  */
 class Pipeline
 {
@@ -149,7 +151,7 @@ class Pipeline
         $handlers = $this->handlers[$handler] ?? [];
 
         // Re-throw exception if no catch handlers are registered to process it.
-        if (empty($handlers) && $handler === 'catch' && ( $args[0] ?? null ) instanceof Throwable) {
+        if ($handlers === [] && $handler === 'catch' && ( $args[0] ?? null ) instanceof Throwable) {
             throw $args[0];
         }
 

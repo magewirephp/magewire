@@ -33,6 +33,9 @@ enum TypeFilter
     case COUNTABLE;
     case JSON_ENCODABLE;
 
+    /**
+     * @mago-expect lint:halstead
+     */
     public function get(): callable
     {
         return match ($this) {
@@ -50,8 +53,8 @@ enum TypeFilter
             self::CALLABLE => static fn ($value) => is_callable($value),
             self::ITERABLE => static fn ($value) => is_iterable($value),
             self::COUNTABLE => static fn ($value) => $value instanceof Countable,
-            self::SERIALIZABLE => fn ($value) => $this->isSerializable($value),
-            self::JSON_ENCODABLE => fn ($value) => $this->isJsonEncodable($value)
+            self::SERIALIZABLE => $this->isSerializable(...),
+            self::JSON_ENCODABLE => $this->isJsonEncodable(...)
         };
     }
 

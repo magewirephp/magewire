@@ -28,7 +28,7 @@ class DomElementParser extends Parser
 
     public function parse(string $content): self
     {
-        if (empty(trim($content))) {
+        if (trim($content) === '') {
             return $this;
         }
 
