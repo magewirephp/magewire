@@ -11,14 +11,19 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management;
 
+use Magento\Framework\App\State as ApplicationState;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Filesystem\DirectoryList;
+use Magento\Framework\View\DesignInterface;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\FileSystem;
 
 class FileManager
 {
     public function __construct(
-        private FileSystem $filesystem,
-        private DirectoryList $directoryList
+        private readonly FileSystem $filesystem,
+        private readonly DirectoryList $directoryList,
+        private readonly ApplicationState $appState,
+        private readonly DesignInterface $design
     ) {
     }
 
@@ -50,6 +55,27 @@ class FileManager
             . 'Magewire'
             . DIRECTORY_SEPARATOR
             . 'views'
+            . DIRECTORY_SEPARATOR
+            . $this->resolveAreaSegment()
+            . DIRECTORY_SEPARATOR
+            . $this->resolveThemeSegment()
         );
+    }
+
+    private function resolveAreaSegment(): string
+    {
+        try {
+            return $this->appState->getAreaCode();
+        } catch (LocalizedException) {
+            return 'global';
+        }
+    }
+
+    private function resolveThemeSegment(): string
+    {
+        $theme = $this->design->getDesignTheme();
+        $code = $theme?->getCode();
+
+        return $code !== null && $code !== '' ? $code : 'unknown/unknown';
     }
 }
