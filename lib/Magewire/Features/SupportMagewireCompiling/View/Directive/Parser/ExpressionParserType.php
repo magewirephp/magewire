@@ -34,7 +34,9 @@ enum ExpressionParserType
      */
     public function create(array $arguments = []): ExpressionParser
     {
-        return match ($this) { self::CONDITION, self::FUNCTION_ARGUMENTS, self::ITERATION_CLAUSE => ObjectManager::getInstance()->create($this->getTypeClass(), $arguments) };
+        return match ($this) {
+            self::CONDITION, self::FUNCTION_ARGUMENTS, self::ITERATION_CLAUSE => ObjectManager::getInstance()->create($this->getTypeClass(), $arguments)
+        };
     }
 
     public function getTypeClass(): string
