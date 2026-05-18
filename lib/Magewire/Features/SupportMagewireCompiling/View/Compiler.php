@@ -19,6 +19,7 @@ use Throwable;
 /**
  * @mago-expect lint:too-many-methods
  * @mago-expect lint:cyclomatic-complexity
+ * @mago-expect lint:kan-defect
  */
 abstract class Compiler
 {
@@ -159,6 +160,93 @@ abstract class Compiler
     }
 
     /**
+     * Compile `{{ $expr }}` (escaped) and `{!! $expr !!}` (raw) echo tags.
+     *
+     * `{{ $expr }}`           → `<?php echo $escaper->escapeHtml($expr) ?>`
+     * `{{ attr($expr) }}`     → `<?php echo $escaper->escapeHtmlAttr($expr) ?>`
+     * `{{ js($expr) }}`       → `<?php echo $escaper->escapeJs($expr) ?>`
+     * `{{ css($expr) }}`      → `<?php echo $escaper->escapeCss($expr) ?>`
+     * `{{ url($expr) }}`      → `<?php echo $escaper->escapeUrl($expr) ?>`
+     * `{{ html($expr) }}`     → `<?php echo $escaper->escapeHtml($expr) ?>`
+     * `{!! $expr !!}`         → `<?php echo $expr ?>`
+     *
+     * Runs only on inline-HTML tokens, so existing `<?php ?>` blocks are untouched.
+     */
+    protected function compileEchos(string $template): string
+    {
+        $template = preg_replace_callback('/\{!!\s*([\s\S]+?)\s*!!\}/', static fn (array $matches): string => sprintf('<?php echo %s ?>', $matches[1]), $template);
+
+        return preg_replace_callback('/\{\{\s*([\s\S]+?)\s*\}\}/', fn (array $matches): string => sprintf('<?php echo %s ?>', $this->resolveEscaperCall($matches[1])), $template);
+    }
+
+    /**
+     * Translate an echo expression into an `$escaper->escape*()` call.
+     *
+     * When the whole expression is wrapped in a known escape modifier
+     * (`attr(...)`, `js(...)`, `css(...)`, `url(...)`, `html(...)`), strip
+     * the wrapper and target the matching Escaper method directly. Otherwise
+     * fall back to `escapeHtml()` on the raw expression.
+     */
+    private function resolveEscaperCall(string $expression): string
+    {
+        $modifiers = [
+            'attr' => 'escapeHtmlAttr',
+            'js' => 'escapeJs',
+            'css' => 'escapeCss',
+            'url' => 'escapeUrl',
+            'html' => 'escapeHtml'
+        ];
+
+        if (preg_match('/^\s*(attr|js|css|url|html)\s*\(/', $expression, $head) === 1) {
+            $modifier = $head[1];
+            $openPos = strpos($expression, '(');
+            $inner = $this->extractBalancedParens($expression, $openPos);
+
+            if ($inner !== null) {
+                return sprintf('$escaper->%s(%s)', $modifiers[$modifier], $inner);
+            }
+        }
+
+        return sprintf('$escaper->escapeHtml(%s)', $expression);
+    }
+
+    /**
+     * Walk from the opening `(` at $openPos until its matching `)`. Return the
+     * inner expression if the closing paren is the LAST non-whitespace char,
+     * else null (the expression is not a pure modifier wrap).
+     */
+    private function extractBalancedParens(string $expression, int $openPos): string|null
+    {
+        $length = strlen($expression);
+        $depth = 1;
+        $cursor = $openPos + 1;
+
+        while ($cursor < $length && $depth > 0) {
+            $char = $expression[$cursor];
+
+            if ($char === '(') {
+                $depth++;
+            } elseif ($char === ')') {
+                $depth--;
+            }
+
+            $cursor++;
+        }
+
+        if ($depth !== 0) {
+            return null;
+        }
+
+        $closePos = $cursor - 1;
+
+        if (trim(substr($expression, $closePos + 1)) !== '') {
+            return null;
+        }
+
+        return substr($expression, $openPos + 1, $closePos - $openPos - 1);
+    }
+
+    /**
      * Compile directives starting with "@".
      *
      * @mago-expect lint:no-isset
@@ -276,6 +364,12 @@ abstract class Compiler
         $distributor->template()->middleware()->group('security', 0);
         $distributor->template()->middleware()->group('last', 900);
         $distributor->html()->middleware()->group('security', 0);
+
+        $distributor
+            ->html()
+            ->pipe(function (string $throughput, callable $next) {
+                return $next($this->compileEchos($throughput));
+            });
 
         $distributor
             ->html()
