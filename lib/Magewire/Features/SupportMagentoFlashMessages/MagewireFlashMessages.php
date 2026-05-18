@@ -33,9 +33,7 @@ class MagewireFlashMessages
 
     public function unset(string $name): static
     {
-        if (isset($this->messages[$name])) {
-            unset($this->messages[$name]);
-        }
+        unset($this->messages[$name]);
 
         return $this;
     }

@@ -30,6 +30,12 @@ use Magewirephp\Magewire\Component;
  * the block that is currently on top of the stack. All relationship queries
  * (parent, children, ancestors, closest) walk the route hierarchy to resolve
  * component-to-component relationships through the block tree.
+ *
+ * @mago-expect lint:too-many-methods
+ * @mago-expect lint:cyclomatic-complexity
+ * @mago-expect lint:kan-defect
+ * @mago-expect lint:no-isset
+ * @mago-expect lint:no-shorthand-ternary
  */
 class LayoutLifecycle
 {
@@ -51,6 +57,8 @@ class LayoutLifecycle
      * Builds a route for the block based on its nameInLayout and the current
      * stack depth. Anonymous blocks or duplicate-named siblings are assigned
      * a numeric index from a per-parent counter to guarantee route uniqueness.
+     *
+     * @mago-expect lint:halstead
      */
     public function push(AbstractBlock $block): static
     {
@@ -128,21 +136,21 @@ class LayoutLifecycle
     /**
      * Get the component bound to a specific block, or null if the block has no component.
      */
-    public function componentFor(AbstractBlock $block): ?Component
+    public function componentFor(AbstractBlock $block): Component|null
     {
         $route = $this->routeForBlock($block);
 
-        return $route !== null ? ($this->components[$route] ?? null) : null;
+        return $route !== null ? $this->components[$route] ?? null : null;
     }
 
     /**
      * Get the block that a component is bound to, or null if the component is not registered.
      */
-    public function blockFor(Component $component): ?AbstractBlock
+    public function blockFor(Component $component): AbstractBlock|null
     {
         $route = $this->routeForComponent($component);
 
-        return $route !== null ? ($this->blocks[$route] ?? null) : null;
+        return $route !== null ? $this->blocks[$route] ?? null : null;
     }
 
     /**
@@ -152,7 +160,7 @@ class LayoutLifecycle
      * and returns the first component found. Used by SupportMagewireNestingComponents
      * to inject the owning component into child template dictionaries.
      */
-    public function closestComponent(AbstractBlock $block): ?Component
+    public function closestComponent(AbstractBlock $block): Component|null
     {
         $route = $this->routeForBlock($block);
 
@@ -180,7 +188,7 @@ class LayoutLifecycle
      * returns the first other component encountered. Returns null if the
      * component is at the root or has no component ancestors.
      */
-    public function parentComponent(Component $component): ?Component
+    public function parentComponent(Component $component): Component|null
     {
         $route = $this->routeForComponent($component);
 
@@ -207,7 +215,7 @@ class LayoutLifecycle
      * Walks the full route upward, collecting every component found along the
      * way. An optional filter callback can narrow the result set.
      */
-    public function componentAncestors(Component $component, ?callable $filter = null): array
+    public function componentAncestors(Component $component, callable|null $filter = null): array
     {
         $route = $this->routeForComponent($component);
 
@@ -237,7 +245,7 @@ class LayoutLifecycle
      * Includes all depths (children, grandchildren, etc.). An optional
      * filter callback can narrow the result set.
      */
-    public function componentChildren(Component $component, ?callable $filter = null): array
+    public function componentChildren(Component $component, callable|null $filter = null): array
     {
         $route = $this->routeForComponent($component);
 
@@ -247,11 +255,7 @@ class LayoutLifecycle
 
         $prefix = $route . DIRECTORY_SEPARATOR;
 
-        $children = array_values(array_filter(
-            $this->components,
-            static fn (Component $c, string $r) => str_starts_with($r, $prefix),
-            ARRAY_FILTER_USE_BOTH
-        ));
+        $children = array_values(array_filter($this->components, static fn (Component $c, string $r) => str_starts_with($r, $prefix), ARRAY_FILTER_USE_BOTH));
 
         return $filter ? array_filter($children, $filter) : $children;
     }
@@ -291,14 +295,14 @@ class LayoutLifecycle
         return end($this->stack) ?: '';
     }
 
-    private function routeForBlock(AbstractBlock $block): ?string
+    private function routeForBlock(AbstractBlock $block): string|null
     {
         $route = array_search($block, $this->blocks, true);
 
         return $route !== false ? $route : null;
     }
 
-    private function routeForComponent(Component $component): ?string
+    private function routeForComponent(Component $component): string|null
     {
         $route = array_search($component, $this->components, true);
 

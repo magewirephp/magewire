@@ -46,9 +46,7 @@ class SupportMagewireCompiling extends ComponentHook
                 return;
             }
 
-            $compiler = $component->magewireCompiler() ?? $component->magewireCompiler(
-                $this->compilerManager->factory()->newCompilerInstance()
-            );
+            $compiler = $component->magewireCompiler() ?? $component->magewireCompiler($this->compilerManager->factory()->newCompilerInstance());
 
             $dto->dictionary(['magewire' => $component]);
 
@@ -113,12 +111,12 @@ class SupportMagewireCompiling extends ComponentHook
                     $result = $next($throughput);
                     $date = new DateTime();
 
-                    return $result . sprintf('<?php /** Compile Date/Time: %s **/ ?>' . PHP_EOL, $date->format('Y-m-d H:i:s.u'));
+                    return sprintf('%s<?php /** Compile Date/Time: %s **/ ?>' . PHP_EOL, $result, $date->format('Y-m-d H:i:s.u'));
                 })
                 ->pipe(static function (string $throughput, callable $next) use ($compiler): string {
                     $result = $next($throughput);
 
-                    return $result . sprintf('<?php /** Template Basepath: %s **/ ?>' . PHP_EOL, $compiler->basePath());
+                    return sprintf('%s<?php /** Template Basepath: %s **/ ?>' . PHP_EOL, $result, $compiler->basePath());
                 })
                 ->pipe(static function (string $throughput, callable $next) use ($compiler): string {
                     $start = $compiler->compileStartTime();
@@ -127,7 +125,7 @@ class SupportMagewireCompiling extends ComponentHook
                     $durationMs = round(( microtime(true) - $start ) * 1000, 2);
                     $durationSec = round($durationMs / 1000, 4);
 
-                    return $result . sprintf('<?php /** Compile Duration: %.2f ms (%.4f s) **/ ?>' . PHP_EOL, $durationMs, $durationSec);
+                    return sprintf('%s<?php /** Compile Duration: %.2f ms (%.4f s) **/ ?>' . PHP_EOL, $result, $durationMs, $durationSec);
                 });
         });
     }

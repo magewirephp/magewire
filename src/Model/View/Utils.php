@@ -32,6 +32,8 @@ class Utils
     /**
      * @template T of UtilsInterface
      * @param array<string, T> $utilities
+     *
+     * @mago-expect lint:excessive-parameter-list
      */
     public function __construct(
         private AlpineViewUtil $alpine,
@@ -111,7 +113,7 @@ class Utils
                     return $subject;
                 }
 
-                if (empty($arguments)) {
+                if ($arguments === []) {
                     return $this->utilities[$utility] = Factory::get($subject::class);
                 }
 

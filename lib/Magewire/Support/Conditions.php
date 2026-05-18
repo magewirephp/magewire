@@ -13,6 +13,10 @@ namespace Magewirephp\Magewire\Support;
 
 use Magewirephp\Magewire\Support\Conditions\ConditionEnum;
 
+/**
+ * @mago-expect lint:too-many-methods
+ * @mago-expect lint:cyclomatic-complexity
+ */
 class Conditions
 {
     /** @var array<int|string, callable|array<int|string, callable>> */
@@ -64,11 +68,17 @@ class Conditions
         return $this;
     }
 
+    /**
+     * @mago-expect lint:no-isset
+     */
     public function isset(string $name, ConditionEnum $type = ConditionEnum::AND): bool
     {
         return isset($this->conditions[$type->value][$name]);
     }
 
+    /**
+     * @mago-expect lint:no-isset
+     */
     public function unset(string $name, ConditionEnum|null $type = null): static
     {
         if ($type && isset($this->conditions[$type->value])) {

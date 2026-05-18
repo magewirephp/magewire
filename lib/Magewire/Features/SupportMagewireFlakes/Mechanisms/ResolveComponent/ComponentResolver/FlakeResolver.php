@@ -29,11 +29,7 @@ class FlakeResolver extends LayoutResolver
         LayoutBlockArgumentsFactory $layoutBlockArgumentsFactory,
         LayoutManager $layoutManager
     ) {
-        parent::__construct(
-            $conditions,
-            $layoutBlockArgumentsFactory,
-            $layoutManager
-        );
+        parent::__construct($conditions, $layoutBlockArgumentsFactory, $layoutManager);
     }
 
     public function complies(mixed $block, mixed $magewire = null): bool

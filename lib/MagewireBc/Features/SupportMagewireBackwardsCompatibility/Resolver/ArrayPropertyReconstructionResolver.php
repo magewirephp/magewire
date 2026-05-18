@@ -38,7 +38,7 @@ class ArrayPropertyReconstructionResolver implements CallHookArgumentResolverInt
     public function supports(Component $component, string $method): bool
     {
         foreach ($this->mapping as $class => $methods) {
-            if (is_a($component, $class) && ($methods[$method] ?? null) !== null) {
+            if (is_a($component, $class) && ( $methods[$method] ?? null ) !== null) {
                 return true;
             }
         }

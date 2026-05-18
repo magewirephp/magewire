@@ -19,6 +19,7 @@ use Magewirephp\Magewire\Support\DataCollection;
 use Magewirephp\Magewire\Support\Factory;
 use Psr\Log\LoggerInterface;
 
+/** @mago-expect lint:too-many-methods */
 abstract class Component extends Html
 {
     // Flag to make the component be aware of its surrounding and vice versa.

@@ -39,22 +39,12 @@ class Flux extends AbstractTagCompiler
         // Strip a literal `slot="name"` so it doesn't end up as a regular
         // property on the component. Slot binding is a Flux convention not
         // shared with Blade — keep this transformation Flux-local.
-        $attributesRaw = preg_replace(
-            '/\s+slot\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)/',
-            '',
-            $attributesRaw,
-            1
-        ) ?? $attributesRaw;
+        $attributesRaw = preg_replace('/\s+slot\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+)/', '', $attributesRaw, 1) ?? $attributesRaw;
 
         $attributes = $this->parseParams($attributesRaw);
         $id = Random::alphabetical(5, true);
-        $var = preg_replace(
-            '/[^a-zA-Z0-9]/',
-            '_',
-            $this->prefix() . ucfirst(strtolower($type)) . ucfirst($id)
-        );
+        $var = preg_replace('/[^a-zA-Z0-9]/', '_', $this->prefix() . ucfirst(strtolower($type)) . ucfirst($id));
 
-        return "@magewireComponent(prefix: '{$this->prefix()}', id: '{$id}', variable: '{$var}', type: '{$type}')\n        "
-            . $this->preamble($var, $attributes);
+        return "@magewireComponent(prefix: '{$this->prefix()}', id: '{$id}', variable: '{$var}', type: '{$type}')\n        " . $this->preamble($var, $attributes);
     }
 }

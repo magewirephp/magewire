@@ -31,7 +31,9 @@ class UpdateRequestRateLimiter extends RateLimiter
         $attempts = $this->rateLimiterConfig->getRequestsMaxAttempts();
         $decay = $this->rateLimiterConfig->getRequestsDecaySeconds();
 
-        if ($result = $this->validate($key, $attempts, $decay)) {
+        $result = $this->validate($key, $attempts, $decay);
+
+        if ($result) {
             $this->hit($key);
         }
 
@@ -41,8 +43,9 @@ class UpdateRequestRateLimiter extends RateLimiter
     public function validateWithComponent(Component $component): bool
     {
         $key = $this->generateKeyByComponent($component);
+        $result = $this->validate($key, 4, 5);
 
-        if ($result = $this->validate($key, 4, 5)) {
+        if ($result) {
             $this->hit($key);
         }
 

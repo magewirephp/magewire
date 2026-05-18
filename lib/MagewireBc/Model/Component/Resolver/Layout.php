@@ -1,4 +1,5 @@
 <?php declare(strict_types=1);
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -53,19 +54,20 @@ class Layout implements ResolverInterface
     /**
      * @throws MissingComponentException
      */
+    /**
+     * @mago-expect lint:no-nested-ternary
+     */
     public function construct(AbstractBlock $block): Component
     {
         $magewire = $block->getData('magewire');
 
         if ($magewire) {
-            $component = is_array($magewire)
-                ? $magewire['type'] : (is_object($magewire)
-                    ? $magewire : $this->componentFactory->create());
+            $component = is_array($magewire) ? $magewire['type'] : ( is_object($magewire) ? $magewire : $this->componentFactory->create() );
 
             if ($component instanceof Component) {
-//                if ($this->init) {
-//                    $component = $this->componentFactory->create($component);
-//                }
+                //                if ($this->init) {
+                //                    $component = $this->componentFactory->create($component);
+                //                }
 
                 $component->name = $block->getNameInLayout();
                 $component->id ??= $component->name;
@@ -98,10 +100,7 @@ class Layout implements ResolverInterface
         $block = $page->getLayout()->getBlock($request->getFingerprint('name'));
 
         if ($block === false) {
-            throw new HttpException(
-                404,
-                sprintf('Magewire component "%1s" could not be found', $request->getFingerprint('name'))
-            );
+            throw new HttpException(404, sprintf('Magewire component "%1s" could not be found', $request->getFingerprint('name')));
         }
 
         return $this->construct($block);
@@ -121,13 +120,10 @@ class Layout implements ResolverInterface
             return $block;
         }
 
-        $module = array_filter(
-            explode('\\', get_class($component)),
-            static fn (string $part) => $part !== 'Interceptor'
-        );
+        $module = array_filter(explode('\\', get_class($component)), static fn (string $part) => $part !== 'Interceptor');
 
         $prefix = $module[0] . '_' . $module[1];
-        $affix  = strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', end($module)));
+        $affix = strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', end($module)));
 
         return $block->setTemplate($prefix . '::magewire/' . $affix . '.phtml');
     }

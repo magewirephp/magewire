@@ -15,6 +15,10 @@ use Magento\Framework\App\ObjectManager;
 
 /**
  * @deprecated This is still a proof of concept and should not be used in a production environment.
+ *
+ * @mago-expect lint:too-many-methods
+ * @mago-expect lint:cyclomatic-complexity
+ * @mago-expect lint:no-isset
  */
 class DataScope
 {

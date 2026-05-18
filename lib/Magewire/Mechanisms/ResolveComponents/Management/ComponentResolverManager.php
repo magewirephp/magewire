@@ -12,7 +12,6 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Mechanisms\ResolveComponents\Management;
 
 use Exception;
-use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\Exception\RuntimeException;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolver\ComponentResolver;
@@ -21,6 +20,7 @@ use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolverNotFoundE
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\ResolversCache;
 use Psr\Log\LoggerInterface;
 
+/** @mago-expect lint:cyclomatic-complexity */
 class ComponentResolverManager
 {
     /**
@@ -141,6 +141,8 @@ class ComponentResolverManager
 
     /**
      * Returns if the given resolver can be found by its accessor.
+     *
+     * @mago-expect lint:no-empty-catch-clause
      */
     public function hasResolverClassInMapping(string $resolver): bool
     {
@@ -156,6 +158,8 @@ class ComponentResolverManager
      * @template T of ComponentResolver
      * @return class-string<T>
      * @throws ComponentResolverNotFoundException
+     *
+     * @mago-expect lint:no-isset
      */
     private function getResolverClass(string $resolver): string
     {

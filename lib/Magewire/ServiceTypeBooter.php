@@ -17,6 +17,7 @@ use Magewirephp\Magewire\Support\DataCollection;
 use Magewirephp\Magewire\Support\DataCollectionFactory;
 use Magewirephp\Magewire\Support\Random;
 
+/** @mago-expect lint:cyclomatic-complexity */
 class ServiceTypeBooter
 {
     private bool $setup = false;
@@ -39,7 +40,7 @@ class ServiceTypeBooter
         }
 
         foreach ($items as $item) {
-            if (! ($item['boot_mode'] instanceof ServiceTypeItemBootMode)) {
+            if (! $item['boot_mode'] instanceof ServiceTypeItemBootMode) {
                 $item['boot_mode'] = ServiceTypeItemBootMode::try($item['boot_mode'] ?? null);
             }
 
@@ -67,7 +68,7 @@ class ServiceTypeBooter
                 continue;
             }
 
-            if (($this->processed[$key] ?? false) === false) {
+            if (( $this->processed[$key] ?? false ) === false) {
                 return false;
             }
         }
@@ -79,6 +80,9 @@ class ServiceTypeBooter
         return true;
     }
 
+    /**
+     * @mago-expect lint:no-empty-catch-clause
+     */
     public function boot(ServiceTypeItemBootMode|null $mode, callable $callback): static
     {
         if ($this->booted) {

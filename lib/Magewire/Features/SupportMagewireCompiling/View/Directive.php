@@ -83,7 +83,8 @@ abstract class Directive
 
     protected function var(string $name, bool $pop = false): string
     {
-        $var = $this->variables[$name] ??= Random::alphabetical(10, true);
+        $this->variables[$name] ??= Random::alphabetical(10, true);
+        $var = $this->variables[$name];
 
         if ($pop) {
             unset($this->variables[$name]);

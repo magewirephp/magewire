@@ -49,14 +49,17 @@ readonly class SlotSnapshot implements Stringable
      *
      * Returns the content of the default slot when the snapshot is used
      * in a string context (e.g., echo, concatenation).
+     *
+     * @mago-expect lint:no-isset
      */
     public function __toString()
     {
-        return isset($this->slots['default'])
-            ? $this->slots['default']->__toString()
-            : '';
+        return isset($this->slots['default']) ? $this->slots['default']->__toString() : '';
     }
 
+    /**
+     * @mago-expect lint:no-isset
+     */
     public function has(string $name = 'default'): bool
     {
         return isset($this->slots[$name]) && ! $this->slots[$name]->isEmpty();

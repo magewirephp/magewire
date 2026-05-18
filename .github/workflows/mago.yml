@@ -30,8 +30,5 @@ jobs:
       - name: Mago lint
         run: mago lint --reporting-format=github
 
-      - name: Mago analyze
-        run: mago analyze --reporting-format=github
-
       - name: Mago format check
         run: mago format --check

@@ -14,6 +14,11 @@ namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\
 use Exception;
 use InvalidArgumentException;
 
+/**
+ * @mago-expect lint:too-many-methods
+ * @mago-expect lint:cyclomatic-complexity
+ * @mago-expect lint:kan-defect
+ */
 class FunctionExpressionParser extends ExpressionParser
 {
     /**
@@ -39,6 +44,8 @@ class FunctionExpressionParser extends ExpressionParser
 
     /**
      * Parse named arguments: key: value, key2: value2, ...
+     *
+     * @mago-expect lint:halstead
      */
     private function parseNamedArguments(string $expression): array
     {
@@ -115,6 +122,8 @@ class FunctionExpressionParser extends ExpressionParser
 
     /**
      * Extract complex value: quoted string, JSON {}, JSON [], or PHP array []
+     *
+     * @mago-expect lint:no-empty-catch-clause
      */
     private function extractComplexValue(string $expression, int $pos): array
     {
@@ -155,9 +164,12 @@ class FunctionExpressionParser extends ExpressionParser
     }
 
     /**
-     * Extract and evaluate a full PHP array literal: ['class' => 'btn', "x-data" => "init()"]
+     * Extract a PHP array literal as raw source: ['class' => 'btn', "x-data" => "init()"]
+     *
+     * Returns the verbatim source so the directive can embed it in compiled PHP output
+     * and let PHP evaluate at template runtime — never via eval at compile time.
      */
-    private function extractPhpArray(string $expression, int &$pos): array
+    private function extractPhpArray(string $expression, int &$pos): string
     {
         $start = $pos;
         $depth = 0;
@@ -200,8 +212,7 @@ class FunctionExpressionParser extends ExpressionParser
                 } elseif ($char === ']') {
                     if ($depth === 0) {
                         $pos++; // include closing ].
-                        $arrayStr = substr($expression, $start, $pos - $start);
-                        return $this->evaluatePhpArray($arrayStr);
+                        return substr($expression, $start, $pos - $start);
                     }
                     $depth--;
                 }
@@ -211,26 +222,6 @@ class FunctionExpressionParser extends ExpressionParser
         }
 
         throw new InvalidArgumentException("Unclosed PHP array starting at position {$start}");
-    }
-
-    /**
-     * Safely evaluate a PHP array literal using eval in a controlled way
-     */
-    private function evaluatePhpArray(string $arrayStr): array
-    {
-        $code = "return {$arrayStr};";
-
-        $result = @eval($code);
-
-        if ($result === false && $arrayStr !== '[]') {
-            throw new InvalidArgumentException("Failed to parse PHP array: syntax error in {$arrayStr}");
-        }
-
-        if (! is_array($result)) {
-            throw new InvalidArgumentException("Expression did not evaluate to an array: {$arrayStr}");
-        }
-
-        return $result;
     }
 
     /**

@@ -15,12 +15,14 @@ class CompilerUtils
 {
     /**
      * Determine if the given expression has the same number of opening and closing parentheses.
+     *
+     * @mago-expect lint:no-insecure-comparison
      */
     public function hasEvenNumberOfParentheses(string $expression): bool
     {
         $tokens = token_get_all('<?php ' . $expression);
 
-        if (empty($tokens) || end($tokens) !== ')') {
+        if ($tokens === [] || end($tokens) !== ')') {
             return false;
         }
 
@@ -28,9 +30,9 @@ class CompilerUtils
         $closing = 0;
 
         foreach ($tokens as $token) {
-            if ($token == ')') {
+            if ($token === ')') {
                 $closing++;
-            } elseif ($token == '(') {
+            } elseif ($token === '(') {
                 $opening++;
             }
         }
@@ -47,7 +49,7 @@ class CompilerUtils
         $result = [];
 
         foreach ($tokens as $token) {
-            if (! ( is_array($token) && in_array($token[0], [T_OPEN_TAG, T_OPEN_TAG_WITH_ECHO, T_CLOSE_TAG]) )) {
+            if (! ( is_array($token) && in_array($token[0], [T_OPEN_TAG, T_OPEN_TAG_WITH_ECHO, T_CLOSE_TAG], true) )) {
                 continue;
             }
 

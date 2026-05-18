@@ -29,7 +29,7 @@ abstract class MagewireCacheSection
 
     public function save(array $data, int|null $ttl = null): bool
     {
-        if (empty($this->tags)) {
+        if ($this->tags === []) {
             $this->tags[] = $this->identifier;
         }
 

@@ -39,7 +39,7 @@ class Template implements UtilsInterface
             ApplicationState::MODE_PRODUCTION
         ];
 
-        if (in_array($state, $states) || is_array($state) && empty(array_diff($state, array_filter($states)))) {
+        if (in_array($state, $states, true) || is_array($state) && array_diff($state, array_filter($states)) === []) {
             return '<!-- Magewire: ' . $this->escaper->escapeHtml($text) . '. -->' . PHP_EOL;
         }
 

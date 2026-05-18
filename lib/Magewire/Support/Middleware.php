@@ -46,10 +46,7 @@ class Middleware extends Pipeline
     public function group(string $name, int $position = 500): Pipeline
     {
         $this->positions[$name] ??= $position;
-
-        if (! isset($this->groups[$name])) {
-            $this->groups[$name] = $this->newTypeInstance(Pipeline::class);
-        }
+        $this->groups[$name] ??= $this->newTypeInstance(Pipeline::class);
 
         return $this->groups[$name];
     }
@@ -61,7 +58,7 @@ class Middleware extends Pipeline
      */
     protected function processGroups(mixed $throughput): mixed
     {
-        if (empty($this->groups)) {
+        if ($this->groups === []) {
             return $throughput;
         }
 

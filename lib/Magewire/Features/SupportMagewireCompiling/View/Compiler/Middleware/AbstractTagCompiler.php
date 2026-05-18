@@ -24,6 +24,8 @@ use Magewirephp\Magewire\Features\SupportMagewireCompiling\Contracts\ViewCompile
  *
  * Adding a third-party prefix is one subclass + one DI entry on
  * `MagentoTemplateCompiler.middleware`. No framework code changes.
+ *
+ * @mago-expect lint:too-many-methods
  */
 abstract class AbstractTagCompiler implements ViewCompilerInterface
 {
@@ -160,16 +162,12 @@ abstract class AbstractTagCompiler implements ViewCompilerInterface
      */
     protected function parseParams(string $params): string
     {
-        preg_match_all(
-            '/(?<key>[\w:.@%-]+)\s*=\s*(?<value>"(?:[^"\\\\]|\\\\.)*"|\'(?:[^\'\\\\]|\\\\.)*\'|[^\s>]+)/ms',
-            $params,
-            $matches
-        );
+        preg_match_all('/(?<key>[\w:.@%-]+)\s*=\s*(?<value>"(?:[^"\\\\]|\\\\.)*"|\'(?:[^\'\\\\]|\\\\.)*\'|[^\s>]+)/ms', $params, $matches);
 
         $bags = [
             'attributes' => [],
             'properties' => [],
-            'magewire'   => [],
+            'magewire' => []
         ];
 
         foreach ($matches['key'] as $i => $key) {
@@ -197,27 +195,20 @@ abstract class AbstractTagCompiler implements ViewCompilerInterface
 
             // Emit value per mode.
             $emission = match ($mode) {
-                'bound'   => $value,
+                'bound' => $value,
                 'escaped' => $this->phpString(htmlspecialchars($value, ENT_QUOTES, 'UTF-8')),
-                default   => $this->phpString($value),
+                default => $this->phpString($value)
             };
 
             $bags[$target][] = '"' . $key . '" => ' . $emission;
         }
 
-        return sprintf(
-            "['attributes' => [%s], 'properties' => [%s], 'magewire' => [%s]]",
-            implode(', ', $bags['attributes']),
-            implode(', ', $bags['properties']),
-            implode(', ', $bags['magewire']),
-        );
+        return sprintf("['attributes' => [%s], 'properties' => [%s], 'magewire' => [%s]]", implode(', ', $bags['attributes']), implode(', ', $bags['properties']), implode(', ', $bags['magewire']));
     }
 
     protected function stripQuotes(string $value): string
     {
-        return str_starts_with($value, '"') || str_starts_with($value, "'")
-            ? substr($value, 1, -1)
-            : $value;
+        return str_starts_with($value, '"') || str_starts_with($value, "'") ? substr($value, 1, -1) : $value;
     }
 
     protected function phpString(string $value): string
@@ -227,20 +218,12 @@ abstract class AbstractTagCompiler implements ViewCompilerInterface
 
     private function compileOpeningTags(string $value): string
     {
-        return preg_replace_callback(
-            $this->buildPattern(closing: false),
-            fn (array $matches): string => $this->emitOpening($matches),
-            $value
-        );
+        return preg_replace_callback($this->buildPattern(closing: false), $this->emitOpening(...), $value);
     }
 
     private function compileSelfClosingTags(string $value): string
     {
-        return preg_replace_callback(
-            $this->buildPattern(closing: true),
-            fn (array $matches): string => $this->emitOpening($matches) . "\n" . $this->closingDirective(),
-            $value
-        );
+        return preg_replace_callback($this->buildPattern(closing: true), fn (array $matches): string => $this->emitOpening($matches) . "\n" . $this->closingDirective(), $value);
     }
 
     private function compileClosingTags(string $value): string

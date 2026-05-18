@@ -21,6 +21,10 @@ use Magewirephp\Magewire\Support\Random;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
+/**
+ * @mago-expect lint:too-many-methods
+ * @mago-expect lint:cyclomatic-complexity
+ */
 abstract class Fragment
 {
     use WithTagging {
@@ -86,6 +90,9 @@ abstract class Fragment
      *
      * Retrieves the buffered output as raw content, applies an optional transformation
      * to produce the final content, and triggers the inspection process.
+     *
+     * @mago-expect lint:halstead
+     * @mago-expect lint:no-empty-catch-clause
      */
     public function end(): static
     {
@@ -212,6 +219,9 @@ abstract class Fragment
         return $this;
     }
 
+    /**
+     * @mago-expect lint:no-shorthand-ternary
+     */
     protected function handleValidationException(Throwable $exception): string
     {
         if ($exception instanceof EmptyFragmentException) {

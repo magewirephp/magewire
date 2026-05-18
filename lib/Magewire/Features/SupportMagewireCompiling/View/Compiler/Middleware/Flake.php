@@ -37,13 +37,8 @@ class Flake extends AbstractTagCompiler
         $type = $matches['type'];
         $attributes = $this->parseParams($matches['attributes'] ?? '');
         $id = Random::alphabetical(5, true);
-        $var = preg_replace(
-            '/[^a-zA-Z0-9]/',
-            '_',
-            $this->prefix() . ucfirst(strtolower($type)) . ucfirst($id)
-        );
+        $var = preg_replace('/[^a-zA-Z0-9]/', '_', $this->prefix() . ucfirst(strtolower($type)) . ucfirst($id));
 
-        return "@magewireComponent(prefix: '{$this->prefix()}', id: '{$id}', variable: '{$var}', type: '{$type}')\n        "
-            . $this->preamble($var, $attributes);
+        return "@magewireComponent(prefix: '{$this->prefix()}', id: '{$id}', variable: '{$var}', type: '{$type}')\n        " . $this->preamble($var, $attributes);
     }
 }

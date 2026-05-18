@@ -52,12 +52,13 @@ class FlakeFactory
         return $block;
     }
 
+    /**
+     * @mago-expect lint:halstead
+     */
     protected function layout(): LayoutInterface
     {
         if ($this->layout === null) {
-            $this->layout = $this->layoutManager->decorator()->decorateForPagelessBlockFetching(
-                $this->layoutManager->factory()->create()
-            );
+            $this->layout = $this->layoutManager->decorator()->decorateForPagelessBlockFetching($this->layoutManager->factory()->create());
 
             $this->layout->getUpdate()->addHandle($this->handles);
         }

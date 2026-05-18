@@ -21,6 +21,8 @@ use Psr\Log\LoggerInterface;
  * specific exception types to either a new exception or throwing a replica with different arguments.
  *
  * @api
+ *
+ * @mago-expect lint:cyclomatic-complexity
  */
 class ExceptionManager
 {
@@ -97,6 +99,9 @@ class ExceptionManager
         return $block;
     }
 
+    /**
+     * @mago-expect lint:no-nested-ternary
+     */
     private function resolveExceptionHandler(Exception $exception, bool $subsequent = false): AbstractExceptionHandler
     {
         $exceptionGroup = $subsequent ? 'subsequent' : 'preceding';

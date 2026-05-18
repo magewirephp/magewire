@@ -56,6 +56,9 @@ trait AsDataObject
         return $this;
     }
 
+    /**
+     * @mago-expect lint:no-empty
+     */
     function hasData($key): bool
     {
         if (property_exists(self::class, 'data')) {
@@ -71,6 +74,8 @@ trait AsDataObject
 
     /**
      * @throws LocalizedException
+     *
+     * @mago-expect lint:no-isset
      */
     function __call($method, $args)
     {

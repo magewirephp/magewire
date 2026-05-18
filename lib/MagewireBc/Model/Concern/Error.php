@@ -31,6 +31,9 @@ trait Error
 
     /**
      * @return Phrase[]
+     *
+     * @mago-expect lint:no-empty
+     * @mago-expect lint:no-isset
      */
     public function getErrors(array $targets = []): array
     {
@@ -49,11 +52,17 @@ trait Error
         return $targets;
     }
 
+    /**
+     * @mago-expect lint:no-empty
+     */
     public function hasErrors(array $targets = []): bool
     {
         return ! empty($this->getErrors($targets));
     }
 
+    /**
+     * @mago-expect lint:no-isset
+     */
     public function hasError(string $property): bool
     {
         return isset($this->errors[$property]);

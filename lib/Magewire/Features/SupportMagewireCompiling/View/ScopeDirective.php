@@ -58,7 +58,7 @@ abstract class ScopeDirective extends Directive
      */
     protected function variableScopeEnd(): string
     {
-        if (empty($this->scopeVariables)) {
+        if ($this->scopeVariables === []) {
             throw new LogicException('Trying to end a scope without a matching start.');
         }
 

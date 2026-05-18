@@ -29,9 +29,7 @@ class MagewireNotifications
 
     public function unset(string $name): static
     {
-        if (isset($this->notifications[$name])) {
-            unset($this->notifications[$name]);
-        }
+        unset($this->notifications[$name]);
 
         return $this;
     }

@@ -73,7 +73,7 @@ class Html extends Fragment
                 $attributeStrings[] = is_numeric($attribute) ? $value : $attribute . '="' . $this->escaper->escapeHtmlAttr($value) . '"';
             }
 
-            if (! empty($attributeStrings)) {
+            if ($attributeStrings !== []) {
                 $attributeString = ' ' . implode(' ', $attributeStrings);
                 $render = preg_replace('/^(<[^>\s]+)/', '$1' . $attributeString, $render, 1);
             }

@@ -31,7 +31,9 @@ class Router implements RouterInterface
     {
         if ($this->matchesMagewireSpecifics($request)) {
             foreach (array_filter($this->routes) as $route) {
-                if ($result = $route->match($request)) {
+                $result = $route->match($request);
+
+                if ($result) {
                     return $result;
                 }
             }
