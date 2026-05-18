@@ -66,12 +66,7 @@ abstract class DataCollection implements Countable, IteratorAggregate
 
     public function each(callable $callback, callable|TypeFilter $filter = TypeFilter::ALL): static
     {
-        $items = $filter === TypeFilter::ALL
-            ? $this->all()
-            : $this->filter()
-                ->with($filter)
-                ->return()
-                ->all();
+        $items = $filter === TypeFilter::ALL ? $this->all() : $this->filter()->with($filter)->return()->all();
 
         foreach ($items as $key => $value) {
             $callback($value, $key);
@@ -261,16 +256,7 @@ abstract class DataCollection implements Countable, IteratorAggregate
         $items = $this;
 
         if ($filter) {
-            $items = $this->subset()
-                ->fill(
-                    $this->filter()
-                        ->with(TypeFilter::JSON_ENCODABLE)
-                        ->return()
-                        ->all()
-                )
-                ->filter()
-                ->with($filter)
-                ->return();
+            $items = $this->subset()->fill($this->filter()->with(TypeFilter::JSON_ENCODABLE)->return()->all())->filter()->with($filter)->return();
         }
 
         return json_encode($items->all());
@@ -400,10 +386,7 @@ abstract class DataCollection implements Countable, IteratorAggregate
 
     public function clear(callable|TypeFilter $filter = TypeFilter::NONE): static
     {
-        $this->items = $this->filter()
-            ->with($filter)
-            ->return()
-            ->all();
+        $this->items = $this->filter()->with($filter)->return()->all();
 
         $this->dispatch(Hook::CLEAR);
         return $this;

@@ -22,7 +22,9 @@ class Json extends Directive
      */
     public function compile(string $expression, string $directive): string
     {
-        $arguments = $this->parser(Directive\Parser\ExpressionParserType::FUNCTION_ARGUMENTS)->parse($expression)->arguments();
+        $arguments = $this->parser(Directive\Parser\ExpressionParserType::FUNCTION_ARGUMENTS)
+            ->parse($expression)
+            ->arguments();
 
         $value = $arguments->get('value', $arguments->get('default', []));
         $flags = $arguments->get('flags', $this->encodingOptions);

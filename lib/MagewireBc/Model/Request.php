@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
@@ -85,10 +87,7 @@ class Request implements RequestInterface
 
     public function isSubsequent(bool|null $flag = null, bool $force = false)
     {
-        return $this->magewireServiceProvider
-            ->runtime()
-            ->mode()
-            ->isSubsequent();
+        return $this->magewireServiceProvider->runtime()->mode()->isSubsequent();
     }
 
     public function isPreceding(): bool
