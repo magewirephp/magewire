@@ -49,7 +49,7 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
         /** @var mixed $magewire */
         $magewire = $block->getData('magewire');
 
-        $lifecycle = $this->componentRenderLifecycleManager->target('magewire')->push($block);
+        $lifecycle = $this->componentRenderLifecycleManager->forMagewire()->push($block);
         trigger('magento:block:render', $lifecycle, $block);
 
         if ($magewire) {

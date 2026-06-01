@@ -74,7 +74,7 @@ class ResolveComponents
 
         // Register a dehydrate listener to attach the used resolver accessor for easy reconstruction.
         on('dehydrate', static function (Component $component, ComponentContext $context) {
-            $context->addMemo('resolver', $component->magewireResolver()->getAccessor());
+            $context->addMemo('resolver', $component->magewireResolver()->accessor());
         });
     }
 
@@ -88,7 +88,7 @@ class ResolveComponents
         [$resolver, $block] = $builder();
 
         if (! $block->getData('magewire') instanceof Component) {
-            throw new ComponentNotFoundException(sprintf('Resolver "%s" failed to construct a Magewire component.', $resolver->getAccessor()));
+            throw new ComponentNotFoundException(sprintf('Resolver "%s" failed to construct a Magewire component.', $resolver->accessor()));
         }
 
         return static function () use ($resolver, $block, $lifecycle) {

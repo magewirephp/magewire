@@ -38,7 +38,7 @@ class SupportMagewireNestingComponents extends ComponentHook
                 return;
             }
 
-            $closest = $this->renderLifecycleManager->target('magewire')->closestComponent($dto->block());
+            $closest = $this->renderLifecycleManager->forMagewire()->closestComponent($dto->block());
 
             if ($closest) {
                 $dto->dictionary(['magewire' => $closest]);
@@ -55,7 +55,7 @@ class SupportMagewireNestingComponents extends ComponentHook
                 $component = $block->getData('magewire');
 
                 if ($component instanceof Component) {
-                    $this->renderLifecycleManager->target('magewire')->bind($component);
+                    $this->renderLifecycleManager->forMagewire()->bind($component);
                 }
 
                 return $block;
@@ -68,7 +68,7 @@ class SupportMagewireNestingComponents extends ComponentHook
                 $component = $block->getData('magewire');
 
                 if ($component instanceof Component) {
-                    $this->renderLifecycleManager->target('magewire')->bind($component);
+                    $this->renderLifecycleManager->forMagewire()->bind($component);
                 }
 
                 return $block;

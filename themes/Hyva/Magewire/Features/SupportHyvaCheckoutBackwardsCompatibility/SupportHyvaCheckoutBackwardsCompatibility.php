@@ -108,15 +108,15 @@ class SupportHyvaCheckoutBackwardsCompatibility extends ComponentHook
         }
 
         try {
-            $backwardsCompatibilityActive = $this->component() ? store($this->component())->get('magewire:bc') : false;
+            $backwardsCompatibilityActive = $this->component() ? store($this->component())->get('magewire:bc', null) : null;
 
             // When still null, a Magewire component is dynamically injected onto the page via a subsequent
             // Magewire request, it can not match any of the above use cases. Herefor, a unique
             // situation occurs needing to search within the lifecycle to try and figure out if
             // any of the requested components, rendered this child component.
-            if ($backwardsCompatibilityActive === false) {
+            if ($backwardsCompatibilityActive === null) {
                 // When still null, lets check if this component sits within the Hyvä Checkout Main component.
-                $backwardsCompatibilityActive = $this->renderLifecycleManager->target('magewire')->within('hyva-checkout-main');
+                $backwardsCompatibilityActive = $this->renderLifecycleManager->forMagewire()->within('hyva-checkout-main');
             }
 
             store($this->component())->set('magewire:bc', is_bool($backwardsCompatibilityActive) ? $backwardsCompatibilityActive : false);
