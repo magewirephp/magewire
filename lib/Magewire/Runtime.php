@@ -28,11 +28,18 @@ class Runtime
     }
 
     /**
+     *
+     *
      * @throws RuntimeException
      */
     public function mode(RequestMode|null $mode = null): RequestMode
     {
-        if ($mode === null || $mode === $this->mode) {
+        if ($mode === null) {
+            return $this->mode;
+        }
+
+        // From this point on, assuming a mode needs to be set.
+        if ($this->mode !== RequestMode::UNDEFINED) {
             return $this->mode;
         }
         if ($mode === RequestMode::UNDEFINED) {
