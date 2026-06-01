@@ -39,7 +39,7 @@ class MagentoTemplateCompiler extends Compiler
                 ->template()
                 ->middleware()
                 ->group($group)
-                ->pipe(fn (string $throughput, callable $next): mixed => $next($middleware->compile($throughput)));
+                ->pipe(static fn (string $throughput, callable $next): mixed => $next($middleware->compile($throughput)));
         }
 
         return $pipeline;

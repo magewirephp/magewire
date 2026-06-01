@@ -78,9 +78,11 @@ abstract class Component extends Html
     public function distribute(array $data): static
     {
         foreach ($data as $name => $value) {
-            if (is_array($value)) {
-                $this->properties()->target($name)->fill($value);
+            if (! is_array($value)) {
+                continue;
             }
+
+            $this->properties()->target($name)->fill($value);
         }
 
         return $this;
