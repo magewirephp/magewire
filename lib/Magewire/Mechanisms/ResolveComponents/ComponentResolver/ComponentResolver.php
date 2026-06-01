@@ -109,7 +109,7 @@ abstract class ComponentResolver
      *
      * The accessor must match the DI-mapping Resolver item's name exactly.
      */
-    public function getAccessor(): string
+    public function accessor(): string
     {
         return $this->accessor;
     }
@@ -149,6 +149,27 @@ abstract class ComponentResolver
     public function remember(): bool
     {
         return true;
+    }
+
+    /**
+     * Determines whether a dynamically loaded child block can inherit and reuse
+     * the resolver that was used to resolve its parent block.
+     *
+     * When a parent block is resolved and a child block is dynamically loaded
+     * without a resolver of its own, the child can ask the parent's resolver
+     * if it is allowed to propagate down and take ownership of its resolution.
+     */
+    public function canPropagate(): bool
+    {
+        return false;
+    }
+
+    /**
+     * @deprecated Has been replaced by {@see accessor()}.
+     */
+    public function getAccessor(): string
+    {
+        return $this->accessor();
     }
 
     protected function conditions(): Conditions

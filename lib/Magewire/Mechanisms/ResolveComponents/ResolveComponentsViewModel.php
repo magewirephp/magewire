@@ -23,6 +23,6 @@ class ResolveComponentsViewModel implements ArgumentInterface
 
     public function doesPageHaveComponents(): bool
     {
-        return $this->renderLifecycleManager->target('magewire')->hasComponents();
+        return $this->renderLifecycleManager->forMagewire()->hasComponents();
     }
 }

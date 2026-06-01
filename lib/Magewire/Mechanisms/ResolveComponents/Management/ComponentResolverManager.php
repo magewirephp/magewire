@@ -197,7 +197,7 @@ class ComponentResolverManager
      */
     private function cache(AbstractBlock $block, ComponentResolver $resolver): void
     {
-        $accessor = $resolver->getAccessor();
+        $accessor = $resolver->accessor();
         $cache = $this->resolversCache->fetch();
 
         $cache['blocks'][$this->getBlockCacheKey($block)] = $accessor;

@@ -31,4 +31,12 @@ class LayoutLifecycleManager
     {
         return $this->lifecycles ??= Factory::create(DataCollection::class);
     }
+
+    /**
+     * Returns the magewire layout lifecycle.
+     */
+    public function forMagewire(): LayoutLifecycle
+    {
+        return $this->target('magewire');
+    }
 }

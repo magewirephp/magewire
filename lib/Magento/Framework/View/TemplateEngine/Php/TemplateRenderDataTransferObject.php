@@ -48,9 +48,4 @@ class TemplateRenderDataTransferObject implements DataTransferObjectInterface
 
         return $this->dictionary;
     }
-
-    public function existsInDictionary(string $key): bool
-    {
-        return array_key_exists($key, $this->dictionary);
-    }
 }

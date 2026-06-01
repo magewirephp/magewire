@@ -106,7 +106,7 @@ class LayoutResolver extends ComponentResolver
         on('dehydrate', function (Component $component, ComponentContext $context) {
             $resolver = $component->magewireResolver();
 
-            if ($resolver->getAccessor() === $this->getAccessor()) {
+            if ($resolver->accessor() === $this->accessor()) {
                 if ($this->canMemorizeLayoutHandles()) {
                     $context->addMemo('handles', array_values($this->determineLayoutHandles($component, $context)));
                 }
