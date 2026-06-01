@@ -30,7 +30,9 @@ class Wrapped
         try {
             $arguments = $this->methodsMap->getMethodParams($this->target::class, $method);
             if (count($params) !== 0 && isset($params[0])) {
-                $params = array_combine(array_column($arguments, 'name'), array_intersect_key($params, $arguments));
+                $names = array_column($arguments, 'name');
+                $count = min(count($names), count($params));
+                $params = array_combine(array_slice($names, 0, $count), array_slice(array_values($params), 0, $count));
             }
             // Remove parameters that are not required by the method.
             $params = array_intersect_key($params, array_flip(array_column($arguments, 'name')));
