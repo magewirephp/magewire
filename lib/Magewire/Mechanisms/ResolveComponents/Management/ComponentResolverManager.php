@@ -90,10 +90,12 @@ class ComponentResolverManager
             $resolver = null;
 
             foreach ($this->resolvers as $key => $componentResolver) {
-                if ($componentResolver->complies($block, $block->getData('magewire'))) {
-                    $resolver = $key;
-                    break;
+                if (! $componentResolver->complies($block, $block->getData('magewire'))) {
+                    continue;
                 }
+
+                $resolver = $key;
+                break;
             }
 
             $resolver = $this->createResolverByAccessor($resolver ?? 'unknown');
