@@ -1,0 +1,53 @@
+name: 'Mago (PR auto-fix)'
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+
+  mago-fix:
+    runs-on: ubuntu-latest
+    # Only same-repo PRs are pushable; skip forks (mago.yml still checks them).
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.MY_TOKEN }}
+          ref: ${{ github.head_ref }}
+
+      - name: Install Mago
+        env:
+          MAGO_VERSION: '1.27.1'
+        run: |
+          curl --proto '=https' --tlsv1.2 -LsSf https://carthage.software/mago.sh | bash -s -- --no-verify --version="$MAGO_VERSION"
+          mago --version
+
+      - name: Strip external includes from mago.toml
+        run: sed -i '/^includes\s*=/d' mago.toml
+
+      # Safe fixes only; '|| true' so unfixable issues don't abort before format.
+      - name: Mago lint fix (safe)
+        run: mago lint --fix --format-after-fix || true
+
+      - name: Mago format
+        run: mago format
+
+      - name: Restore mago.toml
+        run: git checkout -- mago.toml
+
+      - name: Commit & push fixes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          if ! git diff --quiet; then
+            git commit -am 'style: apply Mago safe fixes and formatting'
+            git push
+          else
+            echo 'No Mago changes needed.'
+          fi
