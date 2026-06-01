@@ -6,6 +6,7 @@
         <sequence>
             <module name="Magewirephp_Magewire"/>
             <module name="Hyva_Theme"/>
+            <module name="Hyva_Checkout"/>
         </sequence>
     </module>
 </config>

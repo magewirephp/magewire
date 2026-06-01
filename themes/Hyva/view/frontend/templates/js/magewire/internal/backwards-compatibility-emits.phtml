@@ -16,10 +16,10 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
     (() => {
         'use strict';
 
-        if (typeof Livewire !== 'undefined' && ! Livewire.emitTo) {
-            Livewire.emitTo = function (component, event, ...params) {
+        if (typeof Magewire !== 'undefined' && ! Magewire.emitTo) {
+            Magewire.emitTo = function (component, event, ...params) {
                 const instance = typeof component === 'string'
-                    ? Livewire.find(component)
+                    ? Magewire.find(component)
                     : component;
 
                 if (! instance) {

@@ -24,9 +24,9 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 return;
             }
 
-            component = magewireMakeComponentBackwardsCompatible(component);
+            component = _magewireMakeComponentBackwardsCompatibleSync(component);
 
-            runMagewireBackwardsCompatibleHook('component.initialized', () => {
+            runMagewireBackwardsCompatibleHook('component.initialized', component, (component) => {
                 Magewire.trigger('component.initialized', component);
             });
 
@@ -64,9 +64,9 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 return;
             }
 
-            component = magewireMakeComponentBackwardsCompatible(component);
+            component = _magewireMakeComponentBackwardsCompatibleSync(component);
 
-            runMagewireBackwardsCompatibleHook('element.initialized', () => {
+            runMagewireBackwardsCompatibleHook('element.initialized', component, (component) => {
                 Magewire.trigger('element.initialized', el, component);
             });
         });
@@ -77,9 +77,9 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 return;
             }
 
-            component = magewireMakeComponentBackwardsCompatible(component);
+            component = _magewireMakeComponentBackwardsCompatibleSync(component);
 
-            runMagewireBackwardsCompatibleHook('element.updating', () => {
+            runMagewireBackwardsCompatibleHook('element.updating', component, (component) => {
                 Magewire.trigger('element.updating', el, toEl, component);
             });
         });
@@ -89,10 +89,10 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             if (! magewireIsComponentBackwardsCompatibilityEnabled(component)) {
                 return;
             }
-            
-            component = magewireMakeComponentBackwardsCompatible(component);
 
-            runMagewireBackwardsCompatibleHook('element.removed', () => {
+            component = _magewireMakeComponentBackwardsCompatibleSync(component);
+
+            runMagewireBackwardsCompatibleHook('element.removed', component, (component) => {
                 Magewire.trigger('element.removed', el, component);
             });
         });
@@ -106,7 +106,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 return;
             }
 
-            component = magewireMakeComponentBackwardsCompatible(component);
+            component = _magewireMakeComponentBackwardsCompatibleSync(component);
 
             const generateSignature = () => {
                 return (Math.random() + 1).toString(36).substring(8)
@@ -162,7 +162,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 });
             }
 
-            runMagewireBackwardsCompatibleHook('message.sent', () => {
+            runMagewireBackwardsCompatibleHook('message.sent', component, (component) => {
                 Magewire.trigger('message.sent', message, component);
             });
 
@@ -174,25 +174,25 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 c.snapshot = JSON.parse(c.snapshotEncoded);
 
                 <?php /* Re-apply backwards compatibility layer on success. */ ?>
-                c = magewireMakeComponentBackwardsCompatible(c);
+                c = _magewireMakeComponentBackwardsCompatibleSync(c);
 
                 message.response.effects = c.effects
                 message.response.serverMemo = c.effects.bc.serverMemo
 
-                runMagewireBackwardsCompatibleHook('message.received', () => {
+                runMagewireBackwardsCompatibleHook('message.received', c, (c) => {
                     Magewire.trigger('message.received', message, c);
                 });
 
                 queueMicrotask(() => {
-                    runMagewireBackwardsCompatibleHook('message.processed', () => {
+                    runMagewireBackwardsCompatibleHook('message.processed', c, (c) => {
                         Magewire.trigger('message.processed', message, c);
                     });
                 });
             });
 
             fail(() => {
-                // @todo Check if this really needs to dispatch 'message.processed'.
-                runMagewireBackwardsCompatibleHook('message.processed', () => {
+                <?php /* @todo Check if this really needs to dispatch 'message.processed'. */ ?>
+                runMagewireBackwardsCompatibleHook('message.processed', component, (component) => {
                     Magewire.trigger('message.processed', message, component);
                 });
             });
