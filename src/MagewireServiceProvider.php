@@ -32,6 +32,9 @@ class MagewireServiceProvider
     ) {
     }
 
+    /**
+     * @throws Exception
+     */
     public function setup(): void
     {
         if ($this->runtime()->state()->isMinimally(RuntimeState::SETUP)) {
@@ -60,18 +63,23 @@ class MagewireServiceProvider
     /**
      * @throws Exception
      */
-    public function boot(RequestMode $mode, bool $force = false): void
+    public function boot(RequestMode $mode): void
     {
-        if (! $force && $this->runtime()->state()->is(RuntimeState::UNINITIALIZED)) {
-            $this->setup();
-        }
-        if (! $force && $this->runtime()->state()->isMinimally(RuntimeState::BOOTED)) {
+        // Block re-entry while still booting on the same instance. BOOTING(2) >= BOOTING(2)
+        // catches a recursive boot() called from a magewire:boot listener or a
+        // mechanism/feature boot() body before line 102 has marked the runtime BOOTED.
+        if ($this->runtime()->state()->isMinimally(RuntimeState::BOOTING)) {
             return;
         }
 
+        // Define runtime boot mode.
+        $this->runtime()->mode($mode);
+
+        if ($this->runtime()->state()->is(RuntimeState::UNINITIALIZED)) {
+            $this->setup();
+        }
+
         try {
-            // Define runtime boot mode.
-            $this->runtime()->mode($mode);
             // Define runtime booting state right before service items boot attempt.
             $this->runtime()->state(RuntimeState::BOOTING);
 
@@ -97,6 +105,15 @@ class MagewireServiceProvider
 
             throw $exception;
         }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function reset(RequestMode $mode): void
+    {
+        $this->runtime()->state(RuntimeState::UNINITIALIZED);
+        $this->boot($mode);
     }
 
     public function runtime(): Runtime
