@@ -24,6 +24,25 @@ Other themes are free to ship their own BC implementations. Nothing about the BC
 
 ---
 
+## BC is one-way: old → new only
+
+The BC layer provides **backwards** compatibility, not **forwards** compatibility. The direction matters when you decide where to put a fix.
+
+| Code listens on | Receives | Old v2 API (e.g. `component.serverMemo`) |
+|-----------------|----------|------------------------------------------|
+| **Old v2 hook** (`message.sent`, `message.received`, `component.initialized`, …) | BC `Proxy` | **Works** — `get`/`has` traps resolve `serverMemo` etc. via `effects.bc` |
+| **New v3 hook** (`commit`, `component.init`, …) | Raw v3 component | **Does not work** — `serverMemo` is not on v3 components |
+
+**Implication for new code.** If you are writing a new listener on a new v3 hook (e.g. `Magewire.hook('commit', ...)`), you must use the v3 shape (`effects.evaluation`, `snapshot`, etc.). Reaching for `serverMemo` from new code is a forwards-compat trap — the BC `Proxy` is not handed to new-hook listeners, and it would be wrong to make it so.
+
+**Implication for old code.** Existing v1 listeners on old hooks keep working unchanged. The BC layer wraps the component into a `Proxy` before re-dispatching deprecated events (see `runMagewireBackwardsCompatibleHook` in `magewire-hooks.phtml`), so property access like `component.serverMemo` resolves through `effects.bc.serverMemo` via the proxy's traps.
+
+**Do not** "fix" a new-code call site by wrapping the raw component in `_magewireMakeComponentBackwardsCompatibleSync()` just to expose old API. That is forwards-compat masquerading as BC. Migrate the new code to the v3 shape instead.
+
+Worked example: `hyvaCheckout.evaluation.process(el, component, result)` in `hyva-themes/magento2-hyva-checkout/.../v1.phtml`. If the caller listens on the v3 `commit` hook, the function must read evaluation data from `effects.evaluation` — not `serverMemo`. Wrapping the component to "make `serverMemo` work" is the wrong direction.
+
+---
+
 ## PHP Feature
 
 `Magewirephp\MagewireCompatibilityWithHyva\Magewire\Features\SupportHyvaCheckoutBackwardsCompatibility\SupportHyvaCheckoutBackwardsCompatibility`

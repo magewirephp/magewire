@@ -32,8 +32,8 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
  *   4. After init, the real Magewire object replaces the Proxy — the queue is no
  *      longer needed and is discarded.
  *
- * This file also contains the V1 -> V2 onError bridge (magewireBcOnError), which
- * translates the old Magewire.onError(callback) signature into a V2 request hook.
+ * This file also contains the V1 -> V3 onError bridge (magewireBcOnError), which
+ * translates the old Magewire.onError(callback) signature into a V3 request hook.
  */
 ?>
 <?php $script = $magewireFragment->make()->script()->start() ?>
@@ -41,41 +41,41 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
     (() => {
         document.addEventListener('magewire:init', event => {
             <?php /* Overwrite __magewireIsProxy and __magewireInfo on the real instance once Magewire
-             * has initialized, so callers can distinguish the Proxy from the live API. */ ?>
+                   * has initialized, so callers can distinguish the Proxy from the live API. */ ?>
             Magewire.__magewireIsProxy = function () {
                 return false;
             };
         });
 
         <?php /* If the real Magewire has already loaded (e.g. scripts were reordered),
-         * skip the Proxy entirely — there is nothing to stand in for. */ ?>
+               * skip the Proxy entirely — there is nothing to stand in for. */ ?>
         if (window.Magewire) {
             return;
         }
 
         <?php /* Queue that collects method calls made on the Proxy before the real Magewire
-         * loads. Each entry stores the method name (prop) and its arguments. */ ?>
+               * loads. Each entry stores the method name (prop) and its arguments. */ ?>
         const magewireBcProxyQueue = [
             // Empty by default.
         ];
         <?php /* Map of known backwards-compatibility functions. When the queue is replayed
-         * after init, only calls matching a key here are executed — unknown calls
-         * are silently discarded to avoid errors from removed or renamed APIs. */ ?>
+               * after init, only calls matching a key here are executed — unknown calls
+               * are silently discarded to avoid errors from removed or renamed APIs. */ ?>
         const magewireBcFunctions = {
             onError: magewireBcOnError
         };
 
         <?php /* The Proxy target contains stub properties that are safe to access before init.
-         * The Proxy handler's get() trap intercepts any other property access and returns
-         * a function that queues the call for later replay. */ ?>
+               * The Proxy handler's get() trap intercepts any other property access and returns
+               * a function that queues the call for later replay. */ ?>
         window.Magewire = new Proxy({
             __magewireIsProxy: function() {
                 return true;
             },
 
             <?php /* Provide a no-op components.onErrorCallback so legacy code that does
-             * const orig = Magewire.components.onErrorCallback` doesn't crash when
-             * it calls `orig(status, response)` inside the onError handler. */ ?>
+                   * const orig = Magewire.components.onErrorCallback` doesn't crash when
+                   * it calls `orig(status, response)` inside the onError handler. */ ?>
             components: {
                 onErrorCallback: () => {}
             }
@@ -91,13 +91,13 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             }
         });
 
-        <?php /* V1 -> V2 onError bridge.
-         * Translates the legacy Magewire.onError(callback) signature into a Livewire v3
-         * request hook. The old callback received (status, response); V2 provides
-         * {status, content, preventDefault}. A synthetic Response-like object is built
-         * from the plain-text content so existing callbacks that call response.text()
-         * or response.json() continue to work unchanged. Returning false from the
-         * legacy callback calls preventDefault(), matching V1 suppression behaviour. */ ?>
+        <?php /* V1 -> V3 onError bridge.
+               * Translates the legacy Magewire.onError(callback) signature into a Livewire v3
+               * request hook. The old callback received (status, response); V2 provides
+               * {status, content, preventDefault}. A synthetic Response-like object is built
+               * from the plain-text content so existing callbacks that call response.text()
+               * or response.json() continue to work unchanged. Returning false from the
+               * legacy callback calls preventDefault(), matching V1 suppression behavior. */ ?>
         function magewireBcOnError(callback) {
             Magewire.hook('request', ({ fail }) => {
                 fail(({ status, content, preventDefault }) => {
@@ -130,8 +130,8 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
         }
 
         <?php /* Once the real Magewire is available, drain the queue: replay each captured
-         * call through magewireBcFunctions so the registrations take effect on the
-         * live instance. The queue is consumed in insertion order (FIFO). */ ?>
+               * call through magewireBcFunctions so the registrations take effect on the
+               * live instance. The queue is consumed in insertion order (FIFO). */ ?>
         document.addEventListener('magewire:init', event => {
             for (const { prop, args } of magewireBcProxyQueue) {
                 if (prop in magewireBcFunctions && typeof magewireBcFunctions[prop] === 'function') {

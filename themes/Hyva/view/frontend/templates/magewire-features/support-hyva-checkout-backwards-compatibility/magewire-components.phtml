@@ -30,7 +30,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             return new Proxy(wire, {
                 get(target, prop, receiver) {
                     if (prop === '__instance') {
-                        return magewireMakeComponentBackwardsCompatible(target.__instance);
+                        return _magewireMakeComponentBackwardsCompatibleSync(target.__instance);
                     }
 
                     return Reflect.get(target, prop, receiver);
@@ -39,16 +39,13 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
         };
     });
 
+    <?php /* @todo Should return `true/false` based on a Magewire system config settings. */ ?>
     const magewireIsComponentBackwardsCompatibilityEnabled = function(component) {
-        try {
-            return component.snapshot.memo.bc.enabled;
-        } catch (exception) {
-        }
-
-        return false;
+        return true;
     }
 
-    const magewireMakeComponentBackwardsCompatible = function(component) {
+    <?php /* Internal sync proxy builder. Use only where a synchronous proxy is required (e.g. Magewire.find().__instance). */ ?>
+    const _magewireMakeComponentBackwardsCompatibleSync = function(component) {
         const checksum = component.snapshot?.checksum;
 
         if (component.magewire?.bc?.checksum === checksum) {
@@ -98,6 +95,13 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
         component.magewire.bc = { checksum, proxy };
 
         return proxy;
+    };
+
+    <?php /* Async public API: awaits Magewire readiness so the returned proxy is safe to hand to deprecated hook listeners. */ ?>
+    const magewireMakeComponentBackwardsCompatible = async function(component) {
+        await magewireBcReady;
+
+        return _magewireMakeComponentBackwardsCompatibleSync(component);
     };
 </script>
 <?php $script->end() ?>

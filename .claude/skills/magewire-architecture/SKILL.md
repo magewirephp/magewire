@@ -66,9 +66,40 @@ Boot modes per service item (`ServiceTypeItemBootMode`):
 - `PERSISTENT` (20) — Boot during setup phase, persists across request modes
 - `ALWAYS` (30) — Boot on every request (default)
 
-Runtime state progression: `UNINITIALIZED → SETUP → BOOTING → BOOTED` (or `FAILED / STOPPED`)
+Runtime state progression: `UNINITIALIZED → SETUP → BOOTING → BOOTED` (or `FAILED / STOPPED`). Enum lives at `lib/Magewire/Enums/RuntimeState.php` and exposes ordinal helpers `isMinimally()`, `isMaximally()`, `isAbove()`, `isBelow()` — guards prefer ordinal comparisons over equality.
 
-Request modes: `PRECEDING` (initial page load) and `SUBSEQUENT` (AJAX update).
+Request modes (`lib/Magewire/Enums/RequestMode.php`):
+- `PRECEDING` — initial page load (block render path).
+- `SUBSEQUENT` — Magewire XHR update.
+- `UNDEFINED` — pre-boot sentinel; `Runtime::mode()` rejects re-setting it.
+
+### Boot trigger points
+
+`MagewireServiceProvider::boot(RequestMode $mode)` is called from exactly two places:
+
+1. **`Controller/MagewireUpdateRoute::match()`** — fires `boot(SUBSEQUENT)` when the router matches the Magewire update endpoint. Runs once per XHR.
+2. **`Observer/ViewBlockAbstractToHtmlBefore::execute()`** — fires `boot(PRECEDING)` the first time a block carrying `magewire` data renders.
+
+On a SUBSEQUENT request both fire: the router boots first; later, when the matched block renders inside `HandleRequests::handleUpdate`, the observer enters `boot()` a second time but the state guard short-circuits before any side effects.
+
+### Idempotency & guards
+
+- `boot()` short-circuits when state is `≥ BOOTING`. So a second observer-driven entry while the router's boot is still in flight is a no-op.
+- `Runtime::mode()` is **set-once**: the first non-`UNDEFINED` mode wins; subsequent calls are ignored. The XHR's `SUBSEQUENT` is therefore never downgraded to `PRECEDING` by the later observer call.
+- `MagewireServiceProvider` is a **per-request singleton** under Magento DI (`shared="true"`, default). It is NOT persistent across HTTP requests — every request gets a fresh instance with `state = UNINITIALIZED`. `spl_object_id` collisions across PHP-FPM workers are coincidence; use a random per-instance id if you need to disambiguate logs.
+- `reset(RequestMode)` exists for forcing a re-boot within the same instance (sets state back to `UNINITIALIZED`, then calls `boot()`). Not currently called by the framework itself.
+
+> **Footgun — never DI-inject `Runtime` directly.** `MagewireServiceProvider::runtime()` lazy-creates the singleton via `RuntimeFactory` and caches it on `$this->runtime`. The Runtime that `boot()` mutates is **that cached instance only**. If you inject `Runtime` straight into your own constructor, Magento's DI hands you a **different** Runtime that never sees a `boot()` call — it stays `UNINITIALIZED` / `UNDEFINED` for the whole request and silently misleads any state/mode check. Always go through the service provider: inject `MagewireServiceProvider` and call `$magewireServiceProvider->runtime()` to get the live one.
+
+### setup() vs boot()
+
+`MagewireServiceProvider::setup()` runs the persistent slice only (Containers fully boot; Mechanisms/Features boot with `PERSISTENT` mode). `boot()` calls `setup()` if state is still `UNINITIALIZED`, then boots all remaining (`ALWAYS`) Mechanisms and Features. A `LAZY` service item boots only when something explicitly resolves it.
+
+### Lifecycle events fired during boot
+
+- `trigger('magewire:setup', $runtime)` — emitted from `setup()` after Containers boot, before persistent Mechanisms/Features.
+- `trigger('magewire:boot', $runtime)` — emitted from `boot()` once state is `BOOTING`, before remaining Mechanisms/Features boot. The trigger returns a finisher closure called after all service-type boots succeed.
+- Both events are also re-emitted as Magento observer events (`magewire_on_setup`, `magewire_on_boot`) via the `SupportMagentoObserverEvents` feature, so module developers can hook them through `etc/events.xml`.
 
 ---
 
@@ -237,7 +268,14 @@ The `ResolveComponents` mechanism is Magewire-specific (not ported from Livewire
 
 ### How Resolution Works
 
-When Magewire encounters a block during rendering, the `ComponentResolverManager` iterates registered resolvers (sorted by DI `sortOrder`) and calls `complies()` on each until one matches. The winning resolver then handles construction (initial page load) and reconstruction (AJAX updates).
+The `ComponentResolverManager::resolve($block)` walks a priority list, top-down. The first hit wins; later steps don't run.
+
+1. **Explicit override.** `<argument name="magewire:resolver" xsi:type="string">…</argument>` on the block. Highest priority — lets layout XML force a specific resolver regardless of context.
+2. **Parent inheritance.** Walks `$block->getParentBlock()` until it finds an ancestor whose `magewire` data key already holds a constructed `Component`, and returns that component's `magewireResolver()`. Source of truth is the **live Component on the ancestor block**, not the persistent `ResolversCache` — so a mid-request cache flush cannot poison the choice. Solves the dynamic-load case where a child component is introduced through a parent's XHR re-render and the `LayoutLifecycle` stack doesn't reflect the full page route.
+3. **Persistent block→accessor cache** (`ResolversCache`, keyed by block cache key).
+4. **`complies()` chain.** Iterate registered resolvers by `sortOrder`; the first whose `complies()` returns true wins.
+
+For an XHR update, this whole chain is **not re-run** for components that were rendered initially: the resolver `$accessor` is dehydrated into the snapshot memo (`memo.resolver`) and reused directly by `createResolverByAccessor()` on reconstruct. Resolution only runs again for blocks that weren't constructed on the previous request.
 
 Resolvers are registered in area-scoped DI:
 

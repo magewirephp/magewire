@@ -18,7 +18,7 @@
             </referenceContainer>
         </referenceContainer>
 
-        <referenceContainer name="after.body.start">
+        <referenceBlock name="magewire.priority">
             <block name="magewire.object-proxy"
                    template="Magewirephp_Magewire::js/magewire/object-proxy.phtml"
             >
@@ -28,6 +28,6 @@
                     </argument>
                 </arguments>
             </block>
-        </referenceContainer>
+        </referenceBlock>
     </body>
 </page>
