@@ -36,7 +36,7 @@ jobs:
         run: mago lint --fix --format-after-fix || true
 
       - name: Mago format
-        run: mago format --fix
+        run: mago format
 
       - name: Restore mago.toml
         run: git checkout -- mago.toml
