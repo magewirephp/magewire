@@ -3,7 +3,25 @@
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
 >
     <body>
-        <block name="magewire" template="Magewirephp_Magewire::root.phtml">
+        <referenceContainer name="after.body.start">
+            <block name="magewire.priority"
+                   template="Magewirephp_Magewire::js/magewire/priority.phtml"
+            >
+                <arguments>
+                    <argument name="view_model" xsi:type="object">
+                        Magewirephp\Magewire\Features\SupportMagewireViewModel\MagewireViewModelInterface
+                    </argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+
+        <!-- MAGEWIRE ROOT.
+
+             Blocks within the Magewire root block automatically inherit
+             the Magewire ViewModel if none is explicitly set. -->
+        <block name="magewire"
+               template="Magewirephp_Magewire::root.phtml"
+        >
             <block name="magewire.global"
                    as="global"
                    template="Magewirephp_Magewire::js/magewire/global.phtml"
