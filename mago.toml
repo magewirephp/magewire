@@ -3,7 +3,7 @@ php-version = "8.2.0"
 [source]
 workspace = "."
 paths = ["lib/", "src/", "themes/"]
-excludes = ["dist/**", "node_modules/**", "lib/Livewire", "lib/Magewire/Features/SupportMagewireFlakes/View/Compiler/FlakeCompilerBu.php"]
+excludes = ["dist/**", "node_modules/**", "lib/Livewire"]
 extensions = ["php", "phtml"]
 
 [formatter]
