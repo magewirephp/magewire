@@ -30,7 +30,7 @@ jobs:
           php-version: '8.2'
 
       - name: Install composer
-        uses: ramsey/composer-install@v3
+        uses: ramsey/composer-install@v4
         with:
           composer-options: "--no-scripts"
 
