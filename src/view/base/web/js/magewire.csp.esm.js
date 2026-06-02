@@ -5160,9 +5160,9 @@ var require_module_cjs5 = __commonJS({
   }
 });
 
-// node_modules/@alpinejs/resize/dist/module.cjs.js
+// ../alpine/packages/resize/dist/module.cjs.js
 var require_module_cjs6 = __commonJS({
-  "node_modules/@alpinejs/resize/dist/module.cjs.js"(exports, module) {
+  "../alpine/packages/resize/dist/module.cjs.js"(exports, module) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
     var __getOwnPropNames2 = Object.getOwnPropertyNames;

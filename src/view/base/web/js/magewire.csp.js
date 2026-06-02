@@ -6653,7 +6653,7 @@ Read more about the Alpine's CSP-friendly build restrictions here: https://alpin
   }
   var module_default4 = src_default4;
 
-  // node_modules/@alpinejs/resize/dist/module.esm.js
+  // ../alpine/packages/resize/dist/module.esm.js
   function src_default5(Alpine23) {
     Alpine23.directive("resize", Alpine23.skipDuringClone((el, { value, expression, modifiers }, { evaluateLater, cleanup }) => {
       let evaluator = evaluateLater(expression);
