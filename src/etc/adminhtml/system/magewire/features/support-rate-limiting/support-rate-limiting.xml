@@ -11,6 +11,20 @@
         <label>Rate Limiting</label>
         <comment>Rate limiting can be applied globally to all Magewire requests, and/or individually per component. Global settings take precedence over component-specific limits when both are configured.</comment>
 
+        <field id="developer_mode"
+               translate="label comment"
+               type="select"
+               sortOrder="5"
+               showInDefault="1"
+               showInWebsite="1"
+               showInStore="1"
+        >
+            <label>Enable in Developer Mode</label>
+            <comment>Rate limiting is always enforced in production mode. In developer or default mode it is skipped unless this is set to "Yes". Leave on "No" to avoid throttling during local development and automated tests.</comment>
+
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+        </field>
+
         <field id="variant"
                translate="label"
                type="select"
