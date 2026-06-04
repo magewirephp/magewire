@@ -11,23 +11,35 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireRateLimiting;
 
+use Magento\Framework\App\State as ApplicationState;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\ComponentHook;
 use Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Exceptions\TooManyRequestsException;
 
+use Throwable;
 use function Magewirephp\Magewire\on;
 
 class SupportMagewireRateLimiting extends ComponentHook
 {
     public function __construct(
         private readonly UpdateRequestRateLimiter $rateLimiter,
-        private readonly RateLimiterConfig $rateLimiterConfig
+        private readonly RateLimiterConfig $rateLimiterConfig,
+        private readonly ApplicationState $appState
     ) {
     }
 
     public function provide(): void
     {
+        // Rate limiting is always enforced in production. In developer/default mode it is skipped
+        // (rapid interaction during local dev / automated tests would otherwise hit spurious
+        // TooManyRequests), unless a developer explicitly opts in via the system config toggle.
+        if ($this->getAppMode() !== ApplicationState::MODE_PRODUCTION
+            && ! $this->rateLimiterConfig->throttleInDeveloperMode()
+        ) {
+            return;
+        }
+
         if ($this->rateLimiterConfig->canRateLimitRequests()) {
             on('request', function (array $payload) {
                 $context = $payload[0] ?? false;
@@ -48,6 +60,15 @@ class SupportMagewireRateLimiting extends ComponentHook
                     }
                 };
             });
+        }
+    }
+
+    private function getAppMode(): string
+    {
+        try {
+            return $this->appState->getMode();
+        } catch (Throwable $exception) {
+            return ApplicationState::MODE_DEVELOPER;
         }
     }
 }

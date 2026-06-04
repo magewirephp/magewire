@@ -17,6 +17,11 @@ use Magewirephp\Magewire\Model\Magento\System\ConfigMagewireGroup;
 
 class RateLimiterConfig extends ConfigMagewireGroup
 {
+    public function throttleInDeveloperMode(): bool
+    {
+        return (bool) ( $this->config()->getFeaturesGroupValue('rate_limiting/developer_mode') ?? false );
+    }
+
     public function canRateLimitRequests(): bool
     {
         return $this->getRateLimitingVariant() === RateLimitingVariant::REQUESTS_ONLY;
