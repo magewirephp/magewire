@@ -26,7 +26,7 @@
         </field>
 
         <field id="variant"
-               translate="label"
+               translate="label comment"
                type="select"
                sortOrder="10"
                showInDefault="1"
@@ -34,6 +34,10 @@
                showInStore="1"
         >
             <label>Variant</label>
+            <comment><![CDATA[
+                <strong>Requests only</strong> &ndash; limits the number of update requests within the configured time window (see the "Requests" settings below), either shared across all components or isolated per component depending on the chosen scope.<br/>
+                <strong>Components only</strong> &ndash; limits requests per component using each component's own configured limit, ignoring the global "Requests" settings.<br/>
+                Requests and Components are mutually exclusive; pick the one that matches whether you want a single global budget or per-component budgets.]]></comment>
             <source_model>Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Config\Source\RateLimitingVariant</source_model>
         </field>
 
@@ -48,7 +52,7 @@
             <comment>Note: These settings only take effect when "requests" rate limiting is enabled.</comment>
 
             <field id="scope"
-                   translate="label"
+                   translate="label comment"
                    type="select"
                    sortOrder="10"
                    showInDefault="1"
@@ -56,7 +60,9 @@
                    showInStore="1"
             >
                 <label>Scope</label>
-                <comment>Determine whether rate limiting applies across all components (shared) or individually per component (isolated).</comment>
+                <comment><![CDATA[
+                    <strong>Shared</strong> &ndash; one budget for the whole page; update requests from every component count against the same Max Attempts limit.<br/>
+                    <strong>Isolated</strong> &ndash; each component gets its own Max Attempts budget, so a busy component cannot exhaust the limit for the others.]]></comment>
 
                 <source_model>Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Config\Source\RequestsScope</source_model>
             </field>
