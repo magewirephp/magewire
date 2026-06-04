@@ -29,6 +29,14 @@ class UpdatingUpdatedArgumentSwapResolver implements CallHookArgumentResolverInt
     /**
      * Swap parameters when backwards compatible.
      */
+    private function updating(Component $component, string $method, array $params): array
+    {
+        return [$method, [$params[1], $params[0]]];
+    }
+
+    /**
+     * Swap parameters when backwards compatible.
+     */
     private function updated(Component $component, string $method, array $params): array
     {
         return [$method, [$params[1], $params[0]]];
