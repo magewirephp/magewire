@@ -16,8 +16,8 @@ use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\ComponentHook;
 use Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Exceptions\TooManyRequestsException;
-
 use Throwable;
+
 use function Magewirephp\Magewire\on;
 
 class SupportMagewireRateLimiting extends ComponentHook
@@ -34,9 +34,7 @@ class SupportMagewireRateLimiting extends ComponentHook
         // Rate limiting is always enforced in production. In developer/default mode it is skipped
         // (rapid interaction during local dev / automated tests would otherwise hit spurious
         // TooManyRequests), unless a developer explicitly opts in via the system config toggle.
-        if ($this->getAppMode() !== ApplicationState::MODE_PRODUCTION
-            && ! $this->rateLimiterConfig->throttleInDeveloperMode()
-        ) {
+        if ($this->getAppMode() !== ApplicationState::MODE_PRODUCTION && ! $this->rateLimiterConfig->throttleInDeveloperMode()) {
             return;
         }
 
