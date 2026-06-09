@@ -22,31 +22,43 @@ trait Emit
     use HandlesEvents;
 
     /**
+     * @deprecated Use dispatch() instead.
+     *
      * @param array<string, mixed> $params
      */
     public function emit(string $event, $params = []): Event
     {
-        return $this->dispatch($event, $params);
+        return $this->dispatch($event, ...(is_array($params) ? $params : [$params]));
     }
 
     /**
+     * In v3 events bubble up by default, so emitting "up" is just a dispatch.
+     *
+     * @deprecated Use dispatch() instead.
+     *
      * @param array<string, mixed> $params
      */
     public function emitUp(string $event, $params = []): Event
     {
+        return $this->dispatch($event, ...(is_array($params) ? $params : [$params]));
     }
 
     /**
      * Only emit an event on the component that fired the event.
      *
+     * @deprecated Use dispatch()->self() instead.
+     *
      * @param array<string, mixed> $params
      */
     public function emitSelf(string $event, $params = []): Event
     {
+        return $this->dispatch($event, ...(is_array($params) ? $params : [$params]))->self();
     }
 
     /**
      * Only emit an event to other components of the same type.
+     *
+     * @deprecated Use dispatch()->to() instead.
      *
      * @param array<string, mixed> $params
      */
@@ -58,18 +70,25 @@ trait Emit
     /**
      * Only emit a "refresh" event to other components of the same type.
      *
+     * @deprecated Use dispatch('$refresh')->to() instead.
+     *
      * @param array<string, mixed> $params
      */
     public function emitToRefresh(string $name, $params = []): Event
     {
+        return $this->dispatch('$refresh', ...(is_array($params) ? $params : [$params]))->to($name);
     }
 
     /**
-     * Refresh all parents.
+     * Refresh all parents. In v3 events bubble up by default, so a
+     * dispatched "$refresh" reaches parent components automatically.
+     *
+     * @deprecated Use dispatch('$refresh') instead.
      *
      * @param array<string, mixed> $params
      */
     public function emitToRefreshUp($params = []): Event
     {
+        return $this->dispatch('$refresh', ...(is_array($params) ? $params : [$params]));
     }
 }
