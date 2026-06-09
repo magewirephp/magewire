@@ -25,12 +25,12 @@ MagewirePHP helps you deliver modern UX experiences in Magento—faster, cleaner
 
 ## Documentation
 
-- [Gettings Started](https://magewirephp.github.io/magewire-docs/index.html)
-- [Essentials](https://magewirephp.github.io/magewire-docs/pages/essentials/components.html)
-- [Features](https://magewirephp.github.io/magewire-docs/pages/features/alpine.html)
-- [Directives](https://magewirephp.github.io/magewire-docs/pages/html-directives/wire-click.html)
-- [Concepts](https://magewirephp.github.io/magewire-docs/pages/concepts/morphing.html)
-- [Advanced](https://magewirephp.github.io/magewire-docs/pages/advanced/troubleshooting.html)
+- [Gettings Started](https://docs.magewirephp.nl/index.html)
+- [Essentials](https://docs.magewirephp.nl/pages/essentials/components.html)
+- [Features](https://docs.magewirephp.nl/pages/features/alpine.html)
+- [Directives](https://docs.magewirephp.nl/pages/html-directives/wire-click.html)
+- [Concepts](https://docs.magewirephp.nl/pages/concepts/morphing.html)
+- [Advanced](https://docs.magewirephp.nl/pages/advanced/troubleshooting.html)
 
 ## Sponsors
 
