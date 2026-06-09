@@ -15,7 +15,8 @@ use Magewirephp\Magewire\Features\SupportEvents\Event;
 use Magewirephp\Magewire\Features\SupportEvents\HandlesEvents;
 
 /**
- * @deprecated TBD
+ * @deprecated Livewire v2 emit API. Use dispatch() and its modifiers
+ *             (->self(), ->to()) instead.
  */
 trait Emit
 {
