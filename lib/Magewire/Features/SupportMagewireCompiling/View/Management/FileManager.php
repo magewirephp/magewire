@@ -22,8 +22,7 @@ class FileManager
     public function __construct(
         private readonly FileSystem $filesystem,
         private readonly DirectoryList $directoryList,
-        private readonly ApplicationState $appState,
-        private readonly DesignInterface $design
+        private readonly ApplicationState $appState
     ) {
     }
 
@@ -38,27 +37,23 @@ class FileManager
     public function generateFilePath(string $path, bool $includeResourceDir = true): string
     {
         $resource = $this->getResourcePath();
-        $path = sha1($path) . '.phtml';
+        $path = trim(str_replace($this->directoryList->getRoot(), '', $path), DIRECTORY_SEPARATOR);
 
-        return $includeResourceDir ? $resource . DIRECTORY_SEPARATOR . $path : $path;
+        return $includeResourceDir
+            ? $resource . DIRECTORY_SEPARATOR . $path
+            : $path;
     }
 
     protected function getResourcePath(): string
     {
         return (
-            $this->directoryList->getPath(\Magento\Framework\App\Filesystem\DirectoryList::GENERATED)
+            $this->directoryList->getPath(\Magento\Framework\App\Filesystem\DirectoryList::VAR_DIR)
             . DIRECTORY_SEPARATOR
-            . 'code'
-            . DIRECTORY_SEPARATOR
-            . 'Magewirephp'
-            . DIRECTORY_SEPARATOR
-            . 'Magewire'
+            . 'magewire'
             . DIRECTORY_SEPARATOR
             . 'views'
             . DIRECTORY_SEPARATOR
             . $this->resolveAreaSegment()
-            . DIRECTORY_SEPARATOR
-            . $this->resolveThemeSegment()
         );
     }
 
@@ -69,13 +64,5 @@ class FileManager
         } catch (LocalizedException) {
             return 'global';
         }
-    }
-
-    private function resolveThemeSegment(): string
-    {
-        $theme = $this->design->getDesignTheme();
-        $code = $theme?->getCode();
-
-        return $code !== null && $code !== '' ? $code : 'unknown/unknown';
     }
 }
