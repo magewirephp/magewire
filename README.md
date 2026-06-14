@@ -20,17 +20,12 @@ component-based approach that stays true to Magento’s conventions while simpli
 
 MagewirePHP helps you deliver modern UX experiences in Magento—faster, cleaner, and with less frontend overhead.
 
-- [![Discord](https://dcbadge.vercel.app/api/server/RM5nnK5wxj)](https://discord.gg/zS7z7rmH)
+- [Website](https://magewirephp.nl)
+- [Documentation](https://docs.magewirephp.nl)
+- [Discord](https://discord.gg/ZXcckNgMgm)
 - [Admin Compatibility](https://github.com/magewirephp/magewire-admin)
-
-## Documentation
-
-- [Gettings Started](https://docs.magewirephp.nl/index.html)
-- [Essentials](https://docs.magewirephp.nl/pages/essentials/components.html)
-- [Features](https://docs.magewirephp.nl/pages/features/alpine.html)
-- [Directives](https://docs.magewirephp.nl/pages/html-directives/wire-click.html)
-- [Concepts](https://docs.magewirephp.nl/pages/concepts/morphing.html)
-- [Advanced](https://docs.magewirephp.nl/pages/advanced/troubleshooting.html)
+- [Hyvä Theme Compatibility](https://github.com/magewirephp/magewire-hyva-theme)
+- [Hyvä Checkout Compatibility](https://github.com/magewirephp/magewire-hyva-checkout)
 
 ## Sponsors
 
@@ -39,14 +34,6 @@ MagewirePHP helps you deliver modern UX experiences in Magento—faster, cleaner
 |<a align="center" href="https://hyva.io/" title="Hyvä" target="_blank"><img width="64" alt="Hyvä" src="https://github.com/user-attachments/assets/4b22d11f-9afd-4604-8ed2-8cccceb13542"/></a>|<a align="center" href="https://vendic.nl/" title="Vendic" target="_blank"><img width="64" alt="Vendic" src="https://user-images.githubusercontent.com/5383956/228823594-d3344d87-dadc-4c36-a212-89cba8c7340b.jpg"/></a>|<a align="center" href="https://www.zero1.co.uk/" title="ZERO-1" target="_blank"><img width="64" alt="ZERO-1" src="https://github.com/user-attachments/assets/df1e0e2b-96e9-49e2-a6f4-1ee0aafaf0cc"/></a>|
 
 Click [here](https://github.com/sponsors/wpoortman) to start sponsoring.
-
-## Supported Themes
-
-- ✅ Hyvä
-- ✅ [Magento Admin](https://github.com/magewirephp/magewire-admin)
-- 🧪 Luma (uncertain)
-- 🧪 Breeze (community-driven, uncertain)
-- :sparkles: Yours? Reach out!
 
 ## Upgrading from 1.x
 See [UPGRADING.md](UPGRADING.md) for migration notes — dependency changes, the `#[HandleBackwardsCompatibility]` opt-in, and `wire:model` semantics.
