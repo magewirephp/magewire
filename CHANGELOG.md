@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.2.0](https://github.com/magewirephp/magewire/compare/3.1.0...3.2.0) (2026-06-14)
+
+
+### Features
+
+* Magewire compiler resource path from generated to var ([812f6ae](https://github.com/magewirephp/magewire/commit/812f6ae6ee1d7628b546a17f5aa197b5d4fdce18))
+* Rate limiting dev-mode disabled ([502706a](https://github.com/magewirephp/magewire/commit/502706afe932781640e4cc4a1c9d3761c8ff07f8))
+* Removed all theme compatibility modules from this package ([118d518](https://github.com/magewirephp/magewire/commit/118d518342f26463ed374ad9160a7ce56e26cbb7))
+
+
+### Bug Fixes
+
+* Correct v1 emit() param spreading and implement empty emit methods ([0eadd6c](https://github.com/magewirephp/magewire/commit/0eadd6c98e81b7e6ce8c558a05096a855caeb4ce))
+* Correct v1 emit() param spreading and implement empty emit methods (2/2) ([10c00fc](https://github.com/magewirephp/magewire/commit/10c00fc5bf576b1850f625142de535781c237e06))
+
+
+### Miscellaneous Chores
+
+* Added updating argument swapping for backwards compatible components ([2377627](https://github.com/magewirephp/magewire/commit/23776279a09be38f14b111394a32f7eced063ff4))
+* Rate limiting system config improvements ([0f52472](https://github.com/magewirephp/magewire/commit/0f524725be7f8f1274ee3bf33d33ec90ee553f3b))
+* Upgrade docs URL to docs.magewirephp.nl ([#234](https://github.com/magewirephp/magewire/issues/234)) ([9bf650b](https://github.com/magewirephp/magewire/commit/9bf650b29bfb6023277db1db86e7c96755ee8777))
+
 ## [3.1.0](https://github.com/magewirephp/magewire/compare/3.0.0...v3.1.0) (2026-06-02)
 
 

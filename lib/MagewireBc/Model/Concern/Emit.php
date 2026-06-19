@@ -29,7 +29,7 @@ trait Emit
      */
     public function emit(string $event, $params = []): Event
     {
-        return $this->dispatch($event, ...(is_array($params) ? $params : [$params]));
+        return $this->dispatch($event, ...is_array($params) ? $params : [$params]);
     }
 
     /**
@@ -41,7 +41,7 @@ trait Emit
      */
     public function emitUp(string $event, $params = []): Event
     {
-        return $this->dispatch($event, ...(is_array($params) ? $params : [$params]));
+        return $this->dispatch($event, ...is_array($params) ? $params : [$params]);
     }
 
     /**
@@ -53,7 +53,7 @@ trait Emit
      */
     public function emitSelf(string $event, $params = []): Event
     {
-        return $this->dispatch($event, ...(is_array($params) ? $params : [$params]))->self();
+        return $this->dispatch($event, ...is_array($params) ? $params : [$params])->self();
     }
 
     /**
@@ -77,7 +77,7 @@ trait Emit
      */
     public function emitToRefresh(string $name, $params = []): Event
     {
-        return $this->dispatch('$refresh', ...(is_array($params) ? $params : [$params]))->to($name);
+        return $this->dispatch('$refresh', ...is_array($params) ? $params : [$params])->to($name);
     }
 
     /**
@@ -90,6 +90,6 @@ trait Emit
      */
     public function emitToRefreshUp($params = []): Event
     {
-        return $this->dispatch('$refresh', ...(is_array($params) ? $params : [$params]));
+        return $this->dispatch('$refresh', ...is_array($params) ? $params : [$params]);
     }
 }

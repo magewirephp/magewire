@@ -14,7 +14,6 @@ namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management
 use Magento\Framework\App\State as ApplicationState;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Filesystem\DirectoryList;
-use Magento\Framework\View\DesignInterface;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\FileSystem;
 
 class FileManager
@@ -39,9 +38,7 @@ class FileManager
         $resource = $this->getResourcePath();
         $path = trim(str_replace($this->directoryList->getRoot(), '', $path), DIRECTORY_SEPARATOR);
 
-        return $includeResourceDir
-            ? $resource . DIRECTORY_SEPARATOR . $path
-            : $path;
+        return $includeResourceDir ? $resource . DIRECTORY_SEPARATOR . $path : $path;
     }
 
     protected function getResourcePath(): string
