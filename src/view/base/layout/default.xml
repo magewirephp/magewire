@@ -223,7 +223,11 @@
             <!-- Intended for everything else not-related to features or directive. -->
             <container name="magewire.after" as="after"/>
 
-            <!-- Maintains backward compatibility for blocks and containers created in V1. -->
+            <!--
+                Legacy container for Magewire V1 backward compatibility.
+                Holds blocks and containers from V1 that have not yet been migrated.
+                Not rendered by default — themes must explicitly move it to a destination.
+            -->
             <container name="magewire.legacy" as="legacy">
                 <container name="magewire.plugin.scripts"/>
             </container>
