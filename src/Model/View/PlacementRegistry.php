@@ -99,7 +99,7 @@ class PlacementRegistry
     public function __call(string $proxy, array $arguments = []): mixed
     {
         if (array_key_exists($proxy, $this->proxies)) {
-            return ($this->proxies[$proxy])($this, ...$arguments);
+            return $this->proxies[$proxy]($this, ...$arguments);
         }
 
         throw new BadMethodCallException(sprintf('Placement proxy "%s" was called but does not exist.', $proxy));

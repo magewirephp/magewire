@@ -53,7 +53,6 @@ abstract class Fragment
     /**
      * @param array<int|string, FragmentModifier|callable> $modifiers
      *
-     * @mago-expect lint:excessive-parameter-list
      */
     public function __construct(
         protected LoggerInterface $logger,
@@ -176,7 +175,7 @@ abstract class Fragment
      */
     protected function slots(): SlotsRegistry
     {
-        return ($this->slotsManager ??= Factory::get(SlotsManager::class))->registry();
+        return ( $this->slotsManager ??= Factory::get(SlotsManager::class) )->registry();
     }
 
     protected function placements(): PlacementRegistry

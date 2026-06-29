@@ -48,9 +48,7 @@ class Php
         $isList = array_is_list($value);
 
         foreach ($value as $key => $item) {
-            $items[] = $isList
-                ? self::valueLiteral($item)
-                : self::valueLiteral($key) . ' => ' . self::valueLiteral($item);
+            $items[] = $isList ? self::valueLiteral($item) : self::valueLiteral($key) . ' => ' . self::valueLiteral($item);
         }
 
         return '[' . implode(', ', $items) . ']';
