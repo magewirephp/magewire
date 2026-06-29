@@ -15,6 +15,7 @@ use Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Parser\Expres
 use Magewirephp\Magewire\Mechanisms\HandleCompiling\View\ScopeDirective;
 use Magewirephp\Magewire\Mechanisms\HandleCompiling\View\ScopeDirectiveChain;
 use Magewirephp\Magewire\Mechanisms\HandleCompiling\View\ScopeDirectiveParser;
+use Magewirephp\Magewire\Support\Php;
 
 class Slot extends ScopeDirective
 {
@@ -24,7 +25,7 @@ class Slot extends ScopeDirective
     {
         $var = $this->variableScopeStart($variable);
 
-        return "<?php \${$var} = \$__magewire->factory()->components()->slot('{$target}', \$block) ?>";
+        return "<?php \${$var} = \$__magewire->factory()->components()->slot(" . Php::stringLiteral($target) . ", \$block) ?>";
     }
 
     public function endSlot(): string
