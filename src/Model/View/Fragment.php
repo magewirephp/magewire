@@ -15,6 +15,7 @@ use Magento\Framework\Escaper;
 use Magewirephp\Magewire\Concerns\WithTagging;
 use Magewirephp\Magewire\Model\View\Fragment\Exceptions\EmptyFragmentException;
 use Magewirephp\Magewire\Model\View\Fragment\Exceptions\FragmentValidationException;
+use Magewirephp\Magewire\Model\View\Management\SlotsManager;
 use Magewirephp\Magewire\Support\DataCollection;
 use Magewirephp\Magewire\Support\Factory;
 use Magewirephp\Magewire\Support\Random;
@@ -51,12 +52,16 @@ abstract class Fragment
 
     /**
      * @param array<int|string, FragmentModifier|callable> $modifiers
+     *
+     * @mago-expect lint:excessive-parameter-list
      */
     public function __construct(
         protected LoggerInterface $logger,
         protected Escaper $escaper,
         private array $modifiers = [],
-        private string|null $id = null
+        private string|null $id = null,
+        private SlotsManager|null $slotsManager = null,
+        private PlacementRegistry|null $placementRegistry = null
     ) {
     }
 
@@ -164,6 +169,19 @@ abstract class Fragment
     protected function getRawOutput(): string
     {
         return $this->raw === false ? '' : $this->raw;
+    }
+
+    /**
+     * Slots entry point.
+     */
+    protected function slots(): SlotsRegistry
+    {
+        return ($this->slotsManager ??= Factory::get(SlotsManager::class))->registry();
+    }
+
+    protected function placements(): PlacementRegistry
+    {
+        return $this->placementRegistry ??= Factory::get(PlacementRegistry::class);
     }
 
     /**

@@ -20,6 +20,8 @@ $canRequireMagewire = $magewireUtil->canRequireMagewireJsLibrary();
 ?>
 
 <?= $templateUtil->echoCodeComment('start', true) ?>
+<?= $templateUtil->echoCodeComment('default placements', false, 'container') ?>
+<?= $block->getChildHtml('placements') ?>
 <?= $templateUtil->echoCodeComment('global', false, 'container') ?>
 <?= $layoutUtil->getChildHtml($block, 'global', ['require_magewire' => $canRequireMagewire]) ?>
 

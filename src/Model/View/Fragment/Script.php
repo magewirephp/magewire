@@ -11,8 +11,12 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Model\View\Fragment;
 
-class Script extends Html
+use Magewirephp\Magewire\Model\View\Fragment\Concern\Placeable;
+
+class Script extends Html implements PlaceableFragmentInterface
 {
+    use Placeable;
+
     private string|null $code = null;
 
     public function start(): static
