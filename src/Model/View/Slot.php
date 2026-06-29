@@ -203,7 +203,7 @@ class Slot implements Stringable, IteratorAggregate, Countable
      */
     public function getIterator(): Traversable
     {
-        return new ArrayIterator($this->content);
+        return new ArrayIterator($this->all());
     }
 
     /**

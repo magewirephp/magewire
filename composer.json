@@ -13,6 +13,12 @@
         "component"
     ],
     "homepage": "https://magewirephp.nl/",
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://repo.mage-os.org/"
+        }
+    ],
     "require": {
         "php": ">=8.2",
         "magento/framework": "*",
@@ -58,6 +64,7 @@
     "config": {
         "allow-plugins": {
             "magento/composer-dependency-version-audit-plugin": false,
+            "mage-os/composer-dependency-version-audit-plugin": false,
             "captainhook/hook-installer": true
         }
     }

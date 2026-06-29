@@ -37,7 +37,7 @@ class SlotsRegistry
     /** @var array<string, Component> */
     private array $components = [];
 
-    // At the moment; only for registration purposes only.
+    // At the moment; for registration purposes only.
     private array $completed = [];
 
     private string $area = 'root-0';

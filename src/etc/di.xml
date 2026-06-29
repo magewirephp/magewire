@@ -57,4 +57,24 @@
                 type="Magewirephp\Magewire\Plugin\Magento\Framework\View\TemplateEngine\Php"
         />
     </type>
+
+    <type name="Magewirephp\Magewire\Model\View\PlacementRegistry">
+        <arguments>
+            <argument name="proxies" xsi:type="array">
+                <item name="script" xsi:type="object">Magewirephp\Magewire\Model\View\Placement\Proxy\Script</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Framework\App\Response\Http">
+        <plugin name="Magewirephp_Magewire_Plugin_Magento_Framework_App_Response_Http"
+                type="Magewirephp\Magewire\Plugin\Magento\Framework\App\Response\Http"
+        />
+    </type>
+
+    <type name="Magento\Framework\App\PageCache\Kernel">
+        <plugin name="Magewirephp_Magewire_Plugin_Magento_Framework_App_PageCache_Kernel"
+                type="Magewirephp\Magewire\Plugin\Magento\Framework\App\PageCache\Kernel"
+        />
+    </type>
 </config>

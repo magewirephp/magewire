@@ -14,12 +14,15 @@ namespace Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Parser\ExpressionParserType;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\FunctionDirective;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ScopeDirectiveParser;
+use Magewirephp\Magewire\Support\Php;
 
 class Block extends FunctionDirective
 {
     #[ScopeDirectiveParser(ExpressionParserType::FUNCTION_ARGUMENTS)]
     public function child(string $alias): string
     {
-        return "<?php echo (\$block && \$block->getChildBlock('{$alias}')) ? \$block->getChildBlock('{$alias}')->toHtml() : '' ?>";
+        $alias = Php::stringLiteral($alias);
+
+        return "<?php echo (\$block && \$block->getChildBlock({$alias})) ? \$block->getChildBlock({$alias})->toHtml() : '' ?>";
     }
 }

@@ -1,0 +1,13 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Features\SupportMagewireViewModel\MagewireViewModelInterface;
+
+/** @var Template $block */
+/** @var MagewireViewModelInterface $viewModel */
+
+$viewModel = $block->getData('view_model');
+?>
+<?= $viewModel->utils()->fragment()->script('default') ?>

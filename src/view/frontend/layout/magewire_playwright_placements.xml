@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+      layout="1column"
+>
+    <body>
+        <referenceContainer name="content">
+            <container name="magewire.playwright.placements"
+                       htmlClass="grid grid-cols-1 gap-x-8 gap-y-16"
+                       htmlId="magewire-playwright-placements"
+                       htmlTag="div"
+            >
+                <block name="magewire.playwright.placements.basic"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/placements/basic.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire" xsi:type="object" shared="false">
+                            Magewirephp\Magewire\Magewire\Playwright\Placements\Basic
+                        </argument>
+                    </arguments>
+                </block>
+            </container>
+        </referenceContainer>
+    </body>
+</page>
