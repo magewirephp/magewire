@@ -40,7 +40,7 @@ class Script extends ScopeDirective
 
     private function placementExpression(mixed $placement): string
     {
-        if (is_array($placement) && ($placement['type'] ?? null) === 'variable') {
+        if (is_array($placement) && ( $placement['type'] ?? null ) === 'variable') {
             return Php::variable($placement['name']);
         }
 

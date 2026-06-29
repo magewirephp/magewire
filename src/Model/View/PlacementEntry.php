@@ -35,10 +35,7 @@ readonly class PlacementEntry implements Stringable
             return $this->content;
         }
 
-        return $this->content . PHP_EOL . $this->comment(sprintf(
-            'Magewire: Script placement "%s".',
-            $this->code
-        ));
+        return $this->content . PHP_EOL . $this->comment(sprintf('Magewire: Script placement "%s".', $this->code));
     }
 
     public function sourceComment(): string
@@ -47,11 +44,7 @@ readonly class PlacementEntry implements Stringable
             return '';
         }
 
-        return $this->comment(sprintf(
-            'Magewire: Script "%s" transferred to "%s".',
-            $this->code,
-            $this->name ?? 'unknown',
-        ));
+        return $this->comment(sprintf('Magewire: Script "%s" transferred to "%s".', $this->code, $this->name ?? 'unknown'));
     }
 
     private function isProductionMode(): bool
