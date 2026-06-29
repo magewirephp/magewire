@@ -15,6 +15,7 @@ use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Parser
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ScopeDirective;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ScopeDirectiveChain;
 use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\ScopeDirectiveParser;
+use Magewirephp\Magewire\Support\Php;
 
 class Component extends ScopeDirective
 {
@@ -24,8 +25,11 @@ class Component extends ScopeDirective
     {
         $var = $this->variableScopeStart($variable);
         $prefix ??= 'default';
+        $prefix = Php::stringLiteral($prefix);
+        $type = Php::stringLiteral((string) $type);
+        $id = Php::stringLiteral($id);
 
-        return "<?php \${$var} = \$__magewire->factory()->components()->component(prefix: '{$prefix}', block: \$block, type: '{$type}', id: '{$id}')->track() ?>";
+        return "<?php \${$var} = \$__magewire->factory()->components()->component(prefix: {$prefix}, block: \$block, type: {$type}, id: {$id})->track() ?>";
     }
 
     public function endComponent(): string
