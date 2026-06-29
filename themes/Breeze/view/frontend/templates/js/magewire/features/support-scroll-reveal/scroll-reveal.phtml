@@ -1,0 +1,9 @@
+<script>
+    document.addEventListener('magewire:init', () => {
+        Magewire.hook('morph', ({ el, toEl }) => {
+            if (el.classList.contains('scroll-reveal')) {
+                toEl.classList.add(...[...el.classList]);
+            }
+        });
+    });
+</script>
