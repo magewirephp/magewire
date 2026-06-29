@@ -16,7 +16,7 @@
     "repositories": [
         {
             "type": "composer",
-            "url": "https://repo.mageos.io"
+            "url": "https://repo.mage-os.org/"
         }
     ],
     "require": {
