@@ -28,6 +28,18 @@
         <block name="magewire"
                template="Magewirephp_Magewire::root.phtml"
         >
+            <container name="magewire.placements" as="placements">
+                <block name="magewire.placement.default"
+                       template="Magewirephp_Magewire::placements/default.phtml"
+                >
+                    <arguments>
+                        <argument name="view_model" xsi:type="object">
+                            Magewirephp\Magewire\Features\SupportMagewireViewModel\MagewireViewModelInterface
+                        </argument>
+                    </arguments>
+                </block>
+            </container>
+
             <block name="magewire.global"
                    as="global"
                    template="Magewirephp_Magewire::js/magewire/global.phtml"

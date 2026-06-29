@@ -13,12 +13,16 @@ namespace Magewirephp\Magewire\Model\View\Utils;
 
 use InvalidArgumentException;
 use Magewirephp\Magewire\Model\View\FragmentFactory;
+use Magewirephp\Magewire\Model\View\PlacementRegistry;
 use Magewirephp\Magewire\Model\View\UtilsInterface;
 
 class Fragment implements UtilsInterface
 {
+    private const PLACEMENT_SCOPE_SCRIPT = 'script';
+
     public function __construct(
-        private readonly FragmentFactory $fragmentFactory
+        private readonly FragmentFactory $fragmentFactory,
+        private readonly PlacementRegistry $placementRegistry
     ) {
     }
 
@@ -42,5 +46,25 @@ class Fragment implements UtilsInterface
         }
 
         return $this->fragmentFactory;
+    }
+
+    public function has(string $name): bool
+    {
+        return $this->placementRegistry->has(self::PLACEMENT_SCOPE_SCRIPT, $name);
+    }
+
+    public function render(string $name): string
+    {
+        return $this->script($name);
+    }
+
+    public function container(string $name): string
+    {
+        return $this->script($name);
+    }
+
+    public function script(string $name): string
+    {
+        return $this->placementRegistry->render(self::PLACEMENT_SCOPE_SCRIPT, $name);
     }
 }
