@@ -64,6 +64,7 @@
     "config": {
         "allow-plugins": {
             "magento/composer-dependency-version-audit-plugin": false,
+            "mage-os/composer-dependency-version-audit-plugin": false,
             "captainhook/hook-installer": true
         }
     }
