@@ -41,7 +41,29 @@ class FileManager
         return $includeResourceDir ? $resource . DIRECTORY_SEPARATOR . $path : $path;
     }
 
-    protected function getResourcePath(): string
+    /**
+     * Delete compiled views and return the removed path. Clears a single area when given,
+     * otherwise every area at once.
+     *
+     * @throws \Magento\Framework\Exception\FileSystemException
+     */
+    public function clear(?string $area = null): string
+    {
+        $path = $area === null
+            ? $this->getCompiledViewsPath()
+            : $this->getCompiledViewsPath() . DIRECTORY_SEPARATOR . $area;
+
+        if ($this->filesystem->exists($path)) {
+            $this->filesystem->deleteDirectory($path);
+        }
+
+        return $path;
+    }
+
+    /**
+     * Get the base directory that holds all compiled views, area segment excluded.
+     */
+    public function getCompiledViewsPath(): string
     {
         return (
             $this->directoryList->getPath(\Magento\Framework\App\Filesystem\DirectoryList::VAR_DIR)
@@ -49,9 +71,12 @@ class FileManager
             . 'magewire'
             . DIRECTORY_SEPARATOR
             . 'views'
-            . DIRECTORY_SEPARATOR
-            . $this->resolveAreaSegment()
         );
+    }
+
+    protected function getResourcePath(): string
+    {
+        return $this->getCompiledViewsPath() . DIRECTORY_SEPARATOR . $this->resolveAreaSegment();
     }
 
     private function resolveAreaSegment(): string

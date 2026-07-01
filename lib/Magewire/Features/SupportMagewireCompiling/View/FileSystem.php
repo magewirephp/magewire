@@ -39,6 +39,14 @@ class FileSystem
         $this->magentoFileSystemDriver->filePutContents($to, $content, $mode);
     }
 
+    /**
+     * @throws FileSystemException
+     */
+    public function deleteDirectory(string $path): void
+    {
+        $this->magentoFileSystemDriver->deleteDirectory($path);
+    }
+
     public function exists(string $path): bool
     {
         try {

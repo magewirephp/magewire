@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Symfony;
+namespace Magewirephp\Symfony\Component\Console\Command;
 
 use Symfony\Component\Console\Command\Command;
 
