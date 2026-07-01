@@ -47,11 +47,9 @@ class FileManager
      *
      * @throws \Magento\Framework\Exception\FileSystemException
      */
-    public function clear(?string $area = null): string
+    public function clear(string|null $area = null): string
     {
-        $path = $area === null
-            ? $this->getCompiledViewsPath()
-            : $this->getCompiledViewsPath() . DIRECTORY_SEPARATOR . $area;
+        $path = $area === null ? $this->getCompiledViewsPath() : $this->getCompiledViewsPath() . DIRECTORY_SEPARATOR . $area;
 
         if ($this->filesystem->exists($path)) {
             $this->filesystem->deleteDirectory($path);
@@ -65,13 +63,7 @@ class FileManager
      */
     public function getCompiledViewsPath(): string
     {
-        return (
-            $this->directoryList->getPath(\Magento\Framework\App\Filesystem\DirectoryList::VAR_DIR)
-            . DIRECTORY_SEPARATOR
-            . 'magewire'
-            . DIRECTORY_SEPARATOR
-            . 'views'
-        );
+        return $this->directoryList->getPath(\Magento\Framework\App\Filesystem\DirectoryList::VAR_DIR) . DIRECTORY_SEPARATOR . 'magewire' . DIRECTORY_SEPARATOR . 'views';
     }
 
     protected function getResourcePath(): string

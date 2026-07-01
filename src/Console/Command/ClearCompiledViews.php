@@ -21,7 +21,7 @@ class ClearCompiledViews extends MagewireCommand
 {
     public function __construct(
         private readonly FileManager $fileManager,
-        ?string $name = null
+        string|null $name = null
     ) {
         parent::__construct($name);
     }
@@ -31,12 +31,7 @@ class ClearCompiledViews extends MagewireCommand
         $this->setName('compile:clear');
         $this->setDescription('Delete all compiled Magewire views from var/magewire/views.');
 
-        $this->addOption(
-            'area',
-            'a',
-            InputOption::VALUE_REQUIRED,
-            'Only clear compiled views for a single area (e.g. frontend or adminhtml).'
-        );
+        $this->addOption('area', 'a', InputOption::VALUE_REQUIRED, 'Only clear compiled views for a single area (e.g. frontend or adminhtml).');
 
         parent::configure();
     }
@@ -46,25 +41,17 @@ class ClearCompiledViews extends MagewireCommand
         $area = $input->getOption('area');
 
         try {
-            $path = $this->fileManager->getCompiledViewsPath()
-                . ($area === null ? '' : DIRECTORY_SEPARATOR . $area);
+            $path = $this->fileManager->getCompiledViewsPath() . ( $area === null ? '' : DIRECTORY_SEPARATOR . $area );
 
             if (! $this->fileManager->system()->exists($path)) {
-                $output->writeln(sprintf(
-                    '<info>No compiled Magewire views found%s. Nothing to clear.</info>',
-                    $area === null ? '' : sprintf(' for area "%s"', $area)
-                ));
+                $output->writeln(sprintf('<info>No compiled Magewire views found%s. Nothing to clear.</info>', $area === null ? '' : sprintf(' for area "%s"', $area)));
 
                 return self::SUCCESS;
             }
 
             $this->fileManager->clear($area);
 
-            $output->writeln(sprintf(
-                '<info>Cleared %s compiled Magewire views from %s.</info>',
-                $area === null ? 'all' : sprintf('the "%s" area', $area),
-                $path
-            ));
+            $output->writeln(sprintf('<info>Cleared %s compiled Magewire views from %s.</info>', $area === null ? 'all' : sprintf('the "%s" area', $area), $path));
         } catch (\Throwable $exception) {
             $output->writeln(sprintf('<error>%s</error>', $exception->getMessage()));
 
