@@ -175,6 +175,11 @@
                     <item name="sort_order" xsi:type="number">1600</item>
                 </item>
 
+                <item name="multiple_root_element_detection" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMultipleRootElementDetection\SupportMultipleRootElementDetection</item>
+                    <item name="sort_order" xsi:type="number">1700</item>
+                </item>
+
                 <item name="magento_layouts" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagentoLayouts\SupportMagentoLayouts</item>
                     <item name="sort_order" xsi:type="number">5000</item>
