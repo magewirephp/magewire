@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+      layout="1column"
+>
+    <body>
+        <referenceContainer name="content">
+            <container name="magewire.playwright.multiple_roots"
+                       htmlClass="grid grid-cols-1 gap-x-8 gap-y-16"
+                       htmlId="magewire-playwright-multiple-roots"
+                       htmlTag="div"
+            >
+                <!-- Authored with two sibling root elements: detection must throw and the
+                     block must render the inline Magewire exception instead. -->
+                <block name="magewire.playwright.multiple_roots.invalid"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/multiple_roots/invalid.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire" xsi:type="object" shared="false">
+                            Magewirephp\Magewire\Magewire\Playwright\MultipleRoots\Basic
+                        </argument>
+                    </arguments>
+                </block>
+
+                <!-- Single root element: positive control that must render untouched. -->
+                <block name="magewire.playwright.multiple_roots.valid"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/multiple_roots/valid.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire" xsi:type="object" shared="false">
+                            Magewirephp\Magewire\Magewire\Playwright\MultipleRoots\Basic
+                        </argument>
+                    </arguments>
+                </block>
+            </container>
+        </referenceContainer>
+    </body>
+</page>
