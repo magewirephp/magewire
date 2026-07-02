@@ -519,7 +519,7 @@
         <arguments>
             <!-- Paths can be both .env array or config.xml paths. -->
             <argument name="paths" xsi:type="array">
-                <item name="app.debug" xsi:type="string">dev/magewire/debug</item>
+                <item name="app.debug" xsi:type="string">magewire/debug/enable</item>
             </argument>
         </arguments>
     </type>
