@@ -4,6 +4,83 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.3.0](https://github.com/magewirephp/magewire/compare/3.2.0...3.3.0) (2026-07-02)
+
+
+### Features
+
+* Add magewire:compile:clear CLI command ([ac3a815](https://github.com/magewirephp/magewire/commit/ac3a8156c46610c1e5d685c06d15a01ae936b2a1))
+* added the developer view fragment modifier ([bb54d86](https://github.com/magewirephp/magewire/commit/bb54d8667f46c7bc6747d97255f0a1f8d71f64ba))
+* Blade-like echo compilers ([4637734](https://github.com/magewirephp/magewire/commit/46377348986f61af3a8576b95e0cf07fa36c2ec0))
+* Compiled views resource path including area and theme ([4ce303a](https://github.com/magewirephp/magewire/commit/4ce303adc26e68fa57ceb07575b69f4689cf76c0))
+* DOM, Loader and Str utilities ([f603e07](https://github.com/magewirephp/magewire/commit/f603e07df7b6d2f3adf527e5b748e9248b7990e5))
+* Include Tailwindcss (minimum) ([a17b327](https://github.com/magewirephp/magewire/commit/a17b3273e417ecea32cc7c3efcfabc72c0edb66a))
+* Magewire compiler resource path from generated to var ([44e4361](https://github.com/magewirephp/magewire/commit/44e4361a39ed33294691639faaa1ec62915d3ed9))
+* notification option to keep it visible for a day when duration is set to 0 or false ([1a54a7f](https://github.com/magewirephp/magewire/commit/1a54a7f06cb0e3e9fc1e86066c8472a7420de9b6))
+* Notifier refactor ([81ba4d2](https://github.com/magewirephp/magewire/commit/81ba4d2a6cda59d2194c2ccdd4704abdc109d042))
+* Rate limiting dev-mode disabled ([e41ad96](https://github.com/magewirephp/magewire/commit/e41ad96579ed4561601a9051f302fc08016d60a0))
+* Removed all theme compatibility modules from this package ([d1da05d](https://github.com/magewirephp/magewire/commit/d1da05de9060116608b980516938d5d241e9759a))
+
+
+### Bug Fixes
+
+* adding symfony/http-foundation require ([#98](https://github.com/magewirephp/magewire/issues/98)) ([dbbbdf3](https://github.com/magewirephp/magewire/commit/dbbbdf3d3c60b05d376d6510f56973c8bbc5c329))
+* catch any serialisation related error and return/response as json ([#157](https://github.com/magewirephp/magewire/issues/157)) ([dddbd1d](https://github.com/magewirephp/magewire/commit/dddbd1dc9bfc96228cf1ee8a0630d2f07d15e8bd))
+* complies check continues, even if resolver was already found ([780a3e3](https://github.com/magewirephp/magewire/commit/780a3e3a586f866eceb1deb28a5a45e703ab785d))
+* Correct v1 emit() param spreading and implement empty emit methods ([5c1dcbc](https://github.com/magewirephp/magewire/commit/5c1dcbca3464bb03acd85ceabd2e49a0f8823776))
+* Correct v1 emit() param spreading and implement empty emit methods (2/2) ([318c02d](https://github.com/magewirephp/magewire/commit/318c02d0828b0a0d080c6278bd7caf080810fc78))
+* HTML fragment attribute render restored ([6997511](https://github.com/magewirephp/magewire/commit/69975117e218515a757a2b8de69bf476a22010a2))
+* Map config('app.debug') to the real Magewire debug toggle ([3dde770](https://github.com/magewirephp/magewire/commit/3dde770c586342b199d4539a2990d2e6c4de97fd))
+* type annotations for dispatchBrowserEvent ([#41](https://github.com/magewirephp/magewire/issues/41)) ([afb5fe0](https://github.com/magewirephp/magewire/commit/afb5fe0d8ca70747e068490bf1a319e1e04db7de))
+
+
+### Miscellaneous Chores
+
+* Added missing wire attributes CSS ([19b5c7e](https://github.com/magewirephp/magewire/commit/19b5c7ef7ebf2fda7854fca3d932e347e958ffa6))
+* Added updating argument swapping for backwards compatible components ([130252b](https://github.com/magewirephp/magewire/commit/130252b5923cfea72310c639620a458d03ac85a4))
+* Backwards compatibility improvements (Hyvä) ([a00c1f3](https://github.com/magewirephp/magewire/commit/a00c1f3190b90f4b3efcd73a4be2c3b85d5ac638))
+* Better magewire.legacy explanation (layout XML) ([ff4ad18](https://github.com/magewirephp/magewire/commit/ff4ad18cb0cb7164f1b164ba0fc62b56b2d4b3af))
+* Code revert ([1b3f938](https://github.com/magewirephp/magewire/commit/1b3f93846951f6fcebbfdefefd724368312a8283))
+* Compilation refactoring ([213403d](https://github.com/magewirephp/magewire/commit/213403d5a3a5cbdcadbeb0bf4fcd4c3471dd39d5))
+* Component call wrapper bugfixes ([27c4009](https://github.com/magewirephp/magewire/commit/27c40093d671b68096c95e2f232e80f258177c0a))
+* Component fragment property improvements ([2fbc52e](https://github.com/magewirephp/magewire/commit/2fbc52ed72705d05335eaa15b00956cfc28df352))
+* Component resolver edge-case enhancements ([7c59ec1](https://github.com/magewirephp/magewire/commit/7c59ec18810c9948ecad714ff34dd09a20b0758c))
+* **deps:** bump actions/checkout from 4 to 6 ([#200](https://github.com/magewirephp/magewire/issues/200)) ([0cecae5](https://github.com/magewirephp/magewire/commit/0cecae530aa22ad9d553e7c4808167935543fd2d))
+* **deps:** bump actions/checkout from 6 to 7 ([#237](https://github.com/magewirephp/magewire/issues/237)) ([e9c40d2](https://github.com/magewirephp/magewire/commit/e9c40d2d2b71722c9e03db2441c84e1aa771a671))
+* **deps:** bump stefanzweifel/git-auto-commit-action from 5 to 7 ([#194](https://github.com/magewirephp/magewire/issues/194)) ([0ecd5de](https://github.com/magewirephp/magewire/commit/0ecd5dec6abc26fa0402495ef4703bf84cb22166))
+* Explanation above BC event dispatchment ([7bb7fdd](https://github.com/magewirephp/magewire/commit/7bb7fdd1b9eb2ab556e0a89d810e2a37f74dfdf3))
+* fragment modifier output limitations ([42ccd03](https://github.com/magewirephp/magewire/commit/42ccd03ad58699dde8a5966e8ec7aefb1c57dd9b))
+* Ignore .claude directory entirely ([e91b35c](https://github.com/magewirephp/magewire/commit/e91b35ca8da7fd31418da20313e5ddb846965eed))
+* Include Developer fragment modifier (developer mode only) ([12158df](https://github.com/magewirephp/magewire/commit/12158df45341349ae8da2136db1d653261f4e1ac))
+* JS-lib rebuild ([2a2b256](https://github.com/magewirephp/magewire/commit/2a2b2568b23c3c29b17e65d5af0271cdf8476dd3))
+* Magewire priority block for early JS-code execution (after body starts) ([3cb2767](https://github.com/magewirephp/magewire/commit/3cb2767d39ca344c3a13df8bfafad34126b17945))
+* Magewire resolver arguments data-object -&gt; data collection migration ([a8fc897](https://github.com/magewirephp/magewire/commit/a8fc8976fd8b715581412c7ebc38127a3b488c13))
+* Mago fixes ([e86f977](https://github.com/magewirephp/magewire/commit/e86f977de538898dc236423dcf43c048369f8c34))
+* Mago Github action ([5d7d33d](https://github.com/magewirephp/magewire/commit/5d7d33d6540591196a981b109d84444f5750fd3c))
+* Mago improvements ([3d8af5f](https://github.com/magewirephp/magewire/commit/3d8af5fd98a74bce9d7f32dcf5f059b2cf22ea90))
+* Mago run result badge for main ([df11411](https://github.com/magewirephp/magewire/commit/df1141101e6b208a920fc6d6cccf736d754d328b))
+* Mago test action fixes ([64fc307](https://github.com/magewirephp/magewire/commit/64fc307589809c89474dafde7787a47af9b41295))
+* **main:** Ignore version "v" in repo tags ([425c814](https://github.com/magewirephp/magewire/commit/425c814962f58e9049ba50c1cbcb1fdd945a5747))
+* **main:** release 3.1.0 ([#216](https://github.com/magewirephp/magewire/issues/216)) ([c3e91c3](https://github.com/magewirephp/magewire/commit/c3e91c37ac9dd9d62ff624b1e61c1233fa00d29c))
+* **main:** release 3.2.0 ([#233](https://github.com/magewirephp/magewire/issues/233)) ([845e3b5](https://github.com/magewirephp/magewire/commit/845e3b5db0a068bcfd971fed87de604273ca6f36))
+* Minor resolver management improvements ([d5865de](https://github.com/magewirephp/magewire/commit/d5865deef0f3ef0a7d058f3c7094adffe40288a0))
+* Modifiers array became readonly for HTML fragments ([dd4b027](https://github.com/magewirephp/magewire/commit/dd4b02722ae38db9bc2e0acfe4b1be45e928de6f))
+* Rate limiting system config improvements ([a7b2d15](https://github.com/magewirephp/magewire/commit/a7b2d153d26dc2c088725fccae65a8fe9eba42b6))
+* Removal of BC component check on magewireMakeComponentBackwardsCompatible method ([457f897](https://github.com/magewirephp/magewire/commit/457f8974e17f6cb40ae739d7c2c7167634144e40))
+* Remove tests/Playwright/tests/.gitkeep ([005a840](https://github.com/magewirephp/magewire/commit/005a84065d54c0badc413ae7e751b2ac1647329a))
+* Removed -o on sh command for Mago Github action ([fd484e9](https://github.com/magewirephp/magewire/commit/fd484e922385e8fc2ffe8372b068512cecb5d151))
+* Removed backup file from Mago config ([a6b5fc6](https://github.com/magewirephp/magewire/commit/a6b5fc69a9bd056323ad4ea8687bc4e00faee967))
+* Removed Mago config entity and removed installation of Magento from Mago Github action ([62b8790](https://github.com/magewirephp/magewire/commit/62b87908bf2a358e7f22cc0a09a2884495037be7))
+* Removing the Flake compiler backup (deprecated) ([fd4af23](https://github.com/magewirephp/magewire/commit/fd4af239768fb67a989e5288f64c705ce26d563f))
+* Replaced not-found-exception with replacement ([ac17515](https://github.com/magewirephp/magewire/commit/ac1751500a76401d5837bb0c1f0786a9a9275d2b))
+* Runtime lifecycle improvements ([085dea6](https://github.com/magewirephp/magewire/commit/085dea6791f360e35420bce77056c060e5df6598))
+* Setup addition for Data Collections ([c81e4d5](https://github.com/magewirephp/magewire/commit/c81e4d5e9aa416f89ca516052b2a0b34af22f369))
+* Support class improvements ([54ef2fb](https://github.com/magewirephp/magewire/commit/54ef2fb358023a57c4e0fa3c82c576fb0d3daa90))
+* Typo ([f415ccc](https://github.com/magewirephp/magewire/commit/f415ccc621ddf15f33b8d7c8faac8b51f50649c1))
+* Untrack portman/lib and ignore it ([ae0979c](https://github.com/magewirephp/magewire/commit/ae0979cf6639e6373230a31d69e062b554e52716))
+* Upgrade docs URL to docs.magewirephp.nl ([#234](https://github.com/magewirephp/magewire/issues/234)) ([6e6f49a](https://github.com/magewirephp/magewire/commit/6e6f49adce0f0ba1357100acd766e549ff43d6fa))
+* view fragment modifier architectural improvements ([29df80b](https://github.com/magewirephp/magewire/commit/29df80b2cdd3b497639da48d3ba47a581631b8c1))
+
 ## [3.2.0](https://github.com/magewirephp/magewire/compare/3.1.0...3.2.0) (2026-06-14)
 
 
