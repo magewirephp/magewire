@@ -1,5 +1,5 @@
 # Ignore other folders and files
-lib/Livewire/
+portman/lib/
 node_modules/
 vendor/
 composer.lock
