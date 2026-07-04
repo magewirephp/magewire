@@ -55,19 +55,16 @@
 
                 <item name="handle_components" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Mechanisms\HandleComponents\HandleComponents</item>
-                    <item name="facade" xsi:type="string">Magewirephp\Magewire\Mechanisms\HandleComponents\HandleComponentsFacade</item>
                     <item name="sort_order" xsi:type="number">1100</item>
                 </item>
 
                 <item name="handle_requests" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Mechanisms\HandleRequests\HandleRequests</item>
-                    <item name="facade" xsi:type="string">Magewirephp\Magewire\Mechanisms\HandleRequests\HandleRequestFacade</item>
                     <item name="sort_order" xsi:type="number">1200</item>
                 </item>
 
                 <item name="frontend_assets" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Mechanisms\FrontendAssets\FrontendAssets</item>
-                    <item name="facade" xsi:type="string">Magewirephp\Magewire\Mechanisms\FrontendAssets\FrontendAssetsFacade</item>
                     <item name="view_model" xsi:type="object">Magewirephp\Magewire\Mechanisms\FrontendAssets\FrontendAssetsViewModel</item>
                     <item name="sort_order" xsi:type="number">1400</item>
                     <item name="boot_mode" xsi:type="number">30</item>
@@ -198,7 +195,6 @@
 
                 <item name="magewire_notifications" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireNotifications\SupportMagewireNotifications</item>
-                    <item name="facade" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireNotifications\MagewireNotificationsFacade</item>
                     <item name="sort_order" xsi:type="number">5200</item>
                 </item>
 

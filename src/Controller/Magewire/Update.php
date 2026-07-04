@@ -26,7 +26,7 @@ use Magento\Framework\Exception\NotFoundException;
 use Magewirephp\Magento\Controller\MagewireUpdateResult;
 use Magewirephp\Magento\Controller\MagewireUpdateResultFactory;
 use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
-use Magewirephp\Magewire\Facade\HandleRequestFacade;
+use Magewirephp\Magewire\Mechanisms\HandleRequests\HandleRequests;
 use Magewirephp\Magewire\MagewireServiceProvider;
 use Magewirephp\Magewire\Model\App\ExceptionManager;
 
@@ -56,10 +56,10 @@ class Update implements HttpPostActionInterface, CsrfAwareActionInterface
              * mechanism via the Request object. The Request Handler triggers the regular progress,
              * identical to the original, when rendering a regular page.
              */
-            /** @var HandleRequestFacade $handleRequestsMechanismFacade */
-            $handleRequestsMechanismFacade = $this->magewireServiceProvider->getHandleRequestsMechanismFacade();
+            /** @var HandleRequests $handleRequestsMechanism */
+            $handleRequestsMechanism = $this->magewireServiceProvider->getHandleRequestsMechanism();
 
-            return $this->updateResultFactory->create($handleRequestsMechanismFacade->update());
+            return $this->updateResultFactory->create($handleRequestsMechanism->handleUpdate());
         } catch (Exception $exception) {
             try {
                 $handler = $this->exceptionManager->handle($exception);

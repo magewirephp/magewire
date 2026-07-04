@@ -15,7 +15,7 @@ use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\Exception\RuntimeException;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Mechanisms\ComponentRegistry;
-use Magewirephp\Magewire\Facade\HandleComponentsFacade;
+use Magewirephp\Magewire\Mechanisms\HandleComponents\HandleComponents;
 
 class LivewireManager extends \Livewire\LivewireManager
 {
@@ -38,11 +38,11 @@ class LivewireManager extends \Livewire\LivewireManager
      */
     public function mount($name, $params = [], $key = null, AbstractBlock|null $block = null, Component|null $component = null): void
     {
-        /** @var HandleComponentsFacade $handleComponentsMechanismFacade */
-        $handleComponentsMechanismFacade = $this->magewireServiceProvider->getHandleComponentsMechanismFacade();
+        /** @var HandleComponents $handleComponentsMechanism */
+        $handleComponentsMechanism = $this->magewireServiceProvider->getHandleComponentsMechanism();
 
-        $this->renderStack[$block->getNameInLayout()] = $handleComponentsMechanismFacade
-             ->mount($name, $params, $block, $component);
+        $this->renderStack[$block->getNameInLayout()] = $handleComponentsMechanism
+            ->mount($name, $params, $block->getCacheKey(), $block, $component);
     }
 
     /**
@@ -52,11 +52,11 @@ class LivewireManager extends \Livewire\LivewireManager
      */
     public function update($snapshot, $diff, $calls, AbstractBlock|null $block = null): void
     {
-        /** @var HandleComponentsFacade $handleComponentsMechanismFacade */
-        $handleComponentsMechanismFacade = $this->magewireServiceProvider->getHandleComponentsMechanismFacade();
+        /** @var HandleComponents $handleComponentsMechanism */
+        $handleComponentsMechanism = $this->magewireServiceProvider->getHandleComponentsMechanism();
 
-        $this->renderStack[$block->getNameInLayout()] = $handleComponentsMechanismFacade
-            ->update($snapshot, $diff, $calls, $block);
+        $this->renderStack[$block->getNameInLayout()] = $handleComponentsMechanism
+            ->update($snapshot->toArray(), $diff, $calls, $block);
     }
 
     public function render(AbstractBlock $block, string $html)
