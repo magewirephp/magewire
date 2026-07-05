@@ -19,7 +19,7 @@ use Magewirephp\Magewire\Features\SupportAttributes\HandlesAttributes;
 use Magewirephp\Magewire\Features\SupportMagentoFlashMessages\HandlesMagewireFlashMessages;
 use Magewirephp\Magewire\Features\SupportMagentoLayouts\HandlesMagentoLayout;
 use Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\HandlesComponentBackwardsCompatibility;
-use Magewirephp\Magewire\Features\SupportMagewireCompiling\HandlesMagewireCompiling;
+use Magewirephp\Magewire\Mechanisms\HandleCompiling\HandlesMagewireCompiling;
 use Magewirephp\Magewire\Features\SupportMagewireLoaders\HandlesMagewireLoaders;
 use Magewirephp\Magewire\Features\SupportMagewireNotifications\HandlesMagewireNotifications;
 use Magewirephp\Magewire\Features\SupportMagewireViewModel\HandlesMagewireViewModel;
