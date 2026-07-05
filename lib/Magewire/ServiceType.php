@@ -21,7 +21,6 @@ use Magewirephp\Magewire\Support\Factory;
  * within an application. It handles the instantiation, sorting, and retrieval of these types while
  * ensuring dependencies are resolved and necessary data is injected.
  *
- * @mago-expect lint:too-many-methods
  * @mago-expect lint:cyclomatic-complexity
  * @mago-expect lint:kan-defect
  * @mago-expect lint:no-isset

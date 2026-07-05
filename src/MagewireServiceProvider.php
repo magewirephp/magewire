@@ -142,9 +142,7 @@ class MagewireServiceProvider
             $argument = trim(preg_replace('/(?:container|mechanism|feature)\s*$/', '', $argument), '_');
 
             try {
-                return match ($item) {
-                    'container', 'feature', 'mechanism' => $operation->item($argument),
-                };
+                return match ($item) { 'container', 'feature', 'mechanism' => $operation->item($argument) };
             } catch (Exception $exception) {
                 $this->logger->critical($exception->getMessage(), ['exception' => $exception]);
             }

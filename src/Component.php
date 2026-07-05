@@ -19,12 +19,12 @@ use Magewirephp\Magewire\Features\SupportAttributes\HandlesAttributes;
 use Magewirephp\Magewire\Features\SupportMagentoFlashMessages\HandlesMagewireFlashMessages;
 use Magewirephp\Magewire\Features\SupportMagentoLayouts\HandlesMagentoLayout;
 use Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\HandlesComponentBackwardsCompatibility;
-use Magewirephp\Magewire\Mechanisms\HandleCompiling\HandlesMagewireCompiling;
 use Magewirephp\Magewire\Features\SupportMagewireLoaders\HandlesMagewireLoaders;
 use Magewirephp\Magewire\Features\SupportMagewireNotifications\HandlesMagewireNotifications;
 use Magewirephp\Magewire\Features\SupportMagewireViewModel\HandlesMagewireViewModel;
 use Magewirephp\Magewire\Features\SupportRedirects\HandlesRedirects;
 use Magewirephp\Magewire\Features\SupportStreaming\HandlesStreaming;
+use Magewirephp\Magewire\Mechanisms\HandleCompiling\HandlesMagewireCompiling;
 
 /** @mago-expect lint:too-many-methods */
 abstract class Component implements ArgumentInterface

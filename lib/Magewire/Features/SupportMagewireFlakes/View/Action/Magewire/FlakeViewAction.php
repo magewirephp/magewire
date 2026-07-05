@@ -12,8 +12,8 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Action\Magewire;
 
 use Magento\Framework\View\Element\AbstractBlock;
-use Magewirephp\Magewire\Mechanisms\HandleCompiling\View\ViewAction as ViewAction;
 use Magewirephp\Magewire\Features\SupportMagewireFlakes\Component\FlakeFactory;
+use Magewirephp\Magewire\Mechanisms\HandleCompiling\View\ViewAction as ViewAction;
 use Magewirephp\Magewire\Support\DataArrayFactory;
 use Magewirephp\Magewire\Support\DataCollection;
 use RuntimeException;
