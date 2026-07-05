@@ -129,8 +129,7 @@ class MagewireServiceProvider
         $operation ??= $this->getServiceType($matches[count($matches) - 2]);
 
         /*
-         * Enables the possibility to get either a mechanism- or a feature operation type or its
-         * belonging facade if it has any attached.
+         * Enables the possibility to get either a mechanism- or a feature operation type.
          *
          * @todo This lookup can be heavily optimized caching those that are found
          *       by there $name and when exist as key in a global class array,
@@ -145,7 +144,6 @@ class MagewireServiceProvider
             try {
                 return match ($item) {
                     'container', 'feature', 'mechanism' => $operation->item($argument),
-                    'facade' => $operation->facade($argument)
                 };
             } catch (Exception $exception) {
                 $this->logger->critical($exception->getMessage(), ['exception' => $exception]);

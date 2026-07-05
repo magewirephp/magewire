@@ -64,27 +64,6 @@ abstract class ServiceType
     }
 
     /**
-     * Returns an operation type facade which simplifies the interface of a complex type by
-     * exposing only the necessary methods, thus defining a clear and concise
-     * API for interacting with the type.
-     *
-     * @throws NotFoundException
-     */
-    public function facade(string $for)
-    {
-        $for = preg_replace('/(?<!^)[A-Z]/', '_$0', $for);
-        $facade = $this->items[$for]['facade'];
-
-        if (is_string($facade)) {
-            $this->items[$for]['facade'] = Factory::get($facade);
-        } elseif (! is_object($facade)) {
-            throw new NotFoundException(__('Operation type facade "%1" could not be found.', $for));
-        }
-
-        return $this->items[$for]['facade'];
-    }
-
-    /**
      * @throws NotFoundException
      */
     public function item(string $name): object
@@ -146,8 +125,6 @@ abstract class ServiceType
                 $item['sort_order'] = $this->sortOrder;
             }
 
-            // Ensure the facade key exists, defaulting to null if not set.
-            $item['facade'] ??= null;
             // Keep only active sequences (where the value is true).
             $item['sequence'] = array_filter($item['sequence'] ?? [], static fn ($item) => $item === true);
             // Ensure the view model key exists, defaulting to null if not set.
