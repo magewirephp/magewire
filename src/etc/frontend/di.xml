@@ -92,6 +92,11 @@
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Mechanisms\DataStore</item>
                     <item name="sort_order" xsi:type="number">1250</item>
                 </item>
+
+                <item name="handle_compiling" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Mechanisms\HandleCompiling\HandleCompiling</item>
+                    <item name="sort_order" xsi:type="number">1500</item>
+                </item>
             </argument>
         </arguments>
     </type>
@@ -214,11 +219,6 @@
                     <item name="sort_order" xsi:type="number">99200</item>
                 </item>
 
-                <item name="magewire_compiling" xsi:type="array">
-                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireCompiling\SupportMagewireCompiling</item>
-                    <item name="sort_order" xsi:type="number">99300</item>
-                </item>
-
                 <item name="magento_observer_events" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagentoObserverEvents\SupportMagentoObserverEvents</item>
                     <item name="sort_order" xsi:type="number">99400</item>
@@ -243,104 +243,104 @@
     </type>
 
     <!--
-        Feature: Magewire Compiler
+        Mechanism: Magewire Compiler
 
-        Injecting a default compiler for the abstraction required by this feature
+        Injecting a default compiler for the abstraction required by this mechanism
         instead of having to interface it and use a reference.
 
         IMPORTANT: A different compiler can be injected if needed, but doing so without
         a full understanding of the implications is not recommended.
     -->
-    <type name="Magewirephp\Magewire\Features\SupportMagewireCompiling\SupportMagewireCompiling">
+    <type name="Magewirephp\Magewire\Mechanisms\HandleCompiling\HandleCompiling">
         <arguments>
-            <argument name="compiler" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\MagentoTemplateCompiler</argument>
+            <argument name="compiler" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Compiler\MagentoTemplateCompiler</argument>
         </arguments>
     </type>
 
-    <type name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\MagentoTemplateCompiler">
+    <type name="Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Compiler\MagentoTemplateCompiler">
         <arguments>
             <argument name="middleware" xsi:type="array">
                 <item name="slots" xsi:type="object" sortOrder="10">
-                    Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\Middleware\Slots\Proxy
+                    Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Compiler\Middleware\Slots\Proxy
                 </item>
                 <item name="flux" xsi:type="object" sortOrder="20">
-                    Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\Middleware\Flux\Proxy
+                    Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Compiler\Middleware\Flux\Proxy
                 </item>
                 <item name="flake" xsi:type="object" sortOrder="25">
-                    Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\Middleware\Flake\Proxy
+                    Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Compiler\Middleware\Flake\Proxy
                 </item>
                 <item name="blade" xsi:type="object" sortOrder="30">
-                    Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Compiler\Middleware\Blade\Proxy
+                    Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Compiler\Middleware\Blade\Proxy
                 </item>
             </argument>
         </arguments>
     </type>
 
     <!-- Directive area: Global (no prefix) -->
-    <virtualType name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\BaseDirectiveArea"
-                 type="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\DirectiveArea"
+    <virtualType name="Magewirephp\Magewire\Mechanisms\HandleCompiling\View\BaseDirectiveArea"
+                 type="Magewirephp\Magewire\Mechanisms\HandleCompiling\View\DirectiveArea"
     >
         <arguments>
             <!-- All global directives without a prefix. -->
             <argument name="directives" xsi:type="array">
-                <item name="json" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Json</item>
+                <item name="json" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Json</item>
 
                 <!-- Basic PHP loops. -->
-                <item name="if" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope</item>
-                <item name="foreach" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Scope</item>
+                <item name="if" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Scope</item>
+                <item name="foreach" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Scope</item>
 
                 <!-- Magewire methods (area independent). -->
-                <item name="script" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Script</item>
-                <item name="fragment" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Fragment</item>
-                <item name="slot" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Base\Proxy</item>
-                <item name="template" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Template\Proxy</item>
+                <item name="script" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Script</item>
+                <item name="fragment" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Fragment</item>
+                <item name="slot" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Base\Proxy</item>
+                <item name="template" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Template\Proxy</item>
 
                 <!-- Basic PHP methods. -->
                 <!-- WIP... -->
 
                 <!-- Magento basic methods. -->
-                <item name="translate" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Base\Proxy</item>
-                <item name="child" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Base\Proxy</item>
+                <item name="translate" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Base\Proxy</item>
+                <item name="child" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Base\Proxy</item>
 
                 <!-- Magento authentication methods. -->
-                <item name="auth" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Auth\Proxy</item>
-                <item name="guest" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Auth\Proxy</item>
+                <item name="auth" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Magento\Auth\Proxy</item>
+                <item name="guest" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Magento\Auth\Proxy</item>
             </argument>
         </arguments>
     </virtualType>
 
     <!-- Directive area: Block -->
-    <virtualType name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\MagentoBlockDirectiveArea"
-                 type="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\DirectiveArea"
+    <virtualType name="Magewirephp\Magewire\Mechanisms\HandleCompiling\View\MagentoBlockDirectiveArea"
+                 type="Magewirephp\Magewire\Mechanisms\HandleCompiling\View\DirectiveArea"
     >
         <arguments>
             <!-- All Block-specific directives without the prefix. -->
             <argument name="directives" xsi:type="array">
-                <item name="parent" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Block\Proxy</item>
-                <item name="child" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Block\Proxy</item>
+                <item name="parent" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Magento\Block\Proxy</item>
+                <item name="child" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Magento\Block\Proxy</item>
             </argument>
         </arguments>
     </virtualType>
 
     <!-- Directive area: Escape -->
-    <virtualType name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\MagentoEscapeDirectiveArea"
-                 type="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\DirectiveArea"
+    <virtualType name="Magewirephp\Magewire\Mechanisms\HandleCompiling\View\MagentoEscapeDirectiveArea"
+                 type="Magewirephp\Magewire\Mechanisms\HandleCompiling\View\DirectiveArea"
     >
         <arguments>
             <!-- All Escape-specific directives without the prefix. -->
             <argument name="directives" xsi:type="array">
-                <item name="url" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Escape\Proxy</item>
-                <item name="attr" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Escape\Proxy</item>
-                <item name="js" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Escape\Proxy</item>
-                <item name="html" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Escape\Proxy</item>
-                <item name="css" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magento\Escape\Proxy</item>
+                <item name="url" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Magento\Escape\Proxy</item>
+                <item name="attr" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Magento\Escape\Proxy</item>
+                <item name="js" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Magento\Escape\Proxy</item>
+                <item name="html" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Magento\Escape\Proxy</item>
+                <item name="css" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Magento\Escape\Proxy</item>
             </argument>
         </arguments>
     </virtualType>
 
     <!-- Directive area: Customer -->
-    <virtualType name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\MagentoCustomerDirectiveArea"
-                 type="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\DirectiveArea"
+    <virtualType name="Magewirephp\Magewire\Mechanisms\HandleCompiling\View\MagentoCustomerDirectiveArea"
+                 type="Magewirephp\Magewire\Mechanisms\HandleCompiling\View\DirectiveArea"
     >
         <arguments>
             <!-- All Customer-specific directives without the prefix. -->
@@ -351,53 +351,53 @@
     </virtualType>
 
     <!-- Directive area: Magewire -->
-    <virtualType name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\MagewireDirectiveArea"
-                 type="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\DirectiveArea"
+    <virtualType name="Magewirephp\Magewire\Mechanisms\HandleCompiling\View\MagewireDirectiveArea"
+                 type="Magewirephp\Magewire\Mechanisms\HandleCompiling\View\DirectiveArea"
     >
         <arguments>
             <!-- All Magewire-specific directives without the prefix. -->
             <argument name="directives" xsi:type="array">
-                <item name="slot" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magewire\Slot\Proxy</item>
-                <item name="component" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Directive\Magewire\Component\Proxy</item>
+                <item name="slot" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Magewire\Slot\Proxy</item>
+                <item name="component" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Magewire\Component\Proxy</item>
             </argument>
         </arguments>
     </virtualType>
 
     <!-- Directive area: AlpineJS -->
-    <virtualType name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\AlpinejsDirectiveArea"
-                 type="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\DirectiveArea"
+    <virtualType name="Magewirephp\Magewire\Mechanisms\HandleCompiling\View\AlpinejsDirectiveArea"
+                 type="Magewirephp\Magewire\Mechanisms\HandleCompiling\View\DirectiveArea"
     />
     <!-- Directive area: Tailwindcss -->
-    <virtualType name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\TailwindcssDirectiveArea"
-                 type="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\DirectiveArea"
+    <virtualType name="Magewirephp\Magewire\Mechanisms\HandleCompiling\View\TailwindcssDirectiveArea"
+                 type="Magewirephp\Magewire\Mechanisms\HandleCompiling\View\DirectiveArea"
     />
 
-    <type name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\DirectiveManager">
+    <type name="Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Management\DirectiveManager">
         <arguments>
             <!-- Injecting base directives that are not dependent on an area prefix (e.g., @json, @escape, etc.). -->
-            <argument name="directives" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\BaseDirectiveArea</argument>
+            <argument name="directives" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\BaseDirectiveArea</argument>
 
             <!-- Injecting area-specific directives, likely one per library (e.g., @magewireTeleport, @tailwindcssClass etc.). -->
             <argument name="areas" xsi:type="array">
-                <item name="render" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\MagentoBlockDirectiveArea</item>
-                <item name="escape" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\MagentoEscapeDirectiveArea</item>
-                <item name="customer" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\MagentoCustomerDirectiveArea</item>
-                <item name="magewire" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\MagewireDirectiveArea</item>
-                <item name="alpinejs" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\AlpinejsDirectiveArea</item>
-                <item name="twcss" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\TailwindcssDirectiveArea</item>
+                <item name="render" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\MagentoBlockDirectiveArea</item>
+                <item name="escape" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\MagentoEscapeDirectiveArea</item>
+                <item name="customer" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\MagentoCustomerDirectiveArea</item>
+                <item name="magewire" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\MagewireDirectiveArea</item>
+                <item name="alpinejs" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\AlpinejsDirectiveArea</item>
+                <item name="twcss" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\TailwindcssDirectiveArea</item>
             </argument>
         </arguments>
     </type>
 
     <!-- View Action Management -->
-    <type name="Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\ActionManager">
+    <type name="Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Management\ActionManager">
         <arguments>
             <!-- Defining the default action subject. -->
-            <argument name="action" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Action\Magewire\Proxy</argument>
+            <argument name="action" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Action\Magewire\Proxy</argument>
 
             <argument name="namespaces" xsi:type="array">
-                <item name="magento.auth" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Action\Magento\Auth\Proxy</item>
-                <item name="magewire" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Action\Magewire\Proxy</item>
+                <item name="magento.auth" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Action\Magento\Auth\Proxy</item>
+                <item name="magewire" xsi:type="object">Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Action\Magewire\Proxy</item>
                 <item name="magewire.flake" xsi:type="object">Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Action\Magewire\FlakeViewAction\Proxy</item>
             </argument>
         </arguments>

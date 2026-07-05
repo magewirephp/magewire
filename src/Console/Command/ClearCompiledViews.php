@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Console\Command;
 
-use Magewirephp\Magewire\Features\SupportMagewireCompiling\View\Management\FileManager;
+use Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Management\FileManager;
 use Magewirephp\Symfony\Component\Console\Command\MagewireCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;

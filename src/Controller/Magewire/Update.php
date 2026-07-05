@@ -26,8 +26,8 @@ use Magento\Framework\Exception\NotFoundException;
 use Magewirephp\Magento\Controller\MagewireUpdateResult;
 use Magewirephp\Magento\Controller\MagewireUpdateResultFactory;
 use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
-use Magewirephp\Magewire\Mechanisms\HandleRequests\HandleRequests;
 use Magewirephp\Magewire\MagewireServiceProvider;
+use Magewirephp\Magewire\Mechanisms\HandleRequests\HandleRequests;
 use Magewirephp\Magewire\Model\App\ExceptionManager;
 
 class Update implements HttpPostActionInterface, CsrfAwareActionInterface
