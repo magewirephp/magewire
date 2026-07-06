@@ -162,27 +162,22 @@ jobs:
       - name: Install dependencies (Mage-OS + module + Hyvä + compat)
         working-directory: ${{ env.MAGENTO_DIR }}
         run: |
-          # --no-dev: Mage-OS 3.x pulls a dev-only spatie/ignition tree (spatie/flare ->
-          # illuminate/pipeline -> illuminate/support ^13) that collides with this
-          # module's illuminate ^10.48. It is not needed at runtime, and dropping it lets
-          # composer resolve illuminate 10.x. Also matches a production install.
           composer install --no-dev --no-interaction --no-progress
 
-          # Overlay this PR's code (pinned to 3.999.0 above). --update-no-dev keeps the
-          # dev tree out; -W lets composer adjust locked runtime deps (illuminate/support).
-          # illuminate/support:^10.48 is required alongside so composer resolves the whole
-          # graph onto illuminate 10.x. The only consumer of illuminate/support is
-          # illuminate/pipeline (pulled by the runtime spatie/ignition tree via
-          # spatie/flare, which accepts pipeline ^10), so pinning support forces pipeline
-          # down and everything reconciles.
-          composer require --no-interaction --no-progress --update-no-dev -W \
+          # Add this PR's module (pinned to 3.999.0), the Hyvä default theme, and the
+          # Magewire-Hyvä compat layer to composer.json WITHOUT resolving yet.
+          composer require --no-update --no-interaction \
             "magewirephp/magewire:3.999.0" \
-            "illuminate/support:^10.48"
-
-          # Hyvä default theme + the Magewire-Hyvä compatibility layer.
-          composer require --no-interaction --no-progress --update-no-dev -W \
             hyva-themes/magento2-default-theme \
             magewirephp/magewire-hyva-theme
+
+          # One full re-resolve. Mage-OS 3.x ships a runtime spatie/ignition tree
+          # (swissup/module-ignition -> spatie/ignition -> spatie/flare ->
+          # illuminate/pipeline) whose pipeline was locked at v13 (needs illuminate ^13).
+          # A scoped update leaves that sibling locked; a full update lets this module's
+          # hard illuminate/support ^10.48 pull the whole illuminate tree — pipeline
+          # included — down to 10.x (spatie/flare accepts pipeline ^10).
+          composer update --no-dev --no-interaction --no-progress -W
 
       - name: Install Mage-OS
         working-directory: ${{ env.MAGENTO_DIR }}
@@ -229,6 +224,7 @@ jobs:
           echo "PHP_SERVER_PID=$!" >> "$GITHUB_ENV"
 
       - name: Wait for the store to respond
+        working-directory: ${{ env.MAGENTO_DIR }}
         run: |
           for i in $(seq 1 30); do
             code=$(curl -s -o /dev/null -w '%{http_code}' "$BASE_URL/magewire/playwright/multipleroots" || true)
@@ -238,7 +234,15 @@ jobs:
             echo "Waiting for store, got HTTP $code ($i)..." && sleep 5
           done
           echo "::error::Store did not respond with 200."
+          echo "===== response body (developer mode renders the exception) ====="
+          curl -s "$BASE_URL/magewire/playwright/multipleroots" | head -c 4000 || true
+          echo ""
+          echo "===== phpserver.log ====="
           cat "$GITHUB_WORKSPACE/phpserver.log" || true
+          echo "===== var/log ====="
+          tail -n 60 var/log/*.log 2>/dev/null || true
+          echo "===== var/report (latest) ====="
+          ls -t var/report/ 2>/dev/null | head -1 | xargs -I{} sh -c 'echo "report {}:"; cat var/report/{}' 2>/dev/null || true
           exit 1
 
       - name: Setup Node
