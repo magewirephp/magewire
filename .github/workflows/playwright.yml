@@ -138,9 +138,10 @@ jobs:
           composer config prefer-stable true
 
           # We intentionally override magewirephp/magewire with this PR's branch via a
-          # path repo. Magento's version-audit plugin treats the public dev-main being
-          # "higher" than the branch as a dependency-confusion attack and aborts, so
-          # disable it for this CI-only install.
+          # path repo. The version-audit plugin treats the public dev-main being "higher"
+          # than the branch as a dependency-confusion attack and aborts. Mage-OS ships its
+          # own fork (mage-os/…); disable both for this CI-only install.
+          composer config allow-plugins.mage-os/composer-dependency-version-audit-plugin false
           composer config allow-plugins.magento/composer-dependency-version-audit-plugin false
 
           # Path repository pointing at the checked-out module.
@@ -156,6 +157,12 @@ jobs:
         working-directory: ${{ env.MAGENTO_DIR }}
         run: |
           composer install --no-interaction --no-progress
+
+          # Diagnostic: which package(s) in the base Mage-OS tree pin illuminate/support?
+          # This module needs ^10.48; a core requirement on a newer major is a real
+          # incompatibility rather than a lock/-W issue.
+          echo "=== illuminate/support requirers in base Mage-OS ==="
+          composer why illuminate/support || true
 
           # Overlay this PR's code. Alias to a high version so the Hyvä compat module's
           # "magewire >=3.2" constraint is satisfied by the dev branch. -W lets composer
