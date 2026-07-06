@@ -162,24 +162,19 @@ jobs:
       - name: Install dependencies (Mage-OS + module + Hyvä + compat)
         working-directory: ${{ env.MAGENTO_DIR }}
         run: |
-          composer install --no-interaction --no-progress
+          # --no-dev: Mage-OS 3.x pulls a dev-only spatie/ignition tree (spatie/flare ->
+          # illuminate/pipeline -> illuminate/support ^13) that collides with this
+          # module's illuminate ^10.48. It is not needed at runtime, and dropping it lets
+          # composer resolve illuminate 10.x. Also matches a production install.
+          composer install --no-dev --no-interaction --no-progress
 
-          # Diagnostic: which package(s) in the base Mage-OS tree pin illuminate/support?
-          # This module needs ^10.48; a core requirement on a newer major is a real
-          # incompatibility rather than a lock/-W issue.
-          echo "=== illuminate/support requirers in base Mage-OS ==="
-          composer why illuminate/support || true
-          echo "=== illuminate/pipeline requirers in base Mage-OS ==="
-          composer why illuminate/pipeline || true
-
-          # Overlay this PR's code (pinned to 3.999.0 above). -W lets composer adjust
-          # locked deps (e.g. downgrade illuminate/support to this module's ^10.48 from a
-          # newer version pinned by the base Mage-OS lock).
-          composer require --no-interaction --no-progress -W \
+          # Overlay this PR's code (pinned to 3.999.0 above). --update-no-dev keeps the
+          # dev tree out; -W lets composer adjust locked runtime deps (illuminate/support).
+          composer require --no-interaction --no-progress --update-no-dev -W \
             "magewirephp/magewire:3.999.0"
 
           # Hyvä default theme + the Magewire-Hyvä compatibility layer.
-          composer require --no-interaction --no-progress -W \
+          composer require --no-interaction --no-progress --update-no-dev -W \
             hyva-themes/magento2-default-theme \
             magewirephp/magewire-hyva-theme
 
@@ -211,7 +206,12 @@ jobs:
           if [ -z "$THEME_ID" ]; then
             echo "::error::Hyvä theme (Hyva/default) not found in the theme table." && exit 1
           fi
-          php bin/magento config:set design/theme/theme_id "$THEME_ID"
+          # design/theme/theme_id is not a config:set-validatable path, so write it
+          # straight to core_config_data at default scope.
+          mysql -h 127.0.0.1 -uroot -proot magento -e \
+            "INSERT INTO core_config_data (scope, scope_id, path, value)
+             VALUES ('default', 0, 'design/theme/theme_id', '$THEME_ID')
+             ON DUPLICATE KEY UPDATE value = '$THEME_ID';"
 
           # Known starting state for the multiple-root detection specs.
           php bin/magento config:set \
