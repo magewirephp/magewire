@@ -222,7 +222,10 @@ jobs:
       - name: Start Magento (built-in PHP server)
         working-directory: ${{ env.MAGENTO_DIR }}
         run: |
-          php -S 127.0.0.1:8080 -t pub phpserver/router.php \
+          # PHP_CLI_SERVER_WORKERS makes the built-in server handle concurrent requests.
+          # Magewire's AJAX round-trips are a second request issued while the page is
+          # still loading; a single-threaded server deadlocks and those specs time out.
+          PHP_CLI_SERVER_WORKERS=8 php -S 127.0.0.1:8080 -t pub phpserver/router.php \
             > "$GITHUB_WORKSPACE/phpserver.log" 2>&1 &
           echo "PHP_SERVER_PID=$!" >> "$GITHUB_ENV"
 
