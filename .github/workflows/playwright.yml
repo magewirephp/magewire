@@ -137,6 +137,12 @@ jobs:
           composer config minimum-stability dev
           composer config prefer-stable true
 
+          # We intentionally override magewirephp/magewire with this PR's branch via a
+          # path repo. Magento's version-audit plugin treats the public dev-main being
+          # "higher" than the branch as a dependency-confusion attack and aborts, so
+          # disable it for this CI-only install.
+          composer config allow-plugins.magento/composer-dependency-version-audit-plugin false
+
           # Path repository pointing at the checked-out module.
           composer config repositories.magewire-src \
             "{\"type\":\"path\",\"url\":\"$MODULE_DIR\",\"options\":{\"symlink\":true}}"
@@ -152,12 +158,14 @@ jobs:
           composer install --no-interaction --no-progress
 
           # Overlay this PR's code. Alias to a high version so the Hyvä compat module's
-          # "magewire >=3.2" constraint is satisfied by the dev branch.
-          composer require --no-interaction --no-progress \
+          # "magewire >=3.2" constraint is satisfied by the dev branch. -W lets composer
+          # adjust locked deps (e.g. downgrade illuminate/support to this module's ^10.48
+          # from a newer version pinned by the base Mage-OS lock).
+          composer require --no-interaction --no-progress -W \
             "magewirephp/magewire:dev-${MODULE_BRANCH} as 3.999.0"
 
           # Hyvä default theme + the Magewire-Hyvä compatibility layer.
-          composer require --no-interaction --no-progress \
+          composer require --no-interaction --no-progress -W \
             hyva-themes/magento2-default-theme \
             magewirephp/magewire-hyva-theme
 
