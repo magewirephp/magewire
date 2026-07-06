@@ -251,12 +251,13 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Install Playwright & browsers
         working-directory: ${{ env.MODULE_DIR }}/tests/Playwright
         run: |
-          npm ci
+          # npm install (not ci): package-lock.json is not committed in tests/Playwright.
+          npm install --no-audit --no-fund
           npx playwright install --with-deps chromium
 
       - name: Write Playwright .env
