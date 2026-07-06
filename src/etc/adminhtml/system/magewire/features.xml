@@ -11,6 +11,7 @@
     >
         <label>Features</label>
 
+        <include path="Magewirephp_Magewire::system/magewire/features/support-multiple-root-element-detection/support-multiple-root-element-detection.xml"/>
         <include path="Magewirephp_Magewire::system/magewire/features/support-rate-limiting/support-rate-limiting.xml"/>
     </group>
 </include>

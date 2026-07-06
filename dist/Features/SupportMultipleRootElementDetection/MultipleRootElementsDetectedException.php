@@ -16,10 +16,18 @@ class MultipleRootElementsDetectedException extends \Exception
     use BypassViewHandler;
     function __construct($component)
     {
+        parent::__construct(static::buildMessage($component));
+    }
+    /**
+     * Builds the violation message. Extracted so alternative behaviors (console, log)
+     * can reuse the exact same wording without throwing.
+     */
+    public static function buildMessage($component): string
+    {
         $name = method_exists($component, 'getName') ? $component->getName() : 'unknown';
         $template = static::resolveTemplate($component);
         $location = $template ? " (template: {$template})" : '';
-        parent::__construct("Magewire only supports a single root element per component. Multiple root elements were detected for component [{$name}]{$location}. Wrap the component markup in a single parent element.");
+        return "Magewire only supports a single root element per component. Multiple root elements were detected for component [{$name}]{$location}. Wrap the component markup in a single parent element.";
     }
     /**
      * Best-effort lookup of the block template so the developer can jump straight to

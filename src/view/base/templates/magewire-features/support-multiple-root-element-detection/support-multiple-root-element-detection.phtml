@@ -1,0 +1,31 @@
+<?php
+
+/**
+ * Copyright © Willem Poortman 2021-present. All rights reserved.
+ *
+ * Please read the README and LICENSE files for more
+ * details on copyrights and license information.
+ */
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$message = (string) $block->getData('message');
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment = $magewireViewModel->utils()->fragment();
+?>
+<?php if ($message !== ''): ?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    console.error('<?= $escaper->escapeJs($message) ?>');
+</script>
+<?php $script->end() ?>
+<?php endif ?>

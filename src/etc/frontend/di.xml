@@ -630,4 +630,25 @@
             </argument>
         </arguments>
     </type>
+
+    <!--
+        Multiple root element detection behavior pool.
+
+        Each item is a strategy for reacting when a component renders more than one root
+        element, keyed by the value stored in `magewire/features/multiple_root_element_detection/behavior`.
+        Third parties extend by adding an item here (per-area, since Magento does not merge
+        DI array arguments across areas) plus a matching option in the DetectionBehavior
+        source model. Unknown/missing keys fall back to `defaultHandler`.
+    -->
+    <type name="Magewirephp\Magewire\Features\SupportMultipleRootElementDetection\MultipleRootElementDetectionHandlerManager">
+        <arguments>
+            <argument name="defaultHandler" xsi:type="object">Magewirephp\Magewire\Features\SupportMultipleRootElementDetection\Handler\ThrowExceptionHandler</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="exception" xsi:type="object">Magewirephp\Magewire\Features\SupportMultipleRootElementDetection\Handler\ThrowExceptionHandler</item>
+                <item name="console" xsi:type="object">Magewirephp\Magewire\Features\SupportMultipleRootElementDetection\Handler\ConsoleLogHandler</item>
+                <item name="log" xsi:type="object">Magewirephp\Magewire\Features\SupportMultipleRootElementDetection\Handler\ServerLogHandler</item>
+                <item name="off" xsi:type="object">Magewirephp\Magewire\Features\SupportMultipleRootElementDetection\Handler\NoopHandler</item>
+            </argument>
+        </arguments>
+    </type>
 </config>

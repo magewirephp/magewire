@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+>
+    <body>
+        <block name="magewire.multiple_root_element_detection.console"
+               template="Magewirephp_Magewire::magewire-features/support-multiple-root-element-detection/support-multiple-root-element-detection.phtml"
+        >
+            <arguments>
+                <argument name="view_model" xsi:type="object">Magewirephp\Magewire\ViewModel\Magewire</argument>
+            </arguments>
+        </block>
+    </body>
+</page>

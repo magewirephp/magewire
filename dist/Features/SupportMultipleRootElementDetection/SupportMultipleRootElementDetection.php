@@ -9,31 +9,39 @@
  */
 namespace Magewirephp\Magewire\Features\SupportMultipleRootElementDetection;
 
+use Magento\Framework\App\ObjectManager;
 use function Magewirephp\Magewire\on;
-use function Magewirephp\Magewire\config;
 use Magewirephp\Magewire\ComponentHook;
 class SupportMultipleRootElementDetection extends ComponentHook
 {
-    // Redeclared verbatim from upstream so this file's `config`/`on` function imports
-    // land in the generated output — the upstream source calls the bare Laravel global
-    // config(), which resolves to the wrong namespace once ported.
+    // Redeclared verbatim from upstream so this file's `on` function import lands in the
+    // generated output. Unlike upstream, the reaction is no longer gated on debug mode:
+    // the configured behavior (see the handler manager) decides, with "off" disabling it.
     static function provide()
     {
         on('mount', function ($component) {
-            if (!config('app.debug')) {
-                return;
-            }
             return function ($html) use ($component) {
-                (new static())->warnAgainstMoreThanOneRootElement($component, $html);
+                // Return the (possibly modified) HTML so the EventBus finisher forwards it.
+                return (new static())->warnAgainstMoreThanOneRootElement($component, $html);
             };
         });
     }
+    /**
+     * Delegates the reaction to the configured handler. "off" short-circuits before the
+     * HTML is even parsed; a single root is always fine; otherwise the handler decides
+     * (throw, browser console, log, ...) and returns the HTML to forward.
+     */
     function warnAgainstMoreThanOneRootElement($component, $html)
     {
-        $count = $this->getRootElementCount($html);
-        if ($count > 1) {
-            throw new MultipleRootElementsDetectedException($component);
+        $manager = ObjectManager::getInstance()->get(MultipleRootElementDetectionHandlerManager::class);
+        if (!$manager->isEnabled()) {
+            return $html;
         }
+        $count = $this->getRootElementCount($html);
+        if ($count <= 1) {
+            return $html;
+        }
+        return $manager->handle($component, $html, $count);
     }
     /**
      * Counts top-level (depth 0) element openings without a full DOM parse.

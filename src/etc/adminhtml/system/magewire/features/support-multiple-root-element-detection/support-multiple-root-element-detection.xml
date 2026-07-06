@@ -1,0 +1,31 @@
+<?xml version="1.0" ?>
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd"
+>
+    <group id="multiple_root_element_detection"
+           translate="label"
+           showInDefault="1"
+           showInWebsite="1"
+           showInStore="1"
+    >
+        <label>Multiple Root Element Detection</label>
+        <comment>A Magewire component must render a single root element. This setting controls how a violation is reported. It applies in all modes (developer and production), so choose "Off" to disable detection entirely.</comment>
+
+        <field id="behavior"
+               translate="label comment"
+               type="select"
+               sortOrder="10"
+               showInDefault="1"
+               showInWebsite="1"
+               showInStore="1"
+        >
+            <label>Behavior</label>
+            <comment><![CDATA[
+                <strong>Throw exception</strong> &ndash; aborts the render and shows the Magewire exception block (default).<br/>
+                <strong>Browser console error</strong> &ndash; renders the page and logs the violation to the browser console.<br/>
+                <strong>Server log</strong> &ndash; renders the page and records the violation in the server log.<br/>
+                <strong>Off</strong> &ndash; disables detection (no parsing overhead).]]></comment>
+            <source_model>Magewirephp\Magewire\Features\SupportMultipleRootElementDetection\Config\Source\DetectionBehavior</source_model>
+        </field>
+    </group>
+</include>

@@ -5,6 +5,10 @@
     <default>
         <magewire>
             <features>
+                <multiple_root_element_detection>
+                    <behavior>exception</behavior>
+                </multiple_root_element_detection>
+
                 <rate_limiting>
                     <enabled>0</enabled>
                     <developer_mode>0</developer_mode>
