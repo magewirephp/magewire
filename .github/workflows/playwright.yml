@@ -148,6 +148,12 @@ jobs:
           composer config repositories.magewire-src \
             "{\"type\":\"path\",\"url\":\"$MODULE_DIR\",\"options\":{\"symlink\":true}}"
 
+          # actions/checkout leaves a detached HEAD, so composer would derive the path
+          # repo version as dev-<sha> and no branch-based constraint would match. Pin an
+          # explicit high version instead — deterministic, and satisfies the Hyvä compat
+          # module's "magewire >=3.2". (CI-only; not committed.)
+          composer --working-dir="$MODULE_DIR" config version 3.999.0
+
           # Hyvä Private Packagist (per-account URL + token, both from secrets).
           composer config repositories.hyva composer '${{ secrets.HYVA_COMPOSER_REPO_URL }}'
           composer config --global --auth \
@@ -163,13 +169,14 @@ jobs:
           # incompatibility rather than a lock/-W issue.
           echo "=== illuminate/support requirers in base Mage-OS ==="
           composer why illuminate/support || true
+          echo "=== illuminate/pipeline requirers in base Mage-OS ==="
+          composer why illuminate/pipeline || true
 
-          # Overlay this PR's code. Alias to a high version so the Hyvä compat module's
-          # "magewire >=3.2" constraint is satisfied by the dev branch. -W lets composer
-          # adjust locked deps (e.g. downgrade illuminate/support to this module's ^10.48
-          # from a newer version pinned by the base Mage-OS lock).
+          # Overlay this PR's code (pinned to 3.999.0 above). -W lets composer adjust
+          # locked deps (e.g. downgrade illuminate/support to this module's ^10.48 from a
+          # newer version pinned by the base Mage-OS lock).
           composer require --no-interaction --no-progress -W \
-            "magewirephp/magewire:dev-${MODULE_BRANCH} as 3.999.0"
+            "magewirephp/magewire:3.999.0"
 
           # Hyvä default theme + the Magewire-Hyvä compatibility layer.
           composer require --no-interaction --no-progress -W \
