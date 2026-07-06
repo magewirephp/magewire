@@ -170,8 +170,14 @@ jobs:
 
           # Overlay this PR's code (pinned to 3.999.0 above). --update-no-dev keeps the
           # dev tree out; -W lets composer adjust locked runtime deps (illuminate/support).
+          # illuminate/support:^10.48 is required alongside so composer resolves the whole
+          # graph onto illuminate 10.x. The only consumer of illuminate/support is
+          # illuminate/pipeline (pulled by the runtime spatie/ignition tree via
+          # spatie/flare, which accepts pipeline ^10), so pinning support forces pipeline
+          # down and everything reconciles.
           composer require --no-interaction --no-progress --update-no-dev -W \
-            "magewirephp/magewire:3.999.0"
+            "magewirephp/magewire:3.999.0" \
+            "illuminate/support:^10.48"
 
           # Hyvä default theme + the Magewire-Hyvä compatibility layer.
           composer require --no-interaction --no-progress --update-no-dev -W \
@@ -212,10 +218,6 @@ jobs:
             "INSERT INTO core_config_data (scope, scope_id, path, value)
              VALUES ('default', 0, 'design/theme/theme_id', '$THEME_ID')
              ON DUPLICATE KEY UPDATE value = '$THEME_ID';"
-
-          # Known starting state for the multiple-root detection specs.
-          php bin/magento config:set \
-            magewire/features/multiple_root_element_detection/behavior exception
 
           php bin/magento cache:flush
 
