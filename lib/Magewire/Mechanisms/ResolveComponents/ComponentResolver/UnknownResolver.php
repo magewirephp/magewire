@@ -69,10 +69,7 @@ class UnknownResolver extends ComponentResolver
             $name
         ));
 
-        throw new ComponentNotFoundException(sprintf(
-            'No component resolver could construct the Magewire component for block "%s".',
-            $name
-        ));
+        throw new ComponentNotFoundException(sprintf('No component resolver could construct the Magewire component for block "%s".', $name));
     }
 
     /**
@@ -88,10 +85,7 @@ class UnknownResolver extends ComponentResolver
             $name
         ));
 
-        throw new ComponentNotFoundException(sprintf(
-            'No component resolver could reconstruct the Magewire component "%s".',
-            $name
-        ));
+        throw new ComponentNotFoundException(sprintf('No component resolver could reconstruct the Magewire component "%s".', $name));
     }
 
     public function arguments(): MagewireArguments
