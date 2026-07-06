@@ -1,0 +1,262 @@
+name: 'Playwright (Mage-OS + Hyvä)'
+
+# End-to-end Playwright run of the Magewire test controllers on a freshly installed
+# Mage-OS store using the Hyvä theme and the Magewire-Hyvä compatibility module.
+#
+# The specs in tests/Playwright hit self-contained controllers under /magewire/playwright/*
+# (shipped by this module), so no Magento Sample Data is required. They assert DOM
+# attributes and browser console output — not styling — so the Hyvä Tailwind build is
+# intentionally skipped to keep CI fast.
+#
+# Required repository secrets (Settings → Secrets and variables → Actions):
+#   HYVA_COMPOSER_REPO_URL    Your Hyvä Private Packagist URL, e.g.
+#                             https://hyva-themes.repo.packagist.com/<your-slug>/
+#   HYVA_COMPOSER_AUTH_TOKEN  The http-basic "token" password for that repo.
+# Never commit the token — it is a license credential.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'lib/**'
+      - 'dist/**'
+      - 'tests/Playwright/**'
+      - '.github/workflows/playwright.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: playwright-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  playwright:
+    name: 'Mage-OS ${{ matrix.mage_os }} / PHP ${{ matrix.php }}'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Latest Mage-OS distribution.
+          - mage_os: '3.1.0'
+            php: '8.4'
+          # Oldest documented Mage-OS distribution (Magento 2.4.6 base). Its composer
+          # constraint is ~8.1||~8.2, so PHP 8.3 would fail the platform check — 8.2 is
+          # the floor that also satisfies this module's php>=8.2 requirement.
+          - mage_os: '1.0.5'
+            php: '8.2'
+
+    env:
+      MAGENTO_DIR: ${{ github.workspace }}/magento
+      MODULE_DIR: ${{ github.workspace }}/magewire-src
+      BASE_URL: 'http://127.0.0.1:8080/'
+      COMPOSER_MEMORY_LIMIT: '-1'
+      # Path repositories derive their version from the checked-out git branch. On a PR
+      # this is the head ref; on manual dispatch it is the selected ref name.
+      MODULE_BRANCH: ${{ github.head_ref || github.ref_name }}
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: magento
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=15
+
+      opensearch:
+        image: opensearchproject/opensearch:2.12.0
+        env:
+          discovery.type: single-node
+          plugins.security.disabled: 'true'
+          bootstrap.memory_lock: 'true'
+          OPENSEARCH_JAVA_OPTS: '-Xms512m -Xmx512m'
+          OPENSEARCH_INITIAL_ADMIN_PASSWORD: 'Magewire-CI-123!'
+        ports:
+          - 9200:9200
+
+    steps:
+      - name: Verify Hyvä license secrets are present
+        run: |
+          if [ -z "${{ secrets.HYVA_COMPOSER_REPO_URL }}" ] || [ -z "${{ secrets.HYVA_COMPOSER_AUTH_TOKEN }}" ]; then
+            echo "::error::HYVA_COMPOSER_REPO_URL and HYVA_COMPOSER_AUTH_TOKEN secrets are required to install the Hyvä theme."
+            exit 1
+          fi
+
+      - name: Checkout module (the PR code)
+        uses: actions/checkout@v7
+        with:
+          path: magewire-src
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: bcmath, ctype, curl, dom, gd, hash, iconv, intl, mbstring, openssl, pdo_mysql, simplexml, soap, sockets, xsl, zip, fileinfo
+          tools: composer:v2
+          ini-values: memory_limit=-1
+        env:
+          COMPOSER_TOKEN: ${{ github.token }}
+
+      - name: Install default-mysql-client
+        run: sudo apt-get update && sudo apt-get install -y default-mysql-client
+
+      - name: Wait for OpenSearch
+        run: |
+          for i in $(seq 1 30); do
+            if curl -fs http://127.0.0.1:9200/_cluster/health >/dev/null; then
+              echo "OpenSearch is up." && exit 0
+            fi
+            echo "Waiting for OpenSearch ($i)..." && sleep 5
+          done
+          echo "::error::OpenSearch did not become ready." && exit 1
+
+      - name: Create Mage-OS project
+        run: |
+          composer create-project \
+            --repository-url=https://repo.mage-os.org/ \
+            --no-install \
+            "mage-os/project-community-edition:${{ matrix.mage_os }}" \
+            "$MAGENTO_DIR"
+
+      - name: Configure Composer repositories & auth
+        working-directory: ${{ env.MAGENTO_DIR }}
+        run: |
+          # Allow dev versions so the path-based module (this PR) can be required.
+          composer config minimum-stability dev
+          composer config prefer-stable true
+
+          # Path repository pointing at the checked-out module.
+          composer config repositories.magewire-src \
+            "{\"type\":\"path\",\"url\":\"$MODULE_DIR\",\"options\":{\"symlink\":true}}"
+
+          # Hyvä Private Packagist (per-account URL + token, both from secrets).
+          composer config repositories.hyva composer '${{ secrets.HYVA_COMPOSER_REPO_URL }}'
+          composer config --global --auth \
+            http-basic.hyva-themes.repo.packagist.com token '${{ secrets.HYVA_COMPOSER_AUTH_TOKEN }}'
+
+      - name: Install dependencies (Mage-OS + module + Hyvä + compat)
+        working-directory: ${{ env.MAGENTO_DIR }}
+        run: |
+          composer install --no-interaction --no-progress
+
+          # Overlay this PR's code. Alias to a high version so the Hyvä compat module's
+          # "magewire >=3.2" constraint is satisfied by the dev branch.
+          composer require --no-interaction --no-progress \
+            "magewirephp/magewire:dev-${MODULE_BRANCH} as 3.999.0"
+
+          # Hyvä default theme + the Magewire-Hyvä compatibility layer.
+          composer require --no-interaction --no-progress \
+            hyva-themes/magento2-default-theme \
+            magewirephp/magewire-hyva-theme
+
+      - name: Install Mage-OS
+        working-directory: ${{ env.MAGENTO_DIR }}
+        run: |
+          php bin/magento setup:install \
+            --base-url="$BASE_URL" \
+            --db-host=127.0.0.1 --db-name=magento --db-user=root --db-password=root \
+            --search-engine=opensearch \
+            --opensearch-host=127.0.0.1 --opensearch-port=9200 \
+            --admin-firstname=Admin --admin-lastname=User \
+            --admin-email=admin@example.com \
+            --admin-user=admin --admin-password=Admin123! \
+            --language=en_US --currency=USD --timezone=America/New_York \
+            --use-rewrites=1 --backend-frontname=admin \
+            --no-interaction
+
+      - name: Enable modules & activate Hyvä theme
+        working-directory: ${{ env.MAGENTO_DIR }}
+        run: |
+          php bin/magento deploy:mode:set developer
+          php bin/magento module:enable Magewirephp_MagewireHyvaTheme || true
+          php bin/magento setup:upgrade --no-interaction
+
+          # Activate the Hyvä frontend theme by its registered code.
+          THEME_ID=$(mysql -h 127.0.0.1 -uroot -proot magento -N -B \
+            -e "SELECT theme_id FROM theme WHERE code='Hyva/default' AND area='frontend' LIMIT 1")
+          if [ -z "$THEME_ID" ]; then
+            echo "::error::Hyvä theme (Hyva/default) not found in the theme table." && exit 1
+          fi
+          php bin/magento config:set design/theme/theme_id "$THEME_ID"
+
+          # Known starting state for the multiple-root detection specs.
+          php bin/magento config:set \
+            magewire/features/multiple_root_element_detection/behavior exception
+
+          php bin/magento cache:flush
+
+      - name: Start Magento (built-in PHP server)
+        working-directory: ${{ env.MAGENTO_DIR }}
+        run: |
+          php -S 127.0.0.1:8080 -t pub phpserver/router.php \
+            > "$GITHUB_WORKSPACE/phpserver.log" 2>&1 &
+          echo "PHP_SERVER_PID=$!" >> "$GITHUB_ENV"
+
+      - name: Wait for the store to respond
+        run: |
+          for i in $(seq 1 30); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "$BASE_URL/magewire/playwright/multipleroots" || true)
+            if [ "$code" = "200" ]; then
+              echo "Store is up (HTTP $code)." && exit 0
+            fi
+            echo "Waiting for store, got HTTP $code ($i)..." && sleep 5
+          done
+          echo "::error::Store did not respond with 200."
+          cat "$GITHUB_WORKSPACE/phpserver.log" || true
+          exit 1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright & browsers
+        working-directory: ${{ env.MODULE_DIR }}/tests/Playwright
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Write Playwright .env
+        working-directory: ${{ env.MODULE_DIR }}/tests/Playwright
+        run: |
+          cat > .env <<EOF
+          BASE_URL=$BASE_URL
+
+          ENVIRONMENT=ci
+          ACCOUNT_FIRSTNAME=Veronica
+          ACCOUNT_LASTNAME=Costello
+          ACCOUNT_EMAIL=roni_cost@example.com
+          ACCOUNT_PASSWORD=roni_cost3@example.com
+          EOF
+
+      - name: Run Playwright tests
+        working-directory: ${{ env.MODULE_DIR }}/tests/Playwright
+        env:
+          # The specs shell out to bin/magento; point them at the Mage-OS install
+          # rather than walking up from the (separately checked-out) module dir.
+          MAGENTO_ROOT: ${{ env.MAGENTO_DIR }}
+          MAGENTO_PHP_BIN: php
+        run: npx playwright test
+
+      - name: Upload test results
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results-mageos-${{ matrix.mage_os }}
+          path: |
+            ${{ env.MODULE_DIR }}/tests/Playwright/test-results
+            ${{ github.workspace }}/phpserver.log
+          retention-days: 7
+          if-no-files-found: ignore
