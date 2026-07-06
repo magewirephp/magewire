@@ -144,9 +144,12 @@ jobs:
           composer config allow-plugins.mage-os/composer-dependency-version-audit-plugin false
           composer config allow-plugins.magento/composer-dependency-version-audit-plugin false
 
-          # Path repository pointing at the checked-out module.
+          # Path repository pointing at the checked-out module. symlink:false so composer
+          # COPIES the module into magento/vendor/ — a symlink leaves the sources outside
+          # the Magento root and Magento's filesystem validator rejects template paths
+          # ("cannot be used with directory") that resolve outside it.
           composer config repositories.magewire-src \
-            "{\"type\":\"path\",\"url\":\"$MODULE_DIR\",\"options\":{\"symlink\":true}}"
+            "{\"type\":\"path\",\"url\":\"$MODULE_DIR\",\"options\":{\"symlink\":false}}"
 
           # actions/checkout leaves a detached HEAD, so composer would derive the path
           # repo version as dev-<sha> and no branch-based constraint would match. Pin an
