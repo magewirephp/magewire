@@ -22,9 +22,7 @@ class Base extends Directive
     {
         $translation = sprintf('__(%s)', var_export($value, true));
 
-        return $escape
-            ? "<?php echo \$escaper->escapeHtml({$translation}) ?>"
-            : "<?php echo {$translation} ?>";
+        return $escape ? "<?php echo \$escaper->escapeHtml({$translation}) ?>" : "<?php echo {$translation} ?>";
     }
 
     #[ScopeDirectiveParser(ExpressionParserType::FUNCTION_ARGUMENTS)]
