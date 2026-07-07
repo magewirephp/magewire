@@ -11,17 +11,25 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive;
 
-use Magewirephp\Magewire\Mechanisms\HandleCompiling\View\FunctionDirective;
+use Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive;
+use Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Parser\ExpressionParserType;
+use Magewirephp\Magewire\Mechanisms\HandleCompiling\View\ScopeDirectiveParser;
 
-class Base extends FunctionDirective
+class Base extends Directive
 {
-    public function translate(string $expression): string
+    #[ScopeDirectiveParser(ExpressionParserType::FUNCTION_ARGUMENTS)]
+    public function translate(string $value, bool $escape = true): string
     {
-        return "<?php echo __({$expression}) ?>";
+        $translation = sprintf('__(%s)', var_export($value, true));
+
+        return $escape
+            ? "<?php echo \$escaper->escapeHtml({$translation}) ?>"
+            : "<?php echo {$translation} ?>";
     }
 
-    public function child(string $expression): string
+    #[ScopeDirectiveParser(ExpressionParserType::FUNCTION_ARGUMENTS)]
+    public function child(string $alias): string
     {
-        return "<?php echo (\$block && \$block->getChildBlock({$expression})) ? \$block->getChildBlock({$expression})->toHtml() : '' ?>";
+        return "<?php echo (\$block && \$block->getChildBlock('{$alias}')) ? \$block->getChildBlock('{$alias}')->toHtml() : '' ?>";
     }
 }
