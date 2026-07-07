@@ -11,11 +11,11 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Magento;
 
+use Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive;
 use Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Parser\ExpressionParserType;
-use Magewirephp\Magewire\Mechanisms\HandleCompiling\View\FunctionDirective;
 use Magewirephp\Magewire\Mechanisms\HandleCompiling\View\ScopeDirectiveParser;
 
-class Block extends FunctionDirective
+class Block extends Directive
 {
     #[ScopeDirectiveParser(ExpressionParserType::FUNCTION_ARGUMENTS)]
     public function child(string $alias): string

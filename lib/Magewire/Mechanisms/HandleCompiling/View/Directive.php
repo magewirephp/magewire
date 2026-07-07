@@ -36,6 +36,12 @@ abstract class Directive
     public function compile(string $expression, string $directive)
     {
         if (method_exists($this, $directive) && ( $type = $this->getExpressionParserFor($directive) )) {
+            // RAW directives take no parsing: the verbatim expression is handed to the method as
+            // a single string. This replaces the former FunctionDirective passthrough.
+            if ($type === ExpressionParserType::RAW) {
+                return $this->{$directive}($expression);
+            }
+
             $parser = $this->parser($type)->parse($expression);
 
             $allArgs = $parser->arguments()->all();

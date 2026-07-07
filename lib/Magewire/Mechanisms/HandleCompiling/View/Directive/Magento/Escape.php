@@ -11,10 +11,15 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Magento;
 
-use Magewirephp\Magewire\Mechanisms\HandleCompiling\View\FunctionDirective;
+use Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive;
+use Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Parser\ExpressionParserType;
+use Magewirephp\Magewire\Mechanisms\HandleCompiling\View\ScopeDirectiveParser;
 
-class Escape extends FunctionDirective
+class Escape extends Directive
 {
+    // RAW passthrough: $expression is trusted template source (see ExpressionParserType::RAW).
+    // Output is escaped here via $escaper.
+    #[ScopeDirectiveParser(ExpressionParserType::RAW)]
     public function url(string $expression): string
     {
         return "<?php echo \$escaper->escapeUrl({$expression}) ?>";
