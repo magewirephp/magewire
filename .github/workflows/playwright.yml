@@ -204,6 +204,11 @@ jobs:
           php bin/magento module:enable Magewirephp_MagewireHyvaTheme || true
           php bin/magento setup:upgrade --no-interaction
 
+          # Magewire's debug toggle (magewire/debug/enable) drives config('app.debug').
+          # The multiple-root-element detection only runs when it is on, so the
+          # multiple-roots specs need it enabled to see the inline exception block.
+          php bin/magento config:set magewire/debug/enable 1
+
           # Activate the Hyvä frontend theme by its registered code.
           THEME_ID=$(mysql -h 127.0.0.1 -uroot -proot magento -N -B \
             -e "SELECT theme_id FROM theme WHERE code='Hyva/default' AND area='frontend' LIMIT 1")
