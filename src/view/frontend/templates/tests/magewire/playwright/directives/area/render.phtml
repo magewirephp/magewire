@@ -9,9 +9,11 @@
 
 declare(strict_types=1);
 
+// Exotic: resolve the child alias from a runtime variable, positional (no name:).
+$alias = 'child';
 ?>
 <div>
     Parent
 
-    @renderChild(alias: 'child')
+    @renderChild($alias)
 </div>

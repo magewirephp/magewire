@@ -17,9 +17,9 @@ use Magewirephp\Magewire\Mechanisms\HandleCompiling\View\ScopeDirectiveParser;
 
 class Escape extends Directive
 {
-    // RAW passthrough: $expression is trusted template source (see ExpressionParserType::RAW).
-    // Output is escaped here via $escaper.
-    #[ScopeDirectiveParser(ExpressionParserType::RAW)]
+    // $expression is the verbatim expression the author wrote (@escape($url) / @escape('/path')),
+    // embedded as-is and escaped here via $escaper.
+    #[ScopeDirectiveParser(ExpressionParserType::EXPRESSION_ARGUMENTS)]
     public function url(string $expression): string
     {
         return "<?php echo \$escaper->escapeUrl({$expression}) ?>";

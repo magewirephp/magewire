@@ -294,6 +294,13 @@ abstract class Compiler
                 $match[4] .= $rest;
             }
 
+            // Re-derive the inner expression from the (now balanced) paren group. The non-greedy
+            // capture and the re-balancing above can otherwise leave $match[4] missing closing
+            // parens absorbed into $match[0], truncating nested calls like @translate(strtoupper('x')).
+            if (isset($match[3])) {
+                $match[4] = substr($match[3], 1, -1);
+            }
+
             [$template, $offset] = $this->replaceFirstStatement($match[0], $this->compileDirective($match), $template, $offset);
         }
 

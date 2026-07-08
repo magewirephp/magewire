@@ -26,17 +26,15 @@ enum ExpressionParserType
     case ITERATION_CLAUSE;
 
     /**
-     * Passthrough: the verbatim expression is embedded into the generated PHP and executed as-is,
-     * with NO parsing, quoting, or escaping.
+     * Named/positional arguments whose values are kept verbatim as the PHP expressions the author
+     * wrote (Blade-style), so `@child(alias: $current)` embeds `$current` and `@child('sidebar')`
+     * embeds `'sidebar'`. Bare true/false/null become real bool/null for compile-time flags.
      *
-     * SECURITY: only ever use RAW for expressions that come from trusted template (.phtml) source
-     * authored by developers. Never wire a RAW directive to anything that can carry user input or
-     * request data — that would compile attacker-controlled text into executable PHP. Directives
-     * that accept dynamic values must use a parsing type (e.g. FUNCTION_ARGUMENTS), which quotes
-     * and escapes their arguments. The RAW directive is itself responsible for escaping its output
-     * (see the Escape directive's use of $escaper).
+     * SECURITY: values are embedded into compiled PHP as written, so this is for trusted template
+     * (.phtml) source only — never wire it to user input. A directive using it is responsible for
+     * escaping its own output (see the Escape directive's use of $escaper).
      */
-    case RAW;
+    case EXPRESSION_ARGUMENTS;
 
     /**
      * Returns a new instance of a parse result.
@@ -47,7 +45,9 @@ enum ExpressionParserType
      */
     public function create(array $arguments = []): ExpressionParser
     {
-        return match ($this) { self::CONDITION, self::FUNCTION_ARGUMENTS, self::ITERATION_CLAUSE, self::RAW => ObjectManager::getInstance()->create($this->getTypeClass(), $arguments) };
+        return match ($this) {
+            self::CONDITION, self::FUNCTION_ARGUMENTS, self::ITERATION_CLAUSE, self::EXPRESSION_ARGUMENTS => ObjectManager::getInstance()->create($this->getTypeClass(), $arguments)
+        };
     }
 
     public function getTypeClass(): string
@@ -56,7 +56,7 @@ enum ExpressionParserType
             self::CONDITION => ConditionExpressionParser::class,
             self::FUNCTION_ARGUMENTS => FunctionExpressionParser::class,
             self::ITERATION_CLAUSE => IterationClauseExpressionParser::class,
-            self::RAW => RawExpressionParser::class
+            self::EXPRESSION_ARGUMENTS => ExpressionArgumentsParser::class
         };
     }
 }

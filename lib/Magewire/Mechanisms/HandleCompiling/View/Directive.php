@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Mechanisms\HandleCompiling\View;
 
+use InvalidArgumentException;
 use Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Parser\ExpressionParser;
 use Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Directive\Parser\ExpressionParserType;
 use Magewirephp\Magewire\Support\Random;
@@ -36,23 +37,31 @@ abstract class Directive
     public function compile(string $expression, string $directive)
     {
         if (method_exists($this, $directive) && ( $type = $this->getExpressionParserFor($directive) )) {
-            // RAW directives take no parsing: the verbatim expression is handed to the method as
-            // a single string. This replaces the former FunctionDirective passthrough.
-            if ($type === ExpressionParserType::RAW) {
-                return $this->{$directive}($expression);
-            }
-
             $parser = $this->parser($type)->parse($expression);
 
             $allArgs = $parser->arguments()->all();
             $method = new ReflectionMethod($this, $directive);
             $args = [];
 
-            foreach ($method->getParameters() as $param) {
+            // Positional arguments are only permitted for single-parameter directives (e.g.
+            // @child('sidebar')). A directive that takes more than one parameter must be called with
+            // named arguments, so the intent stays explicit — e.g. @translate(value: 'x', escape: false).
+            if ($method->getNumberOfParameters() > 1 && array_filter(array_keys($allArgs), 'is_int') !== []) {
+                throw new InvalidArgumentException(sprintf(
+                    '@%s takes multiple arguments and must be called with named arguments (e.g. %s: ...); positional arguments are not allowed.',
+                    $directive,
+                    $method->getParameters()[0]->getName()
+                ));
+            }
+
+            foreach ($method->getParameters() as $index => $param) {
                 $paramName = $param->getName();
 
                 if (array_key_exists($paramName, $allArgs)) {
                     $args[$paramName] = $allArgs[$paramName];
+                } elseif (array_key_exists($index, $allArgs)) {
+                    // Positional argument (single-parameter directives only, guarded above).
+                    $args[$paramName] = $allArgs[$index];
                 }
             }
 
