@@ -17,9 +17,10 @@ use Magewirephp\Magewire\Mechanisms\HandleCompiling\View\ScopeDirectiveParser;
 
 class Block extends Directive
 {
-    #[ScopeDirectiveParser(ExpressionParserType::FUNCTION_ARGUMENTS)]
+    #[ScopeDirectiveParser(ExpressionParserType::EXPRESSION_ARGUMENTS)]
     public function child(string $alias): string
     {
-        return "<?php echo (\$block && \$block->getChildBlock('{$alias}')) ? \$block->getChildBlock('{$alias}')->toHtml() : '' ?>";
+        // $alias is the verbatim expression the author wrote ('sidebar' or $current), embedded as-is.
+        return "<?php echo (\$block && \$block->getChildBlock({$alias})) ? \$block->getChildBlock({$alias})->toHtml() : '' ?>";
     }
 }
