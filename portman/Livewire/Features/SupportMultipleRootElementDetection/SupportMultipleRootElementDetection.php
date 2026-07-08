@@ -11,6 +11,9 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMultipleRootElementDetection;
 
+use Magewirephp\Magewire\Features\SupportMultipleRootElementDetection\Api\MultipleRootElementDetectionHandlerInterface;
+use Magewirephp\Magewire\Support\Factory;
+
 use function Magewirephp\Magewire\on;
 use function Magewirephp\Magewire\config;
 
@@ -30,9 +33,28 @@ class SupportMultipleRootElementDetection extends \Livewire\Features\SupportMult
             }
 
             return function ($html) use ($component) {
-                (new static())->warnAgainstMoreThanOneRootElement($component, $html);
+                // Return the (possibly handler-modified) HTML so the EventBus finisher forwards it.
+                return (new static())->warnAgainstMoreThanOneRootElement($component, $html);
             };
         });
+    }
+
+    /**
+     * On a single root element everything is fine. Otherwise the detection handler decides what
+     * happens: the default throws (MultipleRootElementsDetectedException), but the handler is a DI
+     * preference, so a project can swap in its own (log, browser console, ...) and return the HTML
+     * to forward down the pipeline.
+     */
+    function warnAgainstMoreThanOneRootElement($component, $html)
+    {
+        $count = $this->getRootElementCount($html);
+
+        if ($count <= 1) {
+            return $html;
+        }
+
+        return Factory::get(MultipleRootElementDetectionHandlerInterface::class)
+            ->handle($component, $html, $count);
     }
 
     /**
