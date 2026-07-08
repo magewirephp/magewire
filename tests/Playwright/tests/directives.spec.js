@@ -19,7 +19,7 @@ test.describe('Magewire Playwright — Directives', () => {
             await expect(component).toBeVisible();
 
             const rows = component.locator('tbody tr');
-            await expect(rows).toHaveCount(2);
+            await expect(rows).toHaveCount(10);
 
             const count = await rows.count();
 
@@ -37,7 +37,7 @@ test.describe('Magewire Playwright — Directives', () => {
         test('renders the @translate directive with its literal value when escape is false', async ({ page }) => {
             const row = page.locator('[wire\\:id="magewire.playwright.directives.base"] tbody tr').nth(0);
 
-            await expect(row.locator('td').nth(0)).toHaveText('translate');
+            await expect(row.locator('td').nth(0)).toHaveText('translate (escape false)');
             await expect(row.locator('td').nth(2)).toHaveText('foo');
         });
 
@@ -47,6 +47,27 @@ test.describe('Magewire Playwright — Directives', () => {
             await expect(row.locator('td').nth(0)).toHaveText('translate (escaped)');
             await expect(row.locator('td').nth(2)).toHaveText('bar');
         });
+
+        // Exotic EXPRESSION_ARGUMENTS coverage for the multi-parameter @translate directive.
+        // (It must be called with named arguments; positional is exercised via @renderChild below.)
+        const exotic = [
+            ['variable', 2, 'dynamic'],
+            ['comma inside quotes', 3, 'Hello, World'],
+            ['concatenation expression', 4, 'dynamic!'],
+            ['value + escape flag', 5, 'mixed'],
+            ['variable with apostrophe', 6, "O'Brien"],
+            ['nested-paren function call', 7, 'HI'],
+            ['paren inside string', 8, 'a)b'],
+            ['multiple parens in string', 9, 'a)b)c'],
+        ];
+
+        for (const [label, index, expected] of exotic) {
+            test(`@translate — ${label}`, async ({ page }) => {
+                const row = page.locator('[wire\\:id="magewire.playwright.directives.base"] tbody tr').nth(index);
+
+                await expect(row.locator('td').nth(2)).toHaveText(expected);
+            });
+        }
     });
 
     test.describe('Scope directive (@foreach)', () => {

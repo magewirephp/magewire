@@ -9,6 +9,8 @@
 
 declare(strict_types=1);
 
+$dynamic = 'dynamic';
+$quote = "O'Brien";
 ?>
 <div>
     <h2 class="text-lg mb-6 font-bold">
@@ -27,7 +29,7 @@ declare(strict_types=1);
 
         <tbody>
             <tr>
-                <td class="px-6 py-3">translate</td>
+                <td class="px-6 py-3">translate (escape false)</td>
                 <td class="px-6 py-3">foo</td>
                 <td class="px-6 py-3">@translate(value: 'foo', escape: false)</td>
                 <td class="px-6 py-3">foo</td>
@@ -38,6 +40,62 @@ declare(strict_types=1);
                 <td class="px-6 py-3">bar</td>
                 <td class="px-6 py-3">@translate(value: 'bar')</td>
                 <td class="px-6 py-3">bar</td>
+            </tr>
+
+            <tr>
+                <td class="px-6 py-3">translate (variable)</td>
+                <td class="px-6 py-3">$dynamic</td>
+                <td class="px-6 py-3">@translate(value: $dynamic)</td>
+                <td class="px-6 py-3">dynamic</td>
+            </tr>
+
+            <tr>
+                <td class="px-6 py-3">translate (comma inside quotes)</td>
+                <td class="px-6 py-3">Hello, World</td>
+                <td class="px-6 py-3">@translate(value: 'Hello, World')</td>
+                <td class="px-6 py-3">Hello, World</td>
+            </tr>
+
+            <tr>
+                <td class="px-6 py-3">translate (concatenation expression)</td>
+                <td class="px-6 py-3">$dynamic . '!'</td>
+                <td class="px-6 py-3">@translate(value: $dynamic . '!')</td>
+                <td class="px-6 py-3">dynamic!</td>
+            </tr>
+
+            <tr>
+                <td class="px-6 py-3">translate (value + escape flag)</td>
+                <td class="px-6 py-3">mixed</td>
+                <td class="px-6 py-3">@translate(value: 'mixed', escape: false)</td>
+                <td class="px-6 py-3">mixed</td>
+            </tr>
+
+            <tr>
+                <td class="px-6 py-3">translate (variable with apostrophe)</td>
+                <td class="px-6 py-3">$quote</td>
+                <td class="px-6 py-3">@translate(value: $quote)</td>
+                <td class="px-6 py-3">O'Brien</td>
+            </tr>
+
+            <tr>
+                <td class="px-6 py-3">translate (nested-paren function call)</td>
+                <td class="px-6 py-3">strtoupper('hi')</td>
+                <td class="px-6 py-3">@translate(value: strtoupper('hi'))</td>
+                <td class="px-6 py-3">HI</td>
+            </tr>
+
+            <tr>
+                <td class="px-6 py-3">translate (paren inside string)</td>
+                <td class="px-6 py-3">a)b</td>
+                <td class="px-6 py-3">@translate(value: 'a)b')</td>
+                <td class="px-6 py-3">a)b</td>
+            </tr>
+
+            <tr>
+                <td class="px-6 py-3">translate (multiple parens in string)</td>
+                <td class="px-6 py-3">a)b)c</td>
+                <td class="px-6 py-3">@translate(value: 'a)b)c')</td>
+                <td class="px-6 py-3">a)b)c</td>
             </tr>
         </tbody>
     </table>
