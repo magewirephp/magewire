@@ -8,6 +8,15 @@
     />
 
     <!--
+        Default reaction when a component renders more than one root element: throw. This is the
+        extension point — a project can override this preference with its own handler (log, browser
+        console, ...) implementing MultipleRootElementDetectionHandlerInterface.
+    -->
+    <preference for="Magewirephp\Magewire\Features\SupportMultipleRootElementDetection\Api\MultipleRootElementDetectionHandlerInterface"
+                type="Magewirephp\Magewire\Features\SupportMultipleRootElementDetection\Handler\ThrowExceptionHandler"
+    />
+
+    <!--
         Bindings: Frontend Proxies
 
         DOC: Magento Proxies optimize performance by delaying the instantiation of resource-intensive objects until they are needed.
