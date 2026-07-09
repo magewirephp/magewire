@@ -1,5 +1,6 @@
 {
   "include-v-in-tag": false,
+  "last-release-sha": "845e3b5db0a068bcfd971fed87de604273ca6f36",
   "packages": {
     ".": {
       "changelog-path": "CHANGELOG.md",
