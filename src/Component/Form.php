@@ -89,10 +89,10 @@ abstract class Form extends Component
                     $this->error($key, current($error));
                 }
 
-                throw new ValidationException(__('Something went wrong while validating the form input'));
+                throw new ValidationException((string) __('Something went wrong while validating the form input'));
             }
         } catch (Exception $exception) {
-            throw new AcceptableException(__($exception->getMessage()));
+            throw new AcceptableException((string) __($exception->getMessage()));
         }
 
         return true;
