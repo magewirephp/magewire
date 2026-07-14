@@ -20,7 +20,7 @@ class SilentException extends Exception
     public function __construct(
         string|Phrase $message = '',
         int $code = 0,
-        ?Throwable $previous = null
+        Throwable|null $previous = null
     ) {
         parent::__construct((string) $message, $code, $previous);
     }
