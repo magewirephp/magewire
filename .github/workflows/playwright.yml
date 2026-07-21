@@ -16,6 +16,16 @@ name: 'Playwright (Mage-OS + Hyvä)'
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'lib/**'
+      - 'dist/**'
+      - 'composer.json'
+      - 'tests/Playwright/**'
+      - '.github/workflows/playwright.yml'
   pull_request:
     branches:
       - main
