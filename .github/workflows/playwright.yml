@@ -16,6 +16,16 @@ name: 'Playwright (Mage-OS + Hyvä)'
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'lib/**'
+      - 'dist/**'
+      - 'composer.json'
+      - 'tests/Playwright/**'
+      - '.github/workflows/playwright.yml'
   pull_request:
     branches:
       - main
@@ -23,6 +33,7 @@ on:
       - 'src/**'
       - 'lib/**'
       - 'dist/**'
+      - 'composer.json'
       - 'tests/Playwright/**'
       - '.github/workflows/playwright.yml'
 
@@ -36,21 +47,33 @@ concurrency:
 jobs:
 
   playwright:
-    name: 'Mage-OS ${{ matrix.mage_os }} / PHP ${{ matrix.php }}'
+    name: 'Mage-OS ${{ matrix.mage_os }} / PHP ${{ matrix.php }} / illuminate ${{ matrix.illuminate || ''host'' }}'
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
         include:
-          # Latest Mage-OS distribution.
+          # Latest Mage-OS, host-native illuminate. Mage-OS 3.x ships a spatie/ignition
+          # tree pinned at illuminate ^13, so leaving `illuminate` empty resolves the
+          # suite at v13 — the "fit into the host" path the widened illuminate/support
+          # constraint (^10.48 || ^11 || ^12 || ^13) enables. No forced downgrade.
           - mage_os: '3.1.0'
             php: '8.4'
+            illuminate: ''
+          # Same distribution, illuminate pinned to the legacy floor. Proves the old
+          # v10 path still resolves and runs — this drags nesbot/carbon down to 2.x and
+          # symfony/translation to 6.4 (spatie/flare accepts the downgraded tree).
+          - mage_os: '3.1.0'
+            php: '8.4'
+            illuminate: '^10.48'
           # Oldest documented Mage-OS distribution (Magento 2.4.6 base). Its composer
           # constraint is ~8.1||~8.2, so PHP 8.3 would fail the platform check — 8.2 is
-          # the floor that also satisfies this module's php>=8.2 requirement.
+          # the floor that also satisfies this module's php>=8.2 requirement. Left on
+          # the host-native illuminate that this older distribution ships.
           - mage_os: '1.0.5'
             php: '8.2'
+            illuminate: ''
 
     env:
       MAGENTO_DIR: ${{ github.workspace }}/magento
@@ -169,18 +192,35 @@ jobs:
 
           # Add this PR's module (pinned to 3.999.0), the Hyvä default theme, and the
           # Magewire-Hyvä compat layer to composer.json WITHOUT resolving yet.
+          #
+          # When matrix.illuminate is set, also pin illuminate/support to that major so
+          # this row exercises a specific end of the module's widened constraint range
+          # (^10.48 || ^11 || ^12 || ^13). Empty means "let the resolver keep whatever
+          # illuminate the host platform pins" — on Mage-OS 3.x that is the spatie/
+          # ignition tree's v13.
+          ILLUMINATE_PIN=""
+          if [ -n "${{ matrix.illuminate }}" ]; then
+            ILLUMINATE_PIN="illuminate/support:${{ matrix.illuminate }}"
+          fi
           composer require --no-update --no-interaction \
             "magewirephp/magewire:3.999.0" \
             hyva-themes/magento2-default-theme \
-            magewirephp/magewire-hyva-theme
+            magewirephp/magewire-hyva-theme \
+            $ILLUMINATE_PIN
 
-          # One full re-resolve. Mage-OS 3.x ships a runtime spatie/ignition tree
+          # One full re-resolve (-W updates dependencies of the just-required packages
+          # too). Mage-OS 3.x ships a runtime spatie/ignition tree
           # (swissup/module-ignition -> spatie/ignition -> spatie/flare ->
-          # illuminate/pipeline) whose pipeline was locked at v13 (needs illuminate ^13).
-          # A scoped update leaves that sibling locked; a full update lets this module's
-          # hard illuminate/support ^10.48 pull the whole illuminate tree — pipeline
-          # included — down to 10.x (spatie/flare accepts pipeline ^10).
+          # illuminate/pipeline) that resolves at illuminate v13. With no illuminate pin
+          # the whole suite stays at v13 (Magewire's widened constraint accepts it).
+          # When pinned to ^10.48 the resolver drags the tree — pipeline included — down
+          # to 10.x (spatie/flare accepts pipeline ^10), dragging carbon->2 and
+          # symfony/translation->6.4 with it. Either way the suite must resolve and run.
           composer update --no-dev --no-interaction --no-progress -W
+
+          # Record what illuminate actually resolved to, so the log shows which end of
+          # the range this row exercised (and catches a silent pin miss).
+          composer show illuminate/support | grep -i '^versions' || true
 
       - name: Install Mage-OS
         working-directory: ${{ env.MAGENTO_DIR }}
@@ -294,7 +334,7 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v7
         with:
-          name: playwright-results-mageos-${{ matrix.mage_os }}
+          name: playwright-results-mageos-${{ matrix.mage_os }}-illuminate-${{ matrix.illuminate || 'host' }}
           path: |
             ${{ env.MODULE_DIR }}/tests/Playwright/test-results
             ${{ github.workspace }}/phpserver.log

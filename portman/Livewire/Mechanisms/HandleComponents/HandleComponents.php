@@ -29,6 +29,17 @@ use Magewirephp\Magewire\Exceptions\MethodNotFoundException;
 
 class HandleComponents extends \Livewire\Mechanisms\HandleComponents\HandleComponents
 {
+    /**
+     * The active synthesizer list is injected via DI (see the frontend and
+     * adminhtml di.xml) and assigned in the constructor below. Livewire's
+     * upstream default referenced
+     * Carbon/Collection/Stringable synths that Magewire does not ship; declaring
+     * an empty default here keeps them out of the generated dist output.
+     *
+     * @var array
+     */
+    protected $propertySynthesizers = [];
+
     public function __construct(
         private readonly ComponentContextFactory $componentContextFactory,
         private readonly Checksum $checksum,

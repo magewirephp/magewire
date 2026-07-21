@@ -32,7 +32,16 @@ use Magewirephp\Magewire\Exceptions\PublicPropertyNotFoundException;
 use Illuminate\Support\Facades\View;
 class HandleComponents extends Mechanism
 {
-    protected $propertySynthesizers = [Synthesizers\CarbonSynth::class, Synthesizers\CollectionSynth::class, Synthesizers\StringableSynth::class, Synthesizers\EnumSynth::class, Synthesizers\StdClassSynth::class, Synthesizers\ArraySynth::class, Synthesizers\IntSynth::class, Synthesizers\FloatSynth::class];
+    /**
+     * The active synthesizer list is injected via DI (see the frontend and
+     * adminhtml di.xml) and assigned in the constructor below. Livewire's
+     * upstream default referenced
+     * Carbon/Collection/Stringable synths that Magewire does not ship; declaring
+     * an empty default here keeps them out of the generated dist output.
+     *
+     * @var array
+     */
+    protected $propertySynthesizers = [];
     public static $renderStack = [];
     public static $componentStack = [];
     public function registerPropertySynthesizer($synth)
