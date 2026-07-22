@@ -1,0 +1,48 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment = $magewireViewModel->utils()->fragment();
+
+/** @internal Do not modify to ensure Magewire continues to function correctly. */
+?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    function magewireLazyLoad() {
+        return {
+            init() {
+                const trigger = () => this.$wire.__lazyLoad();
+                const mode = this.$el.dataset.magewireLazyMode || 'on-intersect';
+
+                if (mode === 'on-load') {
+                    trigger();
+
+                    return;
+                }
+
+                const observer = new IntersectionObserver((entries, obs) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            obs.disconnect();
+                            trigger();
+                        }
+                    });
+                });
+
+                observer.observe(this.$el);
+            }
+        };
+    }
+
+    document.addEventListener('alpine:init', () => Alpine.data('magewireLazyLoad', magewireLazyLoad), { once: true });
+</script>
+<?php $script->end() ?>

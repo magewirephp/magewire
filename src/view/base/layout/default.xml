@@ -203,6 +203,9 @@
                 <block name="magewire.features.support-magewire-rate-limiting"
                        template="Magewirephp_Magewire::magewire-features/support-magewire-rate-limiting/support-magewire-rate-limiting.phtml"
                 />
+                <block name="magewire.features.support-lazy-loading"
+                       template="Magewirephp_Magewire::magewire-features/support-lazy-loading/support-lazy-loading.phtml"
+                />
             </block>
 
             <container name="magewire.after.internal" as="after.internal"/>

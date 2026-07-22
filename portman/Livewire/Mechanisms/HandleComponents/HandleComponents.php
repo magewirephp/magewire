@@ -211,13 +211,15 @@ class HandleComponents extends \Livewire\Mechanisms\HandleComponents\HandleCompo
         $replace = store($component)->get('skipRender', false);
 
         if ($replace) {
-            $replace = value(is_string($html) ? $html : $default);
+            // A string skipRender value (e.g. a lazy-loading placeholder) replaces the
+            // block output entirely; a boolean true keeps the block-rendered HTML.
+            $replace = value(is_string($replace) ? $replace : (is_string($html) ? $html : $default));
 
             if (! $replace) {
                 return '';
             }
 
-            return Utils::insertAttributesIntoHtmlRoot($html, [
+            return Utils::insertAttributesIntoHtmlRoot($replace, [
                 'wire:id' => $component->getId(),
             ]);
         }
