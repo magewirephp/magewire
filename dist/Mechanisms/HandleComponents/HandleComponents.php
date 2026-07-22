@@ -255,11 +255,13 @@ class HandleComponents extends Mechanism
     {
         $replace = store($component)->get('skipRender', false);
         if ($replace) {
-            $replace = value(is_string($html) ? $html : $default);
+            // A string skipRender value (e.g. a lazy-loading placeholder) replaces the
+            // block output entirely; a boolean true keeps the block-rendered HTML.
+            $replace = value(is_string($replace) ? $replace : (is_string($html) ? $html : $default));
             if (!$replace) {
                 return '';
             }
-            return Utils::insertAttributesIntoHtmlRoot($html, ['wire:id' => $component->getId()]);
+            return Utils::insertAttributesIntoHtmlRoot($replace, ['wire:id' => $component->getId()]);
         }
         [$block, $properties] = $this->getView($component);
         return $this->trackInRenderStack($component, function () use ($component, $block, $properties, $html) {

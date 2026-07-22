@@ -178,6 +178,11 @@
                     <item name="sort_order" xsi:type="number">1200</item>
                 </item>
 
+                <item name="lazy_loading" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportLazyLoading\SupportLazyLoading</item>
+                    <item name="sort_order" xsi:type="number">1250</item>
+                </item>
+
                 <item name="redirects" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportRedirects\SupportRedirects</item>
                     <item name="sort_order" xsi:type="number">1300</item>
