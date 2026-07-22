@@ -37,7 +37,7 @@ class Conditions
      */
     private function set(callable $condition, ConditionEnum $type, string|null $name = null): static
     {
-        $name ?? count($this->get($type));
+        $name ??= count($this->get($type));
         $this->conditions[$type->value][$name] = $condition;
 
         return $this;
