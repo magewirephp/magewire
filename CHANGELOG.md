@@ -4,6 +4,40 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.3.0](https://github.com/magewirephp/magewire/compare/3.2.0...3.3.0) (2026-07-21)
+
+
+### Features
+
+* Blade-style directive arguments (`EXPRESSION_ARGUMENTS`) ([#249](https://github.com/magewirephp/magewire/issues/249)) ([516c37e](https://github.com/magewirephp/magewire/commit/516c37e76902c823860eb1411e3edb6dc416d4d1))
+* Pluggable handler for multiple-root-element detection ([#251](https://github.com/magewirephp/magewire/issues/251)) ([da0d147](https://github.com/magewirephp/magewire/commit/da0d14787ee49cf3920dc01d44fba3c058525c98))
+* `magewire:compile:clear` CLI command to purge compiled views ([ac3a815](https://github.com/magewirephp/magewire/commit/ac3a8156c46610c1e5d685c06d15a01ae936b2a1))
+
+
+### Bug Fixes
+
+* Map `config('app.debug')` to the real Magewire debug toggle ([3dde770](https://github.com/magewirephp/magewire/commit/3dde770c586342b199d4539a2990d2e6c4de97fd))
+* Correct named-argument parsing for `@translate`/`@child` and fold `FunctionDirective` into the RAW type ([#248](https://github.com/magewirephp/magewire/issues/248)) ([2819f06](https://github.com/magewirephp/magewire/commit/2819f0622fd16472d5e5ccba574dd086d3a3aaea))
+* Accept `Phrase` messages in the `SilentException` constructor ([#257](https://github.com/magewirephp/magewire/issues/257)) ([736ebfe](https://github.com/magewirephp/magewire/commit/736ebfe73ca16cd527df74729cdd0ad573413c27))
+* **deps:** widen `illuminate/support` to span v10–v13 ([#253](https://github.com/magewirephp/magewire/issues/253)) ([0a738f9](https://github.com/magewirephp/magewire/commit/0a738f9b5ef95f676f395f97df359c81cf74961d))
+
+
+### Code Refactoring
+
+* Promote view compiling from a Feature to a Mechanism ([#244](https://github.com/magewirephp/magewire/issues/244)) ([7faea5d](https://github.com/magewirephp/magewire/commit/7faea5d69656a3f0f928f24d5d97fa53f188fb26))
+* Remove experimental Feature/Mechanism facades ([#242](https://github.com/magewirephp/magewire/issues/242)) ([c06e5c4](https://github.com/magewirephp/magewire/commit/c06e5c43909cbf94d4a710b6e9ac68060106bacf))
+
+
+### Miscellaneous Chores
+
+* Mage-OS + Hyvä Playwright end-to-end workflow ([#245](https://github.com/magewirephp/magewire/issues/245)) ([a57c73a](https://github.com/magewirephp/magewire/commit/a57c73a25b0effd3d9a8f4ecdfbbee1f7490d75a))
+* Enable Magewire debug toggle for Playwright and retry flaky specs ([#250](https://github.com/magewirephp/magewire/issues/250)) ([1db5f0e](https://github.com/magewirephp/magewire/commit/1db5f0e3df46590257382629e35ffab46bf72e5c))
+* Clearer `magewire.legacy` explanation in layout XML ([ff4ad18](https://github.com/magewirephp/magewire/commit/ff4ad18cb0cb7164f1b164ba0fc62b56b2d4b3af))
+* Pin release-please last-release-sha to the 3.2.0 commit ([#252](https://github.com/magewirephp/magewire/issues/252)) ([ab3c120](https://github.com/magewirephp/magewire/commit/ab3c1208677b59403a2caa6b28635e9f01cdd234))
+* Untrack `portman/lib` and ignore it ([ae0979c](https://github.com/magewirephp/magewire/commit/ae0979cf6639e6373230a31d69e062b554e52716))
+* Ignore the `.claude` directory entirely ([e91b35c](https://github.com/magewirephp/magewire/commit/e91b35ca8da7fd31418da20313e5ddb846965eed))
+* **deps:** bump GitHub Actions — checkout 6→7, setup-node 4→7, upload-artifact 4→7 ([#237](https://github.com/magewirephp/magewire/issues/237), [#254](https://github.com/magewirephp/magewire/issues/254), [#255](https://github.com/magewirephp/magewire/issues/255), [#258](https://github.com/magewirephp/magewire/issues/258))
+
 ## [3.2.0](https://github.com/magewirephp/magewire/compare/3.1.0...3.2.0) (2026-06-14)
 
 
