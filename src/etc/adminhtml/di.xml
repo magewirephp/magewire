@@ -433,6 +433,11 @@
                 <item name="layout" xsi:type="object" sortOrder="99900">
                     Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolver\LayoutResolver
                 </item>
+
+                <!-- Last-resort fallback. Never complies on its own; only reached via the "unknown" accessor. -->
+                <item name="unknown" xsi:type="object" sortOrder="100000">
+                    Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolver\UnknownResolver
+                </item>
             </argument>
         </arguments>
     </type>
