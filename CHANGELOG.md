@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.3.1](https://github.com/magewirephp/magewire/compare/3.3.0...3.3.1) (2026-07-23)
+
+
+### Bug Fixes
+
+* null array offset in Conditions::set() breaking component init in production ([#260](https://github.com/magewirephp/magewire/issues/260)) ([0652c64](https://github.com/magewirephp/magewire/commit/0652c647dd8ceed50baa10fe43bcb3aaf9cdd163))
+* remove deprecated ReflectionMethod::setAccessible() call in invade() helper ([#267](https://github.com/magewirephp/magewire/issues/267)) ([02a6248](https://github.com/magewirephp/magewire/commit/02a62483a5b8a08eec2a9d8863bba9815fd5cfb1))
+* support Magento 2.4.6 DI compile ([d5578f3](https://github.com/magewirephp/magewire/commit/d5578f35e7f1fd829dc32c7933b7bfdd3d909fb4))
+
+
+### Miscellaneous Chores
+
+* define release-please changelog-sections ([#259](https://github.com/magewirephp/magewire/issues/259)) ([315fe86](https://github.com/magewirephp/magewire/commit/315fe868602e0ddf842c6bb037899ce9502852f5))
+
 ## [3.3.0](https://github.com/magewirephp/magewire/compare/3.2.0...3.3.0) (2026-07-21)
 
 
