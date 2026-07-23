@@ -1,0 +1,135 @@
+name: 'Production build'
+
+# Verifies the module survives a Magento production BUILD phase — the two commands a
+# real deploy runs before anything touches a database:
+#
+#   bin/magento setup:di:compile
+#   bin/magento setup:static-content:deploy -f
+#
+# This mirrors the Adobe Commerce Cloud / Mage-OS build step, which runs WITHOUT a
+# database, env.php, or a search engine. It is exactly this module's risk surface:
+# di:compile fails on broken di.xml / uncompilable classes / bad proxies-factories,
+# and static-content:deploy fails on invalid view files (LESS, requirejs-config,
+# template registration). No secrets, no services — fast and deterministic, so a green
+# badge means a tag can ship without manually build-testing first.
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'lib/**'
+      - 'dist/**'
+      - 'composer.json'
+      - '.github/workflows/production-build.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'lib/**'
+      - 'dist/**'
+      - 'composer.json'
+      - '.github/workflows/production-build.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  production-build:
+    name: 'Mage-OS ${{ matrix.mage_os }} / PHP ${{ matrix.php }}'
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - mage_os: '3.1.0'
+            php: '8.4'
+
+    env:
+      MAGENTO_DIR: ${{ github.workspace }}/magento
+      MODULE_DIR: ${{ github.workspace }}/magewire-src
+      COMPOSER_MEMORY_LIMIT: '-1'
+
+    steps:
+      - name: Checkout module (the PR code)
+        uses: actions/checkout@v7
+        with:
+          path: magewire-src
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: bcmath, ctype, curl, dom, gd, hash, iconv, intl, mbstring, openssl, pdo_mysql, simplexml, soap, sockets, xsl, zip, fileinfo
+          tools: composer:v2
+          ini-values: memory_limit=-1
+        env:
+          COMPOSER_TOKEN: ${{ github.token }}
+
+      - name: Create Mage-OS project
+        run: |
+          composer create-project \
+            --repository-url=https://repo.mage-os.org/ \
+            --no-install \
+            "mage-os/project-community-edition:${{ matrix.mage_os }}" \
+            "$MAGENTO_DIR"
+
+      - name: Configure Composer repositories & auth
+        working-directory: ${{ env.MAGENTO_DIR }}
+        run: |
+          # Allow dev versions so the path-based module (this PR) can be required.
+          composer config minimum-stability dev
+          composer config prefer-stable true
+
+          # We override magewirephp/magewire with this PR's branch via a path repo. The
+          # version-audit plugin reads the public dev-main as "higher" than the branch
+          # and aborts as if it were dependency confusion. Mage-OS ships its own fork of
+          # the plugin too; disable both for this CI-only install.
+          composer config allow-plugins.mage-os/composer-dependency-version-audit-plugin false
+          composer config allow-plugins.magento/composer-dependency-version-audit-plugin false
+
+          # Path repository pointing at the checked-out module. symlink:false so composer
+          # COPIES it into magento/vendor/ — a symlink leaves the sources outside the
+          # Magento root and its filesystem validator rejects paths that resolve outside.
+          composer config repositories.magewire-src \
+            "{\"type\":\"path\",\"url\":\"$MODULE_DIR\",\"options\":{\"symlink\":false}}"
+
+          # actions/checkout leaves a detached HEAD, so composer would derive the path
+          # repo version as dev-<sha> and no constraint would match. Pin an explicit high
+          # version instead — deterministic (CI-only; not committed).
+          composer --working-dir="$MODULE_DIR" config version 3.999.0
+
+      - name: Install Mage-OS + module (production deps only)
+        working-directory: ${{ env.MAGENTO_DIR }}
+        run: |
+          composer install --no-dev --no-interaction --no-progress
+          composer require --no-update --no-interaction "magewirephp/magewire:3.999.0"
+          composer update --no-dev --no-interaction --no-progress -W
+
+      - name: Enable all modules (writes app/etc/config.php)
+        working-directory: ${{ env.MAGENTO_DIR }}
+        run: |
+          # module:enable works pre-install: it only writes the module list to
+          # config.php. No database, no env.php — the build phase never has them.
+          php bin/magento module:enable --all --no-interaction
+          php bin/magento module:status Magewirephp_Magewire
+
+      - name: setup:di:compile
+        working-directory: ${{ env.MAGENTO_DIR }}
+        run: php bin/magento setup:di:compile --no-interaction
+
+      - name: setup:static-content:deploy
+        working-directory: ${{ env.MAGENTO_DIR }}
+        run: |
+          # -f forces deployment outside production mode (the build phase runs in
+          # default mode). Deploys every registered theme/area in en_US.
+          php bin/magento setup:static-content:deploy -f --no-interaction en_US
