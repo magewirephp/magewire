@@ -33,16 +33,21 @@ abstract class DataCollection implements Countable, IteratorAggregate
     private self|null $subsets = null;
     /** @var array<Hook, array<int, callable>> */
     private array $hooks = [];
+    private readonly string|int $name;
 
     /**
+     * Magento 2.4.6 cannot reflect union-typed constructor parameters.
+     *
      * @param array<string|int, mixed> $items
+     * @param string|int $name
      */
     public function __construct(
         private readonly Filter $filter,
         private array $items = [],
-        private readonly string|int $name = 'root',
+        mixed $name = 'root',
         private readonly DataCollection|null $parent = null
     ) {
+        $this->name = $name;
         $this->setup();
     }
 

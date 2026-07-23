@@ -17,8 +17,13 @@ use Throwable;
 
 class SilentException extends Exception
 {
+    /**
+     * Magento 2.4.6 cannot reflect union-typed constructor parameters.
+     *
+     * @param string|Phrase $message
+     */
     public function __construct(
-        string|Phrase $message = '',
+        mixed $message = '',
         int $code = 0,
         Throwable|null $previous = null
     ) {

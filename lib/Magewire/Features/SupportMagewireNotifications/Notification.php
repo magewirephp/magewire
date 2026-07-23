@@ -21,8 +21,13 @@ class Notification
     private Phrase|null $title = null;
     private int $duration = 3000;
 
+    /**
+     * Magento 2.4.6 cannot reflect union-typed constructor parameters.
+     *
+     * @param string|Phrase $notification
+     */
     public function __construct(
-        string|Phrase $notification
+        mixed $notification
     ) {
         $this->withMessage($notification);
     }

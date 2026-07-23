@@ -26,9 +26,13 @@ class AttributesReader
     private ReflectionClass|ReflectionProperty $target;
 
     /**
+     * Magento 2.4.6 cannot reflect union-typed constructor parameters.
+     *
+     * @param object|string $subject
+     *
      * @throws ReflectionException
      */
-    private function __construct(object|string $subject)
+    private function __construct(mixed $subject)
     {
         $this->reflection = $subject instanceof ReflectionClass ? $subject : new ReflectionClass($subject);
 
