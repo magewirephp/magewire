@@ -15,7 +15,6 @@ use Magewirephp\Magewire\Support\Conditions\ConditionEnum;
 
 /**
  * @mago-expect lint:too-many-methods
- * @mago-expect lint:cyclomatic-complexity
  */
 class Conditions
 {
