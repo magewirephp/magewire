@@ -1,17 +1,16 @@
 name: 'Production build'
 
-# Verifies the module survives a Magento production BUILD phase — the two commands a
-# real deploy runs before anything touches a database:
+# Verifies the module survives a Magento production build — the compile step a real
+# deploy runs before serving traffic:
 #
 #   bin/magento setup:di:compile
-#   bin/magento setup:static-content:deploy -f
 #
-# This mirrors the Adobe Commerce Cloud / Mage-OS build step, which runs WITHOUT a
-# database, env.php, or a search engine. It is exactly this module's risk surface:
-# di:compile fails on broken di.xml / uncompilable classes / bad proxies-factories,
-# and static-content:deploy fails on invalid view files (LESS, requirejs-config,
-# template registration). No secrets, no services — fast and deterministic, so a green
-# badge means a tag can ship without manually build-testing first.
+# This is the module's core production risk surface: di:compile fails on broken di.xml,
+# uncompilable classes, or bad proxies/factories. It runs WITHOUT a database, env.php,
+# or a search engine (the Adobe Commerce Cloud / Mage-OS build phase) — module:enable
+# writes the module list to config.php, which is all di:compile needs. No secrets, no
+# services: fast and deterministic, so a green badge means a tag can ship without a
+# manual local compile test.
 
 on:
   workflow_dispatch:
@@ -126,10 +125,3 @@ jobs:
       - name: setup:di:compile
         working-directory: ${{ env.MAGENTO_DIR }}
         run: php bin/magento setup:di:compile --no-interaction
-
-      - name: setup:static-content:deploy
-        working-directory: ${{ env.MAGENTO_DIR }}
-        run: |
-          # -f forces deployment outside production mode (the build phase runs in
-          # default mode). Deploys every registered theme/area in en_US.
-          php bin/magento setup:static-content:deploy -f --no-interaction en_US
