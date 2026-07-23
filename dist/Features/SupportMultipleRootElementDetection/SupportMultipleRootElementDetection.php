@@ -9,11 +9,11 @@
  */
 namespace Magewirephp\Magewire\Features\SupportMultipleRootElementDetection;
 
+use Magewirephp\Magewire\Features\SupportMultipleRootElementDetection\Api\MultipleRootElementDetectionHandlerInterface;
+use Magewirephp\Magewire\Support\Factory;
 use function Magewirephp\Magewire\on;
 use function Magewirephp\Magewire\config;
 use Magewirephp\Magewire\ComponentHook;
-use Magewirephp\Magewire\Features\SupportMultipleRootElementDetection\Api\MultipleRootElementDetectionHandlerInterface;
-use Magewirephp\Magewire\Support\Factory;
 class SupportMultipleRootElementDetection extends ComponentHook
 {
     // Redeclared verbatim from upstream so this file's `config`/`on` function imports
@@ -43,8 +43,7 @@ class SupportMultipleRootElementDetection extends ComponentHook
         if ($count <= 1) {
             return $html;
         }
-        return Factory::get(MultipleRootElementDetectionHandlerInterface::class)
-            ->handle($component, $html, $count);
+        return Factory::get(MultipleRootElementDetectionHandlerInterface::class)->handle($component, $html, $count);
     }
     /**
      * Counts top-level (depth 0) element openings without a full DOM parse.
