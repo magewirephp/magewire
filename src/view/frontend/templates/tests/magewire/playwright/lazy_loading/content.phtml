@@ -1,0 +1,20 @@
+<?php
+
+/**
+ * Copyright © Willem Poortman 2021-present. All rights reserved.
+ *
+ * Please read the README and LICENSE files for more
+ * details on copyrights and license information.
+ */
+
+declare(strict_types=1);
+
+/** @var \Magewirephp\Magewire\Magewire\Playwright\LazyLoading\Basic $magewire */
+?>
+<div>
+    <div data-testid="lazy-content">
+        <h2 class="text-lg mb-2 font-bold">Lazy content loaded</h2>
+
+        <p data-testid="lazy-mounted"><?= $magewire->mounted ? 'mounted' : 'not-mounted' ?></p>
+    </div>
+</div>

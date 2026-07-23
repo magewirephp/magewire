@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+      layout="1column"
+>
+    <body>
+        <referenceContainer name="content">
+            <container name="magewire.playwright.lazyloading"
+                       htmlClass="grid grid-cols-1 gap-x-8 gap-y-16"
+                       htmlId="magewire-playwright-lazyloading"
+                       htmlTag="div"
+            >
+                <!-- Control: no lazy trigger anywhere; mounts and renders on first paint. -->
+                <block name="magewire.playwright.lazyloading.control"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/lazy_loading/content.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire" xsi:type="object" shared="false">
+                            Magewirephp\Magewire\Magewire\Playwright\LazyLoading\Basic
+                        </argument>
+                    </arguments>
+                </block>
+
+                <!-- Layout-argument lazy, on-load: fires immediately via x-init. Template-id placeholder. -->
+                <block name="magewire.playwright.lazyloading.onload"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/lazy_loading/content.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire" xsi:type="object" shared="false">
+                            Magewirephp\Magewire\Magewire\Playwright\LazyLoading\Basic
+                        </argument>
+                        <argument name="magewire:component:lazy" xsi:type="string">on-load</argument>
+                    </arguments>
+                </block>
+
+                <!-- Raw-HTML placeholder, on-load. -->
+                <block name="magewire.playwright.lazyloading.raw"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/lazy_loading/content.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire" xsi:type="object" shared="false">
+                            Magewirephp\Magewire\Magewire\Playwright\LazyLoading\RawPlaceholder
+                        </argument>
+                        <argument name="magewire:component:lazy" xsi:type="string">on-load</argument>
+                    </arguments>
+                </block>
+
+                <!-- #[Lazy(isolate: false)] driven on-load: memo.lazyIsolated must be false. -->
+                <block name="magewire.playwright.lazyloading.bundled"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/lazy_loading/content.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire" xsi:type="object" shared="false">
+                            Magewirephp\Magewire\Magewire\Playwright\LazyLoading\Bundled
+                        </argument>
+                        <argument name="magewire:component:lazy" xsi:type="string">on-load</argument>
+                    </arguments>
+                </block>
+
+                <!-- Second #[Lazy(isolate: false)] on-load component: pools into one XHR with `bundled`. -->
+                <block name="magewire.playwright.lazyloading.bundled2"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/lazy_loading/content.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire" xsi:type="object" shared="false">
+                            Magewirephp\Magewire\Magewire\Playwright\LazyLoading\Bundled
+                        </argument>
+                        <argument name="magewire:component:lazy" xsi:type="string">on-load</argument>
+                    </arguments>
+                </block>
+
+                <!-- Spacer pushes the on-intersect components below the fold. -->
+                <block name="magewire.playwright.lazyloading.spacer"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/lazy_loading/spacer.phtml"
+                />
+
+                <!-- #[Lazy] attribute, default on-intersect + default isolation. -->
+                <block name="magewire.playwright.lazyloading.intersect.attribute"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/lazy_loading/content.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire" xsi:type="object" shared="false">
+                            Magewirephp\Magewire\Magewire\Playwright\LazyLoading\Attributed
+                        </argument>
+                    </arguments>
+                </block>
+
+                <!-- Layout-argument lazy="true": on-intersect, no attribute. -->
+                <block name="magewire.playwright.lazyloading.intersect.argument"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/lazy_loading/content.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire" xsi:type="object" shared="false">
+                            Magewirephp\Magewire\Magewire\Playwright\LazyLoading\Basic
+                        </argument>
+                        <argument name="magewire:component:lazy" xsi:type="string">true</argument>
+                    </arguments>
+                </block>
+            </container>
+        </referenceContainer>
+    </body>
+</page>
