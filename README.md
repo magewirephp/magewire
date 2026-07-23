@@ -5,6 +5,7 @@
 [![Latest Stable Version](http://poser.pugx.org/magewirephp/magewire/v)](https://packagist.org/packages/magewirephp/magewire)
 [![Total Downloads](http://poser.pugx.org/magewirephp/magewire/downloads)](https://packagist.org/packages/magewirephp/magewire)
 [![License](http://poser.pugx.org/magewirephp/magewire/license)](https://packagist.org/packages/magewirephp/magewire)
+
 [![Mago](https://github.com/magewirephp/magewire/actions/workflows/mago.yml/badge.svg?branch=main)](https://github.com/magewirephp/magewire/actions/workflows/mago.yml)
 [![Production build](https://github.com/magewirephp/magewire/actions/workflows/production-build.yml/badge.svg?branch=main)](https://github.com/magewirephp/magewire/actions/workflows/production-build.yml?query=branch%3Amain)
 [![Playwright tests](https://github.com/magewirephp/magewire/actions/workflows/playwright.yml/badge.svg?branch=main)](https://github.com/magewirephp/magewire/actions/workflows/playwright.yml?query=branch%3Amain)
