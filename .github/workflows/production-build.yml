@@ -50,8 +50,18 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - mage_os: '3.1.0'
+          # Oldest Mage-OS release on this module's PHP floor. Mage-OS 1.0.0 also
+          # supports PHP 8.1, but magewirephp/magewire requires PHP >=8.2.
+          - mage_os: '1.0.0'
+            php: '8.2'
+          # Last 2.x release on the highest PHP version supported by that line.
+          # Keeping one build per Mage-OS major catches framework/DI differences
+          # that an oldest/latest-only matrix would skip.
+          - mage_os: '2.3.0'
             php: '8.4'
+          # Latest Mage-OS release on its highest supported PHP version.
+          - mage_os: '3.2.0'
+            php: '8.5'
 
     env:
       MAGENTO_DIR: ${{ github.workspace }}/magento
