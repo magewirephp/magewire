@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.4.0](https://github.com/magewirephp/magewire/compare/3.3.1...3.4.0) (2026-07-29)
+
+
+### Features
+
+* lazy loading for Magewire components (implementation) ([#261](https://github.com/magewirephp/magewire/issues/261)) ([43e569d](https://github.com/magewirephp/magewire/commit/43e569da75fe5d1f6caacb59adbbfb0fca7a97ad))
+
+
+### Miscellaneous Chores
+
+* **deps:** bump amannn/action-semantic-pull-request from 5 to 6 ([#270](https://github.com/magewirephp/magewire/issues/270)) ([124afe0](https://github.com/magewirephp/magewire/commit/124afe0a5b7740676162025cd1dac69e3b619905))
+
 ## [3.3.1](https://github.com/magewirephp/magewire/compare/3.3.0...3.3.1) (2026-07-23)
 
 
