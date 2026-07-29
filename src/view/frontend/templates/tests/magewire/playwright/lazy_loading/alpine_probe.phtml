@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * Copyright © Willem Poortman 2021-present. All rights reserved.
+ *
+ * Please read the README and LICENSE files for more
+ * details on copyrights and license information.
+ */
+
+declare(strict_types=1);
+
+// Alpine component used by the alpine_placeholder.phtml placeholder root. Registered by
+// name so the placeholder needs no inline expression, keeping it CSP compatible.
+?>
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('magewireLazyProbe', () => ({ probe: 'alive' }));
+    }, { once: true });
+</script>

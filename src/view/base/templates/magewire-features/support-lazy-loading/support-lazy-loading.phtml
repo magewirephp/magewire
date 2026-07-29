@@ -1,0 +1,59 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment = $magewireViewModel->utils()->fragment();
+
+/** @internal Do not modify to ensure Magewire continues to function correctly. */
+?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    <?php /* Placeholder roots are left untouched server-side: the trigger runs off the
+     * snapshot memo instead of an injected attribute. That keeps a developer's own
+     * placeholder markup (including an x-data they put on its root) fully intact, and
+     * needs no Alpine at all — the CSP-friendly build cannot evaluate a $wire method
+     * call from an attribute expression anyway. */ ?>
+    document.addEventListener('magewire:init', () => {
+        Magewire.hook('component.init', ({ component, cleanup }) => {
+            const memo = component.snapshot.memo;
+
+            <?php /* Anything but an explicit false means the component is either not lazy
+             * or already loaded (lazyLoaded flips to true on the lazy XHR). */ ?>
+            if (memo.lazyLoaded !== false) {
+                return;
+            }
+
+            <?php /* Held back a tick so component initialization completes first, and so
+             * non-isolated commits fired in the same tick can still pool together. */ ?>
+            const trigger = () => setTimeout(() => component.$wire.__lazyLoad());
+
+            if (memo.lazyMode === 'on-load') {
+                trigger();
+
+                return;
+            }
+
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        observer.disconnect();
+                        trigger();
+                    }
+                });
+            });
+
+            observer.observe(component.el);
+            cleanup(() => observer.disconnect());
+        });
+    }, { once: true });
+</script>
+<?php $script->end() ?>

@@ -14,11 +14,11 @@ return [
                     '{Wi,Attr,hel,Imp,Form}*',
                     'Livewire.php',
                     'Attributes/**/*',
-                    '!Attributes/{Locked,On}.php',
+                    '!Attributes/{Locked,On,Lazy}.php',
                     'Drawer/{ImplicitRouteBinding,Regexes}*',
                     'Exceptions/{Event,Livewire,Root}*',
                     'Features/**/*',
-                    '!Features/Support{Attributes,Events,LifecycleHooks,Locales,NestingComponents,Redirects,FormObjects,Validation,LockedProperties,Streaming,MultipleRootElementDetection}/**/*',
+                    '!Features/Support{Attributes,Events,LifecycleHooks,Locales,NestingComponents,Redirects,FormObjects,Validation,LockedProperties,Streaming,LazyLoading,MultipleRootElementDetection}/**/*',
                     'Features/SupportEvents/TestsEvents.php',
                     'Features/SupportRedirects/TestsRedirects.php',
                     'Mechanisms/CompileLivewireTags/**/*',
@@ -87,6 +87,19 @@ return [
                 ],
                 'LivewireServiceProvider' => [
                     'rename' => 'MagewireServiceProvider'
+                ],
+                'Features\\SupportLazyLoading\\SupportLazyLoading' => [
+                    'remove-methods' => [
+                        // Laravel routing does not exist in Magento; lazy is opted into
+                        // through the #[Lazy] attribute or a layout argument instead.
+                        'registerRouteMacro',
+                        // Livewire ferries mount params through a dedicated container
+                        // component whose snapshot is base64 encoded. Magewire's
+                        // fromSnapshot is block-bound, so those params are re-derived
+                        // from layout on the lazy request instead (see call()).
+                        'registerContainerComponent',
+                        'resurrectMountParams'
+                    ]
                 ],
                 'Features\\SupportRedirects\\HandlesRedirects' => [
                     'remove-methods' => [
