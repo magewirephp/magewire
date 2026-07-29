@@ -17,32 +17,43 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
 ?>
 <?php $script = $magewireFragment->make()->script()->start() ?>
 <script>
-    function magewireLazyLoad() {
-        return {
-            init() {
-                const trigger = () => this.$wire.__lazyLoad();
-                const mode = this.$el.dataset.magewireLazyMode || 'on-intersect';
+    <?php /* Placeholder roots are left untouched server-side: the trigger runs off the
+     * snapshot memo instead of an injected attribute. That keeps a developer's own
+     * placeholder markup (including an x-data they put on its root) fully intact, and
+     * needs no Alpine at all — the CSP-friendly build cannot evaluate a $wire method
+     * call from an attribute expression anyway. */ ?>
+    document.addEventListener('magewire:init', () => {
+        Magewire.hook('component.init', ({ component, cleanup }) => {
+            const memo = component.snapshot.memo;
 
-                if (mode === 'on-load') {
-                    trigger();
-
-                    return;
-                }
-
-                const observer = new IntersectionObserver((entries, obs) => {
-                    entries.forEach((entry) => {
-                        if (entry.isIntersecting) {
-                            obs.disconnect();
-                            trigger();
-                        }
-                    });
-                });
-
-                observer.observe(this.$el);
+            <?php /* Anything but an explicit false means the component is either not lazy
+             * or already loaded (lazyLoaded flips to true on the lazy XHR). */ ?>
+            if (memo.lazyLoaded !== false) {
+                return;
             }
-        };
-    }
 
-    document.addEventListener('alpine:init', () => Alpine.data('magewireLazyLoad', magewireLazyLoad), { once: true });
+            <?php /* Held back a tick so component initialization completes first, and so
+             * non-isolated commits fired in the same tick can still pool together. */ ?>
+            const trigger = () => setTimeout(() => component.$wire.__lazyLoad());
+
+            if (memo.lazyMode === 'on-load') {
+                trigger();
+
+                return;
+            }
+
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        observer.disconnect();
+                        trigger();
+                    }
+                });
+            });
+
+            observer.observe(component.el);
+            cleanup(() => observer.disconnect());
+        });
+    }, { once: true });
 </script>
 <?php $script->end() ?>

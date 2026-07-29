@@ -21,7 +21,35 @@
                     </arguments>
                 </block>
 
-                <!-- Layout-argument lazy, on-load: fires immediately via x-init. Template-id placeholder. -->
+                <!-- Eagerly rendered host component wrapping a lazy child component. -->
+                <block name="magewire.playwright.lazyloading.host"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/lazy_loading/host.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire" xsi:type="object" shared="false">
+                            Magewirephp\Magewire\Magewire\Playwright\LazyLoading\Host
+                        </argument>
+                    </arguments>
+
+                    <block name="magewire.playwright.lazyloading.host.child"
+                           as="lazy"
+                           template="Magewirephp_Magewire::tests/magewire/playwright/lazy_loading/content.phtml"
+                    >
+                        <arguments>
+                            <argument name="magewire" xsi:type="object" shared="false">
+                                Magewirephp\Magewire\Magewire\Playwright\LazyLoading\Basic
+                            </argument>
+                            <argument name="magewire:component:lazy" xsi:type="string">on-load</argument>
+                        </arguments>
+                    </block>
+                </block>
+
+                <!-- Registers the Alpine component the alpine placeholder root binds to. -->
+                <block name="magewire.playwright.lazyloading.alpine.probe"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/lazy_loading/alpine_probe.phtml"
+                />
+
+                <!-- Layout-argument lazy, on-load: fires right after init. Template-id placeholder. -->
                 <block name="magewire.playwright.lazyloading.onload"
                        template="Magewirephp_Magewire::tests/magewire/playwright/lazy_loading/content.phtml"
                 >
@@ -82,6 +110,41 @@
                         <argument name="magewire" xsi:type="object" shared="false">
                             Magewirephp\Magewire\Magewire\Playwright\LazyLoading\Attributed
                         </argument>
+                    </arguments>
+                </block>
+
+                <!-- #[Lazy(mode: 'on-load')]: loads below the fold without being scrolled to. -->
+                <block name="magewire.playwright.lazyloading.attribute.onload"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/lazy_loading/content.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire" xsi:type="object" shared="false">
+                            Magewirephp\Magewire\Magewire\Playwright\LazyLoading\AttributedOnLoad
+                        </argument>
+                    </arguments>
+                </block>
+
+                <!-- Same class, layout argument overriding its attribute mode back to on-intersect. -->
+                <block name="magewire.playwright.lazyloading.attribute.onload.overridden"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/lazy_loading/content.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire" xsi:type="object" shared="false">
+                            Magewirephp\Magewire\Magewire\Playwright\LazyLoading\AttributedOnLoad
+                        </argument>
+                        <argument name="magewire:component:lazy" xsi:type="string">on-intersect</argument>
+                    </arguments>
+                </block>
+
+                <!-- Placeholder root carrying its own x-data: must survive untouched. -->
+                <block name="magewire.playwright.lazyloading.intersect.alpine"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/lazy_loading/content.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire" xsi:type="object" shared="false">
+                            Magewirephp\Magewire\Magewire\Playwright\LazyLoading\AlpinePlaceholder
+                        </argument>
+                        <argument name="magewire:component:lazy" xsi:type="string">true</argument>
                     </arguments>
                 </block>
 

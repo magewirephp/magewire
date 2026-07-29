@@ -4,10 +4,10 @@ namespace Magewirephp\Magewire\Features\SupportLazyLoading;
 
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Attributes\Lazy;
-use Magewirephp\Magewire\Drawer\Utils;
 use Magewirephp\Magewire\Features\SupportLifecycleHooks\SupportLifecycleHooks;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\LayoutManager;
 use Magewirephp\Magewire\Support\Factory;
+
 use function Magewirephp\Magewire\on;
 
 class SupportLazyLoading extends \Livewire\Features\SupportLazyLoading\SupportLazyLoading
@@ -64,45 +64,64 @@ class SupportLazyLoading extends \Livewire\Features\SupportLazyLoading\SupportLa
         }
 
         $isolate = true;
+        $mode = null;
 
         if ($lazyAttribute) {
-            $isolate = $lazyAttribute->newInstance()->isolate;
+            $attribute = $lazyAttribute->newInstance();
+
+            $isolate = $attribute->isolate;
+            $mode = $attribute->mode;
         }
 
-        $lazyMode = $lazyParam === 'on-load' ? 'on-load' : 'on-intersect';
+        // A mode named on the layout argument outranks the one on the attribute, so a
+        // single component class can be lazied differently per placement.
+        if (in_array($lazyParam, ['on-load', 'on-intersect'], true)) {
+            $mode = $lazyParam;
+        }
 
         $this->component->skipMount();
 
         $this->storeSet('isLazyLoadMounting', true);
         $this->storeSet('isLazyIsolated', $isolate);
+        $this->storeSet('lazyMode', $mode === 'on-load' ? 'on-load' : 'on-intersect');
 
-        $this->component->skipRender(
-            $this->generatePlaceholderHtml($params, $lazyMode)
-        );
+        $this->component->skipRender($this->generatePlaceholderHtml($params));
     }
 
-    public function generatePlaceholderHtml($params, $lazyMode = 'on-intersect')
+    /**
+     * The trigger mode travels through the snapshot memo instead of a root attribute.
+     * Livewire injects "x-init"/"x-intersect" into the placeholder root, which Hyvä's
+     * CSP-friendly Alpine build cannot evaluate ($wire method calls in an attribute
+     * expression), and any injected "x-data" would silently overrule an x-data a
+     * developer already put on their own placeholder root.
+     */
+    public function dehydrate($context)
     {
-        $html = $this->getPlaceholderView($this->component, $params);
+        if ($this->storeGet('isLazyLoadMounting') === true) {
+            $context->addMemo('lazyLoaded', false);
+            $context->addMemo('lazyIsolated', $this->storeGet('isLazyIsolated'));
+            $context->addMemo('lazyMode', $this->storeGet('lazyMode', 'on-intersect'));
+        } elseif ($this->storeGet('isLazyLoadHydrating') === true) {
+            $context->addMemo('lazyLoaded', true);
+        }
+    }
 
-        // No params are ferried client-side: on the lazy XHR the block is rebuilt from its
-        // layout handles, so the mount arguments are re-derived server-side (see call()).
-        //
-        // The trigger is a CSP-safe Alpine component (magewireLazyLoad) rather than an
-        // inline "$wire.__lazyLoad()" expression: Hyvä's CSP-friendly Alpine build cannot
-        // evaluate a method call in an attribute, but a real method inside an Alpine.data
-        // component calls $wire directly. Mode travels as a plain data attribute.
-        return Utils::insertAttributesIntoHtmlRoot($html, [
-            'x-data' => 'magewireLazyLoad',
-            'data-magewire-lazy-mode' => $lazyMode,
-        ]);
+    /**
+     * Placeholder markup is handed back untouched; only "wire:id" gets stamped onto its
+     * root later on. No params are ferried client-side either: on the lazy XHR the block
+     * is rebuilt from its layout handles, so mount arguments are re-derived server-side
+     * (see call()).
+     */
+    public function generatePlaceholderHtml($params, $isDeferred = false)
+    {
+        return $this->getPlaceholderView($this->component, $params);
     }
 
     /**
      * Resolves the placeholder markup. A component's placeholder() method may return
      * either a Magento template id (Vendor_Module::path/to/template.phtml), rendered
      * here as a standalone block, or a raw HTML string. Markup must have a single
-     * root element so the lazy trigger and wire:id can be attached to it.
+     * root element so wire:id can be attached to it.
      */
     protected function getPlaceholderView($component, $params)
     {
@@ -116,11 +135,7 @@ class SupportLazyLoading extends \Livewire\Features\SupportLazyLoading\SupportLa
             /** @var LayoutManager $layoutManager */
             $layoutManager = Factory::get(LayoutManager::class);
 
-            return $layoutManager->singleton()
-                ->createBlock(Template::class)
-                ->setTemplate($result)
-                ->addData($params)
-                ->toHtml();
+            return $layoutManager->singleton()->createBlock(Template::class)->setTemplate($result)->addData($params)->toHtml();
         }
 
         return $result;

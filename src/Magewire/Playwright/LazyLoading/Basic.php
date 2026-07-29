@@ -20,14 +20,26 @@ use Magewirephp\Magewire\Component;
  * mount() sets $mounted so the rendered template can prove the mount lifecycle ran
  * on the follow-up XHR rather than on the initial (placeholder) paint. placeholder()
  * returns a Magento template id, exercising the standalone-block placeholder path.
+ *
+ * $count and $checked back the wire:click and wire:model.live controls in the rendered
+ * template, proving a lazy-loaded component stays fully interactive afterwards.
  */
 class Basic extends Component
 {
     public bool $mounted = false;
 
+    public int $count = 0;
+
+    public bool $checked = false;
+
     public function mount(): void
     {
         $this->mounted = true;
+    }
+
+    public function increment(): void
+    {
+        $this->count++;
     }
 
     public function placeholder(array $params = []): string

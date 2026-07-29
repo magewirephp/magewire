@@ -1,0 +1,17 @@
+<?php
+
+/**
+ * Copyright © Willem Poortman 2021-present. All rights reserved.
+ *
+ * Please read the README and LICENSE files for more
+ * details on copyrights and license information.
+ */
+
+declare(strict_types=1);
+
+// The root carries a developer-owned Alpine component; the lazy trigger must leave it alone.
+// Registered by name (see alpine_probe.phtml) to stay CSP compatible.
+?>
+<div x-data="magewireLazyProbe">
+    <span data-testid="lazy-alpine-placeholder" x-text="probe">…</span>
+</div>

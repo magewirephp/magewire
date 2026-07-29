@@ -13,7 +13,12 @@ use Magewirephp\Magewire\Features\SupportAttributes\Attribute as LivewireAttribu
 #[\Attribute(\Attribute::TARGET_CLASS)]
 class BaseLazy extends LivewireAttribute
 {
-    public function __construct(public $isolate = true)
+    /**
+     * Livewire ships the trigger mode as a route default and a separate #[Defer] attribute,
+     * neither of which exists in Magento. It travels as a mode instead, matching the values
+     * the "magewire:component:lazy" layout argument accepts.
+     */
+    public function __construct(public $isolate = true, public $mode = 'on-intersect')
     {
     }
 }
