@@ -88,6 +88,19 @@ return [
                 'LivewireServiceProvider' => [
                     'rename' => 'MagewireServiceProvider'
                 ],
+                'Features\\SupportLazyLoading\\SupportLazyLoading' => [
+                    'remove-methods' => [
+                        // Laravel routing does not exist in Magento; lazy is opted into
+                        // through the #[Lazy] attribute or a layout argument instead.
+                        'registerRouteMacro',
+                        // Livewire ferries mount params through a dedicated container
+                        // component whose snapshot is base64 encoded. Magewire's
+                        // fromSnapshot is block-bound, so those params are re-derived
+                        // from layout on the lazy request instead (see call()).
+                        'registerContainerComponent',
+                        'resurrectMountParams'
+                    ]
+                ],
                 'Features\\SupportRedirects\\HandlesRedirects' => [
                     'remove-methods' => [
                         'redirectAction',

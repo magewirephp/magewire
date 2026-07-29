@@ -19,25 +19,6 @@ class SupportLazyLoading extends \Livewire\Features\SupportLazyLoading\SupportLa
         });
     }
 
-    /**
-     * Laravel routing does not exist in Magento; lazy is opted into through the
-     * #[Lazy] attribute or the "magewire:component:lazy" layout argument instead.
-     */
-    public static function registerRouteMacro()
-    {
-        //
-    }
-
-    /**
-     * Livewire ferries mount params through a dedicated container component whose
-     * snapshot is base64 encoded. Magewire's fromSnapshot is block-bound, so that
-     * container is unused here (see resurrectMountParams).
-     */
-    public function registerContainerComponent()
-    {
-        //
-    }
-
     public function mount($params)
     {
         // If Magewire::withoutLazyLoading()...
@@ -162,13 +143,5 @@ class SupportLazyLoading extends \Livewire\Features\SupportLazyLoading\SupportLa
 
         $hook->setComponent($this->component);
         $hook->mount($params);
-    }
-
-    /**
-     * Params are re-derived from layout in call(); the client never ferries a snapshot.
-     */
-    public function resurrectMountParams($encoded)
-    {
-        return [];
     }
 }
