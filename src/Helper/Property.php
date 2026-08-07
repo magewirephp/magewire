@@ -54,7 +54,42 @@ class Property
 
     public function assignViaDots(string $path, $value, array $subject)
     {
-        return $this->arrayManager->set($path, $subject, $value, '.');
+        return $this->detachReferences($this->arrayManager->set($path, $subject, $value, '.'));
+    }
+
+    /**
+     * Returns a copy in which no element is a PHP reference.
+     *
+     * ArrayManager::set() walks the path by reference and leaves one behind on the element it
+     * touched, so a component property such as `fields` ends up holding `&array` at the index
+     * that was written. References are invisible to json_encode() and var_export(), which makes
+     * the consequences look impossible:
+     *
+     *   - Rakit's wildcard resolution cannot read through a reference, so a rule like
+     *     `fields.*.sku` reports "required" against a value that is plainly set.
+     *   - Worse, Rakit writes back through it, nulling the value in the component's own property.
+     *     The next dehydration then drops the key entirely, so the field clears in the UI too.
+     *
+     * Reproducible without Magento or Magewire:
+     *
+     *   $data = ['fields' => [['sku' => 'ABC']]];
+     *   $ref  = &$data['fields'][0];
+     *   (new Validator())->make($data, ['fields.*.sku' => 'required'])->validate();  // fails
+     *
+     * Copying by value on the way out keeps the reference inside ArrayManager, where it belongs.
+     *
+     * @param array<mixed> $data
+     * @return array<mixed>
+     */
+    private function detachReferences(array $data): array
+    {
+        $copy = [];
+
+        foreach ($data as $key => $value) {
+            $copy[$key] = is_array($value) ? $this->detachReferences($value) : $value;
+        }
+
+        return $copy;
     }
 
     public function searchViaDots(string $path, array $value)
