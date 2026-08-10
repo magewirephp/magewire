@@ -17,6 +17,8 @@ use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
 use Magewirephp\Magewire\MagewireManager;
 use Magewirephp\Magewire\MagewireServiceProvider;
+use Magewirephp\Magewire\Mechanisms\HandleRequests\Filter\RequestFilterPipeline;
+use function Magewirephp\Magewire\before;
 use function Magewirephp\Magewire\store;
 use function Magewirephp\Magewire\trigger;
 use Illuminate\Support\Facades\Route;
@@ -25,9 +27,23 @@ use Magewirephp\Magewire\Mechanisms\Mechanism;
 class HandleRequests extends Mechanism
 {
     protected $updateRoute;
+    /**
+     * Overwrites the upstream boot, which wires Laravel routes this mechanism does not use.
+     *
+     * Registers the request filter pipeline against the same event handleUpdate() fires, as a
+     * "before" listener so it sits in front of everything else on that event. Mechanisms boot ahead
+     * of features, so filters run before any of them get a say.
+     *
+     * A rejection throws out of the listener, through handleUpdate(), and lands in the controller
+     * that turns it into a response.
+     *
+     * @see \Magewirephp\Magewire\Mechanisms\HandleRequests\Filter\RequestFilterInterface
+     */
     public function boot()
     {
-        // Overwrite.
+        before('request', function (array $payload): void {
+            $this->requestFilterPipeline->check($this->requestContextFactory->create(['components' => $payload, 'token' => $this->request->getParam('token')]));
+        });
     }
     protected function updateRouteExists()
     {
@@ -135,7 +151,7 @@ class HandleRequests extends Mechanism
         $finish = trigger('response', $responsePayload);
         return $finish($responsePayload);
     }
-    public function __construct(private readonly Http $request, private readonly MagewireManager $magewireManager, private readonly SerializerInterface $serializer, private readonly MagewireServiceProvider $magewireServiceProvider)
+    public function __construct(private readonly Http $request, private readonly MagewireManager $magewireManager, private readonly SerializerInterface $serializer, private readonly MagewireServiceProvider $magewireServiceProvider, private readonly RequestContextFactory $requestContextFactory, private readonly RequestFilterPipeline $requestFilterPipeline)
     {
         //
     }

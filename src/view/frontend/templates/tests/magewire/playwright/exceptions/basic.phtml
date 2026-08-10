@@ -1,0 +1,32 @@
+<?php
+
+/**
+ * Copyright © Willem Poortman 2021-present. All rights reserved.
+ *
+ * Please read the README and LICENSE files for more
+ * details on copyrights and license information.
+ */
+
+declare(strict_types=1);
+
+use Magewirephp\Magewire\Magewire\Playwright\Exceptions\Basic;
+
+/** @var Basic $magewire */
+?>
+<div>
+    <h2 class="text-lg mb-2 font-bold">Request filter rejections</h2>
+
+    <p data-testid="exceptions-count"><?= (int) $magewire->count ?></p>
+
+    <?php /* Control: nothing rejects this, so the counter must move. */ ?>
+    <button type="button" data-testid="exceptions-increment" wire:click="increment">Increment</button>
+
+    <?php /* Rejected by the filter before reconstruction, so the counter must not move. */ ?>
+    <button type="button" data-testid="exceptions-reject-warning" wire:click="rejectWarning">Reject (warning)</button>
+    <button type="button" data-testid="exceptions-reject-error" wire:click="rejectError">Reject (error)</button>
+    <button type="button" data-testid="exceptions-reject-info" wire:click="rejectInfo">Reject (info)</button>
+    <button type="button" data-testid="exceptions-reject-success" wire:click="rejectSuccess">Reject (success)</button>
+
+    <?php /* Thrown from the component itself, after reconstruction. */ ?>
+    <button type="button" data-testid="exceptions-reject-component" wire:click="rejectFromComponent">Reject (component)</button>
+</div>
