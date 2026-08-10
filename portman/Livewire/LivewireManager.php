@@ -61,9 +61,26 @@ class LivewireManager extends \Livewire\LivewireManager
 
     public function render(AbstractBlock $block, string $html)
     {
-        $renderer = $this->renderStack[$block->getNameInLayout()];
+        $name = $block->getNameInLayout();
 
-        array_pop($this->renderStack);
+        /*
+         * A block reaches this point without a renderer whenever mount or update failed: the
+         * exception manager swaps in its own template and lets rendering continue, so nothing was
+         * ever stacked. Returning the HTML untouched keeps that recovery intact rather than
+         * turning it into a fatal.
+         */
+        if (! isset($this->renderStack[$name])) {
+            return $html;
+        }
+
+        $renderer = $this->renderStack[$name];
+
+        /*
+         * Removed by key rather than popped. Blocks finish rendering innermost first, so the last
+         * entry is not necessarily this block's, and popping would evict a sibling or parent that
+         * still has to render.
+         */
+        unset($this->renderStack[$name]);
 
         return $renderer($block, $html);
     }
