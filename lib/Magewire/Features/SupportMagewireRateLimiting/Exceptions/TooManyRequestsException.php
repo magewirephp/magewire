@@ -18,11 +18,7 @@ class TooManyRequestsException extends RequestFilterException
 {
     public function __construct(string $message = '', int $code = 0, Throwable|null $previous = null)
     {
-        parent::__construct(
-            $message === '' ? (string) __('Too many requests! Please wait.') : $message,
-            $code,
-            $previous
-        );
+        parent::__construct($message === '' ? (string) __('Too many requests! Please wait.') : $message, $code, $previous);
     }
 
     public function status(): int

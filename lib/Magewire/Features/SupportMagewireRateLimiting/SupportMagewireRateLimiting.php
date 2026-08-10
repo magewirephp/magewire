@@ -49,7 +49,6 @@ class SupportMagewireRateLimiting extends ComponentHook
 
         if ($this->rateLimiterConfig->canRateLimitComponents()) {
             on('magewire:component:reconstruct', function () {
-
                 // Apply a rate limit check for the component after the component reconstruction.
                 return function (Template $block) {
                     $component = $block->getData('magewire');

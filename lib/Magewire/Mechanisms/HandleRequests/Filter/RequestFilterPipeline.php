@@ -35,9 +35,7 @@ final class RequestFilterPipeline
     ) {
         foreach ($this->filters as $name => $filter) {
             if (! $filter instanceof RequestFilterInterface) {
-                throw new InvalidArgumentException(
-                    sprintf('Request filter "%s" must implement %s.', $name, RequestFilterInterface::class)
-                );
+                throw new InvalidArgumentException(sprintf('Request filter "%s" must implement %s.', $name, RequestFilterInterface::class));
             }
         }
     }

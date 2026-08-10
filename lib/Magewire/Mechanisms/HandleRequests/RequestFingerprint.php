@@ -40,7 +40,7 @@ class RequestFingerprint
     {
         return $this->fingerprint ??= hash('sha256', implode('|', [
             $this->resolveOrigin(),
-            (string) $this->request->getServer('HTTP_USER_AGENT', ''),
+            (string) $this->request->getServer('HTTP_USER_AGENT', '')
         ]));
     }
 

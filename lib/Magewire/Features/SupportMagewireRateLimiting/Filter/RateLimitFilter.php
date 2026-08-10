@@ -68,9 +68,7 @@ class RateLimitFilter implements RequestFilterInterface
      */
     private function canRateLimit(): bool
     {
-        if ($this->getApplicationMode() !== ApplicationState::MODE_PRODUCTION
-            && ! $this->rateLimiterConfig->throttleInDeveloperMode()
-        ) {
+        if ($this->getApplicationMode() !== ApplicationState::MODE_PRODUCTION && ! $this->rateLimiterConfig->throttleInDeveloperMode()) {
             return false;
         }
 

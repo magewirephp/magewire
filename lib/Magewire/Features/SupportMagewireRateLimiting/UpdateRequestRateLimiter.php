@@ -57,11 +57,7 @@ class UpdateRequestRateLimiter extends RateLimiter
      */
     public function validateWithComponentRequestContext(ComponentRequestContext $componentRequestContext): bool
     {
-        return $this->consume(
-            $this->rateLimiterConfig->isIsolatedScope()
-                ? $this->generateKeyByComponentRequestContext($componentRequestContext)
-                : $this->generateKey()
-        );
+        return $this->consume($this->rateLimiterConfig->isIsolatedScope() ? $this->generateKeyByComponentRequestContext($componentRequestContext) : $this->generateKey());
     }
 
     public function validateWithComponent(Component $component): bool

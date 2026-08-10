@@ -60,10 +60,6 @@ class Basic extends Component
     {
         $this->count++;
 
-        throw new PlaywrightRejectionException(
-            418,
-            MessageType::ERROR,
-            'Rejected from within the component.'
-        );
+        throw new PlaywrightRejectionException(418, MessageType::ERROR, 'Rejected from within the component.');
     }
 }

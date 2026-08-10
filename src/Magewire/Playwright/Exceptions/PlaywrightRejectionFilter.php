@@ -44,7 +44,7 @@ class PlaywrightRejectionFilter implements RequestFilterInterface
         'rejectWarning' => [429, MessageType::WARNING],
         'rejectError' => [403, MessageType::ERROR],
         'rejectInfo' => [503, MessageType::INFO],
-        'rejectSuccess' => [409, MessageType::SUCCESS],
+        'rejectSuccess' => [409, MessageType::SUCCESS]
     ];
 
     public function __construct(
@@ -74,11 +74,7 @@ class PlaywrightRejectionFilter implements RequestFilterInterface
 
                 [$status, $severity] = $rejection;
 
-                throw new PlaywrightRejectionException(
-                    $status,
-                    $severity,
-                    sprintf('Rejected by the Playwright filter with a %s severity.', $severity->type())
-                );
+                throw new PlaywrightRejectionException($status, $severity, sprintf('Rejected by the Playwright filter with a %s severity.', $severity->type()));
             }
         }
     }

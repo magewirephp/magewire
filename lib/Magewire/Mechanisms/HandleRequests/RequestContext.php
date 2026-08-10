@@ -36,6 +36,7 @@ class RequestContext
         private readonly RequestFingerprint $requestFingerprint,
         private readonly RequestAttributesFactory $requestAttributesFactory,
         private readonly array $components = [],
+        #[\SensitiveParameter]
         private readonly string|null $token = null
     ) {
     }
