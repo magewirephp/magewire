@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Model\Magewire\Notifier\NotificationStateEnum;
-use Magewirephp\Magewire\Model\Magewire\Notifier\NotificationTypeEnum;
+use Magewirephp\Magewire\Support\Enum\MessageType;
 use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
 
 /** @var Escaper $escaper */
@@ -30,9 +30,9 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
 
             defaults: {
                 notification: {
-                    state: '<?= $escaper->escapeJs(NotificationStateEnum::IDLE->getState()) ?>',
-                    level: <?= $escaper->escapeJs(NotificationStateEnum::IDLE->getLevel()) ?>,
-                    type: '<?= $escaper->escapeJs(NotificationTypeEnum::INFO->getType()) ?>',
+                    state: '<?= $escaper->escapeJs(NotificationStateEnum::IDLE->state()) ?>',
+                    level: <?= $escaper->escapeJs(NotificationStateEnum::IDLE->level()) ?>,
+                    type: '<?= $escaper->escapeJs(MessageType::INFO->type()) ?>',
                     duration: null,
                     recoverable: false,
 
@@ -131,7 +131,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                     return;
                 }
 
-                notification.state = '<?= $escaper->escapeJs(NotificationStateEnum::RUNNING->getState()) ?>';
+                notification.state = '<?= $escaper->escapeJs(NotificationStateEnum::RUNNING->state()) ?>';
                 notification.active = typeof notification.message === 'string' && notification.message.length !== 0;
 
                 try {
@@ -147,7 +147,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             finish: async function(id) {
                 const notification = this.get(id);
 
-                notification.state = '<?= $escaper->escapeJs(NotificationStateEnum::SUCCEEDED->getState()) ?>';
+                notification.state = '<?= $escaper->escapeJs(NotificationStateEnum::SUCCEEDED->state()) ?>';
 
                 return notification;
             },
@@ -155,7 +155,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             terminate: async function(id) {
                 const notification = await this.hold(id);
 
-                notification.state = '<?= $escaper->escapeJs(NotificationStateEnum::TERMINATED->getState()) ?>';
+                notification.state = '<?= $escaper->escapeJs(NotificationStateEnum::TERMINATED->state()) ?>';
                 notification.active = false;
                 await this.trigger('terminate', { notification }, notification);
 
@@ -165,7 +165,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             fail: async function(id, reason = null) {
                 const notification = this.get(id);
 
-                notification.state = '<?= $escaper->escapeJs(NotificationStateEnum::FAILED->getState()) ?>';
+                notification.state = '<?= $escaper->escapeJs(NotificationStateEnum::FAILED->state()) ?>';
                 await this.trigger('failure', { notification, reason }, notification)
 
                 return notification;
@@ -212,7 +212,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 const notification = await this.hold(id);
 
                 await this.trigger('recover', { notification }, notification);
-                notification.state = '<?= $escaper->escapeJs(NotificationStateEnum::RECOVERED->getState()) ?>';
+                notification.state = '<?= $escaper->escapeJs(NotificationStateEnum::RECOVERED->state()) ?>';
 
                 return notification;
             }

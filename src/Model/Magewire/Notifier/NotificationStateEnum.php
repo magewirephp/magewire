@@ -22,19 +22,30 @@ enum NotificationStateEnum: string
     case TERMINATED = 'terminated';
     case RECOVERED = 'recovered';
 
-    public function getState(): string
+    public function state(): string
     {
         return $this->value;
     }
 
-    public function getCssClass(): string
-    {
-        return 'state-' . $this->value;
-    }
-
-    public function getLevel(): int
+    public function level(): int
     {
         $level = array_search($this, self::cases(), true);
         return $level !== false ? $level : 0;
+    }
+
+    /**
+     * @deprecated Been replaced with state().
+     */
+    public function getState(): string
+    {
+        return $this->state();
+    }
+
+    /**
+     * @deprecated Been replaced with level().
+     */
+    public function getLevel(): int
+    {
+        return $this->level();
     }
 }
