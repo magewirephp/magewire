@@ -87,7 +87,7 @@ class MagewireServiceProvider
             $finish = trigger('magewire:boot', $this->runtime());
 
             // Boot all remaining service types not yet booted during setup.
-            $boot['containers'] = $this->mechanisms->boot();
+            $boot['containers'] = $this->containers->boot();
             $boot['mechanisms'] = $this->mechanisms->boot();
             $boot['features'] = $this->features->boot();
 
