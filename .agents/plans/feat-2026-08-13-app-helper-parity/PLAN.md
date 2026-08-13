@@ -19,8 +19,9 @@ entire Laravel Foundation application.
 - Started: 2026-08-13
 - Initial type: Feature
 - Current type: Feature
-- Status: Implemented locally; cross-version and adminhtml matrix coverage remains
+- Status: Implemented and pushed; cross-version and adminhtml matrix coverage remains
 - Branch: `feat/app-helper-parity`
+- Remote branch: `origin/feat/app-helper-parity`
 - Laravel compatibility range: 10.x through 13.x
 - Ported Livewire baseline: 3.7.11
 
@@ -369,4 +370,5 @@ methods unresolved.
 - 2026-08-13: Removed public runtime `bind()` compatibility. Magento `di.xml`
   remains the only application binding source; the adapter retains the
   `singleton()` and `instance()` overlays required by ported Livewire code.
-- 2026-08-13: Created `feat/app-helper-parity` from `origin/main` for review.
+- 2026-08-13: Created `feat/app-helper-parity` from `origin/main` and pushed it
+  to `origin` for review.
