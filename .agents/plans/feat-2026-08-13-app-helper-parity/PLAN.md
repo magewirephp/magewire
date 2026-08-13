@@ -19,9 +19,10 @@ entire Laravel Foundation application.
 - Started: 2026-08-13
 - Initial type: Feature
 - Current type: Feature
-- Status: Implemented and pushed; cross-version and adminhtml matrix coverage remains
+- Status: In review; cross-version and adminhtml matrix coverage remains
 - Branch: `feat/app-helper-parity`
 - Remote branch: `origin/feat/app-helper-parity`
+- Pull request: [#274](https://github.com/magewirephp/magewire/pull/274)
 - Laravel compatibility range: 10.x through 13.x
 - Ported Livewire baseline: 3.7.11
 
@@ -372,3 +373,5 @@ methods unresolved.
   `singleton()` and `instance()` overlays required by ported Livewire code.
 - 2026-08-13: Created `feat/app-helper-parity` from `origin/main` and pushed it
   to `origin` for review.
+- 2026-08-13: Opened pull request
+  [#274](https://github.com/magewirephp/magewire/pull/274).
