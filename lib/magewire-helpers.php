@@ -16,7 +16,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Exception\FileSystemException;
-use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\Exception\RuntimeException;
 use Magewirephp\Magewire\Config as MagewireConfig;
 use Psr\Log\LoggerInterface;
@@ -236,29 +235,22 @@ function config(string $key, mixed $default = null): mixed
 }
 
 /**
- * Get the available container instance.
+ * Get the available Magento-backed application container or resolve a service.
  *
- * @param null  $abstract
- * @param array $arguments
- *
- * @return mixed
- * @throws NotFoundException
+ * @template T of object
+ * @param class-string<T>|string|null $abstract
+ * @param array<string, mixed> $arguments
+ * @return ($abstract is null ? ApplicationContainer : T|mixed)
  */
 function app($abstract = null, array $arguments = []): mixed
 {
-    if (is_string($abstract) && class_exists($abstract)) {
-        return ObjectManager::getInstance()->get($abstract);
-    }
+    $container = ObjectManager::getInstance()->get(ApplicationContainer::class);
+
     if (is_null($abstract)) {
-        return ObjectManager::getInstance();
-    }
-    if (is_object($abstract)) {
-        return ObjectManager::getInstance()->get($abstract);
+        return $container;
     }
 
-    $containers = ObjectManager::getInstance()->get(Containers::class);
-
-    return $containers->item($abstract);
+    return $container->make($abstract, $arguments);
 }
 
 /**
