@@ -69,6 +69,7 @@ adding Laravel's service container as a runtime dependency.
 - [x] Reduce `app()` to Laravel's two-branch shape: return the adapter for `null`, otherwise call `make($abstract, $arguments)`
 - [x] Preserve Magento ObjectManager compatibility methods that existing `app()` consumers may use (`get`, `create`, and `configure`)
 - [x] Add focused unit tests for routing, runtime overrides, identity, and failure behavior
+- [x] Add a separate GitHub Actions check that runs the focused unit tests on PHP 8.2
 - [x] Run a Magento-booting integration probe for preferences, virtual types, frontend aliases, and call-time constructor parameters
 - [ ] Exercise the feature against Illuminate 10 and 13 CI endpoints and the supported Magento/Mage-OS matrix
 - [ ] Document the supported Laravel-style surface and the intentionally unsupported Laravel Application APIs
@@ -281,6 +282,25 @@ would silently change every existing no-argument class lookup from shared to
 fresh and would leave interfaces, virtual types, aliases, and `app()` container
 methods unresolved.
 
+## ✅ Run focused unit tests as a separate pull-request check
+
+The PHPUnit-compatible tests under `tests/Unit` run in a dedicated GitHub
+Actions workflow on PHP 8.2. The workflow installs Magewire's dependencies from
+the public Mage-OS mirror without development packages and provisions a pinned
+PHPUnit 11 CLI without adding a repository-level test-runner dependency.
+
+**Reasoning**
+
+This makes the 14 tests visible as an independent merge check while preserving
+the package's PHP 8.2 floor. Selecting and wiring the repository's eventual Pest
+runner remains separate work.
+
+**Evidence**
+
+- `.github/workflows/unit-tests.yml`
+- `tests/Unit/ApplicationContainerTest.php`
+- `tests/Unit/ContainersTest.php`
+
 # Acceptance criteria
 
 - The same two helper branches used by Laravel 10–13 are visible in Magewire:
@@ -299,6 +319,7 @@ methods unresolved.
   and unchanged unless Portman independently proves otherwise.
 - Behavior is tested at Illuminate 10 and 13 endpoints and in both frontend and
   adminhtml Magento areas.
+- The focused unit suite runs as a separate GitHub Actions pull-request check.
 
 # Investigation
 
@@ -341,9 +362,10 @@ methods unresolved.
 - Whether parameterized construction of a named Magewire alias is used outside
   tests; it should still be designed correctly so the helper has one coherent
   contract.
-- Which PHP test runner lands first. PHPUnit-compatible contract tests now live
-  under `tests/Unit`, but adding the repository-level runner remains separate
-  work in `.agents/plans/pest-test-runner.md`.
+- The repository-level test runner remains separate work in
+  `.agents/plans/pest-test-runner.md`. Pull request #274 uses a pinned PHPUnit
+  CLI supplied by CI so its focused tests can run without deciding that wider
+  migration.
 
 # Tooling
 
@@ -375,3 +397,6 @@ methods unresolved.
   to `origin` for review.
 - 2026-08-13: Opened pull request
   [#274](https://github.com/magewirephp/magewire/pull/274).
+- 2026-08-17: Added a separate PHP 8.2 / PHPUnit 11 GitHub Actions check for
+  the 14 focused unit tests while leaving the repository-level Pest runner as
+  separate work.
