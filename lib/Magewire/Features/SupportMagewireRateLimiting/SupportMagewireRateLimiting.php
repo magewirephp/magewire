@@ -20,6 +20,15 @@ use Throwable;
 
 use function Magewirephp\Magewire\on;
 
+/**
+ * Component scoped rate limiting.
+ *
+ * The request scoped variant lives in the request filter pipeline, where it rejects abuse before
+ * anything is reconstructed. The component variant cannot move there: it keys on a constructed
+ * component, which only exists once reconstruction has already happened.
+ *
+ * @see \Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Filter\RateLimitFilter
+ */
 class SupportMagewireRateLimiting extends ComponentHook
 {
     public function __construct(
@@ -38,17 +47,9 @@ class SupportMagewireRateLimiting extends ComponentHook
             return;
         }
 
-        if ($this->rateLimiterConfig->canRateLimitRequests()) {
-            on('request', function (array $payload) {
-                $context = $payload[0] ?? false;
-
-                // Global scope rate limiting validation.
-                if ($context && ! $this->rateLimiter->validateWithComponentRequestContext($context)) {
-                    throw new TooManyRequestsException();
-                }
-            });
-        } elseif ($this->rateLimiterConfig->canRateLimitComponents()) {
+        if ($this->rateLimiterConfig->canRateLimitComponents()) {
             on('magewire:component:reconstruct', function () {
+                // Apply a rate limit check for the component after the component reconstruction.
                 return function (Template $block) {
                     $component = $block->getData('magewire');
 
@@ -66,7 +67,7 @@ class SupportMagewireRateLimiting extends ComponentHook
         try {
             return $this->appState->getMode();
         } catch (Throwable $exception) {
-            return ApplicationState::MODE_DEVELOPER;
+            return ApplicationState::MODE_PRODUCTION;
         }
     }
 }

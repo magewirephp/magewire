@@ -72,7 +72,15 @@ class ExceptionManager
         $subsequent = $this->magewireServiceProvider->runtime()->mode()->isSubsequent();
 
         if ($subsequent) {
-            $this->handle($exception, $log);
+            /*
+             * An exception bound to a response handler is meant to answer the request itself, with
+             * its own status and body. Rethrowing hands it to the controller, which renders it
+             * through that handler. Swallowing it here instead would replace the component with an
+             * exception template and answer 200, losing everything the handler had to say.
+             */
+            if (is_callable($this->handle($exception, $log))) {
+                throw $exception;
+            }
         }
 
         // Prevent cyclic loops from re-triggering the entire Magewire lifecycle.

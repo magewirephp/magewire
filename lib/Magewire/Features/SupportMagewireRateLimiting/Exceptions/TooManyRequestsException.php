@@ -11,8 +11,18 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Exceptions;
 
-use Exception;
+use Magewirephp\Magewire\Exceptions\RequestFilterException;
+use Throwable;
 
-class TooManyRequestsException extends Exception
+class TooManyRequestsException extends RequestFilterException
 {
+    public function __construct(string $message = '', int $code = 0, Throwable|null $previous = null)
+    {
+        parent::__construct($message === '' ? (string) __('Too many requests! Please wait.') : $message, $code, $previous);
+    }
+
+    public function status(): int
+    {
+        return 429;
+    }
 }

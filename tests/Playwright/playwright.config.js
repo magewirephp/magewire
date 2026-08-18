@@ -12,6 +12,11 @@ export default defineConfig({
     reporter: [['list']],
     use: {
         baseURL: process.env.BASE_URL.replace(/^\/+|\/+$/g, ''),
+        // Local Magento hosts are served over HTTPS with a locally-trusted certificate that Node
+        // does not know about, which fails every spec using the `request` fixture even while the
+        // browser is perfectly happy. Test hosts are developer machines and CI containers, so
+        // verifying the chain buys nothing here.
+        ignoreHTTPSErrors: true,
         browserName: 'chromium',
         headless: true,
         trace: 'off',

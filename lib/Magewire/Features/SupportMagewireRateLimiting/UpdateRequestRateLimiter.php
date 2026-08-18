@@ -14,57 +14,91 @@ namespace Magewirephp\Magewire\Features\SupportMagewireRateLimiting;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Mechanisms\HandleRequests\ComponentRequestContext;
+use Magewirephp\Magewire\Mechanisms\HandleRequests\RequestContext;
+use Magewirephp\Magewire\Mechanisms\HandleRequests\RequestFingerprint;
 
 class UpdateRequestRateLimiter extends RateLimiter
 {
     public function __construct(
         private readonly RateLimiterStorageInterface $storage,
         private readonly DateTime $datetime,
-        private readonly RateLimiterConfig $rateLimiterConfig
+        private readonly RateLimiterConfig $rateLimiterConfig,
+        private readonly RequestFingerprint $requestFingerprint
     ) {
         parent::__construct($this->storage, $this->datetime);
     }
 
-    public function validateWithComponentRequestContext(ComponentRequestContext $componentRequestContext): bool
+    /**
+     * Validate an entire update request.
+     *
+     * Under a shared scope the request counts as a single attempt, no matter how many components
+     * it carries. Under an isolated scope every component keeps its own budget, and a single
+     * exhausted component rejects the request.
+     */
+    public function validateWithRequestContext(RequestContext $context): bool
     {
-        $key = $this->generateKeyByRequestContext($componentRequestContext);
-        $attempts = $this->rateLimiterConfig->getRequestsMaxAttempts();
-        $decay = $this->rateLimiterConfig->getRequestsDecaySeconds();
-
-        $result = $this->validate($key, $attempts, $decay);
-
-        if ($result) {
-            $this->hit($key);
+        if (! $this->rateLimiterConfig->isIsolatedScope()) {
+            return $this->consume($this->generateKey());
         }
 
-        return $result;
+        foreach ($context->getComponents() as $componentRequestContext) {
+            if (! $this->consume($this->generateKeyByComponentRequestContext($componentRequestContext))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @deprecated Superseded by validateWithRequestContext(), which sees the whole payload rather
+     *             than a single component of it.
+     * @see UpdateRequestRateLimiter::validateWithRequestContext()
+     */
+    public function validateWithComponentRequestContext(ComponentRequestContext $componentRequestContext): bool
+    {
+        return $this->consume($this->rateLimiterConfig->isIsolatedScope() ? $this->generateKeyByComponentRequestContext($componentRequestContext) : $this->generateKey());
     }
 
     public function validateWithComponent(Component $component): bool
     {
-        $key = $this->generateKeyByComponent($component);
-        $result = $this->validate($key, 4, 5);
+        /*
+         * The component variant has no configuration of its own, and the "requests" configuration
+         * belongs to the request variant. Both are mutually exclusive, so the original fixed budget
+         * is kept here rather than silently adopting values meant for the other variant.
+         */
+        return $this->consume($this->generateKeyByComponent($component), 4, 5);
+    }
+
+    /**
+     * Validate the key and, while still within budget, record the attempt.
+     */
+    private function consume(string $key, int|null $attempts = null, int|null $decay = null): bool
+    {
+        $attempts ??= $this->rateLimiterConfig->getRequestsMaxAttempts();
+        $decay ??= $this->rateLimiterConfig->getRequestsDecaySeconds();
+
+        $result = $this->validate($key, $attempts, $decay);
 
         if ($result) {
-            $this->hit($key);
+            $this->hit($key, $decay);
         }
 
         return $result;
     }
 
-    private function generateKeyByRequestContext(ComponentRequestContext $componentRequestContext): string
+    private function generateKey(string $suffix = ''): string
     {
-        $key = '123@RL';
+        return 'magewire@rate-limit@' . $this->requestFingerprint->resolve() . $suffix;
+    }
 
-        if ($this->rateLimiterConfig->isIsolatedScope()) {
-            $key .= $componentRequestContext->getSnapshot()->getMemoValue('id');
-        }
-
-        return $key;
+    private function generateKeyByComponentRequestContext(ComponentRequestContext $componentRequestContext): string
+    {
+        return $this->generateKey('@' . $componentRequestContext->getSnapshot()->getMemoValue('id'));
     }
 
     private function generateKeyByComponent(Component $component): string
     {
-        return '123@RLC' . $component->id();
+        return $this->generateKey('@' . $component->id());
     }
 }

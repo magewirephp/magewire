@@ -18,6 +18,8 @@ use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
 use Magewirephp\Magewire\LivewireManager;
 use Magewirephp\Magewire\MagewireServiceProvider;
+use Magewirephp\Magewire\Mechanisms\HandleRequests\Filter\RequestFilterPipeline;
+use function Magewirephp\Magewire\before;
 use function Magewirephp\Magewire\store;
 use function Magewirephp\Magewire\trigger;
 
@@ -27,14 +29,35 @@ class HandleRequests extends \Livewire\Mechanisms\HandleRequests\HandleRequests
         private readonly Http $request,
         private readonly LivewireManager $magewireManager,
         private readonly SerializerInterface $serializer,
-        private readonly MagewireServiceProvider $magewireServiceProvider
+        private readonly MagewireServiceProvider $magewireServiceProvider,
+        private readonly RequestContextFactory $requestContextFactory,
+        private readonly RequestFilterPipeline $requestFilterPipeline
     ) {
         //
     }
 
+    /**
+     * Overwrites the upstream boot, which wires Laravel routes this mechanism does not use.
+     *
+     * Registers the request filter pipeline against the same event handleUpdate() fires, as a
+     * "before" listener so it sits in front of everything else on that event. Mechanisms boot ahead
+     * of features, so filters run before any of them get a say.
+     *
+     * A rejection throws out of the listener, through handleUpdate(), and lands in the controller
+     * that turns it into a response.
+     *
+     * @see \Magewirephp\Magewire\Mechanisms\HandleRequests\Filter\RequestFilterInterface
+     */
     public function boot()
     {
-        // Overwrite.
+        before('request', function (array $payload): void {
+            $this->requestFilterPipeline->check(
+                $this->requestContextFactory->create([
+                    'components' => $payload,
+                    'token' => $this->request->getParam('token'),
+                ])
+            );
+        });
     }
 
     public function isLivewireRequest()
