@@ -5,9 +5,8 @@
 [![Latest Stable Version](http://poser.pugx.org/magewirephp/magewire/v)](https://packagist.org/packages/magewirephp/magewire)
 [![Total Downloads](http://poser.pugx.org/magewirephp/magewire/downloads)](https://packagist.org/packages/magewirephp/magewire)
 [![License](http://poser.pugx.org/magewirephp/magewire/license)](https://packagist.org/packages/magewirephp/magewire)
-
-- [![Mago](https://github.com/magewirephp/magewire/actions/workflows/mago.yml/badge.svg?branch=main)](https://github.com/magewirephp/magewire/actions/workflows/mago.yml)
-- [![Tests](https://github.com/magewirephp/magewire/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/magewirephp/magewire/actions/workflows/tests.yml?query=branch%3Amain)
+[![Mago](https://github.com/magewirephp/magewire/actions/workflows/mago.yml/badge.svg?branch=main)](https://github.com/magewirephp/magewire/actions/workflows/mago.yml)
+[![Tests](https://github.com/magewirephp/magewire/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/magewirephp/magewire/actions/workflows/tests.yml?query=branch%3Amain)
 
 MagewirePHP brings the power of reactive, server-driven UI development to Magento 2—without writing JavaScript.
 Inspired by Laravel Livewire, MagewirePHP lets you build dynamic, interactive frontend components using only PHP,
