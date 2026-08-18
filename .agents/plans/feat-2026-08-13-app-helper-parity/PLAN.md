@@ -70,6 +70,7 @@ adding Laravel's service container as a runtime dependency.
 - [x] Preserve Magento ObjectManager compatibility methods that existing `app()` consumers may use (`get`, `create`, and `configure`)
 - [x] Add focused unit tests for routing, runtime overrides, identity, and failure behavior
 - [x] Add a separate GitHub Actions check that runs the focused unit tests on PHP 8.2
+- [x] Centralize unit, production-build, and Playwright results under one `Tests` workflow and README badge
 - [x] Run a Magento-booting integration probe for preferences, virtual types, frontend aliases, and call-time constructor parameters
 - [ ] Exercise the feature against Illuminate 10 and 13 CI endpoints and the supported Magento/Mage-OS matrix
 - [ ] Document the supported Laravel-style surface and the intentionally unsupported Laravel Application APIs
@@ -282,12 +283,12 @@ would silently change every existing no-argument class lookup from shared to
 fresh and would leave interfaces, virtual types, aliases, and `app()` container
 methods unresolved.
 
-## ✅ Run focused unit tests as a separate pull-request check
+## ✅ Run focused unit tests as a separate pull-request job
 
-The PHPUnit-compatible tests under `tests/Unit` run in a dedicated GitHub
-Actions workflow on PHP 8.2. The workflow installs Magewire's dependencies from
-the public Mage-OS mirror without development packages and provisions a pinned
-PHPUnit 11 CLI without adding a repository-level test-runner dependency.
+The PHPUnit-compatible tests under `tests/Unit` run in a dedicated reusable
+GitHub Actions workflow on PHP 8.2. The workflow installs Magewire's dependencies
+from the public Mage-OS mirror without development packages and provisions a
+pinned PHPUnit 11 CLI without adding a repository-level test-runner dependency.
 
 **Reasoning**
 
@@ -298,8 +299,29 @@ runner remains separate work.
 **Evidence**
 
 - `.github/workflows/unit-tests.yml`
+- `.github/workflows/tests.yml`
 - `tests/Unit/ApplicationContainerTest.php`
 - `tests/Unit/ContainersTest.php`
+
+## ✅ Publish one combined test-status badge
+
+The README displays one `Tests` badge backed by a caller workflow. That workflow
+runs the reusable unit, production-build, and Playwright suites concurrently.
+Any failing called suite makes the caller workflow, and therefore its badge,
+fail.
+
+**Reasoning**
+
+GitHub status badges represent one workflow. A caller workflow provides one
+authoritative result without copying the three suite implementations or adding
+an eventually consistent status-aggregation job.
+
+**Evidence**
+
+- `README.md`
+- `.github/workflows/tests.yml`
+- [GitHub reusable workflow documentation](https://docs.github.com/en/actions/reference/workflows-and-actions/reusing-workflow-configurations)
+- [GitHub workflow status badge documentation](https://docs.github.com/en/actions/how-tos/monitor-workflows/add-a-status-badge)
 
 # Acceptance criteria
 
@@ -319,7 +341,10 @@ runner remains separate work.
   and unchanged unless Portman independently proves otherwise.
 - Behavior is tested at Illuminate 10 and 13 endpoints and in both frontend and
   adminhtml Magento areas.
-- The focused unit suite runs as a separate GitHub Actions pull-request check.
+- The focused unit suite runs as a separate job within the combined GitHub
+  Actions `Tests` pull-request check.
+- The README has one `Tests` badge representing unit, production-build, and
+  Playwright results.
 
 # Investigation
 
@@ -400,3 +425,6 @@ runner remains separate work.
 - 2026-08-17: Added a separate PHP 8.2 / PHPUnit 11 GitHub Actions check for
   the 14 focused unit tests while leaving the repository-level Pest runner as
   separate work.
+- 2026-08-18: Centralized unit, production-build, and Playwright suites under a
+  reusable `Tests` caller workflow and replaced their individual README badges
+  with one combined status badge.

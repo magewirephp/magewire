@@ -7,8 +7,7 @@
 [![License](http://poser.pugx.org/magewirephp/magewire/license)](https://packagist.org/packages/magewirephp/magewire)
 
 - [![Mago](https://github.com/magewirephp/magewire/actions/workflows/mago.yml/badge.svg?branch=main)](https://github.com/magewirephp/magewire/actions/workflows/mago.yml)
-- [![Production build](https://github.com/magewirephp/magewire/actions/workflows/production-build.yml/badge.svg?branch=main)](https://github.com/magewirephp/magewire/actions/workflows/production-build.yml?query=branch%3Amain)
-- [![Playwright tests](https://github.com/magewirephp/magewire/actions/workflows/playwright.yml/badge.svg?branch=main)](https://github.com/magewirephp/magewire/actions/workflows/playwright.yml?query=branch%3Amain)
+- [![Tests](https://github.com/magewirephp/magewire/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/magewirephp/magewire/actions/workflows/tests.yml?query=branch%3Amain)
 
 MagewirePHP brings the power of reactive, server-driven UI development to Magento 2—without writing JavaScript.
 Inspired by Laravel Livewire, MagewirePHP lets you build dynamic, interactive frontend components using only PHP,

@@ -1,25 +1,7 @@
 name: 'Unit tests'
 
 on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - 'lib/**'
-      - 'src/**'
-      - 'composer.json'
-      - 'tests/Unit/**'
-      - '.github/workflows/unit-tests.yml'
-  pull_request:
-    branches:
-      - main
-    paths:
-      - 'lib/**'
-      - 'src/**'
-      - 'composer.json'
-      - 'tests/Unit/**'
-      - '.github/workflows/unit-tests.yml'
+  workflow_call:
 
 permissions:
   contents: read

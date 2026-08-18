@@ -15,27 +15,7 @@ name: 'Playwright (Mage-OS + Hyvä)'
 # Never commit the token — it is a license credential.
 
 on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - 'src/**'
-      - 'lib/**'
-      - 'dist/**'
-      - 'composer.json'
-      - 'tests/Playwright/**'
-      - '.github/workflows/playwright.yml'
-  pull_request:
-    branches:
-      - main
-    paths:
-      - 'src/**'
-      - 'lib/**'
-      - 'dist/**'
-      - 'composer.json'
-      - 'tests/Playwright/**'
-      - '.github/workflows/playwright.yml'
+  workflow_call:
 
 permissions:
   contents: read
