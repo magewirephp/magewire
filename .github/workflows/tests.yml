@@ -1,0 +1,54 @@
+name: 'Tests'
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'lib/**'
+      - 'dist/**'
+      - 'composer.json'
+      - 'tests/Unit/**'
+      - 'tests/Playwright/**'
+      - '.github/workflows/tests.yml'
+      - '.github/workflows/unit-tests.yml'
+      - '.github/workflows/production-build.yml'
+      - '.github/workflows/playwright.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'lib/**'
+      - 'dist/**'
+      - 'composer.json'
+      - 'tests/Unit/**'
+      - 'tests/Playwright/**'
+      - '.github/workflows/tests.yml'
+      - '.github/workflows/unit-tests.yml'
+      - '.github/workflows/production-build.yml'
+      - '.github/workflows/playwright.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  unit-tests:
+    name: 'Unit tests'
+    uses: ./.github/workflows/unit-tests.yml
+
+  production-build:
+    name: 'Production build'
+    uses: ./.github/workflows/production-build.yml
+
+  playwright:
+    name: 'Playwright'
+    uses: ./.github/workflows/playwright.yml
+    secrets: inherit

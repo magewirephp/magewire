@@ -1,0 +1,42 @@
+name: 'Unit tests'
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: unit-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  unit-tests:
+    name: 'PHPUnit / PHP 8.2'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: bcmath, ctype, curl, dom, gd, hash, iconv, intl, mbstring, openssl, simplexml, soap, sockets, xsl, zip
+          tools: composer:v2, phpunit:11.5.56
+          ini-values: memory_limit=-1
+        env:
+          COMPOSER_TOKEN: ${{ github.token }}
+
+      - name: Configure public Magento mirror
+        run: composer config --global repositories.magento composer https://mirror.mage-os.org/
+
+      - name: Install dependencies
+        uses: ramsey/composer-install@v3
+        with:
+          composer-options: '--no-dev --no-scripts --prefer-dist'
+
+      - name: Run unit tests
+        run: phpunit --bootstrap vendor/autoload.php --colors=always --do-not-cache-result tests/Unit

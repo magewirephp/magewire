@@ -40,7 +40,7 @@ abstract class ServiceType
      * @param array<string, string|array> $items
      */
     public function __construct(
-        private array $items = []
+        protected array $items = []
     ) {
     }
 
@@ -68,6 +68,8 @@ abstract class ServiceType
     public function item(string $name): object
     {
         $name = preg_replace('/(?<!^)[A-Z]/', '_$0', $name);
+
+        $this->assemble();
 
         if (isset($this->items[$name])) {
             return $this->items[$name]['type'];
@@ -101,7 +103,10 @@ abstract class ServiceType
 
         foreach (array_filter($this->items, static fn ($value) => is_string($value) || is_array($value)) as $key => $item) {
             if (is_string($item)) {
-                $item = ['type' => $item];
+                $item = ['type' => $item, 'requested_type' => $item];
+            }
+            if (is_string($item['type'] ?? null)) {
+                $item['requested_type'] ??= $item['type'];
             }
             if (is_object($item['type'])) {
                 $assembled[$key] = $item;

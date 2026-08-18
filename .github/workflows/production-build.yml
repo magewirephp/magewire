@@ -9,29 +9,11 @@ name: 'Production build'
 # uncompilable classes, or bad proxies/factories. It runs WITHOUT a database, env.php,
 # or a search engine (the Adobe Commerce Cloud / Mage-OS build phase) — module:enable
 # writes the module list to config.php, which is all di:compile needs. No secrets, no
-# services: fast and deterministic, so a green badge means a tag can ship without a
+# services: fast and deterministic, so a green job means a tag can ship without a
 # manual local compile test.
 
 on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - 'src/**'
-      - 'lib/**'
-      - 'dist/**'
-      - 'composer.json'
-      - '.github/workflows/production-build.yml'
-  pull_request:
-    branches:
-      - main
-    paths:
-      - 'src/**'
-      - 'lib/**'
-      - 'dist/**'
-      - 'composer.json'
-      - '.github/workflows/production-build.yml'
+  workflow_call:
 
 permissions:
   contents: read
