@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.5.0](https://github.com/magewirephp/magewire/compare/3.4.0...3.5.0) (2026-08-18)
+
+
+### Features
+
+* **container:** add Magento app adapter ([#274](https://github.com/magewirephp/magewire/issues/274)) ([2ac8ae1](https://github.com/magewirephp/magewire/commit/2ac8ae1e06d0f8bcf230cefc4b8f9111ada1d156))
+* Request filter pipeline ([#273](https://github.com/magewirephp/magewire/issues/273)) ([db83edf](https://github.com/magewirephp/magewire/commit/db83edfced38538dd6234609bc389a3bb5846b49))
+
 ## [3.4.0](https://github.com/magewirephp/magewire/compare/3.3.1...3.4.0) (2026-07-29)
 
 
