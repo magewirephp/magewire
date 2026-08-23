@@ -72,8 +72,14 @@ test.describe('Magewire Playwright — Compiler', () => {
         await expect(host).not.toHaveAttribute('wire:id', /.+/);
         await expect(host.getByTestId('compiler-flake-card').locator('.mw-flake-heading'))
             .toHaveText('Compiled Flake tree');
-        await expect(host.getByTestId('compiler-flake-card').locator('.mw-flake-badge'))
-            .toHaveText('Nested tag middleware');
+        const badges = host.getByTestId('compiler-flake-card').locator('.mw-flake-badge');
+
+        await expect(badges).toHaveCount(3);
+        await expect(badges).toHaveText([
+            'Nested tag middleware',
+            'Nested tag middleware',
+            'Nested tag middleware',
+        ]);
     });
 
     test('does not compile when magewire:compiler is present without magewire:compile', async ({ page }) => {
