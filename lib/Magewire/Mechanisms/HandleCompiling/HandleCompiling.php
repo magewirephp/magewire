@@ -39,21 +39,23 @@ class HandleCompiling
                 return;
             }
 
-            $component = $dto->block()->getData('magewire');
+            $block = $dto->block();
+            $component = $block->getData('magewire');
+            $compiler = $this->compilerManager->resolve($block);
 
-            if (! $component instanceof Component) {
+            if (! $compiler instanceof Compiler) {
                 return;
             }
 
-            $compiler = $component->magewireCompiler() ?? $component->magewireCompiler($this->compilerManager->factory()->newCompilerInstance());
+            if ($component instanceof Component) {
+                $dto->dictionary(['magewire' => $component]);
+            }
 
-            $dto->dictionary(['magewire' => $component]);
-
-            if ($component->magewireCompiler()->canCompile()) {
+            if ($compiler->canCompile()) {
                 $compiledPath = $compiler->management()->file()->generateFilePath($dto->filename());
 
                 if ($compiler->requiresRecompile($dto->filename())) {
-                    trigger('magewire:view:compile', $compiler, $component, $dto->block());
+                    trigger('magewire:view:compile', $compiler, $component, $block);
                     $compiler->compile($dto->filename(), $compiledPath);
                 }
 
@@ -75,21 +77,30 @@ class HandleCompiling
         });
 
         before('magewire:view:compile', static function (Compiler $compiler) {
-            $runs['html'] = 0;
-
             $compiler
                 ->pipelines()
-                ->html()
+                ->template()
                 ->middleware()
                 ->group('first-line', 2)
-                ->pipe(static function (string $throughput, callable $next) use (&$runs, $compiler) {
-                    $runs['html']++;
+                ->pipe(static function (string $throughput, callable $next): string {
+                    $scope = '@template()' . PHP_EOL;
 
-                    if ($runs['html'] === 1) {
-                        return '@template()' . PHP_EOL . $next($throughput);
+                    if (! str_starts_with(ltrim($throughput), '<?php')) {
+                        return $next($scope . $throughput);
                     }
 
-                    return $next($throughput);
+                    $headerEnd = strpos($throughput, '?>');
+
+                    if ($headerEnd === false) {
+                        return $next($throughput);
+                    }
+
+                    return $next(substr_replace(
+                        $throughput,
+                        PHP_EOL . $scope,
+                        $headerEnd + 2,
+                        0
+                    ));
                 });
 
             $compiler

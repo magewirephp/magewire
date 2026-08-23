@@ -1,0 +1,20 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Playwright\Compiler\LayoutContext;
+
+/** @var Template $block */
+/** @var LayoutContext $compilerContext */
+
+$compilerContext = $block->getData('compiler_context');
+?>
+<div
+    data-testid="compiler-nesting-grandchild"
+    data-layout-route="{{ attr($compilerContext->route()) }}"
+    data-within-parent="{{ attr($compilerContext->within('magewire.playwright.compiler.nesting.parent') ? 'yes' : 'no') }}"
+    class="mt-3 rounded bg-emerald-50 p-3"
+>
+    {{ 'Compiled grandchild' }}
+</div>

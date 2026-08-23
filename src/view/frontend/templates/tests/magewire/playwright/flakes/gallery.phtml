@@ -1,0 +1,178 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Magewire\Playwright\Flakes\Gallery;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+/** @var Gallery $magewire */
+
+$profiles = [
+    ['name' => 'Avery Stone', 'role' => 'Store administrator', 'variant' => 'default'],
+    ['name' => 'Milan Reed', 'role' => 'Content editor', 'variant' => 'muted'],
+    ['name' => 'Sam Rivera', 'role' => 'Support engineer', 'variant' => 'accent'],
+];
+?>
+<main class="mw-flake-gallery" data-testid="flake-gallery">
+    <style>
+        .mw-flake-gallery {
+            --mw-ink: #172033;
+            --mw-muted: #667085;
+            --mw-line: #e3e7ef;
+            --mw-accent: #5b4bdb;
+            max-width: 1120px;
+            margin: 2rem auto 5rem;
+            color: var(--mw-ink);
+            font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        }
+        .mw-flake-gallery__hero {
+            display: flex;
+            justify-content: space-between;
+            gap: 2rem;
+            align-items: end;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            color: #fff;
+            border-radius: 1.25rem;
+            background: linear-gradient(135deg, #211b56, #5b4bdb 58%, #8d7ff2);
+            box-shadow: 0 24px 70px rgba(42, 34, 105, .22);
+        }
+        .mw-flake-gallery__eyebrow {
+            margin: 0 0 .55rem;
+            color: #c9c2ff;
+            font-size: .75rem;
+            font-weight: 800;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+        }
+        .mw-flake-gallery__title { margin: 0; font-size: clamp(2rem, 5vw, 3.75rem); line-height: 1; }
+        .mw-flake-gallery__intro { max-width: 620px; margin: .9rem 0 0; color: #e5e1ff; font-size: 1rem; }
+        .mw-flake-gallery__refresh {
+            flex: 0 0 auto;
+            min-width: 170px;
+            padding: .75rem 1rem;
+            color: #211b56;
+            font-weight: 800;
+            border: 0;
+            border-radius: .75rem;
+            background: #fff;
+            cursor: pointer;
+        }
+        .mw-flake-gallery__refresh[disabled] { opacity: .6; cursor: wait; }
+        .mw-flake-gallery__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; }
+        .mw-flake-gallery__wide { grid-column: 1 / -1; }
+        .mw-flake-gallery__copy { margin: .5rem 0 1.1rem; color: var(--mw-muted); line-height: 1.65; }
+        .mw-flake-gallery__row { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; }
+        .mw-flake-gallery__profiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .9rem; }
+        .mw-flake-gallery__meta { margin: .35rem 0 0; color: var(--mw-muted); font-size: .9rem; }
+        .mw-flake-card { overflow: hidden; border: 1px solid var(--mw-line); border-radius: 1rem; background: #fff; box-shadow: 0 8px 30px rgba(23, 32, 51, .06); }
+        .mw-flake-card--accent { border-color: #c9c2ff; background: linear-gradient(145deg, #fff, #f6f4ff); }
+        .mw-flake-card--muted { background: #f8fafc; box-shadow: none; }
+        .mw-flake-card__header { padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--mw-line); }
+        .mw-flake-card__body { padding: 1.25rem; }
+        .mw-flake-card__footer { display: flex; gap: .6rem; padding: 1rem 1.25rem; border-top: 1px solid var(--mw-line); background: rgba(248, 250, 252, .8); }
+        .mw-flake-heading { margin: 0; line-height: 1.2; }
+        .mw-flake-heading--strong { color: var(--mw-ink); font-weight: 800; }
+        .mw-flake-heading--soft { color: var(--mw-muted); font-weight: 650; }
+        .mw-flake-badge { display: inline-flex; padding: .3rem .6rem; font-size: .75rem; font-weight: 800; border-radius: 999px; }
+        .mw-flake-badge--neutral { color: #344054; background: #f2f4f7; }
+        .mw-flake-badge--success { color: #067647; background: #ecfdf3; }
+        .mw-flake-badge--warning { color: #b54708; background: #fffaeb; }
+        .mw-flake-button { padding: .55rem .8rem; font-weight: 750; border: 1px solid transparent; border-radius: .65rem; cursor: pointer; }
+        .mw-flake-button--primary { color: #fff; background: var(--mw-accent); }
+        .mw-flake-button--secondary { color: #344054; border-color: #d0d5dd; background: #fff; }
+        .mw-flake-button--quiet { color: var(--mw-accent); background: #f1efff; }
+        .mw-flake-counter { display: flex; justify-content: space-between; gap: 1rem; align-items: center; padding: 1.25rem; border: 1px dashed #8d7ff2; border-radius: 1rem; background: #f6f4ff; }
+        .mw-flake-counter p { margin: 0; }
+        @media (max-width: 760px) {
+            .mw-flake-gallery__hero { align-items: start; flex-direction: column; }
+            .mw-flake-gallery__grid, .mw-flake-gallery__profiles { grid-template-columns: 1fr; }
+        }
+    </style>
+
+    <header class="mw-flake-gallery__hero">
+        <div>
+            <p class="mw-flake-gallery__eyebrow">Magewire Playwright route</p>
+            <h1 class="mw-flake-gallery__title">Flakes component gallery</h1>
+            <p class="mw-flake-gallery__intro">
+                Layout-defined components, composed freely in PHTML and rendered as isolated occurrences.
+            </p>
+        </div>
+
+        <button
+            type="button"
+            class="mw-flake-gallery__refresh"
+            data-testid="flake-gallery-refresh"
+            wire:click="refreshExamples"
+            wire:loading.attr="disabled"
+        >
+            Re-rendered <span data-testid="flake-gallery-refresh-count"><?= (int) $magewire->refreshCount ?></span> times
+        </button>
+    </header>
+
+    <section class="mw-flake-gallery__grid" aria-label="Flakes examples">
+        <flake:playwright-card prop:variant="accent" data-testid="profile-card">
+            <flake:playwright-heading prop:level="2">User profile</flake:playwright-heading>
+            <p class="mw-flake-gallery__copy">
+                The heading and badges below are independent Flakes nested directly inside a card Flake.
+            </p>
+            <div class="mw-flake-gallery__row">
+                <flake:playwright-badge prop:tone="success">Verified</flake:playwright-badge>
+                <flake:playwright-badge prop:tone="neutral">Administrator</flake:playwright-badge>
+            </div>
+
+            <slot:footer>
+                <flake:playwright-button prop:variant="primary">Save changes</flake:playwright-button>
+                <flake:playwright-button prop:variant="secondary">Cancel</flake:playwright-button>
+            </slot:footer>
+        </flake:playwright-card>
+
+        <flake:playwright-card prop:variant="default" data-testid="slot-card">
+            <slot:header>
+                <flake:playwright-heading prop:level="3" prop:tone="soft">Named slot composition</flake:playwright-heading>
+            </slot:header>
+
+            <p class="mw-flake-gallery__copy">
+                Header, default body, and footer can be authored in any order without Magento child sort orders.
+            </p>
+
+            <slot:footer>
+                <flake:playwright-button prop:variant="quiet">View structure</flake:playwright-button>
+            </slot:footer>
+        </flake:playwright-card>
+
+        <div class="mw-flake-gallery__wide">
+            <flake:playwright-heading prop:level="2">Repeated occurrence isolation</flake:playwright-heading>
+            <p class="mw-flake-gallery__copy">
+                The same card definition is instantiated three times with different props and content.
+            </p>
+
+            <div class="mw-flake-gallery__profiles" data-testid="repeated-flakes">
+                <?php foreach ($profiles as $index => $profile): ?>
+                    <?php
+                    $variant = $profile['variant'];
+                    $testId = 'repeated-card-' . $index;
+                    ?>
+                    <flake:playwright-card :prop:variant="$variant" :data-testid="$testId">
+                        <flake:playwright-heading prop:level="4">
+                            <?= $escaper->escapeHtml($profile['name']) ?>
+                        </flake:playwright-heading>
+                        <p class="mw-flake-gallery__meta"><?= $escaper->escapeHtml($profile['role']) ?></p>
+                    </flake:playwright-card>
+                <?php endforeach ?>
+            </div>
+        </div>
+
+        <div class="mw-flake-gallery__wide" data-testid="reactive-flake-example">
+            <flake:playwright-heading prop:level="2">Optional Magewire lifecycle</flake:playwright-heading>
+            <p class="mw-flake-gallery__copy">
+                Presentation Flakes compile as ordinary blocks. This counter opts into its own Magewire lifecycle
+                through the <code>magewire</code> argument on its layout definition.
+            </p>
+            <flake:playwright-counter />
+        </div>
+    </section>
+</main>

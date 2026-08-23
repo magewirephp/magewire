@@ -13,5 +13,44 @@
         <referenceContainer name="root">
             <container name="magewire.flakes" htmlTag="div" htmlClass="magewire-flakes" />
         </referenceContainer>
+
+        <referenceContainer name="magewire.flakes">
+            <block name="playwright-card"
+                   template="Magewirephp_Magewire::tests/magewire/playwright/flakes/card.phtml"
+            >
+                <arguments>
+                    <argument name="flake" xsi:type="array">
+                        <item name="family" xsi:type="string">playwright-gallery</item>
+                        <item name="children" xsi:type="array">
+                            <item name="heading" xsi:type="string">playwright-heading</item>
+                            <item name="badge" xsi:type="string">playwright-badge</item>
+                            <item name="button" xsi:type="string">playwright-button</item>
+                        </item>
+                    </argument>
+                </arguments>
+            </block>
+
+            <block name="playwright-heading"
+                   template="Magewirephp_Magewire::tests/magewire/playwright/flakes/heading.phtml"
+            />
+
+            <block name="playwright-badge"
+                   template="Magewirephp_Magewire::tests/magewire/playwright/flakes/badge.phtml"
+            />
+
+            <block name="playwright-button"
+                   template="Magewirephp_Magewire::tests/magewire/playwright/flakes/button.phtml"
+            />
+
+            <block name="playwright-counter"
+                   template="Magewirephp_Magewire::tests/magewire/playwright/flakes/counter.phtml"
+            >
+                <arguments>
+                    <argument name="magewire" xsi:type="object" shared="false">
+                        Magewirephp\Magewire\Magewire\Playwright\Flakes\Counter
+                    </argument>
+                </arguments>
+            </block>
+        </referenceContainer>
     </body>
 </page>

@@ -15,10 +15,10 @@ use Magento\Framework\App\State as ApplicationState;
 use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
+use Magewirephp\Magewire\Features\SupportMagewireFlakes\Contracts\FlakeRenderContextInterface;
 use Magewirephp\Magewire\Features\SupportMagewireFlakes\Component\FlakeFactory;
 use Magewirephp\Magewire\Model\View\Fragment;
 use Magewirephp\Magewire\Model\View\Management\SlotsManager;
-use Magewirephp\Magewire\Support\Random;
 use Psr\Log\LoggerInterface;
 use Throwable;
 
@@ -51,13 +51,13 @@ class Flake extends Fragment\Component
         $this->slots()->default()->push($this->output);
 
         try {
-            $flake = $this->createFlakeByName($this->id());
+            $context = $this->createFlakeContextByName($this->id());
 
-            if ($flake === false) {
+            if ($context === false) {
                 throw new ComponentNotFoundException(sprintf('Magewire: Flake "%s" could not be found or doesnt exist', $this->type()));
             }
 
-            $this->echo($flake->toHtml());
+            $this->echo($this->flakeFactory->render($context));
         } catch (Throwable $exception) {
             $this->logger->critical($exception->getMessage(), ['exception' => $exception]);
 
@@ -72,8 +72,22 @@ class Flake extends Fragment\Component
     protected function createFlakeByName(string $name): AbstractBlock|false
     {
         return $this->flakeFactory->createByName($this->type(), [
-            'magewire:id' => Random::alphabetical(10),
             'magewire:name' => $name
         ]);
+    }
+
+    /**
+     * Create the isolated context used by the namespace renderer.
+     */
+    protected function createFlakeContextByName(string $name): FlakeRenderContextInterface|false
+    {
+        return $this->flakeFactory->createContextByName(
+            $this->type(),
+            [
+                'magewire:name' => $name
+            ],
+            $this->props()->all(),
+            $this->attrs()->all()
+        );
     }
 }
