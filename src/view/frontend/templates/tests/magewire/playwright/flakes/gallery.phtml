@@ -13,7 +13,7 @@ use Magewirephp\Magewire\Magewire\Playwright\Flakes\Gallery;
 $profiles = [
     ['name' => 'Avery Stone', 'role' => 'Store administrator', 'variant' => 'default'],
     ['name' => 'Milan Reed', 'role' => 'Content editor', 'variant' => 'muted'],
-    ['name' => 'Sam Rivera', 'role' => 'Support engineer', 'variant' => 'accent'],
+    ['name' => 'Sam Rivera', 'role' => 'Support engineer', 'variant' => 'accent']
 ];
 ?>
 <main class="mw-flake-gallery" data-testid="flake-gallery">
@@ -153,6 +153,7 @@ $profiles = [
             <div class="mw-flake-gallery__profiles" data-testid="repeated-flakes">
                 <?php foreach ($profiles as $index => $profile): ?>
                     <?php
+
                     $variant = $profile['variant'];
                     $testId = 'repeated-card-' . $index;
                     ?>

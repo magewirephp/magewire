@@ -26,11 +26,7 @@ class FlakeNamespacePool
     {
         foreach ($namespaces as $namespace) {
             if (! $namespace instanceof FlakeNamespaceInterface) {
-                throw new InvalidArgumentException(sprintf(
-                    'Flake namespace entries must implement %s; received %s.',
-                    FlakeNamespaceInterface::class,
-                    get_debug_type($namespace)
-                ));
+                throw new InvalidArgumentException(sprintf('Flake namespace entries must implement %s; received %s.', FlakeNamespaceInterface::class, get_debug_type($namespace)));
             }
 
             $prefix = $namespace->prefix();
@@ -61,10 +57,7 @@ class FlakeNamespacePool
      */
     public function get(string $prefix): FlakeNamespaceInterface
     {
-        return $this->namespaces[$prefix] ?? throw new InvalidArgumentException(sprintf(
-            'Unknown Flake namespace prefix "%s".',
-            $prefix
-        ));
+        return $this->namespaces[$prefix] ?? throw new InvalidArgumentException(sprintf('Unknown Flake namespace prefix "%s".', $prefix));
     }
 
     /**

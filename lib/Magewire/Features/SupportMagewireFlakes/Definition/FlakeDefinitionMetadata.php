@@ -33,16 +33,10 @@ class FlakeDefinitionMetadata
      */
     public static function fromArray(array $metadata): self
     {
-        $family = is_string($metadata['family'] ?? null) && $metadata['family'] !== ''
-            ? $metadata['family']
-            : null;
+        $family = is_string($metadata['family'] ?? null) && $metadata['family'] !== '' ? $metadata['family'] : null;
         $props = is_array($metadata['props'] ?? null) ? $metadata['props'] : [];
-        $children = is_array($metadata['children'] ?? null)
-            ? array_values(array_filter($metadata['children'], 'is_string'))
-            : [];
-        $aware = is_array($metadata['aware'] ?? null)
-            ? array_filter($metadata['aware'], 'is_string')
-            : [];
+        $children = is_array($metadata['children'] ?? null) ? array_values(array_filter($metadata['children'], 'is_string')) : [];
+        $aware = is_array($metadata['aware'] ?? null) ? array_filter($metadata['aware'], 'is_string') : [];
 
         return new self($family, $props, $children, $aware);
     }
@@ -90,9 +84,6 @@ class FlakeDefinitionMetadata
      */
     public function isEmpty(): bool
     {
-        return $this->family === null
-            && $this->props === []
-            && $this->children === []
-            && $this->aware === [];
+        return $this->family === null && $this->props === [] && $this->children === [] && $this->aware === [];
     }
 }

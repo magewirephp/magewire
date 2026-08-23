@@ -95,12 +95,7 @@ class HandleCompiling
                         return $next($throughput);
                     }
 
-                    return $next(substr_replace(
-                        $throughput,
-                        PHP_EOL . $scope,
-                        $headerEnd + 2,
-                        0
-                    ));
+                    return $next(substr_replace($throughput, PHP_EOL . $scope, $headerEnd + 2, 0));
                 });
 
             $compiler

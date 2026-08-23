@@ -70,11 +70,7 @@ class CompilerManager
         }
 
         if (! $compiler instanceof Compiler) {
-            throw new LogicException(sprintf(
-                'Compiler factory must create an instance of %s, got %s.',
-                Compiler::class,
-                get_debug_type($compiler)
-            ));
+            throw new LogicException(sprintf('Compiler factory must create an instance of %s, got %s.', Compiler::class, get_debug_type($compiler)));
         }
 
         $block->setData('magewire:compiler', $compiler);

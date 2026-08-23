@@ -84,8 +84,7 @@ class FlakeFactory implements FlakeRendererInterface
         array $data = [],
         array $props = [],
         array $attributes = []
-    ): FlakeRenderContextInterface|false
-    {
+    ): FlakeRenderContextInterface|false {
         $definition = $this->definitionRegistry->get($this->namespace, $name);
 
         if ($definition === null) {
@@ -97,14 +96,7 @@ class FlakeFactory implements FlakeRendererInterface
         $data['magewire:alias'] ??= $name;
         $data['magewire:name'] ??= Random::alphabetical(10);
 
-        return new FlakeRenderContext(
-            (string) $data['magewire:name'],
-            $this->namespacePool->get($this->namespace),
-            $definition,
-            $data,
-            new FlakePropBag($props),
-            new FlakeAttributeBag($attributes)
-        );
+        return new FlakeRenderContext((string) $data['magewire:name'], $this->namespacePool->get($this->namespace), $definition, $data, new FlakePropBag($props), new FlakeAttributeBag($attributes));
     }
 
     /**
@@ -118,11 +110,7 @@ class FlakeFactory implements FlakeRendererInterface
         $block = $this->createBlock($context);
 
         if ($block === false) {
-            throw new RuntimeException(sprintf(
-                'Flake block "%s" is missing from namespace "%s".',
-                $context->definition()->name(),
-                $context->namespace()->prefix()
-            ));
+            throw new RuntimeException(sprintf('Flake block "%s" is missing from namespace "%s".', $context->definition()->name(), $context->namespace()->prefix()));
         }
 
         return $block->toHtml();
@@ -139,17 +127,11 @@ class FlakeFactory implements FlakeRendererInterface
         $name = $context->definition()->name();
         $block = $layout->getBlock($name);
 
-        if (! $block instanceof AbstractBlock
-            || $layout->getParentName($name) !== $context->namespace()->registryRoot()
-        ) {
+        if (! $block instanceof AbstractBlock || $layout->getParentName($name) !== $context->namespace()->registryRoot()) {
             return false;
         }
 
-        $cacheKey = preg_replace(
-            '/[^a-z0-9\-_]/i',
-            '-',
-            $context->namespace()->prefix() . '-' . $context->id()
-        );
+        $cacheKey = preg_replace('/[^a-z0-9\-_]/i', '-', $context->namespace()->prefix() . '-' . $context->id());
         $block->addData(array_merge($context->data(), [
             'cache_key' => $cacheKey,
             'flake:context' => $context

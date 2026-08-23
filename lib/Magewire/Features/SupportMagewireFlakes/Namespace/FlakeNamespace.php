@@ -36,10 +36,7 @@ class FlakeNamespace implements FlakeNamespaceInterface
 
         $handles = is_string($handles) ? [$handles] : array_values($handles);
 
-        $invalidHandles = array_filter(
-            $handles,
-            static fn (mixed $handle): bool => ! is_string($handle) || $handle === ''
-        );
+        $invalidHandles = array_filter($handles, static fn (mixed $handle): bool => ! is_string($handle) || $handle === '');
 
         if ($handles === [] || $invalidHandles !== []) {
             throw new InvalidArgumentException('A Flake namespace requires one or more layout handles.');
