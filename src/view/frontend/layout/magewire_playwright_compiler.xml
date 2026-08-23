@@ -94,6 +94,14 @@
                     </arguments>
                 </block>
 
+                <block name="magewire.playwright.compiler.directives"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/compiler/directives.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire:compile" xsi:type="boolean">true</argument>
+                    </arguments>
+                </block>
+
                 <block name="magewire.playwright.compiler.selector-only"
                        template="Magewirephp_Magewire::tests/magewire/playwright/compiler/selector-only.phtml"
                 >

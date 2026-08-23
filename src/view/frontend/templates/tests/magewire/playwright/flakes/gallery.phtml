@@ -15,6 +15,7 @@ $profiles = [
     ['name' => 'Milan Reed', 'role' => 'Content editor', 'variant' => 'muted'],
     ['name' => 'Sam Rivera', 'role' => 'Support engineer', 'variant' => 'accent']
 ];
+$directiveModes = ['primary', 'secondary', 'fallback', 'hidden'];
 ?>
 <main class="mw-flake-gallery" data-testid="flake-gallery">
     <style>
@@ -164,6 +165,25 @@ $profiles = [
                         <p class="mw-flake-gallery__meta"><?= $escaper->escapeHtml($profile['role']) ?></p>
                     </flake:playwright-card>
                 <?php endforeach ?>
+            </div>
+        </div>
+
+        <div class="mw-flake-gallery__wide" data-testid="directive-flakes">
+            <flake:playwright-heading prop:level="2">Compiled directives</flake:playwright-heading>
+            <p class="mw-flake-gallery__copy">
+                Scope directives can control Flake occurrences, while every stateless Flake template uses the same
+                compiler for its own directives and escaped expressions.
+            </p>
+
+            <div class="mw-flake-gallery__profiles">
+                @foreach($directiveModes as $mode)
+                    @if($mode !== 'hidden')
+                        <flake:playwright-directives
+                            :prop:mode="$mode"
+                            :data-testid="'directive-flake-' . $mode"
+                        />
+                    @endif
+                @endforeach
             </div>
         </div>
 

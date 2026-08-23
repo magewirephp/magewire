@@ -58,6 +58,47 @@ test.describe('Magewire Playwright — Flakes', () => {
         await expect(profileCard.locator('.mw-flake-heading')).toHaveText('User profile');
     });
 
+    test('runs @foreach and @if directives around Flake occurrences', async ({ page }) => {
+        const directives = page.getByTestId('directive-flakes');
+
+        await expect(directives.locator('[data-mode]')).toHaveCount(3);
+        await expect(page.getByTestId('directive-flake-primary')).toHaveAttribute('data-mode', 'primary');
+        await expect(page.getByTestId('directive-flake-secondary')).toHaveAttribute('data-mode', 'secondary');
+        await expect(page.getByTestId('directive-flake-fallback')).toHaveAttribute('data-mode', 'fallback');
+        await expect(page.getByTestId('directive-flake-hidden')).toHaveCount(0);
+    });
+
+    test('compiles scope and output directives inside stateless Flake templates', async ({ page }) => {
+        const cases = [
+            ['primary', 'Primary Flake branch'],
+            ['secondary', 'Secondary Flake branch'],
+            ['fallback', 'Fallback Flake branch'],
+        ];
+
+        for (const [mode, branch] of cases) {
+            const flake = page.getByTestId(`directive-flake-${mode}`);
+            const payload = JSON.parse(await flake.getAttribute('data-payload'));
+
+            await expect(flake).not.toHaveAttribute('wire:id', /.+/);
+            await expect(flake.getByTestId('directive-flake-branch')).toHaveText(branch);
+            await expect(flake.getByTestId('directive-flake-items').locator('li')).toHaveText([
+                'First Flake directive item',
+                'Last Flake directive item',
+            ]);
+            await expect(flake.getByText('Hidden Flake directive item')).toHaveCount(0);
+            expect(payload).toEqual({ component: 'flake', mode, count: 3 });
+        }
+    });
+
+    test('compiles translation and escaped echos inside a Flake template', async ({ page }) => {
+        const flake = page.getByTestId('directive-flake-primary');
+        const escaped = flake.getByTestId('directive-flake-escaped');
+
+        await expect(flake.getByTestId('directive-flake-translation')).toHaveText('Translated Flake output');
+        await expect(escaped).toHaveText('<strong>Escaped Flake output</strong>');
+        await expect(escaped.locator('strong')).toHaveCount(0);
+    });
+
     test('re-renders the Magewire host without losing Flake composition', async ({ page }) => {
         const count = page.getByTestId('flake-gallery-refresh-count');
         await expect(count).toHaveText('0');

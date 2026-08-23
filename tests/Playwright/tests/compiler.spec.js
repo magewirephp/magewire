@@ -36,6 +36,38 @@ test.describe('Magewire Playwright — Compiler', () => {
         await expect(host).not.toHaveAttribute('wire:id', /.+/);
     });
 
+    test('compiles nested @if and @foreach directive scopes on an ordinary block', async ({ page }) => {
+        const host = page.getByTestId('compiler-directives');
+
+        await expect(host).not.toHaveAttribute('wire:id', /.+/);
+        await expect(host).not.toHaveAttribute('wire:snapshot', /.+/);
+        await expect(host.getByTestId('compiler-directive-branch')).toHaveText('Secondary branch');
+        await expect(host.getByTestId('compiler-directive-items').locator('li')).toHaveText([
+            'First directive item',
+            'Last directive item',
+        ]);
+        await expect(host.getByText('Hidden directive item')).toHaveCount(0);
+    });
+
+    test('compiles @json and @translate directives without a Magewire lifecycle', async ({ page }) => {
+        const host = page.getByTestId('compiler-directives');
+        const payload = JSON.parse(await host.getAttribute('data-payload'));
+
+        expect(payload).toEqual({ route: 'compiler', branch: 'secondary', count: 3 });
+        await expect(host.getByTestId('compiler-directive-translation'))
+            .toHaveText('Translated compiler output');
+        await expect(host.locator('[wire\\:id]')).toHaveCount(0);
+    });
+
+    test('keeps escaped and raw compiler echos distinct', async ({ page }) => {
+        const escaped = page.getByTestId('compiler-directive-escaped');
+        const raw = page.getByTestId('compiler-directive-raw');
+
+        await expect(escaped).toHaveText('<strong>Escaped compiler output</strong>');
+        await expect(escaped.locator('strong')).toHaveCount(0);
+        await expect(raw.locator('strong')).toHaveText('Raw compiler output');
+    });
+
     test('keeps compiled and plain nested blocks on the active layout lifecycle', async ({ page }) => {
         const parent = page.getByTestId('compiler-nesting-parent');
         const child = parent.getByTestId('compiler-nesting-child');

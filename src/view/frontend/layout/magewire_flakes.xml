@@ -42,6 +42,10 @@
                    template="Magewirephp_Magewire::tests/magewire/playwright/flakes/button.phtml"
             />
 
+            <block name="playwright-directives"
+                   template="Magewirephp_Magewire::tests/magewire/playwright/flakes/directives.phtml"
+            />
+
             <block name="playwright-counter"
                    template="Magewirephp_Magewire::tests/magewire/playwright/flakes/counter.phtml"
             >
