@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+      layout="1column"
+>
+    <body>
+        <referenceContainer name="content">
+            <container name="magewire.playwright.addons"
+                       htmlClass="grid grid-cols-1 gap-8"
+                       htmlId="magewire-playwright-addons"
+                       htmlTag="div"
+            >
+                <block name="magewire.playwright.addons.notifier"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/addons/notifier.phtml"
+                />
+            </container>
+        </referenceContainer>
+    </body>
+</page>

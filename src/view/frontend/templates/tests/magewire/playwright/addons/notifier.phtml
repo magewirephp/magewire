@@ -1,0 +1,74 @@
+<?php
+
+/**
+ * Copyright © Willem Poortman 2021-present. All rights reserved.
+ *
+ * Please read the README and LICENSE files for more
+ * details on copyrights and license information.
+ */
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+?>
+<section data-testid="addons-notifier" x-data="magewirePlaywrightNotifier">
+    <h2><?= $escaper->escapeHtml(__('Notifier addon')) ?></h2>
+
+    <label>
+        <span><?= $escaper->escapeHtml(__('Message')) ?></span>
+        <input type="text" data-testid="addons-notifier-message" x-model="message">
+    </label>
+
+    <label>
+        <span><?= $escaper->escapeHtml(__('Type')) ?></span>
+        <select data-testid="addons-notifier-type" x-model="type">
+            <option value="success"><?= $escaper->escapeHtml(__('Success')) ?></option>
+            <option value="info"><?= $escaper->escapeHtml(__('Info')) ?></option>
+            <option value="warning"><?= $escaper->escapeHtml(__('Warning')) ?></option>
+            <option value="error"><?= $escaper->escapeHtml(__('Error')) ?></option>
+        </select>
+    </label>
+
+    <button type="button" data-testid="addons-notifier-create" x-on:click="notify">
+        <?= $escaper->escapeHtml(__('Create notification')) ?>
+    </button>
+
+    <output data-testid="addons-notifier-submissions" x-text="submissions">0</output>
+    <output data-testid="addons-notifier-id" x-text="notification.id">0</output>
+    <output data-testid="addons-notifier-occurrences" x-text="notification.occurrences">0</output>
+    <output data-testid="addons-notifier-total" x-text="notification.total">0</output>
+</section>
+
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('magewirePlaywrightNotifier', () => ({
+            message: '',
+            type: 'info',
+            submissions: 0,
+            notification: {
+                id: 0,
+                occurrences: 0,
+                total: 0
+            },
+
+            async notify() {
+                const notifier = window.MagewireAddons.notifier;
+                const notification = await notifier.create(this.message, {
+                    type: this.type,
+                    duration: false
+                });
+
+                this.notification = {
+                    id: notification.id,
+                    occurrences: notification.occurrences,
+                    total: notifier.notifications.length
+                };
+                this.submissions += 1;
+            }
+        }));
+    }, { once: true });
+</script>
