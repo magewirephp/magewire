@@ -32,6 +32,18 @@ $layoutUtil = $magewireViewModel->utils()->layout();
             x-transition:leave.duration.100ms
             x-bind="bindings.notification.item.root"
         >
+            <span
+                class="magewire-notifier-occurrences absolute -right-2 -top-2 flex h-5 min-w-7 items-center justify-center rounded-md px-1.5 text-xs font-semibold leading-none shadow"
+                x-bind="bindings.notification.item.occurrences"
+            >
+                <span class="sr-only">
+                    <?= $escaper->escapeHtml(__('Notification occurrences:')) ?>
+                </span>
+                <span aria-hidden="true" x-text="notification.occurrences">
+                    <!-- Notification occurrence count placeholder. -->
+                </span>
+            </span>
+
             <?php if ($layoutUtil->canContainerizeBlock($notificationsBeforeBlock)): ?>
                 <div class="magewire-notifier-before">
                     <?= $layoutUtil->renderBlockAsContainer($notificationsBeforeBlock) ?>
