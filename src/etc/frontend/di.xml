@@ -252,11 +252,75 @@
         costlier filter reaches out to an external service. Bind a matching exception handler in
         the ExceptionManager pool below to control the HTTP status a rejection responds with.
     -->
+    <virtualType name="Magewirephp\Magewire\Magewire\Playwright\RateLimiting\ConfiguredUpdateRequestRateLimiter"
+                 type="Magewirephp\Magewire\Features\SupportMagewireRateLimiting\UpdateRequestRateLimiter"
+    >
+        <arguments>
+            <argument name="storage" xsi:type="object">
+                Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Storage\RateLimitLockoutCacheStorage
+            </argument>
+            <argument name="rateLimiterConfig" xsi:type="object">
+                Magewirephp\Magewire\Magewire\Playwright\RateLimiting\PlaywrightRateLimiterConfig
+            </argument>
+            <argument name="requestFingerprint" xsi:type="object">
+                Magewirephp\Magewire\Magewire\Playwright\RateLimiting\PlaywrightRequestFingerprint
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Magewirephp\Magewire\Magewire\Playwright\RateLimiting\ConfiguredRateLimitLockout"
+                 type="Magewirephp\Magewire\Features\SupportMagewireRateLimiting\RateLimitLockout"
+    >
+        <arguments>
+            <argument name="storage" xsi:type="object">
+                Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Storage\RateLimitLockoutCacheStorage
+            </argument>
+            <argument name="config" xsi:type="object">
+                Magewirephp\Magewire\Magewire\Playwright\RateLimiting\PlaywrightRateLimiterConfig
+            </argument>
+            <argument name="requestFingerprint" xsi:type="object">
+                Magewirephp\Magewire\Magewire\Playwright\RateLimiting\PlaywrightRequestFingerprint
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Magewirephp\Magewire\Magewire\Playwright\RateLimiting\ConfiguredRateLimitFilter"
+                 type="Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Filter\RateLimitFilter"
+    >
+        <arguments>
+            <argument name="rateLimiter" xsi:type="object">
+                Magewirephp\Magewire\Magewire\Playwright\RateLimiting\ConfiguredUpdateRequestRateLimiter
+            </argument>
+            <argument name="lockout" xsi:type="object">
+                Magewirephp\Magewire\Magewire\Playwright\RateLimiting\ConfiguredRateLimitLockout
+            </argument>
+            <argument name="rateLimiterConfig" xsi:type="object">
+                Magewirephp\Magewire\Magewire\Playwright\RateLimiting\PlaywrightRateLimiterConfig
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Magewirephp\Magewire\Magewire\Playwright\RateLimiting\PlaywrightRateLimitFilter">
+        <arguments>
+            <argument name="rateLimitFilter" xsi:type="object">
+                Magewirephp\Magewire\Magewire\Playwright\RateLimiting\ConfiguredRateLimitFilter
+            </argument>
+        </arguments>
+    </type>
+
     <type name="Magewirephp\Magewire\Mechanisms\HandleRequests\Filter\RequestFilterPipeline">
         <arguments>
             <argument name="filters" xsi:type="array">
                 <item name="rate_limit" xsi:type="object" sortOrder="100">
                     Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Filter\RateLimitFilter
+                </item>
+
+                <!--
+                    Test-only. Delegates the dedicated rate-limiting fixture to the real filter
+                    with an isolated fixed policy. Dormant outside developer mode.
+                -->
+                <item name="playwright_rate_limit" xsi:type="object" sortOrder="800">
+                    Magewirephp\Magewire\Magewire\Playwright\RateLimiting\PlaywrightRateLimitFilter
                 </item>
 
                 <!--

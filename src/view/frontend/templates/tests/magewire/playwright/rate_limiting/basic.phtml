@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * Copyright © Willem Poortman 2021-present. All rights reserved.
+ *
+ * Please read the README and LICENSE files for more
+ * details on copyrights and license information.
+ */
+
+declare(strict_types=1);
+
+use Magewirephp\Magewire\Magewire\Playwright\RateLimiting\Basic;
+
+/** @var Basic $magewire */
+?>
+<div>
+    <h2 class="text-lg mb-2 font-bold">Rate limiting</h2>
+
+    <p data-testid="rate-limiting-count"><?= (int) $magewire->count ?></p>
+
+    <button type="button" data-testid="rate-limiting-increment" wire:click="increment">Increment</button>
+</div>
