@@ -6,7 +6,7 @@
         <magewire>
             <features>
                 <rate_limiting>
-                    <enabled>0</enabled>
+                    <variant>0</variant>
                     <developer_mode>0</developer_mode>
 
                     <requests>
@@ -14,6 +14,12 @@
                         <max_attempts>4</max_attempts>
                         <decay_seconds>5</decay_seconds>
                     </requests>
+
+                    <lockout>
+                        <enabled>0</enabled>
+                        <warning_threshold>3</warning_threshold>
+                        <duration_seconds>60</duration_seconds>
+                    </lockout>
                 </rate_limiting>
             </features>
         </magewire>

@@ -33,6 +33,7 @@ class SupportMagewireRateLimiting extends ComponentHook
 {
     public function __construct(
         private readonly UpdateRequestRateLimiter $rateLimiter,
+        private readonly RateLimitLockout $lockout,
         private readonly RateLimiterConfig $rateLimiterConfig,
         private readonly ApplicationState $appState
     ) {
@@ -48,17 +49,23 @@ class SupportMagewireRateLimiting extends ComponentHook
         }
 
         if ($this->rateLimiterConfig->canRateLimitComponents()) {
-            on('magewire:component:reconstruct', function () {
+            on('magewire:component:reconstruct', fn () => (
                 // Apply a rate limit check for the component after the component reconstruction.
-                return function (Template $block) {
+                function (Template $block) {
                     $component = $block->getData('magewire');
 
                     // Component scope rate limiting validation.
                     if ($component instanceof Component && ! $this->rateLimiter->validateWithComponent($component)) {
+                        $remainingLockoutSeconds = $this->lockout->registerRejection(UpdateRequestRateLimiter::COMPONENT_DECAY_SECONDS);
+
+                        if ($remainingLockoutSeconds > 0) {
+                            throw TooManyRequestsException::forLockout($remainingLockoutSeconds);
+                        }
+
                         throw new TooManyRequestsException();
                     }
-                };
-            });
+                }
+            ));
         }
     }
 

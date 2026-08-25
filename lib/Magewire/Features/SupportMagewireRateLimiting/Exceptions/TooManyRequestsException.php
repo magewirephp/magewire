@@ -25,4 +25,9 @@ class TooManyRequestsException extends RequestFilterException
     {
         return 429;
     }
+
+    public static function forLockout(int $remainingSeconds): static
+    {
+        return new static((string) __('You have been temporarily locked out due to too many requests. Try again in %1 seconds.', max(1, $remainingSeconds)));
+    }
 }
