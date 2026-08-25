@@ -15,6 +15,7 @@ use Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Config\Source\Rate
 use Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Config\Source\RequestsScope;
 use Magewirephp\Magewire\Model\Magento\System\ConfigMagewireGroup;
 
+/** @mago-expect lint:too-many-methods */
 class RateLimiterConfig extends ConfigMagewireGroup
 {
     public function throttleInDeveloperMode(): bool
@@ -30,6 +31,16 @@ class RateLimiterConfig extends ConfigMagewireGroup
     public function canRateLimitComponents(): bool
     {
         return $this->getRateLimitingVariant() === RateLimitingVariant::COMPONENTS_ONLY;
+    }
+
+    public function canRateLimit(): bool
+    {
+        return $this->canRateLimitRequests() || $this->canRateLimitComponents();
+    }
+
+    public function canLockout(): bool
+    {
+        return (bool) ( $this->config()->getFeaturesGroupValue('rate_limiting/lockout/enabled') ?? false );
     }
 
     public function isSharedScope(): bool
@@ -50,6 +61,16 @@ class RateLimiterConfig extends ConfigMagewireGroup
     public function getRequestsDecaySeconds(): int
     {
         return (int) ( $this->config()->getFeaturesGroupValue('rate_limiting/requests/decay_seconds') ?? 5 );
+    }
+
+    public function getLockoutWarningThreshold(): int
+    {
+        return max(1, (int) ( $this->config()->getFeaturesGroupValue('rate_limiting/lockout/warning_threshold') ?? 3 ));
+    }
+
+    public function getLockoutSeconds(): int
+    {
+        return max(1, (int) ( $this->config()->getFeaturesGroupValue('rate_limiting/lockout/duration_seconds') ?? 60 ));
     }
 
     protected function getRateLimitingVariant(): string

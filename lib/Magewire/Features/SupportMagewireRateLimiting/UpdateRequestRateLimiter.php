@@ -19,6 +19,9 @@ use Magewirephp\Magewire\Mechanisms\HandleRequests\RequestFingerprint;
 
 class UpdateRequestRateLimiter extends RateLimiter
 {
+    public const COMPONENT_MAX_ATTEMPTS = 4;
+    public const COMPONENT_DECAY_SECONDS = 5;
+
     public function __construct(
         private readonly RateLimiterStorageInterface $storage,
         private readonly DateTime $datetime,
@@ -67,7 +70,7 @@ class UpdateRequestRateLimiter extends RateLimiter
          * belongs to the request variant. Both are mutually exclusive, so the original fixed budget
          * is kept here rather than silently adopting values meant for the other variant.
          */
-        return $this->consume($this->generateKeyByComponent($component), 4, 5);
+        return $this->consume($this->generateKeyByComponent($component), self::COMPONENT_MAX_ATTEMPTS, self::COMPONENT_DECAY_SECONDS);
     }
 
     /**

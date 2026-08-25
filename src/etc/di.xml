@@ -32,6 +32,13 @@
     <preference for="Magewirephp\Magewire\Features\SupportMagewireRateLimiting\RateLimiterStorageInterface"
                 type="Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Storage\RateLimiterCacheStorage"
     />
+    <type name="Magewirephp\Magewire\Features\SupportMagewireRateLimiting\RateLimitLockout">
+        <arguments>
+            <argument name="storage" xsi:type="object">
+                Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Storage\RateLimitLockoutCacheStorage
+            </argument>
+        </arguments>
+    </type>
 
     <!--
         Feature: Magewire View Model

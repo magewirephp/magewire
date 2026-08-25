@@ -95,5 +95,64 @@
                 <validate>required-entry integer</validate>
             </field>
         </group>
+
+        <group id="lockout"
+               translate="label comment"
+               sortOrder="30"
+               showInDefault="1"
+               showInWebsite="1"
+               showInStore="1"
+        >
+            <label>Lockout</label>
+            <comment>Optionally escalate repeated rate-limit warnings into a temporary lockout for the same visitor.</comment>
+
+            <field id="enabled"
+                   translate="label comment"
+                   type="select"
+                   sortOrder="10"
+                   showInDefault="1"
+                   showInWebsite="1"
+                   showInStore="1"
+            >
+                <label>Enable Lockout</label>
+                <comment>When enabled, repeated rate-limit warnings temporarily block the visitor and notify them for how long.</comment>
+
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            </field>
+
+            <field id="warning_threshold"
+                   translate="label comment"
+                   type="text"
+                   sortOrder="20"
+                   showInDefault="1"
+                   showInWebsite="1"
+                   showInStore="1"
+            >
+                <label>Warnings Before Lockout</label>
+                <comment>Number of rate-limit rejections within the active rate-limit window that trigger a lockout.</comment>
+                <validate>required-entry integer validate-greater-than-zero</validate>
+
+                <depends>
+                    <field id="enabled">1</field>
+                </depends>
+            </field>
+
+            <field id="duration_seconds"
+                   translate="label comment"
+                   type="text"
+                   sortOrder="30"
+                   showInDefault="1"
+                   showInWebsite="1"
+                   showInStore="1"
+            >
+                <label>Lockout Seconds</label>
+                <comment>Number of seconds the visitor remains locked out after reaching the warning threshold.</comment>
+                <validate>required-entry integer validate-greater-than-zero</validate>
+
+                <depends>
+                    <field id="enabled">1</field>
+                </depends>
+            </field>
+        </group>
     </group>
 </include>
