@@ -21,8 +21,58 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
     document.addEventListener('magewire:init', event => {
         const addons = window.MagewireAddons;
         const header = '<?= $escaper->escapeJs(RequestFilterException::MESSAGE_SEVERITY_HEADER) ?>';
+        const retryAfterHeader = 'Retry-After';
+        const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+            ?? document.querySelector('[data-csrf]')?.getAttribute('data-csrf')
+            ?? window.livewireScriptConfig?.csrf
+            ?? 'anonymous';
+        const lockoutStorageKey = `magewire:request-filter:lockout:${csrf}`;
+        let lockoutUntil = 0;
 
-        Magewire.hook('request', ({ respond, fail }) => {
+        const readLockoutUntil = () => {
+            try {
+                return Math.max(lockoutUntil, Number.parseInt(localStorage.getItem(lockoutStorageKey), 10) || 0);
+            } catch {
+                return lockoutUntil;
+            }
+        };
+
+        const writeLockoutUntil = deadline => {
+            lockoutUntil = deadline;
+
+            try {
+                localStorage.setItem(lockoutStorageKey, deadline.toString());
+            } catch {
+                // The in-memory deadline still protects this page when storage is unavailable.
+            }
+        };
+
+        const clearLockout = () => {
+            lockoutUntil = 0;
+
+            try {
+                localStorage.removeItem(lockoutStorageKey);
+            } catch {
+                // Nothing else is needed when storage is unavailable.
+            }
+        };
+
+        Magewire.hook('request', ({ options, respond, fail }) => {
+            const deadline = readLockoutUntil();
+
+            if (Date.now() < deadline) {
+                const controller = new AbortController();
+
+                controller.abort();
+                options.signal = controller.signal;
+
+                return;
+            }
+
+            if (deadline !== 0) {
+                clearLockout();
+            }
+
             let severity = null;
 
             respond(({ response }) => {
@@ -33,6 +83,12 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                  * rejection deserves.
                  */
                 severity = response.headers.get(header);
+
+                const retryAfter = Number.parseInt(response.headers.get(retryAfterHeader), 10);
+
+                if (response.status === 429 && Number.isInteger(retryAfter) && retryAfter > 0) {
+                    writeLockoutUntil(Math.max(readLockoutUntil(), Date.now() + (retryAfter * 1000)));
+                }
             });
 
             fail(({ content, preventDefault }) => {

@@ -9,8 +9,8 @@ import { test, expect } from '@playwright/test';
 const PATH = '/magewire/playwright/ratelimiting';
 const UPDATE_URL = '/magewire/update';
 const SEVERITY_HEADER = 'x-magewire-message-severity';
+const RETRY_AFTER_HEADER = 'retry-after';
 const REGULAR_WARNING = 'Too many requests! Please wait.';
-const LOCKOUT_PATTERN = /^You have been temporarily locked out due to too many requests\. Try again in [1-6] seconds\.$/;
 
 const TESTID = {
     count: 'rate-limiting-count',
@@ -29,6 +29,26 @@ async function clickAndCaptureUpdate(page) {
     return response;
 }
 
+async function clickAndAssertNoUpdate(page) {
+    let requests = 0;
+    const countRequest = request => {
+        if (request.url().includes(UPDATE_URL)) {
+            requests++;
+        }
+    };
+
+    page.on('request', countRequest);
+
+    try {
+        await testid(page, TESTID.increment).click();
+        await page.waitForTimeout(250);
+    } finally {
+        page.off('request', countRequest);
+    }
+
+    expect(requests).toBe(0);
+}
+
 async function consumeBudget(page) {
     for (const count of ['1', '2']) {
         const response = await clickAndCaptureUpdate(page);
@@ -43,6 +63,7 @@ async function rejectAtLimit(page) {
 
     expect(response.status()).toBe(429);
     expect(response.headers()[SEVERITY_HEADER]).toBe('warning');
+    expect(response.headers()).not.toHaveProperty(RETRY_AFTER_HEADER);
     expect(await response.text()).toBe(REGULAR_WARNING);
     await expect(testid(page, TESTID.count)).toHaveText('2');
 
@@ -54,6 +75,7 @@ async function triggerLockout(page) {
 
     expect(response.status()).toBe(429);
     expect(response.headers()[SEVERITY_HEADER]).toBe('warning');
+    expect(response.headers()[RETRY_AFTER_HEADER]).toBe('6');
     expect(await response.text()).toBe('You have been temporarily locked out due to too many requests. Try again in 6 seconds.');
     await expect(testid(page, TESTID.count)).toHaveText('2');
 
@@ -77,17 +99,18 @@ test.describe('Magewire Playwright — Rate Limiting', () => {
         await expect(notificationOf(page, 'warning')).toHaveText(REGULAR_WARNING);
     });
 
-    test('escalates repeated rate-limit warnings into an active lockout', async ({ page }) => {
+    test('prevents another browser request while the lockout is active, including after reload', async ({ page }) => {
         await consumeBudget(page);
         await rejectAtLimit(page);
         await triggerLockout(page);
 
-        const response = await clickAndCaptureUpdate(page);
-
-        expect(response.status()).toBe(429);
-        expect(response.headers()[SEVERITY_HEADER]).toBe('warning');
-        expect(await response.text()).toMatch(LOCKOUT_PATTERN);
+        await clickAndAssertNoUpdate(page);
         await expect(testid(page, TESTID.count)).toHaveText('2');
+
+        await page.reload();
+        await expect(testid(page, TESTID.count)).toHaveText('0');
+        await clickAndAssertNoUpdate(page);
+        await expect(testid(page, TESTID.count)).toHaveText('0');
     });
 
     test('accepts requests again after the lockout expires', async ({ page }) => {

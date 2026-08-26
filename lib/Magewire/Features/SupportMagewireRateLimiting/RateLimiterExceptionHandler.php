@@ -29,6 +29,11 @@ class RateLimiterExceptionHandler extends AbstractExceptionHandler
         if ($exception instanceof TooManyRequestsException) {
             return static function (HttpResponseInterface $response) use ($exception) {
                 $response->setHeader(RequestFilterException::MESSAGE_SEVERITY_HEADER, $exception->severity()->type(), true);
+
+                foreach ($exception->headers() as $name => $value) {
+                    $response->setHeader($name, $value, true);
+                }
+
                 $response->setBody($exception->getMessage());
                 $response->setHttpResponseCode($exception->status());
 
