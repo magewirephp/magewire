@@ -76,12 +76,12 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             let severity = null;
 
             respond(({ response }) => {
-                /*
+                <?php /*
                  * Presence of the header is the server saying this body was written for the
                  * customer, and its value says how much that message weighs. Status is
                  * deliberately not consulted: a filter decides for itself which status its
                  * rejection deserves.
-                 */
+                 */ ?>
                 severity = response.headers.get(header);
 
                 const retryAfter = Number.parseInt(response.headers.get(retryAfterHeader), 10);
@@ -92,11 +92,11 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             });
 
             fail(({ content, preventDefault }) => {
-                /*
+                <?php /*
                  * Anything without the header is left to Magewire's regular failure handling,
                  * which renders its own exception output, so a stack trace or an error page can
                  * never reach a customer.
-                 */
+                 */ ?>
                 if (! severity) {
                     return;
                 }
@@ -107,11 +107,11 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                     return;
                 }
 
-                /*
+                <?php /*
                  * Which UX carries the message is a frontend decision, not something the server
                  * dictates. Swapping the notifier for a modal or an inline banner is a change
                  * here alone.
-                 */
+                 */ ?>
                 if (addons.has('notifier')) {
                     addons.notifier.create(message, { type: severity });
                 } else {
