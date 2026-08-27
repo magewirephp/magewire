@@ -12,15 +12,18 @@ return [
                 'glob' => '**/*.php',
                 'ignore' => [
                     '{Wi,Attr,hel,Imp,Form}*',
+                    '!WithPagination.php',
                     'Livewire.php',
                     'Attributes/**/*',
                     '!Attributes/{Locked,On,Lazy}.php',
                     'Drawer/{ImplicitRouteBinding,Regexes}*',
                     'Exceptions/{Event,Livewire,Root}*',
                     'Features/**/*',
-                    '!Features/Support{Attributes,Events,LifecycleHooks,Locales,NestingComponents,Redirects,FormObjects,Validation,LockedProperties,Streaming,LazyLoading,MultipleRootElementDetection}/**/*',
+                    '!Features/Support{Attributes,Events,LifecycleHooks,Locales,NestingComponents,Redirects,FormObjects,Validation,LockedProperties,Streaming,LazyLoading,MultipleRootElementDetection,Pagination}/**/*',
                     'Features/SupportEvents/TestsEvents.php',
                     'Features/SupportRedirects/TestsRedirects.php',
+                    'Features/SupportPagination/{PaginationUrl,BrowserTest,UnitTest}.php',
+                    'Features/SupportPagination/views/**/*',
                     'Mechanisms/CompileLivewireTags/**/*',
                     'Mechanisms/ExtendBlade/**/*',
                     'Mechanisms/HandleComponents/Synthesizers/{Carbon,Collection,Stringable}*',
@@ -106,6 +109,23 @@ return [
                         'redirectAction',
                         'redirectRoute',
                         'redirectIntended'
+                    ]
+                ],
+                'Features\\SupportPagination\\SupportPagination' => [
+                    'remove-methods' => [
+                        'provide',
+                        'boot',
+                        'destroy',
+                        'overrideDefaultPaginationViews',
+                        'setPathResolvers',
+                        'setPageResolvers',
+                        'ensurePaginatorIsInitialized',
+                        'getQueryStringDetails',
+                        'resolvePage',
+                        'addUrlHook',
+                        'paginationView',
+                        'paginationSimpleView',
+                        'getQueryString'
                     ]
                 ]
             ]
