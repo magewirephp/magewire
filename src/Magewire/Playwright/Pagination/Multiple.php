@@ -26,7 +26,7 @@ class Multiple extends Component
         'Post #3',
         'Post #4',
         'Post #5',
-        'Post #6',
+        'Post #6'
     ];
 
     private const ITEMS = [
@@ -35,7 +35,7 @@ class Multiple extends Component
         'Item #3',
         'Item #4',
         'Item #5',
-        'Item #6',
+        'Item #6'
     ];
 
     /**
@@ -119,7 +119,7 @@ class Multiple extends Component
      */
     private function slicePage(array $values, int $page): array
     {
-        $offset = ($page - 1) * self::PER_PAGE;
+        $offset = ( $page - 1 ) * self::PER_PAGE;
 
         return array_slice($values, $offset, self::PER_PAGE);
     }

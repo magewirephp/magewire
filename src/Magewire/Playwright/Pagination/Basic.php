@@ -29,7 +29,7 @@ class Basic extends Component
         'Post #6',
         'Post #7',
         'Post #8',
-        'Post #9',
+        'Post #9'
     ];
 
     /**
@@ -49,7 +49,7 @@ class Basic extends Component
      */
     public function getCurrentPosts(): array
     {
-        $offset = ((int) $this->getPage() - 1) * self::PER_PAGE;
+        $offset = ( (int) $this->getPage() - 1 ) * self::PER_PAGE;
 
         return array_slice(self::POSTS, $offset, self::PER_PAGE);
     }

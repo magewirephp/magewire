@@ -22,7 +22,7 @@ $currentPage = (int) $magewire->getPage();
 
     <ol data-testid="basic-posts">
         <?php foreach ($magewire->getCurrentPosts() as $offset => $post): ?>
-            <?php $postNumber = (($currentPage - 1) * 3) + $offset + 1 ?>
+            <?php $postNumber = ( ( $currentPage - 1 ) * 3 ) + $offset + 1 ?>
             <li data-testid="basic-post" wire:key="basic-post-<?= (int) $postNumber ?>">
                 <?= $escaper->escapeHtml($post) ?>
             </li>

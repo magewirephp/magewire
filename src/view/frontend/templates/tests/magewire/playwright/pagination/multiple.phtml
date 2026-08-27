@@ -25,7 +25,7 @@ $itemPage = (int) $magewire->getPage('item-page');
         <h3><?= $escaper->escapeHtml(__('Posts')) ?></h3>
         <ol data-testid="multiple-posts">
             <?php foreach ($magewire->getCurrentPosts() as $offset => $post): ?>
-                <?php $postNumber = (($postPage - 1) * 3) + $offset + 1 ?>
+                <?php $postNumber = ( ( $postPage - 1 ) * 3 ) + $offset + 1 ?>
                 <li data-testid="multiple-post" wire:key="multiple-post-<?= (int) $postNumber ?>">
                     <?= $escaper->escapeHtml($post) ?>
                 </li>
@@ -45,7 +45,7 @@ $itemPage = (int) $magewire->getPage('item-page');
         <h3><?= $escaper->escapeHtml(__('Items')) ?></h3>
         <ol data-testid="multiple-items">
             <?php foreach ($magewire->getCurrentItems() as $offset => $item): ?>
-                <?php $itemNumber = (($itemPage - 1) * 3) + $offset + 1 ?>
+                <?php $itemNumber = ( ( $itemPage - 1 ) * 3 ) + $offset + 1 ?>
                 <li data-testid="multiple-item" wire:key="multiple-item-<?= (int) $itemNumber ?>">
                     <?= $escaper->escapeHtml($item) ?>
                 </li>
