@@ -1,6 +1,8 @@
 # Magewire PHP
 
-> Looking for v1? See the [1.x branch](https://github.com/magewirephp/magewire/tree/1.x).
+> [!IMPORTANT]
+> **Magewire [1.x](https://github.com/magewirephp/magewire/tree/1.x) is no longer actively maintained.**
+> This version will only receive **security-related updates when necessary**. No new features, improvements, or regular bug fixes are planned. For ongoing development and support, we recommend upgrading to the latest major version.
 
 [![Latest Stable Version](http://poser.pugx.org/magewirephp/magewire/v)](https://packagist.org/packages/magewirephp/magewire)
 [![Total Downloads](http://poser.pugx.org/magewirephp/magewire/downloads)](https://packagist.org/packages/magewirephp/magewire)
