@@ -1,3 +1,7 @@
+> [!IMPORTANT]
+> **Magewire 1.x is no longer actively maintained.**
+> This version will only receive **security-related updates when necessary**. No new features, improvements, or regular bug fixes are planned. For ongoing development and support, we recommend upgrading to the latest major version.
+
 # Magewire PHP
 [![Latest Stable Version](https://img.shields.io/packagist/v/magewirephp/magewire)](https://packagist.org/packages/magewirephp/magewire)
 [![Downloads](https://img.shields.io/packagist/dm/magewirephp/magewire)](https://packagist.org/packages/magewirephp/magewire)
