@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+      layout="1column"
+>
+    <body>
+        <referenceContainer name="content">
+            <container name="magewire.playwright.pagination"
+                       htmlClass="grid grid-cols-1 gap-x-8 gap-y-16"
+                       htmlId="magewire-playwright-pagination"
+                       htmlTag="div"
+            >
+                <block name="magewire.playwright.pagination.basic"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/pagination/basic.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire" xsi:type="object" shared="false">
+                            Magewirephp\Magewire\Magewire\Playwright\Pagination\Basic
+                        </argument>
+                    </arguments>
+                </block>
+
+                <block name="magewire.playwright.pagination.multiple"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/pagination/multiple.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire" xsi:type="object" shared="false">
+                            Magewirephp\Magewire\Magewire\Playwright\Pagination\Multiple
+                        </argument>
+                    </arguments>
+                </block>
+            </container>
+        </referenceContainer>
+    </body>
+</page>

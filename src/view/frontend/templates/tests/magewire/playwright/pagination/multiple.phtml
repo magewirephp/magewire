@@ -1,0 +1,69 @@
+<?php
+
+/**
+ * Copyright © Willem Poortman 2021-present. All rights reserved.
+ *
+ * Please read the README and LICENSE files for more
+ * details on copyrights and license information.
+ */
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magewirephp\Magewire\Magewire\Playwright\Pagination\Multiple;
+
+/** @var Multiple $magewire */
+/** @var Escaper $escaper */
+
+$postPage = (int) $magewire->getPage();
+$itemPage = (int) $magewire->getPage('item-page');
+?>
+<section data-testid="pagination-multiple">
+    <h2><?= $escaper->escapeHtml(__('Multiple paginators')) ?></h2>
+
+    <div data-testid="multiple-posts-paginator">
+        <h3><?= $escaper->escapeHtml(__('Posts')) ?></h3>
+        <ol data-testid="multiple-posts">
+            <?php foreach ($magewire->getCurrentPosts() as $offset => $post): ?>
+                <?php $postNumber = ( ( $postPage - 1 ) * 3 ) + $offset + 1 ?>
+                <li data-testid="multiple-post" wire:key="multiple-post-<?= (int) $postNumber ?>">
+                    <?= $escaper->escapeHtml($post) ?>
+                </li>
+            <?php endforeach ?>
+        </ol>
+        <p data-testid="multiple-post-page"><?= (int) $postPage ?></p>
+        <p data-testid="multiple-post-hook"><?= $escaper->escapeHtml($magewire->pageHookOutput) ?></p>
+        <button type="button" data-testid="multiple-post-previous" wire:click="previousPage">
+            <?= $escaper->escapeHtml(__('Previous posts')) ?>
+        </button>
+        <button type="button" data-testid="multiple-post-next" wire:click="nextPage">
+            <?= $escaper->escapeHtml(__('Next posts')) ?>
+        </button>
+    </div>
+
+    <div data-testid="multiple-items-paginator">
+        <h3><?= $escaper->escapeHtml(__('Items')) ?></h3>
+        <ol data-testid="multiple-items">
+            <?php foreach ($magewire->getCurrentItems() as $offset => $item): ?>
+                <?php $itemNumber = ( ( $itemPage - 1 ) * 3 ) + $offset + 1 ?>
+                <li data-testid="multiple-item" wire:key="multiple-item-<?= (int) $itemNumber ?>">
+                    <?= $escaper->escapeHtml($item) ?>
+                </li>
+            <?php endforeach ?>
+        </ol>
+        <p data-testid="multiple-item-page"><?= (int) $itemPage ?></p>
+        <p data-testid="multiple-item-hook"><?= $escaper->escapeHtml($magewire->itemPageHookOutput) ?></p>
+        <button type="button"
+                data-testid="multiple-item-previous"
+                wire:click="previousItemPage"
+        >
+            <?= $escaper->escapeHtml(__('Previous items')) ?>
+        </button>
+        <button type="button"
+                data-testid="multiple-item-next"
+                wire:click="nextItemPage"
+        >
+            <?= $escaper->escapeHtml(__('Next items')) ?>
+        </button>
+    </div>
+</section>
