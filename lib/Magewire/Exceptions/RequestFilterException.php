@@ -76,4 +76,14 @@ abstract class RequestFilterException extends RuntimeException
     {
         return MessageType::WARNING;
     }
+
+    /**
+     * Additional response headers carried by this rejection.
+     *
+     * @return array<string, string>
+     */
+    public function headers(): array
+    {
+        return [];
+    }
 }

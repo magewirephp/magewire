@@ -16,6 +16,8 @@ use Throwable;
 
 class TooManyRequestsException extends RequestFilterException
 {
+    private int|null $retryAfterSeconds = null;
+
     public function __construct(string $message = '', int $code = 0, Throwable|null $previous = null)
     {
         parent::__construct($message === '' ? (string) __('Too many requests! Please wait.') : $message, $code, $previous);
@@ -24,5 +26,25 @@ class TooManyRequestsException extends RequestFilterException
     public function status(): int
     {
         return 429;
+    }
+
+    public static function forLockout(int $remainingSeconds): static
+    {
+        $remainingSeconds = max(1, $remainingSeconds);
+        $exception = new static((string) __('You have been temporarily locked out due to too many requests. Try again in %1 seconds.', $remainingSeconds));
+        $exception->retryAfterSeconds = $remainingSeconds;
+
+        return $exception;
+    }
+
+    public function headers(): array
+    {
+        $headers = parent::headers();
+
+        if ($this->retryAfterSeconds !== null) {
+            $headers['Retry-After'] = (string) $this->retryAfterSeconds;
+        }
+
+        return $headers;
     }
 }

@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+      layout="1column"
+>
+    <body>
+        <referenceContainer name="content">
+            <container name="magewire.playwright.rate-limiting"
+                       htmlId="magewire-playwright-rate-limiting"
+                       htmlTag="div"
+            >
+                <!-- The filter keys on this block name, so renaming it detaches the fixture. -->
+                <block name="magewire.playwright.rate-limiting.basic"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/rate_limiting/basic.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire" xsi:type="object" shared="false">
+                            Magewirephp\Magewire\Magewire\Playwright\RateLimiting\Basic
+                        </argument>
+                    </arguments>
+                </block>
+            </container>
+        </referenceContainer>
+    </body>
+</page>

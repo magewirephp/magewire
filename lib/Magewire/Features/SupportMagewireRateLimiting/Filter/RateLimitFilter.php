@@ -14,6 +14,7 @@ namespace Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Filter;
 use Magento\Framework\App\State as ApplicationState;
 use Magewirephp\Magewire\Features\SupportMagewireRateLimiting\Exceptions\TooManyRequestsException;
 use Magewirephp\Magewire\Features\SupportMagewireRateLimiting\RateLimiterConfig;
+use Magewirephp\Magewire\Features\SupportMagewireRateLimiting\RateLimitLockout;
 use Magewirephp\Magewire\Features\SupportMagewireRateLimiting\UpdateRequestRateLimiter;
 use Magewirephp\Magewire\Mechanisms\HandleRequests\Filter\RequestFilterInterface;
 use Magewirephp\Magewire\Mechanisms\HandleRequests\RequestContext;
@@ -37,6 +38,7 @@ class RateLimitFilter implements RequestFilterInterface
 
     public function __construct(
         private readonly UpdateRequestRateLimiter $rateLimiter,
+        private readonly RateLimitLockout $lockout,
         private readonly RateLimiterConfig $rateLimiterConfig,
         private readonly ApplicationState $applicationState
     ) {
@@ -45,6 +47,20 @@ class RateLimitFilter implements RequestFilterInterface
     public function check(RequestContext $context): void
     {
         if (! $this->canRateLimit()) {
+            return;
+        }
+
+        $remainingLockoutSeconds = $this->lockout->remainingSeconds();
+
+        if ($remainingLockoutSeconds > 0) {
+            throw TooManyRequestsException::forLockout($remainingLockoutSeconds);
+        }
+
+        /*
+         * Component-scoped limiting still needs reconstruction, but an already active lockout can
+         * be rejected here before that work starts.
+         */
+        if (! $this->rateLimiterConfig->canRateLimitRequests()) {
             return;
         }
 
@@ -57,6 +73,12 @@ class RateLimitFilter implements RequestFilterInterface
         $context->attributes()->set(self::ATTRIBUTE, $passed);
 
         if (! $passed) {
+            $remainingLockoutSeconds = $this->lockout->registerRejection($this->rateLimiterConfig->getRequestsDecaySeconds());
+
+            if ($remainingLockoutSeconds > 0) {
+                throw TooManyRequestsException::forLockout($remainingLockoutSeconds);
+            }
+
             throw new TooManyRequestsException();
         }
     }
@@ -72,7 +94,7 @@ class RateLimitFilter implements RequestFilterInterface
             return false;
         }
 
-        return $this->rateLimiterConfig->canRateLimitRequests();
+        return $this->rateLimiterConfig->canRateLimit();
     }
 
     /**
