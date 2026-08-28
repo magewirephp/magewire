@@ -31,13 +31,15 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             defaults: {
                 notification: {
                     state: '<?= $escaper->escapeJs(NotificationStateEnum::IDLE->state()) ?>',
-                    level: <?= $escaper->escapeJs(NotificationStateEnum::IDLE->level()) ?>,
+                    level: <?= $escaper->escapeJs((string) NotificationStateEnum::IDLE->level()) ?>,
                     type: '<?= $escaper->escapeJs(MessageType::INFO->type()) ?>',
                     duration: null,
                     recoverable: false,
+                    occurrences: 1,
 
                     hooks: {
                         onCreate: ({ notification }) => {},
+                        onUpdate: ({ notification, changes }) => {},
                         onActivate: ({ notification }) => {},
                         onCleanup: ({ notification }) => {},
                         onTerminate: ({ notification }) => {},
@@ -65,6 +67,29 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                 });
             },
 
+            observe: function(subject) {
+                const notifier = this;
+                const notification = Alpine.reactive(subject);
+                let previous = notification.state;
+
+                Alpine.effect(() => {
+                    const state = notification.state;
+
+                    if (previous !== state) {
+                        <?php /* A negative level is allowed to be set when no matching level was found. */ ?>
+                        notification.level = levels.indexOf(state);
+
+                        if (typeof notification.hooks.onStateChange === 'function') {
+                            notifier.trigger('state-change', { state, previous, notification }, notification)
+                        }
+                    }
+
+                    previous = state;
+                });
+
+                return notification;
+            },
+
             create: async function(message, options = {}, hooks = {}) {
                 const { activate = true, ...notificationOptions } = options;
 
@@ -85,29 +110,28 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                     notification.duration = window.MagewireUtilities.str.calculateReadingDurationByStrLength(notification.message);
                 }
 
+                const previous = this.notifications[this.notifications.length - 1] ?? null;
+
+                <?php /*
+                 * Duplicate identity deliberately stops at message and type. Lifecycle fields,
+                 * hooks, and whichever markup renders the notification are not customer-visible
+                 * message identity. Only an active, immediately preceding notification is reused;
+                 * a message that has already disappeared should be allowed to surface again.
+                 */ ?>
+                if (activate
+                    && previous?.active === true
+                    && previous.message === notification.message
+                    && previous.type === notification.type
+                ) {
+                    return this.update(previous.id, {
+                        occurrences: (previous.occurrences ?? 1) + 1
+                    }, hooks);
+                }
+
                 notification.id = Math.floor(Math.random() * 2147483647);
                 notification.state = this.defaults.notification.state;
                 notification.active = false;
-
-                const notifier = this;
-
-                notification = new Proxy(notification, {
-                    set(target, property, value) {
-                        const previous = target[property];
-                        target[property] = value;
-
-                        if (property === 'state' && previous !== value) {
-                            <?php /* A negative level is allowed to be set when no matching level was found. */ ?>
-                            notification.level = levels.indexOf(value);
-
-                            if (typeof target.hooks.onStateChange === 'function') {
-                                notifier.trigger('state-change', { state: value, previous, notification }, notification)
-                            }
-                        }
-
-                        return true;
-                    }
-                });
+                notification = this.observe(notification);
 
                 this.notifications.push(notification);
 
@@ -122,6 +146,25 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
 
             get: function(id) {
                 return this.notifications.find(notification => notification.id === id) ?? null;
+            },
+
+            update: async function(id, changes = {}, hooks = {}) {
+                const notification = await this.hold(id);
+
+                if (! notification) {
+                    return null;
+                }
+
+                Object.assign(notification, changes);
+                notification.hooks = { ...notification.hooks, ...hooks };
+
+                await this.trigger('update', { notification, changes }, notification);
+
+                if (notification.active) {
+                    await this.cleanup(id);
+                }
+
+                return notification;
             },
 
             activate: async function(id) {
@@ -183,7 +226,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
             hold: async function(id) {
                 const notification = this.get(id);
 
-                if (notification.timeout) {
+                if (notification?.timeout) {
                     clearTimeout(notification.timeout);
                 }
 
