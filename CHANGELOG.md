@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.6.0](https://github.com/magewirephp/magewire/compare/3.5.0...3.6.0) (2026-08-28)
+
+
+### Features
+
+* **notifier:** coalesce repeated messages ([#280](https://github.com/magewirephp/magewire/issues/280)) ([f3e15ee](https://github.com/magewirephp/magewire/commit/f3e15ee5e8eebfbebd65ce241bfb7bdfd41212ff))
+* **ported:** WithPagination support ([#283](https://github.com/magewirephp/magewire/issues/283)) ([#284](https://github.com/magewirephp/magewire/issues/284)) ([1d9807a](https://github.com/magewirephp/magewire/commit/1d9807afe1d731d8b8ce4a08b76e39f227f47b43))
+* **rate-limiting:** add temporary lockouts ([#281](https://github.com/magewirephp/magewire/issues/281)) ([c8ee94c](https://github.com/magewirephp/magewire/commit/c8ee94ce910161fa70e5bcc599cc7e7f4afb49ac))
+
+
+### Bug Fixes
+
+* **compiler:** start template fragments ([#282](https://github.com/magewirephp/magewire/issues/282)) ([f913dd4](https://github.com/magewirephp/magewire/commit/f913dd4d5fdd0621e7fc46d5d8b70881c355c3b5))
+
 ## [3.5.0](https://github.com/magewirephp/magewire/compare/3.4.0...3.5.0) (2026-08-18)
 
 
