@@ -112,12 +112,12 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
 
                 const previous = this.notifications[this.notifications.length - 1] ?? null;
 
-                /*
+                <?php /*
                  * Duplicate identity deliberately stops at message and type. Lifecycle fields,
                  * hooks, and whichever markup renders the notification are not customer-visible
                  * message identity. Only an active, immediately preceding notification is reused;
                  * a message that has already disappeared should be allowed to surface again.
-                 */
+                 */ ?>
                 if (activate
                     && previous?.active === true
                     && previous.message === notification.message
