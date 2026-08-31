@@ -86,7 +86,7 @@
 
                             <item name="query_params" xsi:type="array">
                                 <!-- See: web/js/manifest.json -->
-                                <item name="id" xsi:type="string">69cd902e</item>
+                                <item name="id" xsi:type="string">d24a0e56</item>
                             </item>
 
                             <item name="html_attributes" xsi:type="array">
