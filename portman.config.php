@@ -5,8 +5,8 @@ return [
             'portman/lib/Livewire' => [
                 'composer' => [
                     'name'   => 'livewire/livewire',
-                    'version'   => '~3.7.11',
-                    'version-lock'   => '3.7.11',
+                    'version'   => '~3.7.15',
+                    'version-lock'   => '3.7.15',
                     'base-path'   => 'src'
                 ],
                 'glob' => '**/*.php',
