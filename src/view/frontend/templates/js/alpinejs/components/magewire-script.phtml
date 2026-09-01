@@ -16,13 +16,13 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
 ?>
 <?php $script = $magewireFragment->make()->script()->start() ?>
 <script>
-    function magewireScript() {
+    function magewireRuntime() {
         return {
             //
         };
     }
 
-    function magewireScriptBindings() {
+    function magewireRuntimeBindings() {
         return {
             'x-bind:data-update-uri'() {
                 return '<?= $escaper->escapeJs($magewireUtility->getUpdateUri()) ?>';
@@ -33,9 +33,23 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
         };
     }
 
+    <?php /* @deprecated Use magewireRuntime instead. */ ?>
+    function magewireScript() {
+        return magewireRuntime();
+    }
+
+    <?php /* @deprecated Use magewireRuntimeBindings instead. */ ?>
+    function magewireScriptBindings() {
+        return magewireRuntimeBindings();
+    }
+
     <?php /* Register as Alpine component. */ ?>
-    document.addEventListener('alpine:init', () => Alpine.data('magewireScript', magewireScript), { once: true })
+    document.addEventListener('alpine:init', () => Alpine.data('magewireRuntime', magewireRuntime), { once: true })
     <?php /* Register Alpine component bindings (for optional usage). */ ?>
+    document.addEventListener('alpine:init', () => Alpine.bind('magewireRuntimeBindings', magewireRuntimeBindings), { once: true });
+    <?php /* Register deprecated Alpine component alias. */ ?>
+    document.addEventListener('alpine:init', () => Alpine.data('magewireScript', magewireScript), { once: true })
+    <?php /* Register deprecated Alpine component bindings alias. */ ?>
     document.addEventListener('alpine:init', () => Alpine.bind('magewireScriptBindings', magewireScriptBindings), { once: true });
 </script>
 <?php $script->end() ?>
