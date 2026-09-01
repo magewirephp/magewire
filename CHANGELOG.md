@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.6.1](https://github.com/magewirephp/magewire/compare/3.6.0...3.6.1) (2026-09-01)
+
+
+### Bug Fixes
+
+* **runtime:** add canonical Magewire runtime providers ([#287](https://github.com/magewirephp/magewire/issues/287)) ([2c927bc](https://github.com/magewirephp/magewire/commit/2c927bc4b62420384d23e7240dab4d96d6721ba4))
+
 ## [3.6.0](https://github.com/magewirephp/magewire/compare/3.5.0...3.6.0) (2026-08-28)
 
 
