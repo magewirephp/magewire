@@ -33,16 +33,12 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
         };
     }
 
-    /**
-     * @deprecated Use magewireRuntime instead.
-     */
+    <?php /* @deprecated Use magewireRuntime instead. */ ?>
     function magewireScript() {
         return magewireRuntime();
     }
 
-    /**
-     * @deprecated Use magewireRuntimeBindings instead.
-     */
+    <?php /* @deprecated Use magewireRuntimeBindings instead. */ ?>
     function magewireScriptBindings() {
         return magewireRuntimeBindings();
     }
