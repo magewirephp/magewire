@@ -25,9 +25,7 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                  aria-label="off"
                  class="magewire.notification.message relative"
                  x-bind:class="getButtonClasses"
-                 x-transition:leave="transition ease-in duration-600"
-                 x-transition:leave-start="opacity-100 scale-100"
-                 x-transition:leave-end="opacity-0 scale-80"
+                 x-transition:leave.scale.80.opacity
                  x-show="message.active"
                  x-on:click.once="inactivateMessage"
             >
@@ -58,9 +56,7 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                                 <?php /* Stack items vertically to prevent layout shifting when hiding or disappearing, ensuring consistent visual layout. */ ?>
                                 <div class="absolute"
                                      x-show="message.loading"
-                                     x-transition:leave="transition ease-in duration-600"
-                                     x-transition:leave-start="scale-100"
-                                     x-transition:leave-end="scale-0"
+                                     x-transition:leave.scale.0
                                 >
                                     <?= $block->getChildHtml('spinner') ?>
                                 </div>
@@ -73,9 +69,7 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                                      xmlns="http://www.w3.org/2000/svg"
                                      aria-hidden="true"
                                      x-show="isSuccessMessage"
-                                     x-transition:enter="transition ease-in duration-200"
-                                     x-transition:enter-start="scale-0"
-                                     x-transition:enter-end="scale-100"
+                                     x-transition:enter.scale.0.duration.200ms
                                 >
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path>
                                 </svg>
@@ -88,9 +82,7 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                                      xmlns="http://www.w3.org/2000/svg"
                                      aria-hidden="true"
                                      x-show="isNotSuccessMessage"
-                                     x-transition:enter="transition ease-in duration-200"
-                                     x-transition:enter-start="scale-0"
-                                     x-transition:enter-end="scale-100"
+                                     x-transition:enter.scale.0.duration.200ms
                                 >
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"></path>
                                 </svg>
