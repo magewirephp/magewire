@@ -12,12 +12,8 @@ use Magento\Framework\View\Element\Template;
 /** @var Escaper $escaper */
 /** @var Template $block */
 ?>
-<div class="magewire-loader-overlay
-            fixed
-            top-0 left-0 right-0 bottom-0
-            w-full h-screen
-            overflow-hidden
-            bg-white bg-opacity-90"
+<div class="magewire-loader-overlay fixed inset-0 flex flex-col
+    justify-center items-center w-full h-screen overflow-hidden bg-white/80"
      <?php /* AlpineJS v2.x */ ?>
      x-spread="overlay"
      <?php /* AlpineJS v3.x */ ?>
@@ -29,10 +25,9 @@ use Magento\Framework\View\Element\Template;
      x-transition:leave="transition duration-200"
      x-transition:leave-start="opacity-100"
      x-transition:leave-end="opacity-0"
+     x-ref="overlay"
 >
-    <div class="flex flex-col justify-center items-center h-screen w-full space-y-6" x-ref="overlay">
-        <div class="w-16 h-16">
-            <?= $block->getChildHtml('spinner') ?>
-        </div>
+    <div class="w-16 h-16">
+        <?= $block->getChildHtml('spinner') ?>
     </div>
 </div>
