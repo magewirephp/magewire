@@ -37,8 +37,8 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                             md:max-w-sm"
                      x-bind:class="getUnsuccessfulBorderClasses"
                 >
-                    <div class="flex text-left text-sm space-x-0.5 text-gray-900">
-                        <div class="flex-grow w-0 space-y-1">
+                    <div class="flex gap-x-0.5 text-sm">
+                        <div class="grow w-0 space-y-1">
                             <template x-for="(title, position, loaders) in message.loader" :key="position">
                                 <p class="hyphens-auto leading-tight"
                                    x-text="title"
