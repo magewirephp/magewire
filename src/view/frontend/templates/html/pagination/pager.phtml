@@ -8,12 +8,14 @@
 
 declare(strict_types=1);
 
-/** @var PaginationInterface $pagination */
-/** @var Template $block */
-
+use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Component\PaginationInterface;
 
+/** @var Escaper $escaper */
+/** @var Template $block */
+
+/** @var PaginationInterface $pagination */
 $pagination = $block->getComponent();
 ?>
 <div>

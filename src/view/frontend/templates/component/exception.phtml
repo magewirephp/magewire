@@ -9,7 +9,7 @@
 use Magento\Framework\App\State;
 use Magento\Framework\View\Element\Template;
 
-/** @var $block Template */
+/** @var Template $block */
 ?>
 <?php if ($block->getApplicationState()->getMode() === State::MODE_DEVELOPER): ?>
 <div class="magewire-exception">
@@ -21,4 +21,3 @@ use Magento\Framework\View\Element\Template;
 </div>
 <?php endif; ?>
 <!-- Magewire Component wire-exception: <?= $block->getNameInLayout() ?>-->
-
