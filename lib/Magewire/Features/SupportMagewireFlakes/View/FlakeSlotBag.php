@@ -9,8 +9,9 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Fragment\Component;
+namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\View;
 
-class Flux extends Flake
+/** @extends FlakeValueBag<string, mixed> */
+class FlakeSlotBag extends FlakeValueBag
 {
 }

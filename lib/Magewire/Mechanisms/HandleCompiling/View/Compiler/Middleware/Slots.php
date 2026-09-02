@@ -39,8 +39,7 @@ class Slots extends AbstractTagCompiler
 
     protected function closingTagPattern(): string
     {
-        // Accept both `</slot:name>` and the bare `</slot>` — Laravel-style
-        // symmetry with Flux's slot tags.
+        // Accept both `</slot:name>` and the bare `</slot>`.
         return "/<\/\s*slot(?::[\w\-.]+)?\s*>/";
     }
 

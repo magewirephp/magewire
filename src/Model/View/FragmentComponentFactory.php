@@ -15,11 +15,18 @@ use LogicException;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\Model\View\Fragment\Component;
 use Magewirephp\Magewire\Model\View\Fragment\Component\Unknown;
+use Magewirephp\Magewire\Model\View\Fragment\Slot;
 use Magewirephp\Magewire\Support\Factory;
 use Magewirephp\Magewire\Support\Random;
 
 class FragmentComponentFactory
 {
+    /** @var array<string, int> */
+    private array $occurrences = [];
+
+    /**
+     * @param array<string, class-string> $components
+     */
     public function __construct(
         private array $components = []
     ) {
@@ -33,30 +40,41 @@ class FragmentComponentFactory
      * Slots tracker. The id is a fresh random per slot instance and is purely
      * a uniqueness handle (not the slot name).
      */
-    public function slot(string $target, AbstractBlock $block): \Magewirephp\Magewire\Model\View\Fragment\Slot
+    public function slot(string $target, AbstractBlock $block): Slot
     {
-        return $this->create(\Magewirephp\Magewire\Model\View\Fragment\Slot::class, [
+        $slot = $this->create(Slot::class, [
             'id' => Random::alphabetical(10),
             'type' => $target,
             'block' => $block
         ]);
+
+        if (! $slot instanceof Slot) {
+            throw new LogicException(sprintf('Expected Slot, got %s.', get_debug_type($slot)));
+        }
+
+        return $slot;
     }
 
     /**
-     * @template T of Component
-     * @param class-string<T> $prefix
-     * @return T
      * @throws LogicException
      */
     public function component(string $prefix, AbstractBlock $block, string $id, string $type = 'default'): Component
     {
+        $occurrenceKey = $prefix . ':' . $id;
+        $occurrence = $this->occurrences[$occurrenceKey] ?? 0;
+        $this->occurrences[$occurrenceKey] = $occurrence + 1;
+
+        if ($occurrence !== 0) {
+            $id .= '-' . $occurrence;
+        }
+
         return $this->create($this->components[$prefix] ?? Unknown::class, ['id' => $id, 'type' => $type, 'block' => $block]);
     }
 
     /**
-     * @template T of Fragment
-     * @param class-string<T> $type
-     * @return T
+     * @param class-string $type
+     * @param array<string, mixed> $arguments
+     * @return Component
      * @throws LogicException
      */
     private function create(string $type, array $arguments = []): Component

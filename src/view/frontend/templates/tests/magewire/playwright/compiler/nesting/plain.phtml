@@ -1,0 +1,22 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Playwright\Compiler\LayoutContext;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+
+/** @var LayoutContext $compilerContext */
+$compilerContext = $block->getData('compiler_context');
+?>
+<article
+    data-testid="compiler-nesting-plain-child"
+    data-layout-route="<?= $escaper->escapeHtmlAttr($compilerContext->route()) ?>"
+    data-within-parent="<?= $compilerContext->within('magewire.playwright.compiler.nesting.parent') ? 'yes' : 'no' ?>"
+    class="rounded-lg border border-slate-200 bg-white p-4"
+>
+    Plain uncompiled child
+</article>

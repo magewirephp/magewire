@@ -9,10 +9,9 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\Component;
+namespace Magewirephp\Magewire\Features\SupportMagewireFlakes\View;
 
-use Magewirephp\Magewire\Component;
-
-class Flux extends Component
+/** @extends FlakeValueBag<int, mixed> */
+class FlakeAncestorFrames extends FlakeValueBag
 {
 }

@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Willem Poortman 2021-present. All rights reserved.
+ *
+ * Please read the README and LICENSE files for more
+ * details on copyrights and license information.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+      layout="1column"
+>
+    <body>
+        <referenceContainer name="content">
+            <container name="magewire.playwright.compiler"
+                       htmlClass="grid grid-cols-1 gap-8"
+                       htmlId="magewire-playwright-compiler"
+                       htmlTag="div"
+            >
+                <block name="magewire.playwright.compiler.default"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/compiler/default.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire:compile" xsi:type="boolean">true</argument>
+                    </arguments>
+                </block>
+
+                <block name="magewire.playwright.compiler.custom"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/compiler/custom.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire:compile" xsi:type="boolean">true</argument>
+                        <argument name="magewire:compiler" xsi:type="object" shared="false">
+                            Magewirephp\Magewire\Playwright\Compiler\CustomCompiler
+                        </argument>
+                    </arguments>
+                </block>
+
+                <block name="magewire.playwright.compiler.nesting.parent"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/compiler/nesting/parent.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire:compile" xsi:type="boolean">true</argument>
+                        <argument name="compiler_context" xsi:type="object">
+                            Magewirephp\Magewire\Playwright\Compiler\LayoutContext
+                        </argument>
+                    </arguments>
+
+                    <block name="magewire.playwright.compiler.nesting.child"
+                           template="Magewirephp_Magewire::tests/magewire/playwright/compiler/nesting/child.phtml"
+                           as="compiled-child"
+                    >
+                        <arguments>
+                            <argument name="magewire:compile" xsi:type="boolean">true</argument>
+                            <argument name="magewire:compiler" xsi:type="object" shared="false">
+                                Magewirephp\Magewire\Playwright\Compiler\CustomCompiler
+                            </argument>
+                            <argument name="compiler_context" xsi:type="object">
+                                Magewirephp\Magewire\Playwright\Compiler\LayoutContext
+                            </argument>
+                        </arguments>
+
+                        <block name="magewire.playwright.compiler.nesting.grandchild"
+                               template="Magewirephp_Magewire::tests/magewire/playwright/compiler/nesting/grandchild.phtml"
+                               as="grandchild"
+                        >
+                            <arguments>
+                                <argument name="magewire:compile" xsi:type="boolean">true</argument>
+                                <argument name="compiler_context" xsi:type="object">
+                                    Magewirephp\Magewire\Playwright\Compiler\LayoutContext
+                                </argument>
+                            </arguments>
+                        </block>
+                    </block>
+
+                    <block name="magewire.playwright.compiler.nesting.plain"
+                           template="Magewirephp_Magewire::tests/magewire/playwright/compiler/nesting/plain.phtml"
+                           as="plain-child"
+                    >
+                        <arguments>
+                            <argument name="compiler_context" xsi:type="object">
+                                Magewirephp\Magewire\Playwright\Compiler\LayoutContext
+                            </argument>
+                        </arguments>
+                    </block>
+                </block>
+
+                <block name="magewire.playwright.compiler.flake-tree"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/compiler/flake-tree.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire:compile" xsi:type="boolean">true</argument>
+                    </arguments>
+                </block>
+
+                <block name="magewire.playwright.compiler.directives"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/compiler/directives.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire:compile" xsi:type="boolean">true</argument>
+                    </arguments>
+                </block>
+
+                <block name="magewire.playwright.compiler.selector-only"
+                       template="Magewirephp_Magewire::tests/magewire/playwright/compiler/selector-only.phtml"
+                >
+                    <arguments>
+                        <argument name="magewire:compiler" xsi:type="object" shared="false">
+                            Magewirephp\Magewire\Playwright\Compiler\CustomCompiler
+                        </argument>
+                    </arguments>
+                </block>
+            </container>
+        </referenceContainer>
+    </body>
+</page>
