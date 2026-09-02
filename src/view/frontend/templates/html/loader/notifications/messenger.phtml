@@ -29,12 +29,8 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                  x-show="message.active"
                  x-on:click.once="inactivateMessage"
             >
-                <div class="relative w-full
-                            rounded-md border border-gray-300
-                            bg-white bg-opacity-75 backdrop-blur-sm bg-blur
-                            py-3 px-5 md:py-4 md:pl-6 md:pr-4
-                            shadow-lg
-                            md:max-w-sm"
+                <div class="relative w-full rounded-md border border-gray-300 bg-white/60 backdrop-blur-sm
+                        py-3 px-5 md:py-4 md:pl-6 md:pr-4 shadow-lg md:max-w-sm"
                      x-bind:class="getUnsuccessfulBorderClasses"
                 >
                     <div class="flex gap-x-0.5 text-sm">
