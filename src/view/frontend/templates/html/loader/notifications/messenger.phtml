@@ -45,44 +45,45 @@ use Magewirephp\Magewire\Model\Action\FireEvent;
                             </template>
                         </div>
 
-                        <div class="flex-none w-5 h-5 mx-auto mt-0.5">
-                            <div class="relative">
-                                <?php /* Stack items vertically to prevent layout shifting when hiding or disappearing, ensuring consistent visual layout. */ ?>
-                                <div class="absolute"
-                                     x-show="message.loading"
-                                     x-transition:leave.scale.0
-                                >
-                                    <?= $block->getChildHtml('spinner') ?>
-                                </div>
-
-                                <?php /* Show a checkmark icon when loading fully completed successfully. */ ?>
-                                <svg class="w-full h-full text-green-700"
-                                     fill="none"
-                                     stroke="currentColor"
-                                     stroke-width="2"
-                                     viewBox="0 0 24 24"
-                                     xmlns="http://www.w3.org/2000/svg"
-                                     aria-hidden="true"
-                                     x-show="isSuccessMessage"
-                                     x-transition:enter.scale.0.duration.200ms
-                                >
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path>
-                                </svg>
-
-                                <?php /* Show a exclamation triangle icon when loading failed. */ ?>
-                                <svg class="w-full h-full text-red-700"
-                                     fill="none"
-                                     stroke="currentColor"
-                                     stroke-width="2"
-                                     viewBox="0 0 24 24"
-                                     xmlns="http://www.w3.org/2000/svg"
-                                     aria-hidden="true"
-                                     x-show="isNotSuccessMessage"
-                                     x-transition:enter.scale.0.duration.200ms
-                                >
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"></path>
-                                </svg>
+                        <?php /* Stack items vertically to prevent layout shifting when hiding or disappearing, ensuring consistent visual layout. */ ?>
+                        <div class="flex-none grid *:[grid-area:1/1] w-6 h-6 mx-auto mt-0.5">
+                            <div x-show="message.loading" x-transition:leave.scale.0>
+                                <?= $block->getChildHtml('spinner') ?>
                             </div>
+
+                            <?php /* Show a checkmark icon when loading fully completed successfully. */ ?>
+                            <svg
+                                class="w-full h-full text-green-600"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                viewBox="0 0 24 24"
+                                width="24"
+                                height="24"
+                                xmlns="http://www.w3.org/2000/svg"
+                                aria-hidden="true"
+                                x-show="isSuccessMessage"
+                                x-transition:enter.scale.0.duration.200ms
+                            >
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path>
+                            </svg>
+
+                            <?php /* Show a exclamation triangle icon when loading failed. */ ?>
+                            <svg
+                                class="w-full h-full text-red-600"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                viewBox="0 0 24 24"
+                                width="24"
+                                height="24"
+                                xmlns="http://www.w3.org/2000/svg"
+                                aria-hidden="true"
+                                x-show="isNotSuccessMessage"
+                                x-transition:enter.scale.0.duration.200ms
+                            >
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"></path>
+                            </svg>
                         </div>
                     </div>
                 </div>
