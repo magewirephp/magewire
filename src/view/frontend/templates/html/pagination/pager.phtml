@@ -8,34 +8,76 @@
 
 declare(strict_types=1);
 
-/** @var PaginationInterface $pagination */
-/** @var Template $block */
-
+use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Component\PaginationInterface;
 
+/** @var Escaper $escaper */
+/** @var Template $block */
+
+/** @var PaginationInterface $pagination */
 $pagination = $block->getComponent();
+
+$paginationBtnCssClasses = "p-2 rounded-sm border border-gray-300 hover:bg-primary hover:text-on-primary cursor-pointer disabled:cursor-not-allowed disabled:bg-transparent disabled:text-gray-400";
 ?>
 <div>
     <?php if ($pagination->hasPages()): ?>
-    <div class="flex items-center">
-        <?php if ($pagination->onFirstPage()): ?>
-        <span class="rounded-l rounded-sm border border-brand-light px-3 py-2 cursor-not-allowed no-underline">&laquo;</span>
-        <?php else: ?>
+    <div class="flex gap-1 items-center">
         <button
-            class="rounded-l rounded-sm border-t border-b border-l border-brand-light px-3 py-2 text-brand-dark hover:bg-brand-light no-underline cursor-pointer"
+            type="button"
+            class="<?= $escaper->escapeHtmlAttr($paginationBtnCssClasses) ?>"
+            aria-label="<?= $escaper->escapeHtmlAttr(__('Previous page')); ?>"
+            <?php if ($pagination->onFirstPage()): ?>
+            disabled
+            <?php else: ?>
             wire:click="toPreviousPage"
-            rel="prev"
+            <?php endif; ?>
         >
-            &laquo;
+            <svg
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="rtl:rotate-180"
+            >
+                <path d="m11 17-5-5 5-5"/>
+                <path d="m18 17-5-5 5-5"/>
+            </svg>
         </button>
-        <?php endif; ?>
 
-        <?php if ($pagination->hasMorePages()): ?>
-        <button class="rounded-r rounded-sm border border-brand-light px-3 py-2 hover:bg-brand-light text-brand-dark no-underline cursor-pointer" wire:click="toNextPage" rel="next">&raquo;</button>
-        <?php else: ?>
-        <span class="rounded-r rounded-sm border border-brand-light px-3 py-2 hover:bg-brand-light text-brand-dark no-underline cursor-not-allowed">&raquo;</span>
-        <?php endif; ?>
+        <button
+            type="button"
+            class="<?= $escaper->escapeHtmlAttr($paginationBtnCssClasses) ?>"
+            aria-label="<?= $escaper->escapeHtmlAttr(__('Next page')); ?>"
+            <?php if ($pagination->hasMorePages()): ?>
+            wire:click="toNextPage"
+            <?php else: ?>
+            disabled
+            <?php endif; ?>
+        >
+            <svg
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="rtl:rotate-180"
+            >
+                <path d="m6 17 5-5-5-5"/>
+                <path d="m13 17 5-5-5-5"/>
+            </svg>
+        </button>
     </div>
     <?php endif; ?>
 </div>

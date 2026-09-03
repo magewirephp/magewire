@@ -5,6 +5,6 @@
  * details on copyrights and license information.
  */
 
-module.exports = {
-    content: ["../templates/**/*.phtml"],
-};
+@source "../templates";
+
+@import "./src/magewire.css";
