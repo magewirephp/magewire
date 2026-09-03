@@ -6,24 +6,18 @@
 [wire\:loading\.flex],
 [wire\:loading\.table],
 [wire\:loading\.grid],
-[wire\:loading\.inline-flex] {
-    display: none;
-}
-
+[wire\:loading\.inline-flex],
 [wire\:loading\.delay\.shortest],
 [wire\:loading\.delay\.shorter],
 [wire\:loading\.delay\.short],
 [wire\:loading\.delay\.long],
 [wire\:loading\.delay\.longer],
-[wire\:loading\.delay\.longest] {
-    display: none;
-}
-
+[wire\:loading\.delay\.longest],
 [wire\:offline] {
     display: none;
 }
 
-[wire\:dirty]:not(textarea):not(input):not(select) {
+[wire\:dirty]:not(textarea, input, select) {
     display: none;
 }
 
