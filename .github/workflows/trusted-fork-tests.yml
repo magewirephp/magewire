@@ -1,0 +1,220 @@
+name: 'Trusted fork tests'
+
+# Fork pull_request workflows intentionally receive no repository secrets. After
+# reviewing a PR revision, a maintainer can comment `/test` to mirror that exact
+# commit to an internal CI ref and dispatch the complete test workflow there.
+# No contributor code is executed by this privileged broker.
+on:
+  issue_comment:
+    types: [created]
+  pull_request_target:
+    types: [closed]
+  workflow_run:
+    workflows: ['Tests']
+    types: [completed]
+    branches: ['ci/pr-*-comment-*']
+
+permissions: {}
+
+jobs:
+
+  dispatch:
+    name: 'Dispatch /test'
+    if: >-
+      github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request &&
+      github.event.comment.body == '/test' &&
+      contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: write
+      issues: write
+      pull-requests: read
+    steps:
+      - name: Authorize maintainer and dispatch PR revision
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const actor = context.payload.comment.user.login;
+            const { data: access } = await github.rest.repos.getCollaboratorPermissionLevel({
+              ...context.repo,
+              username: actor,
+            });
+
+            if (!['admin', 'write'].includes(access.permission)) {
+              core.notice(`Ignoring /test from ${actor}: write access is required.`);
+              return;
+            }
+
+            const { data: pull } = await github.rest.pulls.get({
+              ...context.repo,
+              pull_number: context.issue.number,
+            });
+
+            if (pull.state !== 'open' || !pull.head.repo) {
+              core.setFailed('The pull request must be open and its head repository must be available.');
+              return;
+            }
+
+            const commentId = context.payload.comment.id;
+            const shortSha = pull.head.sha.slice(0, 7);
+            const commitUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/commit/${pull.head.sha}`;
+            const brokerUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const updateComment = body => github.rest.issues.updateComment({
+              ...context.repo,
+              comment_id: commentId,
+              body,
+            });
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              ...context.repo,
+              pull_number: pull.number,
+              per_page: 100,
+            });
+            const workflowChanges = files
+              .map(file => file.filename)
+              .filter(filename => filename.startsWith('.github/workflows/'));
+
+            if (workflowChanges.length > 0) {
+              await updateComment([
+                '### Trusted fork tests',
+                '',
+                `⛔ Tests were not started for [\`${shortSha}\`](${commitUrl}) because this PR changes GitHub Actions workflow files.`,
+                '',
+                'Privileged testing requires those workflow changes to be reviewed and merged separately.',
+                '',
+                `[View authorization details](${brokerUrl})`,
+              ].join('\n'));
+              core.setFailed(`Refusing privileged tests because the PR changes workflow files: ${workflowChanges.join(', ')}`);
+              return;
+            }
+
+            const branch = `ci/pr-${pull.number}-comment-${commentId}`;
+            const ref = `heads/${branch}`;
+
+            try {
+              try {
+                const { data: current } = await github.rest.git.getRef({
+                  ...context.repo,
+                  ref,
+                });
+
+                if (current.object.sha !== pull.head.sha) {
+                  throw new Error(`${branch} already points to a different revision.`);
+                }
+              } catch (error) {
+                if (error.status !== 404) throw error;
+
+                await github.rest.git.createRef({
+                  ...context.repo,
+                  ref: `refs/${ref}`,
+                  sha: pull.head.sha,
+                });
+              }
+
+              const runsUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/workflows/tests.yml?query=${encodeURIComponent(`branch:${branch}`)}`;
+              await updateComment([
+                '### Trusted fork tests',
+                '',
+                `⏳ Tests are running for [\`${shortSha}\`](${commitUrl}).`,
+                '',
+                `[View workflow runs](${runsUrl})`,
+              ].join('\n'));
+
+              await github.rest.actions.createWorkflowDispatch({
+                ...context.repo,
+                workflow_id: 'tests.yml',
+                ref: branch,
+              });
+
+              core.notice(`Dispatched Tests for PR #${pull.number} at ${pull.head.sha} via ${branch}.`);
+            } catch (error) {
+              await updateComment([
+                '### Trusted fork tests',
+                '',
+                `❌ Tests could not be started for [\`${shortSha}\`](${commitUrl}).`,
+                '',
+                `[Review the authorization run](${brokerUrl}), then add a new \`/test\` comment to try again.`,
+              ].join('\n'));
+              throw error;
+            }
+
+  report:
+    name: 'Report trusted result'
+    if: >-
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.event == 'workflow_dispatch' &&
+      startsWith(github.event.workflow_run.head_branch, 'ci/pr-')
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Update command comment
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const run = context.payload.workflow_run;
+            const match = /^ci\/pr-(\d+)-comment-(\d+)$/.exec(run.head_branch);
+
+            if (!match) {
+              core.notice(`Ignoring unrecognized trusted CI ref ${run.head_branch}.`);
+              return;
+            }
+
+            const commentId = Number(match[2]);
+            const shortSha = run.head_sha.slice(0, 7);
+            const commitUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/commit/${run.head_sha}`;
+            let summary;
+
+            if (run.conclusion === 'success') {
+              summary = `✅ All trusted tests passed for [\`${shortSha}\`](${commitUrl}).`;
+            } else if (run.conclusion === 'cancelled') {
+              summary = `⚠️ Trusted tests were cancelled for [\`${shortSha}\`](${commitUrl}). Add a new \`/test\` comment to run them again.`;
+            } else {
+              summary = `❌ Trusted tests failed for [\`${shortSha}\`](${commitUrl}). Review the failure, then add a new \`/test\` comment to rerun them.`;
+            }
+
+            try {
+              await github.rest.issues.updateComment({
+                ...context.repo,
+                comment_id: commentId,
+                body: [
+                  '### Trusted fork tests',
+                  '',
+                  summary,
+                  '',
+                  `[View workflow run](${run.html_url})`,
+                ].join('\n'),
+              });
+            } catch (error) {
+              if (error.status !== 404) throw error;
+              core.notice(`Command comment ${commentId} no longer exists.`);
+            }
+
+  cleanup:
+    name: 'Remove trusted CI ref'
+    if: github.event_name == 'pull_request_target'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Delete temporary PR ref
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const prefix = `heads/ci/pr-${context.payload.pull_request.number}-comment-`;
+            const refs = await github.paginate(github.rest.git.listMatchingRefs, {
+              ...context.repo,
+              ref: prefix,
+              per_page: 100,
+            });
+
+            for (const reference of refs) {
+              await github.rest.git.deleteRef({
+                ...context.repo,
+                ref: reference.ref.replace(/^refs\//, ''),
+              });
+            }
+
+            core.notice(`Removed ${refs.length} temporary ref(s) matching ${prefix}.`);

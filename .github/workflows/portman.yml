@@ -11,7 +11,6 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
 
 jobs:
 
@@ -21,8 +20,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
         with:
-          ref: ${{ github.head_ref }}
-          token: ${{ secrets.MY_TOKEN }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.repo.full_name == github.repository && github.head_ref || github.event.pull_request.head.sha }}
+          token: ${{ secrets.MY_TOKEN || github.token }}
+          persist-credentials: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
 
       - name: Setup php
         uses: shivammathur/setup-php@v2
@@ -40,6 +41,14 @@ jobs:
       - name: Portman build
         run: ./vendor/bin/portman build
 
-      - uses: stefanzweifel/git-auto-commit-action@v7
+      - name: Verify Portman build is committed
+        if: github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          git add --intent-to-add --all
+          git diff --exit-code
+
+      - name: Commit Portman build
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: 'chore(portman) build'
