@@ -1,0 +1,48 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Model\View\Fragment\Component as FragmentComponent;
+
+/** @var Template $block */
+/** @var FragmentComponent $__component */
+
+$mode = (string) $__component->prop('mode', 'fallback');
+$testId = (string) $__component->attrs()->get('data-testid', 'directive-flake');
+$items = [
+    ['label' => 'First Flake directive item', 'enabled' => true],
+    ['label' => 'Hidden Flake directive item', 'enabled' => false],
+    ['label' => 'Last Flake directive item', 'enabled' => true]
+];
+$payload = ['component' => 'flake', 'mode' => $mode, 'count' => count($items)];
+?>
+<article
+    data-testid="{{ attr($testId) }}"
+    data-mode="{{ attr($mode) }}"
+    data-payload='@json(value: $payload)'
+    class="mw-flake-card mw-flake-card--muted"
+>
+    <div class="mw-flake-card__body">
+        @if($mode === 'primary')
+            <p data-testid="directive-flake-branch">Primary Flake branch</p>
+        @elseif($mode === 'secondary')
+            <p data-testid="directive-flake-branch">Secondary Flake branch</p>
+        @else
+            <p data-testid="directive-flake-branch">Fallback Flake branch</p>
+        @endif
+
+        <ul data-testid="directive-flake-items">
+            @foreach($items as $item)
+                @if($item['enabled'])
+                    <li>{{ $item['label'] }}</li>
+                @endif
+            @endforeach
+        </ul>
+
+        <p data-testid="directive-flake-translation">
+            @translate(value: 'Translated Flake output')
+        </p>
+        <p data-testid="directive-flake-escaped">{{ '<strong>Escaped Flake output</strong>' }}</p>
+    </div>
+</article>

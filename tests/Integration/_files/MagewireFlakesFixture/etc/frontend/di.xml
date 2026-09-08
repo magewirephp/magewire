@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <virtualType name="Magewirephp\MagewireFlakesFixture\Namespace"
+                 type="Magewirephp\Magewire\Features\SupportMagewireFlakes\Namespace\FlakeNamespace"
+    >
+        <arguments>
+            <argument name="prefix" xsi:type="string">fixture</argument>
+            <argument name="handles" xsi:type="array">
+                <item name="default" xsi:type="string">magewire_flakes_fixture</item>
+            </argument>
+            <argument name="registryRoot" xsi:type="string">magewire.flakes.fixture</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Magewirephp\MagewireFlakesFixture\Compiler"
+                 type="Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Compiler\Middleware\Flake"
+    >
+        <arguments>
+            <argument name="tagPrefix" xsi:type="string">fixture</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Magewirephp\MagewireFlakesFixture\Factory"
+                 type="Magewirephp\Magewire\Features\SupportMagewireFlakes\Component\FlakeFactory"
+    >
+        <arguments>
+            <argument name="namespace" xsi:type="string">fixture</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Magewirephp\MagewireFlakesFixture\Fragment"
+                 type="Magewirephp\Magewire\Features\SupportMagewireFlakes\View\Fragment\Component\Flake"
+    >
+        <arguments>
+            <argument name="flakeFactory" xsi:type="object">Magewirephp\MagewireFlakesFixture\Factory</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="Magewirephp\MagewireFlakesFixture\Resolver"
+                 type="Magewirephp\Magewire\Features\SupportMagewireFlakes\Mechanisms\ResolveComponent\ComponentResolver\FlakeResolver"
+    >
+        <arguments>
+            <argument name="flakeFactory" xsi:type="object">Magewirephp\MagewireFlakesFixture\Factory</argument>
+            <argument name="accessor" xsi:type="string">fixture</argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Magewirephp\Magewire\Features\SupportMagewireFlakes\Namespace\FlakeNamespacePool">
+        <arguments>
+            <argument name="namespaces" xsi:type="array">
+                <item name="fixture" xsi:type="object">Magewirephp\MagewireFlakesFixture\Namespace</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Compiler\MagentoTemplateCompiler">
+        <arguments>
+            <argument name="middleware" xsi:type="array">
+                <item name="fixture" xsi:type="object" sortOrder="26">Magewirephp\MagewireFlakesFixture\Compiler</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magewirephp\Magewire\Model\View\FragmentComponentFactory">
+        <arguments>
+            <argument name="components" xsi:type="array">
+                <item name="fixture" xsi:type="string">Magewirephp\MagewireFlakesFixture\Fragment</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\ComponentResolverManager">
+        <arguments>
+            <argument name="resolvers" xsi:type="array">
+                <item name="fixture" xsi:type="object">Magewirephp\MagewireFlakesFixture\Resolver</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

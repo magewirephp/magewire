@@ -1,0 +1,20 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Model\View\Fragment\Component as FragmentComponent;
+use Magewirephp\Magewire\Model\View\SlotSnapshot;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+/** @var FragmentComponent $__component */
+/** @var SlotSnapshot $__slot */
+
+$tone = (string) $__component->prop('tone', 'neutral');
+$tone = in_array($tone, ['neutral', 'success', 'warning'], true) ? $tone : 'neutral';
+?>
+<span class="mw-flake-badge mw-flake-badge--<?= $escaper->escapeHtmlAttr($tone) ?>">
+    <?= /* @noEscape */ $__slot ?>
+</span>

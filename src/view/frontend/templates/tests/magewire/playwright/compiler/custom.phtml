@@ -1,0 +1,20 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+
+/** @var Template $block */
+
+$message = 'Custom compiler selected';
+?>
+<section
+    data-testid="compiler-custom"
+    data-compiler="<?= $escaper->escapeHtmlAttr($block->getData('magewire:compiler')::class) ?>"
+    class="rounded-xl border border-indigo-200 bg-indigo-50 p-6"
+>
+    <h2 class="mb-4 text-xl font-bold">Custom compiler subclass</h2>
+    @if($message !== '')
+        <p data-testid="compiler-custom-output">{{ $message }}</p>
+    @endif
+</section>

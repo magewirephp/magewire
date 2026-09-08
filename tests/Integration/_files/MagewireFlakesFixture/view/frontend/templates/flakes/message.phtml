@@ -1,0 +1,13 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+?>
+<span data-flake-fixture="true">
+    <?= $escaper->escapeHtml($block->getData('label') ?? 'Fixture message') ?>
+</span>

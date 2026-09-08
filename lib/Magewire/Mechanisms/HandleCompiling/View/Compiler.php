@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Mechanisms\HandleCompiling\View;
 
 use Magento\Framework\Exception\FileSystemException;
+use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Management\CompilerManager;
 use Magewirephp\Magewire\Support\Pipeline;
 use Throwable;
@@ -21,7 +22,7 @@ use Throwable;
  * @mago-expect lint:cyclomatic-complexity
  * @mago-expect lint:kan-defect
  */
-abstract class Compiler
+abstract class Compiler implements ArgumentInterface
 {
     private bool $compile = true;
 
@@ -146,6 +147,8 @@ abstract class Compiler
 
     /**
      * Parses and compiles a single token from the tokenized template.
+     *
+     * @param array{int, string, int} $token
      * @throws Throwable
      */
     protected function parseToken(#[\SensitiveParameter] array $token): string
@@ -310,6 +313,7 @@ abstract class Compiler
     /**
      * Compile a single "@" directive.
      *
+     * @param array{string, string, string, string|null, string|null} $match
      * @mago-expect lint:no-isset
      * @mago-expect lint:halstead
      * @mago-expect lint:no-assign-in-condition
@@ -337,6 +341,8 @@ abstract class Compiler
 
     /**
      * Replace the first match for a statement compilation operation.
+     *
+     * @return array{string, int}|string
      */
     protected function replaceFirstStatement(string $search, string $replace, string $subject, int $offset): array|string
     {
