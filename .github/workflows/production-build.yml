@@ -14,12 +14,18 @@ name: 'Production build'
 
 on:
   workflow_call:
+    inputs:
+      checkout_ref:
+        description: 'Optional commit SHA to test instead of the workflow ref.'
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: read
 
 concurrency:
-  group: production-build-${{ github.ref }}
+  group: production-build-${{ inputs.checkout_ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -84,6 +90,7 @@ jobs:
       - name: Checkout module (the PR code)
         uses: actions/checkout@v7
         with:
+          ref: ${{ inputs.checkout_ref }}
           path: magewire-src
 
       - name: Setup PHP
