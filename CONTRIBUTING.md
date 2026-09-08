@@ -115,7 +115,8 @@ Release-please uses these to cut version bumps and generate `CHANGELOG.md`.
 3. Update or add a skill under `.claude/skills/` if your change alters a documented API or pattern.
 4. Include a description explaining **why**, not just **what** — the diff shows the what.
 5. Link relevant discussions or issues.
-6. CI will re-run `portman build` on your PR and auto-commit `dist/` changes, so you don't need to include `dist/` diffs if you don't want to. But committing them locally first avoids conflicts.
+6. CI will re-run `portman build` on your PR. Same-repository branches receive an automatic `dist/` commit; fork PRs must include the generated changes themselves.
+7. Fork PRs run all public checks without repository secrets. After reviewing the code, a maintainer can comment `/test` to run the private Hyvä Playwright suite against that exact PR revision.
 
 ### What gets rejected
 

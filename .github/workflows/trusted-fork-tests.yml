@@ -1,0 +1,125 @@
+name: 'Trusted fork tests'
+
+# Fork pull_request workflows intentionally receive no repository secrets. After
+# reviewing a PR revision, a maintainer can comment `/test` to mirror that exact
+# commit to an internal CI ref and dispatch the complete test workflow there.
+# No contributor code is executed by this privileged broker.
+on:
+  issue_comment:
+    types: [created]
+  pull_request_target:
+    types: [closed]
+
+permissions: {}
+
+jobs:
+
+  dispatch:
+    name: 'Dispatch /test'
+    if: >-
+      github.event_name == 'issue_comment' &&
+      github.event.issue.pull_request &&
+      github.event.comment.body == '/test' &&
+      contains(fromJSON('["OWNER", "MEMBER", "COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: write
+      pull-requests: read
+    steps:
+      - name: Authorize maintainer and dispatch PR revision
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const actor = context.payload.comment.user.login;
+            const { data: access } = await github.rest.repos.getCollaboratorPermissionLevel({
+              ...context.repo,
+              username: actor,
+            });
+
+            if (!['admin', 'write'].includes(access.permission)) {
+              core.notice(`Ignoring /test from ${actor}: write access is required.`);
+              return;
+            }
+
+            const { data: pull } = await github.rest.pulls.get({
+              ...context.repo,
+              pull_number: context.issue.number,
+            });
+
+            if (pull.state !== 'open' || !pull.head.repo) {
+              core.setFailed('The pull request must be open and its head repository must be available.');
+              return;
+            }
+
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              ...context.repo,
+              pull_number: pull.number,
+              per_page: 100,
+            });
+            const workflowChanges = files
+              .map(file => file.filename)
+              .filter(filename => filename.startsWith('.github/workflows/'));
+
+            if (workflowChanges.length > 0) {
+              core.setFailed(`Refusing privileged tests because the PR changes workflow files: ${workflowChanges.join(', ')}`);
+              return;
+            }
+
+            const branch = `ci/pr-${pull.number}`;
+            const ref = `heads/${branch}`;
+
+            try {
+              const { data: current } = await github.rest.git.getRef({
+                ...context.repo,
+                ref,
+              });
+
+              if (current.object.sha !== pull.head.sha) {
+                await github.rest.git.updateRef({
+                  ...context.repo,
+                  ref,
+                  sha: pull.head.sha,
+                  force: true,
+                });
+              }
+            } catch (error) {
+              if (error.status !== 404) throw error;
+
+              await github.rest.git.createRef({
+                ...context.repo,
+                ref: `refs/${ref}`,
+                sha: pull.head.sha,
+              });
+            }
+
+            await github.rest.actions.createWorkflowDispatch({
+              ...context.repo,
+              workflow_id: 'tests.yml',
+              ref: branch,
+            });
+
+            core.notice(`Dispatched Tests for PR #${pull.number} at ${pull.head.sha} via ${branch}.`);
+
+  cleanup:
+    name: 'Remove trusted CI ref'
+    if: github.event_name == 'pull_request_target'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Delete temporary PR ref
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const ref = `heads/ci/pr-${context.payload.pull_request.number}`;
+
+            try {
+              await github.rest.git.deleteRef({
+                ...context.repo,
+                ref,
+              });
+            } catch (error) {
+              if (![404, 422].includes(error.status)) throw error;
+              core.notice(`No temporary ref found at ${ref}.`);
+            }

@@ -16,6 +16,11 @@ name: 'Playwright (Mage-OS + Hyvä)'
 
 on:
   workflow_call:
+    secrets:
+      HYVA_COMPOSER_REPO_URL:
+        required: true
+      HYVA_COMPOSER_AUTH_TOKEN:
+        required: true
 
 permissions:
   contents: read
@@ -101,6 +106,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           path: magewire-src
+          persist-credentials: false
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2

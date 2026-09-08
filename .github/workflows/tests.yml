@@ -50,5 +50,12 @@ jobs:
 
   playwright:
     name: 'Playwright'
+    # Fork PRs cannot access the private Hyvä credentials. A maintainer can run
+    # this suite for their exact head SHA by commenting `/test` on the PR.
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.pull_request.head.repo.full_name == github.repository
     uses: ./.github/workflows/playwright.yml
-    secrets: inherit
+    secrets:
+      HYVA_COMPOSER_REPO_URL: ${{ secrets.HYVA_COMPOSER_REPO_URL }}
+      HYVA_COMPOSER_AUTH_TOKEN: ${{ secrets.HYVA_COMPOSER_AUTH_TOKEN }}
