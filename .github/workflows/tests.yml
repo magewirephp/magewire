@@ -48,13 +48,39 @@ jobs:
     name: 'Production build'
     uses: ./.github/workflows/production-build.yml
 
+  approve-trusted-playwright:
+    name: 'Approve fork Playwright'
+    # SECURITY: this environment must exist with required reviewers configured.
+    # GitHub creates a missing environment without protection rules.
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      startsWith(github.ref, 'refs/heads/ci/pr-')
+    runs-on: ubuntu-latest
+    environment:
+      name: trusted-fork-tests
+    steps:
+      - name: Record approval
+        run: echo "Approved private Playwright tests for $GITHUB_SHA."
+
   playwright:
     name: 'Playwright'
-    # Fork PRs cannot access the private Hyvä credentials. A maintainer can run
-    # this suite for their exact head SHA by commenting `/test` on the PR.
+    # Fork PRs cannot access the private Hyvä credentials. Their mirrored CI ref
+    # is handled by trusted-playwright after environment approval instead.
     if: >-
-      github.event_name != 'pull_request' ||
-      github.event.pull_request.head.repo.full_name == github.repository
+      github.event_name == 'push' ||
+      (github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository) ||
+      (github.event_name == 'workflow_dispatch' &&
+      !startsWith(github.ref, 'refs/heads/ci/pr-'))
+    uses: ./.github/workflows/playwright.yml
+    secrets:
+      HYVA_COMPOSER_REPO_URL: ${{ secrets.HYVA_COMPOSER_REPO_URL }}
+      HYVA_COMPOSER_AUTH_TOKEN: ${{ secrets.HYVA_COMPOSER_AUTH_TOKEN }}
+
+  trusted-playwright:
+    name: 'Playwright (approved fork)'
+    needs: approve-trusted-playwright
+    if: needs.approve-trusted-playwright.result == 'success'
     uses: ./.github/workflows/playwright.yml
     secrets:
       HYVA_COMPOSER_REPO_URL: ${{ secrets.HYVA_COMPOSER_REPO_URL }}

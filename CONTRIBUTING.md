@@ -116,7 +116,7 @@ Release-please uses these to cut version bumps and generate `CHANGELOG.md`.
 4. Include a description explaining **why**, not just **what** — the diff shows the what.
 5. Link relevant discussions or issues.
 6. CI will re-run `portman build` on your PR. Same-repository branches receive an automatic `dist/` commit; fork PRs must include the generated changes themselves.
-7. Fork PRs run all public checks without repository secrets. After reviewing the code, a maintainer can comment `/test` to run the private Hyvä Playwright suite against that exact PR revision.
+7. Fork PRs run all public checks automatically. The private Hyvä Playwright suite is prepared against the exact PR revision and waits for a maintainer to approve the `trusted-fork-tests` environment before it runs.
 
 ### What gets rejected
 
