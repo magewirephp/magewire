@@ -2,12 +2,18 @@ name: 'Unit tests'
 
 on:
   workflow_call:
+    inputs:
+      checkout_ref:
+        description: 'Optional commit SHA to test instead of the workflow ref.'
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: read
 
 concurrency:
-  group: unit-tests-${{ github.ref }}
+  group: unit-tests-${{ inputs.checkout_ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -19,6 +25,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.checkout_ref }}
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2

@@ -1,9 +1,10 @@
 name: 'Trusted fork tests'
 
 # Fork pull_request workflows intentionally receive no repository secrets. This
-# privileged broker mirrors an exact fork revision to an internal CI ref, but it
-# never checks out or executes contributor code. The private Playwright job is
-# released only after approval through the trusted-fork-tests environment.
+# privileged broker makes an exact fork revision reachable through an internal
+# CI ref, but dispatches the trusted workflow definition from main and never
+# executes contributor code itself. The private Playwright job is released only
+# after approval through the trusted-fork-tests environment.
 on:
   pull_request_target:
     branches: [main]
@@ -11,7 +12,7 @@ on:
   workflow_run:
     workflows: ['Tests']
     types: [completed]
-    branches: ['ci/pr-*']
+    branches: [main]
 
 permissions: {}
 
@@ -154,10 +155,14 @@ jobs:
               await github.rest.actions.createWorkflowDispatch({
                 ...context.repo,
                 workflow_id: 'tests.yml',
-                ref: branch,
+                ref: 'main',
+                inputs: {
+                  checkout_ref: pull.head.sha,
+                  trusted_pr_number: String(pull.number),
+                },
               });
 
-              const runsUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/workflows/tests.yml?query=${encodeURIComponent(`branch:${branch}`)}`;
+              const runsUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/workflows/tests.yml?query=${encodeURIComponent('branch:main event:workflow_dispatch')}`;
               await setStatus([
                 '### Trusted fork tests',
                 '',
@@ -168,7 +173,7 @@ jobs:
                 `[Review and follow the workflow run](${runsUrl})`,
               ]);
 
-              core.notice(`Dispatched Tests for PR #${pull.number} at ${pull.head.sha} via ${branch}.`);
+              core.notice(`Dispatched the main Tests workflow for PR #${pull.number} at ${pull.head.sha}.`);
             } catch (error) {
               await setStatus([
                 '### Trusted fork tests',
@@ -184,8 +189,7 @@ jobs:
     name: 'Report trusted result'
     if: >-
       github.event_name == 'workflow_run' &&
-      github.event.workflow_run.event == 'workflow_dispatch' &&
-      startsWith(github.event.workflow_run.head_branch, 'ci/pr-')
+      github.event.workflow_run.event == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -196,30 +200,33 @@ jobs:
         with:
           script: |
             const run = context.payload.workflow_run;
-            const match = /^ci\/pr-(\d+)$/.exec(run.head_branch);
+            const match = /^Trusted fork PR #(\d+) @ ([0-9a-f]{40})$/.exec(run.display_title);
 
             if (!match) {
-              core.notice(`Ignoring unrecognized trusted CI ref ${run.head_branch}.`);
-              return;
-            }
-
-            try {
-              const { data: current } = await github.rest.git.getRef({
-                ...context.repo,
-                ref: `heads/${run.head_branch}`,
-              });
-
-              if (current.object.sha !== run.head_sha) {
-                core.notice(`Ignoring stale result for ${run.head_sha}; ${run.head_branch} now points to ${current.object.sha}.`);
-                return;
-              }
-            } catch (error) {
-              if (error.status !== 404) throw error;
-              core.notice(`Ignoring result because ${run.head_branch} no longer exists.`);
+              core.notice(`Ignoring workflow dispatch named ${run.display_title}.`);
               return;
             }
 
             const pullNumber = Number(match[1]);
+            const testedSha = match[2];
+            const branch = `ci/pr-${pullNumber}`;
+
+            try {
+              const { data: current } = await github.rest.git.getRef({
+                ...context.repo,
+                ref: `heads/${branch}`,
+              });
+
+              if (current.object.sha !== testedSha) {
+                core.notice(`Ignoring stale result for ${testedSha}; ${branch} now points to ${current.object.sha}.`);
+                return;
+              }
+            } catch (error) {
+              if (error.status !== 404) throw error;
+              core.notice(`Ignoring result because ${branch} no longer exists.`);
+              return;
+            }
+
             const marker = '<!-- trusted-fork-tests -->';
             const comments = await github.paginate(github.rest.issues.listComments, {
               ...context.repo,
@@ -236,8 +243,8 @@ jobs:
               return;
             }
 
-            const shortSha = run.head_sha.slice(0, 7);
-            const commitUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/commit/${run.head_sha}`;
+            const shortSha = testedSha.slice(0, 7);
+            const commitUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/commit/${testedSha}`;
             let summary;
 
             if (run.conclusion === 'success') {

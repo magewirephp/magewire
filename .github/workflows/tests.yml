@@ -1,7 +1,25 @@
 name: 'Tests'
 
+run-name: >-
+  ${{ inputs.trusted_pr_number != '' &&
+  format('Trusted fork PR #{0} @ {1}', inputs.trusted_pr_number, inputs.checkout_ref) ||
+  github.event.pull_request.title ||
+  github.event.head_commit.message ||
+  'Tests' }}
+
 on:
   workflow_dispatch:
+    inputs:
+      checkout_ref:
+        description: 'Optional commit SHA to test instead of the workflow ref.'
+        required: false
+        type: string
+        default: ''
+      trusted_pr_number:
+        description: 'Fork PR number requiring environment approval.'
+        required: false
+        type: string
+        default: ''
   push:
     branches:
       - main
@@ -35,7 +53,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: tests-${{ github.ref }}
+  group: tests-${{ inputs.trusted_pr_number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -43,10 +61,14 @@ jobs:
   unit-tests:
     name: 'Unit tests'
     uses: ./.github/workflows/unit-tests.yml
+    with:
+      checkout_ref: ${{ inputs.checkout_ref }}
 
   production-build:
     name: 'Production build'
     uses: ./.github/workflows/production-build.yml
+    with:
+      checkout_ref: ${{ inputs.checkout_ref }}
 
   approve-trusted-playwright:
     name: 'Approve fork Playwright'
@@ -54,13 +76,14 @@ jobs:
     # GitHub creates a missing environment without protection rules.
     if: >-
       github.event_name == 'workflow_dispatch' &&
-      startsWith(github.ref, 'refs/heads/ci/pr-')
+      inputs.trusted_pr_number != '' &&
+      inputs.checkout_ref != ''
     runs-on: ubuntu-latest
     environment:
       name: trusted-fork-tests
     steps:
       - name: Record approval
-        run: echo "Approved private Playwright tests for $GITHUB_SHA."
+        run: echo "Approved private Playwright tests for ${{ inputs.checkout_ref }}."
 
   playwright:
     name: 'Playwright'
@@ -71,8 +94,10 @@ jobs:
       (github.event_name == 'pull_request' &&
       github.event.pull_request.head.repo.full_name == github.repository) ||
       (github.event_name == 'workflow_dispatch' &&
-      !startsWith(github.ref, 'refs/heads/ci/pr-'))
+      inputs.trusted_pr_number == '')
     uses: ./.github/workflows/playwright.yml
+    with:
+      checkout_ref: ${{ inputs.checkout_ref }}
     secrets:
       HYVA_COMPOSER_REPO_URL: ${{ secrets.HYVA_COMPOSER_REPO_URL }}
       HYVA_COMPOSER_AUTH_TOKEN: ${{ secrets.HYVA_COMPOSER_AUTH_TOKEN }}
@@ -82,6 +107,8 @@ jobs:
     needs: approve-trusted-playwright
     if: needs.approve-trusted-playwright.result == 'success'
     uses: ./.github/workflows/playwright.yml
+    with:
+      checkout_ref: ${{ inputs.checkout_ref }}
     secrets:
       HYVA_COMPOSER_REPO_URL: ${{ secrets.HYVA_COMPOSER_REPO_URL }}
       HYVA_COMPOSER_AUTH_TOKEN: ${{ secrets.HYVA_COMPOSER_AUTH_TOKEN }}
