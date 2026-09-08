@@ -112,3 +112,115 @@ jobs:
     secrets:
       HYVA_COMPOSER_REPO_URL: ${{ secrets.HYVA_COMPOSER_REPO_URL }}
       HYVA_COMPOSER_AUTH_TOKEN: ${{ secrets.HYVA_COMPOSER_AUTH_TOKEN }}
+
+  report-trusted-result:
+    name: 'Report trusted result'
+    needs:
+      - unit-tests
+      - production-build
+      - approve-trusted-playwright
+      - playwright
+      - trusted-playwright
+    if: >-
+      always() &&
+      github.event_name == 'workflow_dispatch' &&
+      inputs.trusted_pr_number != '' &&
+      inputs.checkout_ref != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      PULL_NUMBER: ${{ inputs.trusted_pr_number }}
+      TESTED_SHA: ${{ inputs.checkout_ref }}
+      UNIT_RESULT: ${{ needs.unit-tests.result }}
+      PRODUCTION_RESULT: ${{ needs.production-build.result }}
+      APPROVAL_RESULT: ${{ needs.approve-trusted-playwright.result }}
+      REGULAR_PLAYWRIGHT_RESULT: ${{ needs.playwright.result }}
+      TRUSTED_PLAYWRIGHT_RESULT: ${{ needs.trusted-playwright.result }}
+    steps:
+      - name: Update status comment
+        uses: actions/github-script@v9
+        with:
+          script: |
+            const pullNumber = Number(process.env.PULL_NUMBER);
+            const testedSha = process.env.TESTED_SHA;
+
+            if (!Number.isInteger(pullNumber) || pullNumber < 1 || !/^[0-9a-f]{40}$/.test(testedSha)) {
+              core.setFailed('Trusted test reporting received an invalid pull request number or commit SHA.');
+              return;
+            }
+
+            const branch = `ci/pr-${pullNumber}`;
+
+            try {
+              const { data: current } = await github.rest.git.getRef({
+                ...context.repo,
+                ref: `heads/${branch}`,
+              });
+
+              if (current.object.sha !== testedSha) {
+                core.notice(`Ignoring stale result for ${testedSha}; ${branch} now points to ${current.object.sha}.`);
+                return;
+              }
+            } catch (error) {
+              if (error.status !== 404) throw error;
+              core.notice(`Ignoring result because ${branch} no longer exists.`);
+              return;
+            }
+
+            const marker = '<!-- trusted-fork-tests -->';
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              ...context.repo,
+              issue_number: pullNumber,
+              per_page: 100,
+            });
+            const statusComment = comments.find(comment =>
+              comment.user?.login === 'github-actions[bot]' &&
+              comment.body?.includes(marker)
+            );
+
+            if (!statusComment) {
+              core.notice(`Status comment for PR #${pullNumber} no longer exists.`);
+              return;
+            }
+
+            const results = {
+              unit: process.env.UNIT_RESULT,
+              production: process.env.PRODUCTION_RESULT,
+              approval: process.env.APPROVAL_RESULT,
+              regularPlaywright: process.env.REGULAR_PLAYWRIGHT_RESULT,
+              trustedPlaywright: process.env.TRUSTED_PLAYWRIGHT_RESULT,
+            };
+            const passed =
+              results.unit === 'success' &&
+              results.production === 'success' &&
+              results.approval === 'success' &&
+              results.regularPlaywright === 'skipped' &&
+              results.trustedPlaywright === 'success';
+            const cancelled = Object.values(results).includes('cancelled');
+            const shortSha = testedSha.slice(0, 7);
+            const commitUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/commit/${testedSha}`;
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            let summary;
+
+            if (passed) {
+              summary = `✅ All trusted tests passed for [\`${shortSha}\`](${commitUrl}).`;
+            } else if (cancelled) {
+              summary = `⚠️ Trusted tests were cancelled for [\`${shortSha}\`](${commitUrl}). Re-run the workflow to try again.`;
+            } else {
+              summary = `❌ Trusted tests failed for [\`${shortSha}\`](${commitUrl}). Review the failure, then re-run the workflow.`;
+            }
+
+            await github.rest.issues.updateComment({
+              ...context.repo,
+              comment_id: statusComment.id,
+              body: [
+                marker,
+                '### Trusted fork tests',
+                '',
+                summary,
+                '',
+                `[View workflow run](${runUrl})`,
+              ].join('\n'),
+            });

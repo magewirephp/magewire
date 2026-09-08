@@ -9,10 +9,6 @@ on:
   pull_request_target:
     branches: [main]
     types: [opened, synchronize, reopened, ready_for_review, closed]
-  workflow_run:
-    workflows: ['Tests']
-    types: [completed]
-    branches: [main]
 
 permissions: {}
 
@@ -166,7 +162,7 @@ jobs:
               await setStatus([
                 '### Trusted fork tests',
                 '',
-                `🛡️ Tests started for [\`${shortSha}\`](${commitUrl}).`,
+                `⏳ Trusted tests are running for [\`${shortSha}\`](${commitUrl}).`,
                 '',
                 'Public jobs run immediately. The private Hyvä Playwright job requires maintainer approval in the `trusted-fork-tests` environment.',
                 '',
@@ -184,89 +180,6 @@ jobs:
               ]);
               throw error;
             }
-
-  report:
-    name: 'Report trusted result'
-    # The script below accepts only the structured trusted run-name format and checks
-    # its immutable SHA, so no additional source-event condition is required.
-    if: github.event_name == 'workflow_run'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
-    steps:
-      - name: Update status comment
-        uses: actions/github-script@v9
-        with:
-          script: |
-            const run = context.payload.workflow_run;
-            const match = /^Trusted fork PR #(\d+) @ ([0-9a-f]{40})$/.exec(run.display_title);
-
-            if (!match) {
-              core.notice(`Ignoring workflow dispatch named ${run.display_title}.`);
-              return;
-            }
-
-            const pullNumber = Number(match[1]);
-            const testedSha = match[2];
-            const branch = `ci/pr-${pullNumber}`;
-
-            try {
-              const { data: current } = await github.rest.git.getRef({
-                ...context.repo,
-                ref: `heads/${branch}`,
-              });
-
-              if (current.object.sha !== testedSha) {
-                core.notice(`Ignoring stale result for ${testedSha}; ${branch} now points to ${current.object.sha}.`);
-                return;
-              }
-            } catch (error) {
-              if (error.status !== 404) throw error;
-              core.notice(`Ignoring result because ${branch} no longer exists.`);
-              return;
-            }
-
-            const marker = '<!-- trusted-fork-tests -->';
-            const comments = await github.paginate(github.rest.issues.listComments, {
-              ...context.repo,
-              issue_number: pullNumber,
-              per_page: 100,
-            });
-            const statusComment = comments.find(comment =>
-              comment.user?.login === 'github-actions[bot]' &&
-              comment.body?.includes(marker)
-            );
-
-            if (!statusComment) {
-              core.notice(`Status comment for PR #${pullNumber} no longer exists.`);
-              return;
-            }
-
-            const shortSha = testedSha.slice(0, 7);
-            const commitUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/commit/${testedSha}`;
-            let summary;
-
-            if (run.conclusion === 'success') {
-              summary = `✅ All trusted tests passed for [\`${shortSha}\`](${commitUrl}).`;
-            } else if (run.conclusion === 'cancelled') {
-              summary = `⚠️ Trusted tests were cancelled for [\`${shortSha}\`](${commitUrl}). Re-run the workflow to try again.`;
-            } else {
-              summary = `❌ Trusted tests failed for [\`${shortSha}\`](${commitUrl}). Review the failure, then re-run the workflow.`;
-            }
-
-            await github.rest.issues.updateComment({
-              ...context.repo,
-              comment_id: statusComment.id,
-              body: [
-                marker,
-                '### Trusted fork tests',
-                '',
-                summary,
-                '',
-                `[View workflow run](${run.html_url})`,
-              ].join('\n'),
-            });
 
   cleanup:
     name: 'Remove trusted CI ref'
