@@ -57,13 +57,12 @@ jobs:
               return;
             }
 
-            const commentId = context.payload.comment.id;
             const shortSha = pull.head.sha.slice(0, 7);
             const commitUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/commit/${pull.head.sha}`;
             const brokerUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            const updateComment = body => github.rest.issues.updateComment({
+            const createStatusComment = body => github.rest.issues.createComment({
               ...context.repo,
-              comment_id: commentId,
+              issue_number: pull.number,
               body,
             });
 
@@ -77,7 +76,7 @@ jobs:
               .filter(filename => filename.startsWith('.github/workflows/'));
 
             if (workflowChanges.length > 0) {
-              await updateComment([
+              await createStatusComment([
                 '### Trusted fork tests',
                 '',
                 `⛔ Tests were not started for [\`${shortSha}\`](${commitUrl}) because this PR changes GitHub Actions workflow files.`,
@@ -90,8 +89,18 @@ jobs:
               return;
             }
 
-            const branch = `ci/pr-${pull.number}-comment-${commentId}`;
+            const { data: statusComment } = await createStatusComment([
+              '### Trusted fork tests',
+              '',
+              `⏳ Preparing trusted tests for [\`${shortSha}\`](${commitUrl}).`,
+            ].join('\n'));
+            const branch = `ci/pr-${pull.number}-comment-${statusComment.id}`;
             const ref = `heads/${branch}`;
+            const updateStatusComment = body => github.rest.issues.updateComment({
+              ...context.repo,
+              comment_id: statusComment.id,
+              body,
+            });
 
             try {
               try {
@@ -114,7 +123,7 @@ jobs:
               }
 
               const runsUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/workflows/tests.yml?query=${encodeURIComponent(`branch:${branch}`)}`;
-              await updateComment([
+              await updateStatusComment([
                 '### Trusted fork tests',
                 '',
                 `⏳ Tests are running for [\`${shortSha}\`](${commitUrl}).`,
@@ -130,7 +139,7 @@ jobs:
 
               core.notice(`Dispatched Tests for PR #${pull.number} at ${pull.head.sha} via ${branch}.`);
             } catch (error) {
-              await updateComment([
+              await updateStatusComment([
                 '### Trusted fork tests',
                 '',
                 `❌ Tests could not be started for [\`${shortSha}\`](${commitUrl}).`,
@@ -150,7 +159,7 @@ jobs:
     permissions:
       issues: write
     steps:
-      - name: Update command comment
+      - name: Update status comment
         uses: actions/github-script@v9
         with:
           script: |
