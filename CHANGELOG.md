@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.6.2](https://github.com/magewirephp/magewire/compare/3.6.1...3.6.2) (2026-09-08)
+
+
+### Bug Fixes
+
+* **ci:** dispatch trusted workflow from main ([#298](https://github.com/magewirephp/magewire/issues/298)) ([afdfb81](https://github.com/magewirephp/magewire/commit/afdfb81a390e30fb3d67d95196163d4243f49807))
+* **ci:** grant pull request comment access ([#296](https://github.com/magewirephp/magewire/issues/296)) ([5b64c1b](https://github.com/magewirephp/magewire/commit/5b64c1b8a02a644febd48e0d6476529d2b355864))
+* **ci:** report trusted results inline ([#304](https://github.com/magewirephp/magewire/issues/304)) ([837c040](https://github.com/magewirephp/magewire/commit/837c0408a0625583af763b979115a38b35268750))
+* **ci:** run trusted result reporter ([#303](https://github.com/magewirephp/magewire/issues/303)) ([8612e99](https://github.com/magewirephp/magewire/commit/8612e992f0538b2f090bf096c432ceea7967aba0))
+* **ci:** use bot-owned test status comment ([#294](https://github.com/magewirephp/magewire/issues/294)) ([1219bf7](https://github.com/magewirephp/magewire/commit/1219bf70f3e0b0b85f6621df636fb78dfb7d1b01))
+
 ## [3.6.1](https://github.com/magewirephp/magewire/compare/3.6.0...3.6.1) (2026-09-01)
 
 
