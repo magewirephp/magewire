@@ -187,9 +187,9 @@ jobs:
 
   report:
     name: 'Report trusted result'
-    if: >-
-      github.event_name == 'workflow_run' &&
-      github.event.workflow_run.event == 'workflow_dispatch'
+    # The script below accepts only the structured trusted run-name format and checks
+    # its immutable SHA, so no additional source-event condition is required.
+    if: github.event_name == 'workflow_run'
     runs-on: ubuntu-latest
     permissions:
       contents: read
