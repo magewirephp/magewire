@@ -176,6 +176,22 @@ Evidence:
 - [PR #291](https://github.com/magewirephp/magewire/pull/291)
 - [PR #290](https://github.com/magewirephp/magewire/pull/290)
 
+## Open PR #292 is superseded by the external asset
+
+PR #292 minifies and simplifies the inline `magewire.phtml` stylesheet. The
+new core architecture deletes that template in favor of Magento's cacheable,
+deploy-time-minifiable CSS asset, so its file-level change cannot be retained.
+Its proposed selector list also omits the existing `[wire\:offline]` rule and
+reduces the doubled attribute-selector specificity. Core keeps the complete
+directive-state contract and adds computed-style coverage for offline and
+delayed-loading states.
+
+Evidence:
+
+- [PR #292](https://github.com/magewirephp/magewire/pull/292)
+- `src/view/base/web/css/magewire.css:11`
+- `tests/Playwright/tests/notifier.spec.js:51`
+
 # ASSUMED
 
 - The next feature-capable core release can introduce the stylesheet without a

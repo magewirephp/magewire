@@ -22,9 +22,11 @@ strengthens the build dependency this plan removes.
 - Started: 2026-09-08
 - Initial type: Git Discussion
 - Current type: Git Discussion
-- Status: Core and companion implementations verified and ready for review
+- Status: Core PR open; companion PR drafted behind the Magewire 3.7 release
 - GitHub discussion: [#301](https://github.com/magewirephp/magewire/discussions/301)
 - Related open pull request: [#291](https://github.com/magewirephp/magewire/pull/291)
+- Core pull request: [#305](https://github.com/magewirephp/magewire/pull/305)
+- Companion pull request: [magewire-hyva-theme#7](https://github.com/magewirephp/magewire-hyva-theme/pull/7)
 - Affected packages: `magewirephp/magewire` and
   `magewirephp/magewire-hyva-theme`
 
@@ -80,7 +82,7 @@ with no Tailwind build or Fylgja dependency in either package.
 - [x] Verify the root npm package has no build entry point or consumers
 - [x] Inspect existing Tailwind pull requests for overlapping work
 - [x] Establish CSS ownership and an upgrade-safe release order
-- [ ] Decide whether to close PR #291 or ask its author to repurpose it
+- [x] Decide whether to close PRs #291 and #292 as superseded by #305
 - [x] Implement the core pre-baked stylesheet and semantic class migration
 - [x] Remove Hyva/Tailwind registration and build metadata from core
 - [x] Add computed-style regressions that run without a Tailwind build
@@ -332,3 +334,8 @@ compatibility sequence.
 - 2026-09-09: Verified the final core CSS has no Hyva-specific naming, passed
   all 99 Playwright tests and Magento DI compilation, and proved the companion
   vanilla stylesheet overrides the core cascade without a frontend build.
+- 2026-09-09: Opened core PR #305 and dependent draft companion PR #7.
+- 2026-09-09: Audited PRs #291 and #292. Their changed files are removed by
+  #305; #292 also omits the existing `wire:offline` rule. Added explicit
+  delayed-loading and offline computed-style coverage before closing both as
+  superseded.

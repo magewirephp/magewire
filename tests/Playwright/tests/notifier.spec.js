@@ -57,6 +57,8 @@ test.describe('Magewire Playwright — Notifier', () => {
             const probe = document.createElement('div');
             probe.innerHTML = [
                 '<span data-magewire-css-probe="loading" wire:loading></span>',
+                '<span data-magewire-css-probe="loading-delay" wire:loading.delay></span>',
+                '<span data-magewire-css-probe="offline" wire:offline></span>',
                 '<span data-magewire-css-probe="dirty" wire:dirty></span>',
                 '<span data-magewire-css-probe="cloak" x-cloak></span>',
             ].join('');
@@ -75,6 +77,8 @@ test.describe('Magewire Playwright — Notifier', () => {
         await expect(notification).toHaveCSS('border-radius', '12px');
         await expect(notification).toHaveCSS('font-size', '14px');
         await expect(page.locator('[data-magewire-css-probe="loading"]')).toBeHidden();
+        await expect(page.locator('[data-magewire-css-probe="loading-delay"]')).toBeHidden();
+        await expect(page.locator('[data-magewire-css-probe="offline"]')).toBeHidden();
         await expect(page.locator('[data-magewire-css-probe="dirty"]')).toBeHidden();
         await expect(page.locator('[data-magewire-css-probe="cloak"]')).toBeHidden();
     });
