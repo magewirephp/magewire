@@ -44,7 +44,7 @@
 .magewire-notifier {
     --magewire-notifier-gap: 0.25rem;
     --magewire-notifier-offset: 0.5rem;
-    --magewire-notifier-width: 24rem;
+    --magewire-notifier-width: 26rem;
     --magewire-notifier-z-index: 40;
     --magewire-notifier-surface: #fff;
     --magewire-notifier-border: #e8e8ec;

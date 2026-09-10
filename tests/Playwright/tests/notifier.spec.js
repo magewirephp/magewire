@@ -179,7 +179,7 @@ test.describe('Magewire Playwright — Notifier', () => {
         expect(position.centerX).toBeCloseTo(position.viewportCenterX, 0);
         expect(position.bottomOffset).toBe(16);
         expect(position.bottom).toBeCloseTo(position.viewportHeight - position.bottomOffset, 0);
-        expect(position.width).toBe(384);
+        expect(position.width).toBe(416);
     });
 
     test('updates the previous active notification when its message and type are equal', async ({ page }) => {
