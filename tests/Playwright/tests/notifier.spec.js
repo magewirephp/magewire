@@ -147,7 +147,7 @@ test.describe('Magewire Playwright — Notifier', () => {
         await expect(notification).toHaveCSS('transform', 'none');
     });
 
-    test('places the notification stack at the bottom center of the viewport', async ({ page }) => {
+    test('places a fixed-width notification stack at the bottom center on desktop', async ({ page }) => {
         await page.evaluate(() => {
             document.querySelectorAll('link[rel~="stylesheet"]').forEach(stylesheet => {
                 if (! stylesheet.href.includes('Magewirephp_Magewire/css/magewire.css')) {
@@ -170,13 +170,16 @@ test.describe('Magewire Playwright — Notifier', () => {
                 centerX: bounds.left + (bounds.width / 2),
                 bottom: bounds.bottom,
                 bottomOffset: Number.parseFloat(styles.bottom),
+                width: bounds.width,
                 viewportCenterX: window.innerWidth / 2,
                 viewportHeight: window.innerHeight
             };
         });
 
         expect(position.centerX).toBeCloseTo(position.viewportCenterX, 0);
+        expect(position.bottomOffset).toBe(16);
         expect(position.bottom).toBeCloseTo(position.viewportHeight - position.bottomOffset, 0);
+        expect(position.width).toBe(384);
     });
 
     test('updates the previous active notification when its message and type are equal', async ({ page }) => {

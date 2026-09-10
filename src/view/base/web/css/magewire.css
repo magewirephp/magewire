@@ -44,6 +44,7 @@
 .magewire-notifier {
     --magewire-notifier-gap: 0.25rem;
     --magewire-notifier-offset: 0.5rem;
+    --magewire-notifier-width: 24rem;
     --magewire-notifier-z-index: 40;
     --magewire-notifier-surface: #fff;
     --magewire-notifier-border: #e8e8ec;
@@ -270,11 +271,13 @@
 @media (min-width: 48rem) {
     .magewire-notifier {
         --magewire-notifier-gap: 0.5rem;
-        --magewire-notifier-offset: 1.5rem;
+        --magewire-notifier-offset: 1rem;
+        inline-size: var(--magewire-notifier-width);
+        max-inline-size: calc(100vw - var(--magewire-notifier-offset) - var(--magewire-notifier-offset));
     }
 
     .magewire-notifier .magewire-notifier-item[data-type] {
-        inline-size: auto;
+        inline-size: 100%;
     }
 }
 

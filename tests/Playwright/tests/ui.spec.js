@@ -39,6 +39,9 @@ test.describe('Magewire Playwright — UI workbench', () => {
             .toBeVisible();
         await expect(workbench(page).getByTestId('ui-exception').locator('.magewire-exception'))
             .toBeVisible();
+        await expect(workbench(page).getByTestId('ui-pagination')).toBeVisible();
+        await expect(workbench(page).getByTestId('ui-pagination-items').getByRole('listitem'))
+            .toHaveCount(3);
     });
 
     test('can preview expiring notifications and clear the collection', async ({ page }) => {
@@ -92,5 +95,30 @@ test.describe('Magewire Playwright — UI workbench', () => {
         await expect(workbench(page).getByTestId('ui-request-count')).toHaveText('1');
         await expect(loading).toBeHidden();
         await expect(dirty).toBeHidden();
+    });
+
+    test('exercises numbered, previous, and next pagination states', async ({ page }) => {
+        await visitWorkbench(page);
+
+        const pagination = workbench(page).getByTestId('ui-pagination');
+        const items = workbench(page).getByTestId('ui-pagination-items');
+
+        await expect(workbench(page).getByTestId('ui-pagination-current-page')).toHaveText('1 / 3');
+        await expect(pagination.getByTestId('ui-pagination-previous')).toBeDisabled();
+        await expect(pagination.getByTestId('ui-pagination-page-1')).toHaveAttribute('aria-current', 'page');
+        await expect(items).toContainText('Reactive storefront components');
+
+        await pagination.getByTestId('ui-pagination-next').click();
+        await expect(workbench(page).getByTestId('ui-pagination-current-page')).toHaveText('2 / 3');
+        await expect(pagination.getByTestId('ui-pagination-page-2')).toHaveAttribute('aria-current', 'page');
+        await expect(items).toContainText('Loading and activity states');
+
+        await pagination.getByTestId('ui-pagination-page-3').click();
+        await expect(workbench(page).getByTestId('ui-pagination-current-page')).toHaveText('3 / 3');
+        await expect(pagination.getByTestId('ui-pagination-next')).toBeDisabled();
+        await expect(items).toContainText('Accessible interaction states');
+
+        await pagination.getByTestId('ui-pagination-previous').click();
+        await expect(workbench(page).getByTestId('ui-pagination-current-page')).toHaveText('2 / 3');
     });
 });

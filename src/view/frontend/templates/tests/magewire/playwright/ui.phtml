@@ -24,6 +24,8 @@ $loadingIcon = $block->getChildHtml('loading');
 $preview = $block->getData('preview');
 $exceptionBlock = $block->getChildBlock('exception');
 $exceptionHtml = '';
+$paginationPage = (int) $magewire->getPage();
+$paginationLastPage = $magewire->getPaginationLastPage();
 
 if ($exceptionBlock instanceof AbstractBlock && $preview instanceof UiPreview) {
     $exceptionHtml = $exceptionBlock->setData('application_state', $preview->applicationState())->setData('exception', $preview->exception())->toHtml();
@@ -188,6 +190,69 @@ if ($exceptionBlock instanceof AbstractBlock && $preview instanceof UiPreview) {
             </p>
         </section>
     </div>
+
+    <section class="magewire-ui-workbench__panel" aria-labelledby="magewire-ui-pagination">
+        <div class="magewire-ui-workbench__panel-heading">
+            <div>
+                <p class="magewire-ui-workbench__eyebrow"><?= $escaper->escapeHtml(__('Navigation')) ?></p>
+                <h2 id="magewire-ui-pagination"><?= $escaper->escapeHtml(__('Pagination')) ?></h2>
+            </div>
+
+            <span class="magewire-ui-workbench__counter" data-testid="ui-pagination-current-page">
+                <?= $escaper->escapeHtml(__('%1 / %2', $paginationPage, $paginationLastPage)) ?>
+            </span>
+        </div>
+
+        <p>
+            <?= $escaper->escapeHtml(__('Exercise previous, numbered, current, and next page states against a real Magewire paginator.')) ?>
+        </p>
+
+        <ol class="magewire-ui-workbench__pagination-items" data-testid="ui-pagination-items">
+            <?php foreach ($magewire->getPaginationItems() as $offset => $item): ?>
+                <?php $itemNumber = (($paginationPage - 1) * 3) + $offset + 1 ?>
+                <li wire:key="ui-pagination-item-<?= (int) $itemNumber ?>">
+                    <span><?= (int) $itemNumber ?></span>
+                    <?= $escaper->escapeHtml($item) ?>
+                </li>
+            <?php endforeach ?>
+        </ol>
+
+        <nav class="magewire-ui-workbench__pagination"
+             data-testid="ui-pagination"
+             aria-label="<?= $escaper->escapeHtmlAttr(__('UI workbench pagination')) ?>"
+        >
+            <button type="button"
+                    data-testid="ui-pagination-previous"
+                    wire:click="previousPage"
+                    <?php if ($paginationPage === 1): ?>disabled<?php endif ?>
+            >
+                <span aria-hidden="true">&larr;</span>
+                <span><?= $escaper->escapeHtml(__('Previous')) ?></span>
+            </button>
+
+            <span class="magewire-ui-workbench__pagination-pages">
+                <?php for ($page = 1; $page <= $paginationLastPage; $page++): ?>
+                    <button type="button"
+                            data-testid="ui-pagination-page-<?= (int) $page ?>"
+                            wire:click="gotoPage(<?= (int) $page ?>)"
+                            aria-label="<?= $escaper->escapeHtmlAttr(__('Page %1', $page)) ?>"
+                            <?php if ($paginationPage === $page): ?>aria-current="page"<?php endif ?>
+                    >
+                        <?= (int) $page ?>
+                    </button>
+                <?php endfor ?>
+            </span>
+
+            <button type="button"
+                    data-testid="ui-pagination-next"
+                    wire:click="nextPage"
+                    <?php if ($paginationPage === $paginationLastPage): ?>disabled<?php endif ?>
+            >
+                <span><?= $escaper->escapeHtml(__('Next')) ?></span>
+                <span aria-hidden="true">&rarr;</span>
+            </button>
+        </nav>
+    </section>
 
     <section class="magewire-ui-workbench__panel" aria-labelledby="magewire-ui-exception">
         <div class="magewire-ui-workbench__panel-heading">

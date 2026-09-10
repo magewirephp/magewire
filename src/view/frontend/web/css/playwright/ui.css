@@ -236,6 +236,89 @@
     font-size: 0.75rem;
 }
 
+.magewire-ui-workbench__pagination-items {
+    display: grid;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.magewire-ui-workbench__pagination-items li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-block: 0.625rem;
+    padding-inline: 0.75rem;
+    border: 1px solid var(--magewire-ui-workbench-border);
+    border-radius: 0.5rem;
+    background: #f8fafc;
+}
+
+.magewire-ui-workbench__pagination-items li span {
+    display: inline-grid;
+    flex: 0 0 auto;
+    place-items: center;
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--magewire-ui-workbench-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.magewire-ui-workbench__pagination,
+.magewire-ui-workbench__pagination-pages {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.magewire-ui-workbench__pagination {
+    justify-content: space-between;
+}
+
+.magewire-ui-workbench__pagination button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    min-inline-size: 2.5rem;
+    min-block-size: 2.5rem;
+    padding-block: 0.5rem;
+    padding-inline: 0.75rem;
+    border: 1px solid #d8d8de;
+    border-radius: 0.5rem;
+    background: #fff;
+    color: var(--magewire-ui-workbench-color);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.magewire-ui-workbench__pagination button[aria-current="page"] {
+    border-color: var(--magewire-ui-workbench-accent);
+    background: var(--magewire-ui-workbench-accent);
+    color: #fff;
+}
+
+.magewire-ui-workbench__pagination button:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+@media (max-width: 47.99rem) {
+    .magewire-ui-workbench__pagination {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .magewire-ui-workbench__pagination-pages {
+        justify-content: center;
+        order: -1;
+    }
+}
+
 @media (min-width: 64rem) {
     .magewire-ui-workbench__grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
