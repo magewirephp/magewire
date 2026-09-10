@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+      layout="1column"
+>
+    <head>
+        <css src="Magewirephp_Magewire::css/playwright/ui.css"/>
+    </head>
+
+    <body>
+        <referenceBlock name="page.main.title" remove="true"/>
+
+        <referenceContainer name="content">
+            <block name="magewire.playwright.ui"
+                   template="Magewirephp_Magewire::tests/magewire/playwright/ui.phtml"
+            >
+                <arguments>
+                    <argument name="magewire" xsi:type="object" shared="false">
+                        Magewirephp\Magewire\Magewire\Playwright\Ui
+                    </argument>
+                    <argument name="preview" xsi:type="object">
+                        Magewirephp\Magewire\ViewModel\Playwright\UiPreview
+                    </argument>
+                </arguments>
+
+                <block name="magewire.playwright.ui.loading"
+                       as="loading"
+                       template="Magewirephp_Magewire::magewire/utils/icons/loading.phtml"
+                />
+
+                <block name="magewire.playwright.ui.exception"
+                       as="exception"
+                       template="Magewirephp_Magewire::magewire/exception.phtml"
+                />
+            </block>
+        </referenceContainer>
+    </body>
+</page>

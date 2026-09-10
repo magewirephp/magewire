@@ -60,9 +60,12 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                                 'x-bind:class'() {
                                     return [
                                         'message',
-                                        'relative',
+                                        'magewire-notifier-item',
                                         `${this.notification.type}`
                                     ];
+                                },
+                                'x-bind:data-type'() {
+                                    return this.notification.type;
                                 },
                             }
                         },
@@ -71,7 +74,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                             return {
                                 'x-bind:class'() {
                                     return {
-                                        'animate-bounce': this.notification.occurrences > 10
+                                        'magewire-notifier-occurrences--emphasized': this.notification.occurrences > 10
                                     };
                                 },
                                 'x-bind:style'() {

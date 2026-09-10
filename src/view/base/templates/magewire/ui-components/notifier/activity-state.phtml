@@ -9,7 +9,7 @@ use Magento\Framework\View\Element\Template;
 /** @var Escaper $escaper */
 
 $blockLoaderIcon = $block->getChildBlock('loader') ?>
-<div class="size-5" x-show="notification.loader.active">
+<div class="magewire-notifier-activity-state" x-show="notification.loader.active">
     <?php /* Stack items vertically to prevent layout shifting when hiding or disappearing, ensuring consistent visual layout. */ ?>
     <?php if ($blockLoaderIcon): ?>
         <div x-show="notification.state">

@@ -1,0 +1,310 @@
+/*
+ * Magewire core component styles.
+ *
+ * This is original, framework-independent CSS. Its modular structure, logical
+ * properties, and custom-property API take inspiration from Fylgja's way of
+ * writing CSS (https://fylgja.dev/); no Fylgja package or runtime is bundled.
+ * The visual direction follows the quiet surfaces, clear borders, and focused
+ * accents used throughout Laravel and Laravel Cloud.
+ */
+
+[wire\:loading][wire\:loading],
+[wire\:loading\.delay][wire\:loading\.delay],
+[wire\:loading\.inline-block][wire\:loading\.inline-block],
+[wire\:loading\.inline][wire\:loading\.inline],
+[wire\:loading\.block][wire\:loading\.block],
+[wire\:loading\.flex][wire\:loading\.flex],
+[wire\:loading\.table][wire\:loading\.table],
+[wire\:loading\.grid][wire\:loading\.grid],
+[wire\:loading\.inline-flex][wire\:loading\.inline-flex],
+[wire\:loading\.delay\.none][wire\:loading\.delay\.none],
+[wire\:loading\.delay\.shortest][wire\:loading\.delay\.shortest],
+[wire\:loading\.delay\.shorter][wire\:loading\.delay\.shorter],
+[wire\:loading\.delay\.short][wire\:loading\.delay\.short],
+[wire\:loading\.delay\.default][wire\:loading\.delay\.default],
+[wire\:loading\.delay\.long][wire\:loading\.delay\.long],
+[wire\:loading\.delay\.longer][wire\:loading\.delay\.longer],
+[wire\:loading\.delay\.longest][wire\:loading\.delay\.longest],
+[wire\:offline][wire\:offline] {
+    display: none;
+}
+
+[wire\:dirty]:not(textarea):not(input):not(select) {
+    display: none;
+}
+
+:root {
+    --livewire-progress-bar-color: #2299dd;
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+.magewire-notifier {
+    --magewire-notifier-gap: 0.25rem;
+    --magewire-notifier-offset: 0.5rem;
+    --magewire-notifier-width: 26rem;
+    --magewire-notifier-z-index: 40;
+    --magewire-notifier-surface: #fff;
+    --magewire-notifier-border: #e8e8ec;
+    --magewire-notifier-color: #1c2024;
+    --magewire-notifier-muted-color: #60646c;
+    --magewire-notifier-radius: 0.75rem;
+    --magewire-notifier-shadow: 0 1px 2px rgb(15 23 42 / 6%), 0 8px 24px rgb(15 23 42 / 10%);
+    --magewire-notifier-padding-block: 0.875rem;
+    --magewire-notifier-padding-inline: 1rem;
+    position: fixed;
+    z-index: var(--magewire-notifier-z-index);
+    inset-block-end: var(--magewire-notifier-offset);
+    inset-inline: 0;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--magewire-notifier-gap);
+    inline-size: calc(100% - var(--magewire-notifier-offset) - var(--magewire-notifier-offset));
+    max-inline-size: 70ch;
+    margin-block: 0;
+    margin-inline: auto;
+    pointer-events: none;
+}
+
+.magewire-notifier .magewire-notifier-item[data-type] {
+    --magewire-notifier-accent: var(--magewire-notifier-neutral, #64748b);
+    --magewire-notifier-accent-surface: var(--magewire-notifier-neutral-surface, #f8fafc);
+    --magewire-notifier-accent-color: var(--magewire-notifier-neutral-color, #334155);
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    inline-size: 100%;
+    max-inline-size: min(70ch, calc(100vw - var(--magewire-notifier-offset) - var(--magewire-notifier-offset)));
+    box-sizing: border-box;
+    margin-block-end: 0;
+    padding-block: var(--magewire-notifier-padding-block);
+    padding-inline: var(--magewire-notifier-padding-inline);
+    border: 1px solid var(--magewire-notifier-border);
+    border-inline-start: 0.25rem solid var(--magewire-notifier-accent);
+    border-radius: var(--magewire-notifier-radius);
+    box-shadow: var(--magewire-notifier-shadow);
+    background: var(--magewire-notifier-surface);
+    color: var(--magewire-notifier-color);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    text-align: start;
+    overflow-wrap: anywhere;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.magewire-notifier .magewire-notifier-item[data-type="success"] {
+    --magewire-notifier-accent: var(--magewire-notifier-success, #16a34a);
+    --magewire-notifier-accent-surface: var(--magewire-notifier-success-surface, #f0fdf4);
+    --magewire-notifier-accent-color: var(--magewire-notifier-success-color, #166534);
+}
+
+.magewire-notifier .magewire-notifier-item:is([data-type="info"], [data-type="notice"]) {
+    --magewire-notifier-accent: var(--magewire-notifier-info, #006aff);
+    --magewire-notifier-accent-surface: var(--magewire-notifier-info-surface, #eff6ff);
+    --magewire-notifier-accent-color: var(--magewire-notifier-info-color, #1d4ed8);
+}
+
+.magewire-notifier .magewire-notifier-item[data-type="warning"] {
+    --magewire-notifier-accent: var(--magewire-notifier-warning, #d97706);
+    --magewire-notifier-accent-surface: var(--magewire-notifier-warning-surface, #fffbeb);
+    --magewire-notifier-accent-color: var(--magewire-notifier-warning-color, #92400e);
+}
+
+.magewire-notifier .magewire-notifier-item[data-type="error"] {
+    --magewire-notifier-accent: var(--magewire-notifier-error, #f53003);
+    --magewire-notifier-accent-surface: var(--magewire-notifier-error-surface, #fff1ed);
+    --magewire-notifier-accent-color: var(--magewire-notifier-error-color, #c42602);
+}
+
+.magewire-notifier .magewire-notifier-occurrences {
+    max-inline-size: fit-content;
+    min-inline-size: 1.75rem;
+    padding-block: 0;
+    padding-inline: 0.375rem;
+    border: 1px solid var(--magewire-notifier-accent);
+    border-radius: 0.375rem;
+    background: var(--magewire-notifier-accent-surface);
+    color: var(--magewire-notifier-accent-color);
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.magewire-notifier-occurrences {
+    position: absolute;
+    inset-block-start: -0.5rem;
+    inset-inline-end: -0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    block-size: 1.25rem;
+    box-sizing: border-box;
+    box-shadow: 0 0 0 2px var(--magewire-notifier-surface), 0 1px 3px rgb(15 23 42 / 16%);
+}
+
+.magewire-notifier-occurrences--emphasized {
+    animation: magewire-bounce 1s infinite;
+}
+
+.magewire-notifier-transition-enter {
+    transition-property: opacity, transform;
+    transition-duration: var(--magewire-notifier-enter-duration, 400ms);
+    transition-timing-function: var(--magewire-notifier-enter-easing, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.magewire-notifier-transition-enter-start {
+    opacity: 0;
+    transform: translateY(calc(100vh + 100%));
+}
+
+.magewire-notifier-transition-enter-end,
+.magewire-notifier-transition-leave-start {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.magewire-notifier-transition-leave {
+    transition-property: opacity, transform;
+    transition-duration: var(--magewire-notifier-leave-duration, 150ms);
+    transition-timing-function: ease-in;
+}
+
+.magewire-notifier-transition-leave-end {
+    opacity: 0;
+    transform: translateY(0.5rem);
+}
+
+.magewire-notifier-body {
+    min-inline-size: 0;
+}
+
+.magewire-notifier-title,
+.magewire-notifier-message {
+    margin: 0;
+}
+
+.magewire-notifier-title {
+    color: var(--magewire-notifier-color);
+    font-weight: 600;
+}
+
+.magewire-notifier-message {
+    color: var(--magewire-notifier-muted-color);
+}
+
+.magewire-notifier-title + .magewire-notifier-message {
+    margin-block-start: 0.125rem;
+}
+
+.magewire-notifier-after {
+    flex: none;
+    margin-inline-start: auto;
+}
+
+.magewire-notifier-activity-state {
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+}
+
+.magewire-loading-icon {
+    inline-size: 100%;
+    block-size: 100%;
+    animation: magewire-spin 1s linear infinite;
+}
+
+.magewire-loading-icon-track {
+    opacity: 0.25;
+}
+
+.magewire-loading-icon-indicator {
+    filter: drop-shadow(0 1px 1px rgb(15 23 42 / 20%));
+}
+
+.magewire-sr-only {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.magewire-exception-trace {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 1rem;
+    border: 1px solid var(--magewire-exception-border, #e8e8ec);
+    border-inline-start: 0.25rem solid var(--magewire-exception-accent, #f53003);
+    border-radius: var(--magewire-exception-radius, 0.75rem);
+    box-shadow: var(--magewire-exception-shadow, 0 1px 2px rgb(15 23 42 / 6%));
+    background: var(--magewire-exception-surface, #fff);
+    color: var(--magewire-exception-color, #1c2024);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    white-space: pre-line;
+    overflow: auto;
+}
+
+.magewire-exception-label {
+    color: var(--magewire-exception-accent, #f53003);
+    font-weight: 600;
+}
+
+.magewire-exception-message {
+    margin-block-start: 0.5rem;
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
+@media (min-width: 48rem) {
+    .magewire-notifier {
+        --magewire-notifier-gap: 0.5rem;
+        --magewire-notifier-offset: 1rem;
+        inline-size: var(--magewire-notifier-width);
+        max-inline-size: calc(100vw - var(--magewire-notifier-offset) - var(--magewire-notifier-offset));
+    }
+
+    .magewire-notifier .magewire-notifier-item[data-type] {
+        inline-size: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .magewire-notifier .magewire-notifier-item[data-type],
+    .magewire-notifier-occurrences--emphasized,
+    .magewire-loading-icon {
+        animation: none;
+        transition: none;
+    }
+}
+
+@keyframes magewire-bounce {
+    0%,
+    100% {
+        transform: translateY(-25%);
+        animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+    }
+
+    50% {
+        transform: none;
+        animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    }
+}
+
+@keyframes magewire-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

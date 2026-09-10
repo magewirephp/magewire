@@ -3,6 +3,7 @@
 ## Requirements
 
 - Magento Sample Data
+- Magento developer mode
 
 ## Install
 
@@ -40,6 +41,17 @@ To run the Magewire Playwright tests, follow these steps:
    ```sh
    npx playwright test --ui
    ```
+
+## UI workbench
+
+Open `/magewire/playwright/ui` in a non-production Magento installation to inspect and style the
+core UI without having to reproduce application states elsewhere. The workbench uses the real
+notifier, loading icon, exception template, and Magewire directives. Its controls can keep every
+notification visible, let notifications expire, replay all message types, or clear the preview.
+
+The same page is covered by `tests/ui.spec.js`, including persistent and expiring notifications,
+occurrence badges, loading, dirty, and offline behavior. Theme compatibility modules can visit this
+route in their own Playwright suite to verify their presentation overrides against the same markup.
 
 ## More details
 

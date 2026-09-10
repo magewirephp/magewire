@@ -23,11 +23,11 @@ $exception = $block->getData('exception');
 ?>
 <?php if ($state instanceof ApplicationState && $state->getMode() === ApplicationState::MODE_DEVELOPER): ?>
 <div class="magewire-exception">
-    <pre class="whitespace-pre-line text-sm text-gray-600 border rounded border-gray-600 p-4 overflow-auto">
-        <span class="text-red-600 font-bold">Exception:</span> <?= $escaper->escapeHtml($exception->getMessage()) ?>
+    <pre class="magewire-exception-trace">
+        <span class="magewire-exception-label">Exception:</span> <?= $escaper->escapeHtml($exception->getMessage()) ?>
     </pre>
 
-    <p class="text-xs mt-2 italic">
+    <p class="magewire-exception-message">
         <?php if (strlen($id) === 0): ?>
             <?= $escaper->escapeHtml(__('An exception occurred while parsing and/or rendering the Magewire component.')) ?>
         <?php else: ?>
