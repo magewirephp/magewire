@@ -55,14 +55,16 @@
     --magewire-notifier-padding-inline: 1rem;
     position: fixed;
     z-index: var(--magewire-notifier-z-index);
+    inset-block-end: var(--magewire-notifier-offset);
     inset-inline: 0;
-    inset-block-end: 0;
     display: inline-flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: var(--magewire-notifier-gap);
-    max-inline-size: 100%;
-    margin: var(--magewire-notifier-offset);
+    inline-size: calc(100% - var(--magewire-notifier-offset) - var(--magewire-notifier-offset));
+    max-inline-size: 70ch;
+    margin-block: 0;
+    margin-inline: auto;
     pointer-events: none;
 }
 
@@ -150,6 +152,34 @@
 
 .magewire-notifier-occurrences--emphasized {
     animation: magewire-bounce 1s infinite;
+}
+
+.magewire-notifier-transition-enter {
+    transition-property: opacity, transform;
+    transition-duration: var(--magewire-notifier-enter-duration, 400ms);
+    transition-timing-function: var(--magewire-notifier-enter-easing, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.magewire-notifier-transition-enter-start {
+    opacity: 0;
+    transform: translateY(calc(100vh + 100%));
+}
+
+.magewire-notifier-transition-enter-end,
+.magewire-notifier-transition-leave-start {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.magewire-notifier-transition-leave {
+    transition-property: opacity, transform;
+    transition-duration: var(--magewire-notifier-leave-duration, 150ms);
+    transition-timing-function: ease-in;
+}
+
+.magewire-notifier-transition-leave-end {
+    opacity: 0;
+    transform: translateY(0.5rem);
 }
 
 .magewire-notifier-body {
@@ -241,7 +271,6 @@
     .magewire-notifier {
         --magewire-notifier-gap: 0.5rem;
         --magewire-notifier-offset: 1.5rem;
-        inset-inline-end: auto;
     }
 
     .magewire-notifier .magewire-notifier-item[data-type] {

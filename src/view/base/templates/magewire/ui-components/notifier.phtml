@@ -28,8 +28,12 @@ $layoutUtil = $magewireViewModel->utils()->layout();
             aria-label="off"
             role="status"
             x-show="notification.active"
-            x-transition:enter.duration.400ms
-            x-transition:leave.duration.100ms
+            x-transition:enter="magewire-notifier-transition-enter"
+            x-transition:enter-start="magewire-notifier-transition-enter-start"
+            x-transition:enter-end="magewire-notifier-transition-enter-end"
+            x-transition:leave="magewire-notifier-transition-leave"
+            x-transition:leave-start="magewire-notifier-transition-leave-start"
+            x-transition:leave-end="magewire-notifier-transition-leave-end"
             x-bind="bindings.notification.item.root"
         >
             <span

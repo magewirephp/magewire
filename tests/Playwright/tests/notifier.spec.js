@@ -83,6 +83,102 @@ test.describe('Magewire Playwright — Notifier', () => {
         await expect(page.locator('[data-magewire-css-probe="cloak"]')).toBeHidden();
     });
 
+    test('slides a notification into view from below the viewport', async ({ page }) => {
+        const startPosition = await page.evaluate(() => {
+            const notification = document.createElement('div');
+            notification.className = [
+                'message',
+                'success',
+                'magewire-notifier-item',
+                'magewire-notifier-transition-enter-start'
+            ].join(' ');
+            notification.dataset.type = 'success';
+            notification.textContent = 'Transition position probe';
+            document.querySelector('.magewire-notifier').appendChild(notification);
+
+            const bounds = notification.getBoundingClientRect();
+            const styles = getComputedStyle(notification);
+            const result = {
+                opacity: styles.opacity,
+                top: bounds.top,
+                viewportHeight: window.innerHeight
+            };
+
+            notification.remove();
+
+            return result;
+        });
+        const transition = page.evaluate(() => new Promise((resolve, reject) => {
+            const notifier = document.querySelector('.magewire-notifier');
+            const timeout = setTimeout(() => {
+                observer.disconnect();
+                reject(new Error('Notification never entered its start position.'));
+            }, 2000);
+            const observer = new MutationObserver(() => {
+                const notification = notifier.querySelector('.magewire-notifier-transition-enter-start');
+
+                if (! notification) {
+                    return;
+                }
+
+                clearTimeout(timeout);
+                observer.disconnect();
+                resolve(notification.className);
+            });
+
+            observer.observe(notifier, {
+                attributes: true,
+                childList: true,
+                subtree: true,
+                attributeFilter: ['class']
+            });
+        }));
+
+        await createNotification(page, 'Slide into view.', 'success');
+
+        const start = await transition;
+        expect(start).toContain('magewire-notifier-transition-enter-start');
+        expect(startPosition.opacity).toBe('0');
+        expect(startPosition.top).toBeGreaterThanOrEqual(startPosition.viewportHeight);
+
+        const notification = notificationOfType(page, 'success');
+        await expect(notification).toBeVisible();
+        await expect(notification).not.toHaveClass(/\bmagewire-notifier-transition-enter-start\b/);
+        await expect(notification).toHaveCSS('transform', 'none');
+    });
+
+    test('places the notification stack at the bottom center of the viewport', async ({ page }) => {
+        await page.evaluate(() => {
+            document.querySelectorAll('link[rel~="stylesheet"]').forEach(stylesheet => {
+                if (! stylesheet.href.includes('Magewirephp_Magewire/css/magewire.css')) {
+                    stylesheet.disabled = true;
+                }
+            });
+
+            document.querySelectorAll('style').forEach(stylesheet => {
+                stylesheet.disabled = true;
+            });
+        });
+
+        await createNotification(page, 'Centered along the bottom.', 'info');
+
+        const position = await page.locator('.magewire-notifier').evaluate(element => {
+            const bounds = element.getBoundingClientRect();
+            const styles = getComputedStyle(element);
+
+            return {
+                centerX: bounds.left + (bounds.width / 2),
+                bottom: bounds.bottom,
+                bottomOffset: Number.parseFloat(styles.bottom),
+                viewportCenterX: window.innerWidth / 2,
+                viewportHeight: window.innerHeight
+            };
+        });
+
+        expect(position.centerX).toBeCloseTo(position.viewportCenterX, 0);
+        expect(position.bottom).toBeCloseTo(position.viewportHeight - position.bottomOffset, 0);
+    });
+
     test('updates the previous active notification when its message and type are equal', async ({ page }) => {
         const first = await createNotification(page, 'Too many requests! Please wait.');
 
