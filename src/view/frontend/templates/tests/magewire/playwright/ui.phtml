@@ -209,7 +209,7 @@ if ($exceptionBlock instanceof AbstractBlock && $preview instanceof UiPreview) {
 
         <ol class="magewire-ui-workbench__pagination-items" data-testid="ui-pagination-items">
             <?php foreach ($magewire->getPaginationItems() as $offset => $item): ?>
-                <?php $itemNumber = (($paginationPage - 1) * 3) + $offset + 1 ?>
+                <?php $itemNumber = ( ( $paginationPage - 1 ) * 3 ) + $offset + 1 ?>
                 <li wire:key="ui-pagination-item-<?= (int) $itemNumber ?>">
                     <span><?= (int) $itemNumber ?></span>
                     <?= $escaper->escapeHtml($item) ?>

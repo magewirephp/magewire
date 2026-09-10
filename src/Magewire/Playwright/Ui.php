@@ -41,7 +41,7 @@ class Ui extends Component
      */
     public function getPaginationItems(): array
     {
-        $offset = ((int) $this->getPage() - 1) * self::ITEMS_PER_PAGE;
+        $offset = ( (int) $this->getPage() - 1 ) * self::ITEMS_PER_PAGE;
 
         return array_slice(self::ITEMS, $offset, self::ITEMS_PER_PAGE);
     }
