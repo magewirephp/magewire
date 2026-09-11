@@ -49,10 +49,12 @@ class Functions
 
     public function escapeStringForHtml($subject): string
     {
-        if (is_string($subject) || is_numeric($subject)) {
-            return $this->escape->escapeHtml($subject);
+        if (!is_string($subject) && !is_numeric($subject)) {
+            $subject = $this->serializer->serialize($subject);
         }
 
-        return $this->escape->escapeHtml($this->serializer->serialize($subject));
+        // Escaper::escapeHtml keeps existing entities (double_encode=false), which turns serialized
+        // data containing e.g. `&quot;` into invalid JSON once the browser decodes the attribute.
+        return htmlspecialchars((string)$subject, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 }
