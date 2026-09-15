@@ -8,6 +8,17 @@
  * accents used throughout Laravel and Laravel Cloud.
  */
 
+/*
+ * Contents
+ *
+ * 1. Framework
+ * 2. Utilities
+ * 3. Addons
+ */
+
+/* 1. Framework
+   ========================================================================== */
+
 [wire\:loading][wire\:loading],
 [wire\:loading\.delay][wire\:loading\.delay],
 [wire\:loading\.inline-block][wire\:loading\.inline-block],
@@ -40,6 +51,80 @@
 [x-cloak] {
     display: none !important;
 }
+
+.magewire-exception-trace {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 1rem;
+    border: 1px solid var(--magewire-exception-border, #e8e8ec);
+    border-inline-start: 0.25rem solid var(--magewire-exception-accent, #f53003);
+    border-radius: var(--magewire-exception-radius, 0.75rem);
+    box-shadow: var(--magewire-exception-shadow, 0 1px 2px rgb(15 23 42 / 6%));
+    background: var(--magewire-exception-surface, #fff);
+    color: var(--magewire-exception-color, #1c2024);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    white-space: pre-line;
+    overflow: auto;
+}
+
+.magewire-exception-label {
+    color: var(--magewire-exception-accent, #f53003);
+    font-weight: 600;
+}
+
+.magewire-exception-message {
+    margin-block-start: 0.5rem;
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
+/* 2. Utilities
+   ========================================================================== */
+
+.magewire-sr-only {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.magewire-loading-icon {
+    inline-size: 100%;
+    block-size: 100%;
+    animation: magewire-spin 1s linear infinite;
+}
+
+.magewire-loading-icon-track {
+    opacity: 0.25;
+}
+
+.magewire-loading-icon-indicator {
+    filter: drop-shadow(0 1px 1px rgb(15 23 42 / 20%));
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .magewire-loading-icon {
+        animation: none;
+        transition: none;
+    }
+}
+
+@keyframes magewire-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 3. Addons
+   ========================================================================== */
+
+/* Notifier */
 
 .magewire-notifier {
     --magewire-notifier-gap: 0.25rem;
@@ -215,59 +300,6 @@
     block-size: 1.25rem;
 }
 
-.magewire-loading-icon {
-    inline-size: 100%;
-    block-size: 100%;
-    animation: magewire-spin 1s linear infinite;
-}
-
-.magewire-loading-icon-track {
-    opacity: 0.25;
-}
-
-.magewire-loading-icon-indicator {
-    filter: drop-shadow(0 1px 1px rgb(15 23 42 / 20%));
-}
-
-.magewire-sr-only {
-    position: absolute;
-    inline-size: 1px;
-    block-size: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-}
-
-.magewire-exception-trace {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 1rem;
-    border: 1px solid var(--magewire-exception-border, #e8e8ec);
-    border-inline-start: 0.25rem solid var(--magewire-exception-accent, #f53003);
-    border-radius: var(--magewire-exception-radius, 0.75rem);
-    box-shadow: var(--magewire-exception-shadow, 0 1px 2px rgb(15 23 42 / 6%));
-    background: var(--magewire-exception-surface, #fff);
-    color: var(--magewire-exception-color, #1c2024);
-    font-size: 0.875rem;
-    line-height: 1.5;
-    white-space: pre-line;
-    overflow: auto;
-}
-
-.magewire-exception-label {
-    color: var(--magewire-exception-accent, #f53003);
-    font-weight: 600;
-}
-
-.magewire-exception-message {
-    margin-block-start: 0.5rem;
-    font-size: 0.75rem;
-    font-style: italic;
-}
-
 @media (min-width: 48rem) {
     .magewire-notifier {
         --magewire-notifier-gap: 0.5rem;
@@ -283,8 +315,7 @@
 
 @media (prefers-reduced-motion: reduce) {
     .magewire-notifier .magewire-notifier-item[data-type],
-    .magewire-notifier-occurrences--emphasized,
-    .magewire-loading-icon {
+    .magewire-notifier-occurrences--emphasized {
         animation: none;
         transition: none;
     }
@@ -300,11 +331,5 @@
     50% {
         transform: none;
         animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
-    }
-}
-
-@keyframes magewire-spin {
-    to {
-        transform: rotate(360deg);
     }
 }
