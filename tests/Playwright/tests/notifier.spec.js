@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test';
 const PATH = '/magewire/playwright/addons';
 const notifierFixture = page => page.getByTestId('addons-notifier');
 const notifications = page => page.locator('.magewire-notifier-message');
+const notificationOfType = (page, type) => page.locator(`.magewire-notifier-item[data-type="${type}"]`);
 const occurrenceBadge = page => page.locator('.magewire-notifier-occurrences');
 const occurrenceBadgeOfType = (page, type) => page.locator(`.message.${type} .magewire-notifier-occurrences`);
 const occurrenceBadgeValue = page => occurrenceBadge(page).locator('[aria-hidden="true"]');
@@ -33,6 +34,154 @@ test.describe('Magewire Playwright — Notifier', () => {
         await expect(notifierFixture(page).getByRole('heading')).toHaveText('Notifier addon');
     });
 
+    test('loads the framework-independent presentation from Magewire core', async ({ page }) => {
+        await createNotification(page, 'Styled without a theme build.', 'info');
+
+        const stylesheetLoaded = await page.evaluate(() => Array.from(document.styleSheets).some(
+            stylesheet => stylesheet.href?.includes('Magewirephp_Magewire/css/magewire.css'),
+        ));
+
+        expect(stylesheetLoaded).toBe(true);
+
+        await page.evaluate(() => {
+            document.querySelectorAll('link[rel~="stylesheet"]').forEach(stylesheet => {
+                if (!stylesheet.href.includes('Magewirephp_Magewire/css/magewire.css')) {
+                    stylesheet.disabled = true;
+                }
+            });
+
+            document.querySelectorAll('style').forEach(stylesheet => {
+                stylesheet.disabled = true;
+            });
+
+            const probe = document.createElement('div');
+            probe.innerHTML = [
+                '<span data-magewire-css-probe="loading" wire:loading></span>',
+                '<span data-magewire-css-probe="loading-delay" wire:loading.delay></span>',
+                '<span data-magewire-css-probe="offline" wire:offline></span>',
+                '<span data-magewire-css-probe="dirty" wire:dirty></span>',
+                '<span data-magewire-css-probe="cloak" x-cloak></span>',
+            ].join('');
+            document.body.append(probe);
+        });
+
+        await expect(page.locator('.magewire-notifier')).toHaveCSS('position', 'fixed');
+
+        const notification = notificationOfType(page, 'info');
+        await expect(notification).toHaveClass(/\bmessage\b/);
+        await expect(notification).not.toHaveClass(/\btoast\b/);
+        await expect(notification).toHaveCSS('display', 'flex');
+        await expect(notification).toHaveCSS('position', 'relative');
+        await expect(notification).toHaveCSS('border-top-width', '1px');
+        await expect(notification).toHaveCSS('border-inline-start-width', '4px');
+        await expect(notification).toHaveCSS('border-radius', '12px');
+        await expect(notification).toHaveCSS('font-size', '14px');
+        await expect(page.locator('[data-magewire-css-probe="loading"]')).toBeHidden();
+        await expect(page.locator('[data-magewire-css-probe="loading-delay"]')).toBeHidden();
+        await expect(page.locator('[data-magewire-css-probe="offline"]')).toBeHidden();
+        await expect(page.locator('[data-magewire-css-probe="dirty"]')).toBeHidden();
+        await expect(page.locator('[data-magewire-css-probe="cloak"]')).toBeHidden();
+    });
+
+    test('slides a notification into view from below the viewport', async ({ page }) => {
+        const startPosition = await page.evaluate(() => {
+            const notification = document.createElement('div');
+            notification.className = [
+                'message',
+                'success',
+                'magewire-notifier-item',
+                'magewire-notifier-transition-enter-start'
+            ].join(' ');
+            notification.dataset.type = 'success';
+            notification.textContent = 'Transition position probe';
+            document.querySelector('.magewire-notifier').appendChild(notification);
+
+            const bounds = notification.getBoundingClientRect();
+            const styles = getComputedStyle(notification);
+            const result = {
+                opacity: styles.opacity,
+                top: bounds.top,
+                viewportHeight: window.innerHeight
+            };
+
+            notification.remove();
+
+            return result;
+        });
+        const transition = page.evaluate(() => new Promise((resolve, reject) => {
+            const notifier = document.querySelector('.magewire-notifier');
+            const timeout = setTimeout(() => {
+                observer.disconnect();
+                reject(new Error('Notification never entered its start position.'));
+            }, 2000);
+            const observer = new MutationObserver(() => {
+                const notification = notifier.querySelector('.magewire-notifier-transition-enter-start');
+
+                if (! notification) {
+                    return;
+                }
+
+                clearTimeout(timeout);
+                observer.disconnect();
+                resolve(notification.className);
+            });
+
+            observer.observe(notifier, {
+                attributes: true,
+                childList: true,
+                subtree: true,
+                attributeFilter: ['class']
+            });
+        }));
+
+        await createNotification(page, 'Slide into view.', 'success');
+
+        const start = await transition;
+        expect(start).toContain('magewire-notifier-transition-enter-start');
+        expect(startPosition.opacity).toBe('0');
+        expect(startPosition.top).toBeGreaterThanOrEqual(startPosition.viewportHeight);
+
+        const notification = notificationOfType(page, 'success');
+        await expect(notification).toBeVisible();
+        await expect(notification).not.toHaveClass(/\bmagewire-notifier-transition-enter-start\b/);
+        await expect(notification).toHaveCSS('transform', 'none');
+    });
+
+    test('places a fixed-width notification stack at the bottom center on desktop', async ({ page }) => {
+        await page.evaluate(() => {
+            document.querySelectorAll('link[rel~="stylesheet"]').forEach(stylesheet => {
+                if (! stylesheet.href.includes('Magewirephp_Magewire/css/magewire.css')) {
+                    stylesheet.disabled = true;
+                }
+            });
+
+            document.querySelectorAll('style').forEach(stylesheet => {
+                stylesheet.disabled = true;
+            });
+        });
+
+        await createNotification(page, 'Centered along the bottom.', 'info');
+
+        const position = await page.locator('.magewire-notifier').evaluate(element => {
+            const bounds = element.getBoundingClientRect();
+            const styles = getComputedStyle(element);
+
+            return {
+                centerX: bounds.left + (bounds.width / 2),
+                bottom: bounds.bottom,
+                bottomOffset: Number.parseFloat(styles.bottom),
+                width: bounds.width,
+                viewportCenterX: window.innerWidth / 2,
+                viewportHeight: window.innerHeight
+            };
+        });
+
+        expect(position.centerX).toBeCloseTo(position.viewportCenterX, 0);
+        expect(position.bottomOffset).toBe(16);
+        expect(position.bottom).toBeCloseTo(position.viewportHeight - position.bottomOffset, 0);
+        expect(position.width).toBe(416);
+    });
+
     test('updates the previous active notification when its message and type are equal', async ({ page }) => {
         const first = await createNotification(page, 'Too many requests! Please wait.');
 
@@ -61,6 +210,7 @@ test.describe('Magewire Playwright — Notifier', () => {
 
         await expect(occurrenceBadgeValue(page)).toHaveText('10');
         await expect(occurrenceBadge(page)).toBeVisible();
+        await expect(occurrenceBadge(page)).toHaveCSS('position', 'absolute');
 
         const dimensions = await occurrenceBadge(page).evaluate(element => ({
             height: element.offsetHeight,
@@ -78,12 +228,13 @@ test.describe('Magewire Playwright — Notifier', () => {
         }
 
         expect(notification.occurrences).toBe(10);
-        await expect(occurrenceBadge(page)).not.toHaveClass(/\banimate-bounce\b/);
+        await expect(occurrenceBadge(page)).not.toHaveClass(/\bmagewire-notifier-occurrences--emphasized\b/);
 
         notification = await createNotification(page, 'Keep warning me.');
 
         expect(notification.occurrences).toBe(11);
-        await expect(occurrenceBadge(page)).toHaveClass(/\banimate-bounce\b/);
+        await expect(occurrenceBadge(page)).toHaveClass(/\bmagewire-notifier-occurrences--emphasized\b/);
+        await expect(occurrenceBadge(page)).toHaveCSS('animation-name', 'magewire-bounce');
     });
 
     test('exposes the notification type as the badge styling hook', async ({ page }) => {
@@ -96,6 +247,7 @@ test.describe('Magewire Playwright — Notifier', () => {
 
         for (const type of types) {
             await expect(occurrenceBadgeOfType(page, type)).toBeVisible();
+            await expect(notificationOfType(page, type)).toHaveClass(new RegExp(`\\b${type}\\b`));
         }
     });
 

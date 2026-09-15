@@ -2,13 +2,11 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
 >
-    <body>
-        <referenceContainer name="head.additional">
-            <block name="magewire.css"
-                   template="Magewirephp_Magewire::css/magewire.phtml"
-            />
-        </referenceContainer>
+    <head>
+        <css src="Magewirephp_Magewire::css/magewire.css"/>
+    </head>
 
+    <body>
         <referenceContainer name="after.body.start">
             <block name="magewire.priority"
                    template="Magewirephp_Magewire::js/magewire/priority.phtml"
