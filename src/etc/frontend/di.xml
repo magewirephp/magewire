@@ -192,7 +192,7 @@
                 </item>
 
                 <item name="events" xsi:type="array">
-                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportEvents\SupportEvents</item>
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireEvents\SupportMagewireEvents</item>
                     <item name="sort_order" xsi:type="number">1600</item>
                 </item>
 
