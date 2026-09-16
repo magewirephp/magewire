@@ -20,6 +20,7 @@ is explicitly deferred.
 - Current type: Feature
 - Status: Listener slice implemented and verified
 - Branch: `feat/layout-listener-overrides`
+- Draft PR: #307
 
 # Goal
 
@@ -280,3 +281,4 @@ Willem
   an externally registered Magewire feature subclass.
 - 2026-09-16: Created `feat/layout-listener-overrides` from `main` for draft
   review.
+- 2026-09-16: Opened draft pull request #307.
