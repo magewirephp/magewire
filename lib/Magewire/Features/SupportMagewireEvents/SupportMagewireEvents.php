@@ -60,12 +60,7 @@ class SupportMagewireEvents extends ComponentHook
         $removed = $this->getRemovedListenerNames();
         $listeners = array_values(array_filter($context->getEffects()->getData('listeners', []), static fn ($listener) => ! in_array($listener, $removed, true)));
 
-        if ($listeners === []) {
-            $context->getEffects()->exclude('listeners');
-            return;
-        }
-
-        $context->addEffect('listeners', $listeners);
+        $listeners === [] ? $context->getEffects()->exclude('listeners') : $context->addEffect('listeners', $listeners);
     }
 
     /**
