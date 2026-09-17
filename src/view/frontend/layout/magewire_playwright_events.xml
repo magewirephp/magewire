@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+      layout="1column"
+>
+    <body>
+        <referenceContainer name="content">
+            <block name="magewire.playwright.events.basic"
+                   template="Magewirephp_Magewire::tests/magewire/playwright/events/basic.phtml"
+            >
+                <arguments>
+                    <argument name="magewire" xsi:type="object" shared="false">
+                        Magewirephp\Magewire\Magewire\Playwright\Events\Basic
+                    </argument>
+                    <argument name="magewire:listeners" xsi:type="array">
+                        <item name="layout:added" xsi:type="string">onLayoutAdded</item>
+                        <item name="layout:removed-later" xsi:type="string">onLayoutRemoved</item>
+                        <item name="layout:replaced-later" xsi:type="string">onLayoutOriginal</item>
+                        <item name="class:removed" xsi:type="boolean">false</item>
+                        <item name="class:replaced" xsi:type="string">onClassReplacement</item>
+                        <item name="shorthandListener" xsi:type="null"/>
+                        <item name="dynamic:{scope}" xsi:type="null"/>
+                        <item name="attribute:removed" xsi:type="null"/>
+                        <item name="attribute:replaced" xsi:type="string">onAttributeReplacement</item>
+                    </argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+
+        <referenceBlock name="magewire.playwright.events.basic">
+            <arguments>
+                <argument name="magewire:listeners" xsi:type="array">
+                    <item name="layout:removed-later" xsi:type="null"/>
+                    <item name="layout:replaced-later" xsi:type="string">onLayoutReplacement</item>
+                </argument>
+            </arguments>
+        </referenceBlock>
+    </body>
+</page>

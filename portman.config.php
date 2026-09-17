@@ -18,6 +18,7 @@ return [
                     '!Attributes/{Locked,On,Lazy}.php',
                     'Drawer/{ImplicitRouteBinding,Regexes}*',
                     'Exceptions/{Event,Livewire,Root}*',
+                    '!Exceptions/EventHandlerDoesNotExist.php',
                     'Features/**/*',
                     '!Features/Support{Attributes,Events,LifecycleHooks,Locales,NestingComponents,Redirects,FormObjects,Validation,LockedProperties,Streaming,LazyLoading,MultipleRootElementDetection,Pagination}/**/*',
                     'Features/SupportEvents/TestsEvents.php',
