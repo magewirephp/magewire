@@ -10,54 +10,56 @@ use ReflectionMethod;
 
 class SupportMagewireEventsTest extends TestCase
 {
-    public function test_it_layers_normalized_listener_sources_in_order(): void
+    public function test_it_layers_layout_handlers_over_attribute_listeners(): void
     {
-        $listeners = $this->mergeListenerSources(
-            [
-                'shorthandListener',
-                'class:kept' => 'onClassKept',
-                'shared:event' => 'onClassShared'
-            ],
-            [
-                'attribute:kept' => 'onAttributeKept',
-                'shared:event' => 'onAttributeShared'
-            ],
-            [
-                'layout:added' => 'onLayoutAdded',
-                'shared:event' => 'onLayoutShared'
-            ]
-        );
+        $listeners = $this->applyListenerOverlay([
+            'shorthandListener',
+            'attribute:removed' => 'onAttributeRemoved',
+            'shared:event' => 'onAttributeShared'
+        ], [
+            'attribute:removed' => false,
+            'layout:added' => 'onLayoutAdded',
+            'shared:event' => 'onLayoutShared'
+        ]);
 
         self::assertSame(
             [
                 'shorthandListener' => 'shorthandListener',
-                'class:kept' => 'onClassKept',
                 'shared:event' => 'onLayoutShared',
-                'attribute:kept' => 'onAttributeKept',
                 'layout:added' => 'onLayoutAdded'
             ],
             $listeners
         );
     }
 
-    public function test_false_and_null_remove_listeners_from_earlier_sources(): void
+    public function test_false_and_null_are_preserved_as_listener_tombstones(): void
     {
-        $listeners = $this->mergeListenerSources([
-            'class:removed' => 'onClassRemoved',
-            'class:null-removed' => 'onClassNullRemoved',
-            'class:kept' => 'onClassKept'
-        ], [
+        $tombstones = $this->getListenerTombstones([
             'class:removed' => false,
-            'class:null-removed' => null
+            'class:null-removed' => null,
+            'layout:kept' => 'onLayoutKept'
         ]);
 
-        self::assertSame(['class:kept' => 'onClassKept'], $listeners);
+        self::assertSame(
+            [
+                'class:removed' => false,
+                'class:null-removed' => null
+            ],
+            $tombstones
+        );
     }
 
-    private function mergeListenerSources(array ...$sources): array
+    private function applyListenerOverlay(array $listeners, array $overlay): array
     {
-        $method = new ReflectionMethod(SupportMagewireEvents::class, 'mergeListenerSources');
+        $method = new ReflectionMethod(SupportMagewireEvents::class, 'applyListenerOverlay');
 
-        return $method->invoke(null, ...$sources);
+        return $method->invoke(null, $listeners, $overlay);
+    }
+
+    private function getListenerTombstones(array $listeners): array
+    {
+        $method = new ReflectionMethod(SupportMagewireEvents::class, 'getListenerTombstones');
+
+        return $method->invoke(null, $listeners);
     }
 }

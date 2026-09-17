@@ -3,10 +3,10 @@
 Introduce selective, per-block feature configuration through `magewire:` layout
 arguments, including keyed removal through `false` or `null` tombstones.
 
-The implemented first slice is event listeners: listener definitions already form
-a keyed configuration map and have one server-side resolution point. Loaders are
-the next credible candidate. Lazy loading already proves that layout arguments
-can override feature attributes. Arbitrary component-property mutation is not
+The implemented first slice is event listeners. A standalone Magewire feature
+now composes with the ported event feature through ordered lifecycle hooks; it
+does not extend, replace, or add Magento knowledge to `SupportEvents`. Loaders
+are the next credible candidate. Arbitrary component-property mutation is not
 recommended.
 
 For this slice, "from that point on" means later layout XML declarations before
@@ -71,14 +71,17 @@ properties or assign arbitrary public component state.
 
 Magewire
 
-## ✅ Keep Magewire integration outside Portman-ported files
+## ✅ Compose with the ported event feature instead of replacing it
 
-The layout-aware listener resolver lives in the external
-`SupportMagewireEvents` subclass under `lib/Magewire`. Frontend and adminhtml DI
-register that subclass in place of the ported `SupportEvents` feature.
+The ported `SupportEvents` feature remains registered unchanged. The external
+`SupportMagewireEvents` feature is registered separately at a later sort order.
+It contributes active layout handlers during `boot()`, rejects tombstoned
+dispatches through a pre-call guard, and filters the browser listener effect in
+its later `dehydrate()` hook.
 
-The Portman source and generated `SupportEvents` class remain unaware of
-Magento layout arguments and Magewire resolver methods.
+If the core event feature is disabled, the Magewire feature skips itself. The
+Portman source and generated `SupportEvents` class remain unaware of Magento
+layout arguments and Magewire resolver methods.
 
 **Reasoning**
 
@@ -86,14 +89,20 @@ Magento layout arguments and Magewire resolver methods.
   Livewire behavior.
 - Magento layout arguments and `magewireResolver()` belong to Magewire's
   integration layer.
-- An external subclass reuses the complete upstream event lifecycle while
-  limiting the override to listener-source composition.
+- Dehydration alone can change browser subscriptions, but server dispatch
+  authorization and method resolution happen earlier in `SupportEvents::call()`.
+- Ordered composition preserves both server and browser behavior without
+  replacing the core feature.
+- Keeping active layout handlers in the existing attribute-backed listener
+  source preserves dynamic component `getListeners()` implementations.
 
 **Evidence**
 
 - `lib/Magewire/Features/SupportMagewireEvents/SupportMagewireEvents.php`
 - `src/etc/frontend/di.xml`
 - `src/etc/adminhtml/di.xml`
+- `dist/ComponentHookRegistry.php:42-75`
+- `dist/Features/SupportEvents/SupportEvents.php:21-72`
 
 **Owner**
 
@@ -245,10 +254,16 @@ Willem
 
 # Implementation
 
-- Added an external `SupportMagewireEvents` subclass for layout-aware listener
-  resolution and registered it for frontend and adminhtml areas.
+- Registered the original ported `SupportEvents` feature unchanged and added an
+  independent `SupportMagewireEvents` feature immediately after it in frontend
+  and adminhtml areas.
 - Kept the Portman source and generated `SupportEvents` class free of
   Magewire-specific resolver access.
+- Active layout handlers are layered into the existing attribute listener
+  source during `boot()`, before server calls and dehydration.
+- Tombstoned server dispatches are rejected by a pre-call guard, while the
+  later dehydration hook removes tombstoned names from the browser effect.
+- The Magewire adapter skips itself when the core event feature is disabled.
 - Included the upstream `EventHandlerDoesNotExist` exception that the active
   server authorization path already references, so rejected tombstoned events
   fail with the intended error instead of a missing-class error.
@@ -282,3 +297,5 @@ Willem
 - 2026-09-16: Created `feat/layout-listener-overrides` from `main` for draft
   review.
 - 2026-09-16: Opened draft pull request #307.
+- 2026-09-17: Reworked the listener integration into an independently ordered
+  Magewire feature, restoring the original ported event feature registration.

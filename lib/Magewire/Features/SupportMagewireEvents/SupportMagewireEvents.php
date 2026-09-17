@@ -11,18 +11,61 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireEvents;
 
+use Magewirephp\Magewire\ComponentHook;
+use Magewirephp\Magewire\ComponentHookRegistry;
+use Magewirephp\Magewire\Exceptions\EventHandlerDoesNotExist;
 use Magewirephp\Magewire\Features\SupportEvents\SupportEvents;
+use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
 
-use function Magewirephp\Magewire\invade;
+use function Magewirephp\Magewire\before;
 use function Magewirephp\Magewire\store;
 
-class SupportMagewireEvents extends SupportEvents
+/** @mago-expect lint:cyclomatic-complexity */
+class SupportMagewireEvents extends ComponentHook
 {
-    public static function getComponentListeners($component)
+    public static function provide(): void
     {
-        $listeners = static::mergeListenerSources(invade($component)->getListeners(), store($component)->get('listenersFromAttributes', []), static::getLayoutListeners($component));
+        before('call', static function ($component, $method, $params): void {
+            if ($method !== '__dispatch') {
+                return;
+            }
 
-        return static::replaceDynamicEventNamePlaceholders($listeners, $component);
+            $hook = ComponentHookRegistry::getHook($component, self::class);
+
+            if ($hook instanceof self && is_string($params[0] ?? null)) {
+                $hook->ensureListenerIsNotRemoved($params[0]);
+            }
+        });
+    }
+
+    public function skip(): bool
+    {
+        return ComponentHookRegistry::getHook($this->component(), SupportEvents::class) === null;
+    }
+
+    public function boot(): void
+    {
+        $component = $this->component();
+        $fromAttributes = store($component)->get('listenersFromAttributes', []);
+
+        store($component)->set('listenersFromAttributes', static::applyListenerOverlay($fromAttributes, static::getLayoutListeners($component)));
+    }
+
+    public function dehydrate(ComponentContext $context): void
+    {
+        if (! $context->isMounting() || ! $context->hasEffect('listeners')) {
+            return;
+        }
+
+        $removed = $this->getRemovedListenerNames();
+        $listeners = array_values(array_filter($context->getEffects()->getData('listeners', []), static fn ($listener) => ! in_array($listener, $removed, true)));
+
+        if ($listeners === []) {
+            $context->getEffects()->exclude('listeners');
+            return;
+        }
+
+        $context->addEffect('listeners', $listeners);
     }
 
     /**
@@ -43,26 +86,65 @@ class SupportMagewireEvents extends SupportEvents
     }
 
     /**
-     * Normalize each source to event => method before layering it. A false or
-     * null value is a tombstone for the same event in an earlier source.
+     * Add layout handlers to the source consumed by SupportEvents. Tombstones
+     * are enforced by the pre-call guard and the later dehydration hook.
      */
-    protected static function mergeListenerSources(array ...$sources): array
+    protected static function applyListenerOverlay(array $listeners, array $overlay): array
     {
-        $listeners = [];
+        $listeners = static::normalizeListeners($listeners);
 
-        foreach ($sources as $source) {
-            foreach ($source as $event => $method) {
-                $event = is_numeric($event) ? $method : $event;
-
-                if ($method === false || $method === null) {
-                    unset($listeners[$event]);
-                    continue;
-                }
-
-                $listeners[$event] = $method;
+        foreach (static::normalizeListeners($overlay) as $event => $method) {
+            if ($method === false || $method === null) {
+                unset($listeners[$event]);
+                continue;
             }
+
+            $listeners[$event] = $method;
         }
 
         return $listeners;
+    }
+
+    protected static function getListenerTombstones(array $listeners): array
+    {
+        $tombstones = [];
+
+        foreach (static::normalizeListeners($listeners) as $event => $method) {
+            if ($method !== false && $method !== null) {
+                continue;
+            }
+
+            $tombstones[$event] = $method;
+        }
+
+        return $tombstones;
+    }
+
+    protected static function normalizeListeners(array $listeners): array
+    {
+        $normalized = [];
+
+        foreach ($listeners as $event => $method) {
+            $event = is_numeric($event) ? $method : $event;
+            $normalized[$event] = $method;
+        }
+
+        return $normalized;
+    }
+
+    private function ensureListenerIsNotRemoved(string $listener): void
+    {
+        if (in_array($listener, $this->getRemovedListenerNames(), true)) {
+            throw new EventHandlerDoesNotExist($listener);
+        }
+    }
+
+    private function getRemovedListenerNames(): array
+    {
+        $component = $this->component();
+        $tombstones = static::getListenerTombstones(static::getLayoutListeners($component));
+        $tombstones = SupportEvents::replaceDynamicEventNamePlaceholders($tombstones, $component);
+
+        return array_keys($tombstones);
     }
 }

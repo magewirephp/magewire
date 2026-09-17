@@ -262,10 +262,15 @@ The implementation plan should cover:
 - regression coverage for components without `magewire:listeners`.
 
 Although `SupportEvents` is Portman-generated under `dist/`, Magewire-specific
-integration must remain external to the Portman source. The implementation uses
-a `SupportMagewireEvents` subclass under `lib/Magewire` and registers it as the
-event feature in frontend and adminhtml DI. The generated upstream event class
-remains unchanged.
+integration must remain external to the Portman source. The implementation
+keeps the original event feature registered and adds `SupportMagewireEvents` as
+an independent, later-running feature under `lib/Magewire`.
+
+A dehydration-only overlay would be incomplete: it can replace the browser
+effect, but event authorization and method resolution already occur in
+`SupportEvents::call()`. The companion feature therefore adds active layout
+handlers during `boot()`, rejects tombstoned calls through a pre-call guard, and
+uses its later `dehydrate()` hook only for the final browser effect.
 
 Evidence:
 
