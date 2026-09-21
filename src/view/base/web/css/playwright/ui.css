@@ -27,7 +27,7 @@
     font-size: clamp(2rem, 6vw, 3.5rem);
     font-weight: 700;
     letter-spacing: -0.04em;
-    line-height: 1;
+    line-height: 1.1;
 }
 
 .magewire-ui-workbench h2 {
