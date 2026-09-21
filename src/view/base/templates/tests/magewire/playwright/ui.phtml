@@ -50,6 +50,7 @@ if ($exceptionBlock instanceof AbstractBlock && $preview instanceof UiPreview) {
             </div>
             <output class="magewire-ui-workbench__counter"
                     data-testid="ui-notification-count"
+                    aria-label="<?= $escaper->escapeHtmlAttr(__('Active notifications')) ?>"
                     aria-live="polite"
             >0</output>
         </div>

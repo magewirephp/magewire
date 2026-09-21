@@ -19,6 +19,8 @@ test.describe('Magewire Playwright — UI workbench', () => {
 
         await expect(workbench(page).getByRole('heading', { level: 1 })).toHaveText('Magewire UI');
         await expect(workbench(page).getByTestId('ui-notifications-persistent')).toBeChecked();
+        await expect(workbench(page).getByTestId('ui-notification-count'))
+            .toHaveAccessibleName('Active notifications');
         await expect(workbench(page).getByTestId('ui-notification-mode'))
             .toHaveText('Notifications remain visible until dismissed.');
 
