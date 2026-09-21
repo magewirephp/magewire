@@ -19,9 +19,7 @@
     color: var(--magewire-ui-workbench-color);
 }
 
-.magewire-ui-workbench h1,
-.magewire-ui-workbench h2,
-.magewire-ui-workbench p {
+.magewire-ui-workbench :is(h1, h2, p) {
     margin: 0;
 }
 
