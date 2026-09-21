@@ -147,6 +147,37 @@ test.describe('Magewire Playwright — Notifier', () => {
         await expect(notification).toHaveCSS('transform', 'none');
     });
 
+    test('dismisses a notification with its close button', async ({ page }) => {
+        await createNotification(page, 'Dismiss me.', 'info');
+
+        const notification = notificationOfType(page, 'info');
+        const close = notification.getByRole('button', { name: 'Close message' });
+
+        await expect(close).toBeVisible();
+
+        const alignment = await close.evaluate((button) => {
+            const notificationBounds = button.closest('.magewire-notifier-item').getBoundingClientRect();
+            const buttonBounds = button.getBoundingClientRect();
+            const iconBounds = button.querySelector('svg').getBoundingClientRect();
+
+            return {
+                notificationCenterY: notificationBounds.top + (notificationBounds.height / 2),
+                buttonCenterY: buttonBounds.top + (buttonBounds.height / 2),
+                buttonCenterX: buttonBounds.left + (buttonBounds.width / 2),
+                iconCenterY: iconBounds.top + (iconBounds.height / 2),
+                iconCenterX: iconBounds.left + (iconBounds.width / 2),
+            };
+        });
+
+        expect(alignment.buttonCenterY).toBeCloseTo(alignment.notificationCenterY, 0);
+        expect(alignment.iconCenterY).toBeCloseTo(alignment.buttonCenterY, 0);
+        expect(alignment.iconCenterX).toBeCloseTo(alignment.buttonCenterX, 0);
+
+        await close.focus();
+        await page.keyboard.press('Enter');
+        await expect(notification).toBeHidden();
+    });
+
     test('places a fixed-width notification stack at the bottom center on desktop', async ({ page }) => {
         await page.evaluate(() => {
             document.querySelectorAll('link[rel~="stylesheet"]').forEach(stylesheet => {

@@ -291,13 +291,31 @@
 }
 
 .magewire-notifier-after {
+    display: flex;
     flex: none;
+    align-items: center;
     margin-inline-start: auto;
 }
 
-.magewire-notifier-activity-state {
-    inline-size: 1.25rem;
-    block-size: 1.25rem;
+.magewire-notifier-close {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    inline-size: 1.125rem;
+    block-size: 1.125rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.magewire-notifier-close-icon {
+    display: block;
+    inline-size: 1.125rem;
+    block-size: 1.125rem;
 }
 
 @media (min-width: 48rem) {

@@ -20,7 +20,6 @@ use Magewirephp\Magewire\ViewModel\Playwright\UiPreview;
 /** @var Ui $magewire */
 /** @var UiPreview $preview */
 
-$loadingIcon = $block->getChildHtml('loading');
 $preview = $block->getData('preview');
 $exceptionBlock = $block->getChildBlock('exception');
 $exceptionHtml = '';
@@ -56,7 +55,7 @@ if ($exceptionBlock instanceof AbstractBlock && $preview instanceof UiPreview) {
         </div>
 
         <p>
-            <?= $escaper->escapeHtml(__('Preview every message type, including a loader and both regular and emphasized occurrence badges.')) ?>
+            <?= $escaper->escapeHtml(__('Preview every message type, including close buttons and both regular and emphasized occurrence badges.')) ?>
         </p>
 
         <div class="magewire-ui-workbench__controls">
@@ -105,14 +104,10 @@ if ($exceptionBlock instanceof AbstractBlock && $preview instanceof UiPreview) {
                     <p class="magewire-ui-workbench__eyebrow"><?= $escaper->escapeHtml(__('Live state')) ?></p>
                     <h2 id="magewire-ui-activity"><?= $escaper->escapeHtml(__('Activity and loading')) ?></h2>
                 </div>
-
-                <span class="magewire-ui-workbench__icon" data-testid="ui-loading-icon" aria-hidden="true">
-                    <?= /* @noEscape */ $loadingIcon ?>
-                </span>
             </div>
 
             <p>
-                <?= $escaper->escapeHtml(__('Start the delayed request to inspect the loading directive, spinner, disabled button, and progress bar.')) ?>
+                <?= $escaper->escapeHtml(__('Start the delayed request to inspect the loading directive, disabled button, and progress bar.')) ?>
             </p>
 
             <div class="magewire-ui-workbench__sample-row">
@@ -131,9 +126,6 @@ if ($exceptionBlock instanceof AbstractBlock && $preview instanceof UiPreview) {
                       wire:loading.delay.shortest
                       wire:target="simulateRequest"
                 >
-                    <span class="magewire-ui-workbench__state-icon" aria-hidden="true">
-                        <?= /* @noEscape */ $loadingIcon ?>
-                    </span>
                     <?= $escaper->escapeHtml(__('Request in progress')) ?>
                 </span>
 
@@ -318,8 +310,7 @@ if ($exceptionBlock instanceof AbstractBlock && $preview instanceof UiPreview) {
                     const options = {
                         title: notification.title,
                         type: notification.type,
-                        duration: persistent.checked ? false : Math.max(250, Number(duration.value) || 4000),
-                        loader: { active: notification.loading === true }
+                        duration: persistent.checked ? false : Math.max(250, Number(duration.value) || 4000)
                     };
 
                     for (let occurrence = 0; occurrence < occurrences; occurrence += 1) {
@@ -340,8 +331,7 @@ if ($exceptionBlock instanceof AbstractBlock && $preview instanceof UiPreview) {
                         await createNotification({
                             type: 'info',
                             title: 'Request running',
-                            message: 'The activity indicator remains available to theme authors.',
-                            loading: true
+                            message: 'This notification can be dismissed with its close button.'
                         }, 2);
                         await createNotification({
                             type: 'warning',

@@ -23,11 +23,6 @@
                     </argument>
                 </arguments>
 
-                <block name="magewire.playwright.ui.loading"
-                       as="loading"
-                       template="Magewirephp_Magewire::magewire/utils/icons/loading.phtml"
-                />
-
                 <block name="magewire.playwright.ui.exception"
                        as="exception"
                        template="Magewirephp_Magewire::magewire/exception.phtml"
