@@ -314,10 +314,20 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .magewire-notifier .magewire-notifier-item[data-type],
+    .magewire-notifier .magewire-notifier-item[data-type] {
+        animation: none;
+        transition-property: opacity;
+    }
+
+    .magewire-notifier-transition-enter-start,
+    .magewire-notifier-transition-enter-end,
+    .magewire-notifier-transition-leave-start,
+    .magewire-notifier-transition-leave-end {
+        transform: none;
+    }
+
     .magewire-notifier-occurrences--emphasized {
         animation: none;
-        transition: none;
     }
 }
 
