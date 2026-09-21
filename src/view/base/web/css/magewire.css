@@ -40,7 +40,7 @@
     display: none;
 }
 
-[wire\:dirty]:not(textarea):not(input):not(select) {
+[wire\:dirty]:not(input, select, textarea) {
     display: none;
 }
 
