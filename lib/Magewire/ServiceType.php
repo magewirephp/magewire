@@ -14,6 +14,7 @@ namespace Magewirephp\Magewire;
 use Magento\Framework\Exception\NotFoundException;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magewirephp\Magewire\Enums\ServiceTypeItemBootMode;
+use Magewirephp\Magewire\ServiceType\ItemSorter;
 use Magewirephp\Magewire\Support\Factory;
 
 /**
@@ -22,9 +23,7 @@ use Magewirephp\Magewire\Support\Factory;
  * ensuring dependencies are resolved and necessary data is injected.
  *
  * @mago-expect lint:cyclomatic-complexity
- * @mago-expect lint:kan-defect
  * @mago-expect lint:no-isset
- * @mago-expect lint:identity-comparison
  */
 abstract class ServiceType
 {
@@ -156,29 +155,7 @@ abstract class ServiceType
             return $this->items;
         }
 
-        uasort($this->items, static function ($a, $b) {
-            if ($a['sort_order'] == $b['sort_order']) {
-                if (isset($a['sequence'])) {
-                    foreach ($a['sequence'] as $dependency) {
-                        if ($dependency == $b['type']) {
-                            return 1; // $a should come after $b
-                        }
-                    }
-                }
-
-                if (isset($b['sequence'])) {
-                    foreach ($b['sequence'] as $dependency) {
-                        if ($dependency == $a['type']) {
-                            return -1; // $a should come before $b
-                        }
-                    }
-                }
-
-                return 0;
-            }
-
-            return ( $a['sort_order'] ?? 0 ) < ( $b['sort_order'] ?? 0 ) ? -1 : 1;
-        });
+        $this->items = ( new ItemSorter() )->sort($this->items);
 
         $this->sorted = true;
         return $this->items;

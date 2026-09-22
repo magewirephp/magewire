@@ -145,7 +145,8 @@
                     as defined in Livewire\LivewireServiceProvider::bootFeatures.
 
                     Magewire-specific features rely solely on whether a feature needs to load before or after another,
-                    rather than a strict sort order.
+                    rather than a strict sort order. Add a `sequence` array keyed by feature item name with a boolean
+                    `true` value when a feature must load after another feature.
                 -->
                 <item name="magewire_view_model" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireViewModel\SupportMagewireViewModel</item>
@@ -211,6 +212,9 @@
                 <item name="magewire_events" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireEvents\SupportMagewireEvents</item>
                     <item name="sort_order" xsi:type="number">1650</item>
+                    <item name="sequence" xsi:type="array">
+                        <item name="events" xsi:type="boolean">true</item>
+                    </item>
                 </item>
 
                 <item name="magento_layouts" xsi:type="array">
