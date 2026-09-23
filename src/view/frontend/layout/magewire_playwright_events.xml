@@ -29,8 +29,8 @@
                         <item name="onClassRemoved" xsi:type="null"/>
                         <item name="onLayoutAdded" xsi:type="string">Added loading</item>
                     </argument>
-                    <argument name="magewire:argument-modifiers" xsi:type="array">
-                        <item name="configure" xsi:type="object" shared="false">Magewirephp\Magewire\Magewire\Playwright\Events\ConfigureArguments</item>
+                    <argument name="magewire:modifiers" xsi:type="array">
+                        <item name="configure" xsi:type="object" shared="false">Magewirephp\Magewire\Magewire\Playwright\Events\ConfigureComponent</item>
                     </argument>
                 </arguments>
             </block>

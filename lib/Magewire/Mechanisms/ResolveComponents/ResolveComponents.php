@@ -17,7 +17,8 @@ use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
 use Magewirephp\Magewire\MagewireServiceProvider;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
 use Magewirephp\Magewire\Mechanisms\HandleRequests\ComponentRequestContext;
-use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\ArgumentModifierRunner;
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentModifiers\ComponentModifierContext;
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentModifiers\ComponentModifierRunner;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolver\ComponentResolver;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\ComponentResolverManager;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\LayoutManager;
@@ -32,7 +33,7 @@ class ResolveComponents
         private readonly ComponentResolverManager $componentResolverManagement,
         private readonly MagewireServiceProvider $magewireServiceProvider,
         private readonly LayoutManager $layoutManager,
-        private readonly ArgumentModifierRunner $argumentModifierRunner
+        private readonly ComponentModifierRunner $componentModifierRunner
     ) {
     }
 
@@ -104,7 +105,7 @@ class ResolveComponents
             $component->magewireResolver($resolver);
             $component->magewireLayoutLifecycle($lifecycle);
 
-            $this->argumentModifierRunner->run($component, $resolver->arguments());
+            $this->componentModifierRunner->run(new ComponentModifierContext($component, $resolver->arguments()));
 
             $assembly = $resolver->assemble($block, $component);
             trigger('magewire:component:build', $assembly, $component, $resolver);
