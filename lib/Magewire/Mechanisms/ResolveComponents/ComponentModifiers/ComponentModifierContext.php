@@ -22,12 +22,12 @@ class ComponentModifierContext
     ) {
     }
 
-    public function getComponent(): Component
+    public function component(): Component
     {
         return $this->component;
     }
 
-    public function getArguments(): MagewireArguments
+    public function arguments(): MagewireArguments
     {
         return $this->arguments;
     }

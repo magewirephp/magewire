@@ -18,13 +18,13 @@ class ConfigureComponent implements ModifierInterface
 {
     public function modify(ComponentModifierContext $context): void
     {
-        $component = $context->getComponent();
+        $component = $context->component();
 
         if (! $component instanceof Basic || $component->scope !== 'resolved') {
             return;
         }
 
-        $arguments = $context->getArguments();
+        $arguments = $context->arguments();
         $listeners = $arguments->get('listeners', []);
         $listeners['modifier:' . $component->scope] = 'onModifierAdded';
         $listeners['modifier:replace'] = 'onModifierReplacement';

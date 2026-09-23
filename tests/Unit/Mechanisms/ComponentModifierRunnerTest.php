@@ -35,9 +35,9 @@ class ComponentModifierRunnerTest extends TestCase
                 new class implements ModifierInterface {
                     public function modify(ComponentModifierContext $context): void
                     {
-                        $arguments = $context->getArguments();
+                        $arguments = $context->arguments();
                         $arguments->merge(['custom' => (string) $arguments->get('loader')['onModifierAdded'][0]]);
-                        $context->getComponent()->scope = 'modified';
+                        $context->component()->scope = 'modified';
                     }
                 }
             ],

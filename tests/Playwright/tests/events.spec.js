@@ -24,7 +24,7 @@ async function dispatch(page, event) {
     await page.evaluate((name) => window.dispatchEvent(new CustomEvent(name)), event);
 }
 
-test.describe('Magewire Playwright — Events', () => {
+test.describe('Magewire Playwright — Events, Loaders and Modifiers', () => {
     test.beforeEach(async ({ page }) => {
         const version = Math.floor(Math.random() * 1_000_000);
         await page.goto(`${PATH}?v=${version}`);
@@ -62,7 +62,7 @@ test.describe('Magewire Playwright — Events', () => {
         ]));
     });
 
-    test('merges loader entries from the layout and PHP modifier', async ({ request }) => {
+    test('merges loader entries from the layout and modifier object', async ({ request }) => {
         const html = await (await request.get(PATH)).text();
         const tag = rootTag(html, ID);
 
@@ -74,7 +74,7 @@ test.describe('Magewire Playwright — Events', () => {
         });
     });
 
-    test('uses PHP-computed listener names and handler replacements', async ({ page }) => {
+    test('uses the modifier object for dynamic listener names and handler replacements', async ({ page }) => {
         const result = component(page).getByTestId('event-result');
 
         await dispatch(page, 'modifier:resolved');

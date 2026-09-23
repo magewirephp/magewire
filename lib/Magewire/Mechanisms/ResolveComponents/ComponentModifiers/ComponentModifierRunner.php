@@ -17,7 +17,7 @@ class ComponentModifierRunner
 {
     public function run(ComponentModifierContext $context): void
     {
-        $modifiers = $context->getArguments()->get('modifiers', []);
+        $modifiers = $context->arguments()->get('modifiers', []);
 
         if (! is_array($modifiers)) {
             throw new InvalidArgumentException('The magewire:modifiers layout argument must be an array.');
