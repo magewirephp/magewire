@@ -16,7 +16,7 @@ use Magento\Framework\View\Element\Block\ArgumentInterface;
 /**
  * Changes a component during its build, before mount or hydration.
  */
-interface ComponentModifierInterface extends ArgumentInterface
+interface ModifierInterface extends ArgumentInterface
 {
     public function modify(ComponentModifierContext $context): void;
 }

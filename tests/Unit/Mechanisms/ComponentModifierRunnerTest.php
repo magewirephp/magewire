@@ -9,8 +9,8 @@ use Magewirephp\Magewire\Magewire\Playwright\Events\Basic;
 use Magewirephp\Magewire\Magewire\Playwright\Events\ConfigureComponent;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\BlockMagewireArguments;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentModifiers\ComponentModifierContext;
-use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentModifiers\ComponentModifierInterface;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentModifiers\ComponentModifierRunner;
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentModifiers\ModifierInterface;
 use Magewirephp\Magewire\Support\DataCollection\Filter;
 use PHPUnit\Framework\TestCase;
 
@@ -32,7 +32,7 @@ class ComponentModifierRunnerTest extends TestCase
         $arguments = $this->arguments([
             'modifiers' => [
                 new ConfigureComponent(),
-                new class implements ComponentModifierInterface {
+                new class implements ModifierInterface {
                     public function modify(ComponentModifierContext $context): void
                     {
                         $arguments = $context->getArguments();

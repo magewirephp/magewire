@@ -24,8 +24,8 @@ class ComponentModifierRunner
         }
 
         foreach ($modifiers as $name => $modifier) {
-            if (! $modifier instanceof ComponentModifierInterface) {
-                throw new InvalidArgumentException(sprintf('Component modifier "%s" must implement %s.', $name, ComponentModifierInterface::class));
+            if (! $modifier instanceof ModifierInterface) {
+                throw new InvalidArgumentException(sprintf('Component modifier "%s" must implement %s.', $name, ModifierInterface::class));
             }
 
             $modifier->modify($context);

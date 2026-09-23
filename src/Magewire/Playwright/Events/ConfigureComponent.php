@@ -12,9 +12,9 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Magewire\Playwright\Events;
 
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentModifiers\ComponentModifierContext;
-use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentModifiers\ComponentModifierInterface;
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentModifiers\ModifierInterface;
 
-class ConfigureComponent implements ComponentModifierInterface
+class ConfigureComponent implements ModifierInterface
 {
     public function modify(ComponentModifierContext $context): void
     {
