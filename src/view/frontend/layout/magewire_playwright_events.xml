@@ -22,11 +22,15 @@
                         <item name="dynamic:{scope}" xsi:type="null"/>
                         <item name="attribute:removed" xsi:type="null"/>
                         <item name="attribute:replaced" xsi:type="string">onAttributeReplacement</item>
+                        <item name="modifier:replace" xsi:type="string">onLayoutOriginal</item>
                     </argument>
                     <argument name="magewire:loader" xsi:type="array">
                         <item name="onClassKept" xsi:type="string">Layout loading</item>
                         <item name="onClassRemoved" xsi:type="null"/>
                         <item name="onLayoutAdded" xsi:type="string">Added loading</item>
+                    </argument>
+                    <argument name="magewire:argument-modifiers" xsi:type="array">
+                        <item name="configure" xsi:type="object" shared="false">Magewirephp\Magewire\Magewire\Playwright\Events\ConfigureArguments</item>
                     </argument>
                 </arguments>
             </block>

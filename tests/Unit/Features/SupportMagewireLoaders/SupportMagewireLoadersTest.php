@@ -16,6 +16,26 @@ use PHPUnit\Framework\TestCase;
 
 class SupportMagewireLoadersTest extends TestCase
 {
+    public function test_it_preserves_a_phrase_used_as_the_whole_loader(): void
+    {
+        $component = new class extends Component {};
+        $phrase = __('Global loading');
+
+        $arguments = $this->createMock(MagewireArguments::class);
+        $arguments->method('all')->willReturn(['loader' => $phrase]);
+
+        $resolver = $this->createMock(ComponentResolver::class);
+        $resolver->method('arguments')->willReturn($arguments);
+        $component->magewireResolver($resolver);
+
+        $context = new ComponentContext(null, $component, true, new Effects(), new Memo());
+        $hook = new SupportMagewireLoaders(new LayoutArgumentOverlay());
+        $hook->setComponent($component);
+        $hook->dehydrate($context);
+
+        self::assertSame($phrase, $context->getEffects()->getData('loader')[0]);
+    }
+
     public function test_it_dehydrates_the_layout_overlay_without_changing_the_component_loader(): void
     {
         $component = new class extends Component {
@@ -26,12 +46,14 @@ class SupportMagewireLoadersTest extends TestCase
         };
 
         $arguments = $this->createMock(MagewireArguments::class);
+        $phrase = __('Layout publishing');
         $arguments
             ->method('all')
             ->willReturn(['loader' => [
                 'save' => 'Layout saving',
                 'delete' => null,
-                'publish' => 'Layout publishing'
+                'publish' => [$phrase],
+                'archive' => __('Layout archiving')
             ]]);
 
         $resolver = $this->createMock(ComponentResolver::class);
@@ -45,9 +67,10 @@ class SupportMagewireLoadersTest extends TestCase
 
         $loader = $context->getEffects()->getData('loader')[0];
 
-        self::assertSame(['save', 'publish'], array_keys($loader));
+        self::assertSame(['save', 'publish', 'archive'], array_keys($loader));
         self::assertSame('Layout saving', (string) $loader['save'][0]);
-        self::assertSame('Layout publishing', (string) $loader['publish'][0]);
+        self::assertSame($phrase, $loader['publish'][0]);
+        self::assertSame('Layout archiving', (string) $loader['archive'][0]);
         self::assertSame(['save' => 'Class saving', 'delete' => 'Class deleting'], $component->getLoader());
     }
 }

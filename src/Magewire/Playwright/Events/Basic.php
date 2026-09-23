@@ -106,4 +106,14 @@ class Basic extends Component
     {
         $this->result = 'layout-removed';
     }
+
+    public function onModifierAdded(): void
+    {
+        $this->result = 'modifier-added';
+    }
+
+    public function onModifierReplacement(): void
+    {
+        $this->result = 'modifier-replacement';
+    }
 }

@@ -50,6 +50,8 @@ test.describe('Magewire Playwright — Events', () => {
             'attribute:replaced',
             'layout:added',
             'layout:replaced-later',
+            'modifier:resolved',
+            'modifier:replace',
         ]));
         expect(listeners).not.toEqual(expect.arrayContaining([
             'class:removed',
@@ -60,15 +62,26 @@ test.describe('Magewire Playwright — Events', () => {
         ]));
     });
 
-    test('merges loader entries from the layout with the component loader', async ({ request }) => {
+    test('merges loader entries from the layout and PHP modifier', async ({ request }) => {
         const html = await (await request.get(PATH)).text();
         const tag = rootTag(html, ID);
 
         expect(tag).toBeTruthy();
         expect(effectsFromTag(tag).loader[0]).toEqual({
-            onClassKept: ['Layout loading'],
+            onClassKept: ['Loading from PHP modifier'],
             onLayoutAdded: ['Added loading'],
+            onModifierAdded: ['Adding from PHP modifier'],
         });
+    });
+
+    test('uses PHP-computed listener names and handler replacements', async ({ page }) => {
+        const result = component(page).getByTestId('event-result');
+
+        await dispatch(page, 'modifier:resolved');
+        await expect(result).toHaveText('modifier-added');
+
+        await dispatch(page, 'modifier:replace');
+        await expect(result).toHaveText('modifier-replacement');
     });
 
     test('dispatches kept and layout-added listeners', async ({ page }) => {
