@@ -23,17 +23,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'src/**'
-      - 'lib/**'
-      - 'dist/**'
-      - 'composer.json'
-      - 'tests/Unit/**'
-      - 'tests/Playwright/**'
-      - '.github/workflows/tests.yml'
-      - '.github/workflows/unit-tests.yml'
-      - '.github/workflows/production-build.yml'
-      - '.github/workflows/playwright.yml'
   pull_request:
     branches:
       - main
@@ -53,7 +42,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: tests-${{ inputs.trusted_pr_number || github.ref }}
+  group: tests-${{ github.event_name }}-${{ inputs.trusted_pr_number || github.ref }}
   cancel-in-progress: true
 
 jobs:
