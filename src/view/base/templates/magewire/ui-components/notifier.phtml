@@ -28,15 +28,19 @@ $layoutUtil = $magewireViewModel->utils()->layout();
             aria-label="off"
             role="status"
             x-show="notification.active"
-            x-transition:enter.duration.400ms
-            x-transition:leave.duration.100ms
+            x-transition:enter="magewire-notifier-transition-enter"
+            x-transition:enter-start="magewire-notifier-transition-enter-start"
+            x-transition:enter-end="magewire-notifier-transition-enter-end"
+            x-transition:leave="magewire-notifier-transition-leave"
+            x-transition:leave-start="magewire-notifier-transition-leave-start"
+            x-transition:leave-end="magewire-notifier-transition-leave-end"
             x-bind="bindings.notification.item.root"
         >
             <span
-                class="magewire-notifier-occurrences absolute -right-2 -top-2 flex h-5 min-w-7 items-center justify-center rounded-md px-1.5 text-xs font-semibold leading-none shadow"
+                class="magewire-notifier-occurrences"
                 x-bind="bindings.notification.item.occurrences"
             >
-                <span class="sr-only">
+                <span class="magewire-sr-only">
                     <?= $escaper->escapeHtml(__('Notification occurrences:')) ?>
                 </span>
                 <span aria-hidden="true" x-text="notification.occurrences">

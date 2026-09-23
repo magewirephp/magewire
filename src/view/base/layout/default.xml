@@ -2,13 +2,11 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
 >
-    <body>
-        <referenceContainer name="head.additional">
-            <block name="magewire.css"
-                   template="Magewirephp_Magewire::css/magewire.phtml"
-            />
-        </referenceContainer>
+    <head>
+        <css src="Magewirephp_Magewire::css/magewire.css"/>
+    </head>
 
+    <body>
         <referenceContainer name="after.body.start">
             <block name="magewire.priority"
                    template="Magewirephp_Magewire::js/magewire/priority.phtml"
@@ -121,16 +119,10 @@
                         <block name="magewire.ui-components.notifier.notification.after"
                                as="notification.after"
                         >
-                            <!-- Inject a notification activity state. -->
-                            <block name="magewire.ui-components.notifier.activity-state"
-                                   template="Magewirephp_Magewire::magewire/ui-components/notifier/activity-state.phtml"
-                            >
-                                <!-- Inject loading icon (e.g., spinner). -->
-                                <block name="magewire.ui-components.notifier.activity-state.loader-icon"
-                                       as="loader"
-                                       template="Magewirephp_Magewire::magewire/utils/icons/loading.phtml"
-                                />
-                            </block>
+                            <!-- Inject a notification close button. -->
+                            <block name="magewire.ui-components.notifier.close-button"
+                                   template="Magewirephp_Magewire::magewire/ui-components/notifier/close-button.phtml"
+                            />
                         </block>
                     </block>
                 </container>

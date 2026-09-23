@@ -1,0 +1,34 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+?>
+<button
+    type="button"
+    class="magewire-notifier-close"
+    aria-label="<?= $escaper->escapeHtmlAttr(__('Close message')) ?>"
+    x-on:click.stop="terminate"
+>
+    <svg
+        class="magewire-notifier-close-icon"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        width="18"
+        height="18"
+        aria-hidden="true"
+    >
+        <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18 18 6M6 6l12 12"
+        />
+    </svg>
+</button>

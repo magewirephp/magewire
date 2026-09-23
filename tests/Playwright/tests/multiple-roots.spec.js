@@ -21,6 +21,7 @@ test.describe('Magewire Playwright — Multiple Root Element Detection', () => {
             await expect(exception).toContainText(
                 'Magewire only supports a single root element per component',
             );
+            await expect(exception.locator('.magewire-exception-trace')).toHaveCSS('white-space', 'pre-line');
         });
 
         test('names the offending template in the exception message', async ({ page }) => {
