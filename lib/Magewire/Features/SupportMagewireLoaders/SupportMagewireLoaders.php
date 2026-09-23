@@ -11,34 +11,65 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireLoaders;
 
+use Magento\Framework\Phrase;
 use Magewirephp\Magewire\ComponentHook;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\LayoutArgumentOverlay;
 
 use function Magewirephp\Magewire\map_with_keys;
 
 class SupportMagewireLoaders extends ComponentHook
 {
+    public function __construct(
+        private readonly LayoutArgumentOverlay $layoutArgumentOverlay
+    ) {
+    }
+
     function dehydrate(ComponentContext $context): void
     {
-        $loader = $context->component->getLoader();
+        $loader = $this->layoutArgumentOverlay->value($context->component, 'loader', $context->component->getLoader(), [null]);
 
         if ($loader) {
-            if (is_array($loader)) {
-                $loader = map_with_keys(static function ($value, $key) {
-                    if (is_string($value)) {
-                        $value = [$value];
-                    }
-                    if (is_array($value)) {
-                        $value = array_map('__', array_filter($value, 'is_string'));
-                    }
+            $context->pushEffect('loader', $this->translateLoader($loader));
+        }
+    }
 
-                    return [$key => $value];
-                }, $loader);
-            } elseif (is_string($loader)) {
-                $loader = __($loader);
+    private function translateLoader(mixed $loader): mixed
+    {
+        if (is_string($loader)) {
+            return __($loader);
+        }
+
+        if (! is_array($loader)) {
+            return $loader;
+        }
+
+        return map_with_keys(fn ($value, $key) => [$key => $this->translateMessages($value)], $loader);
+    }
+
+    private function translateMessages(mixed $value): mixed
+    {
+        if (is_string($value) || $value instanceof Phrase) {
+            $value = [$value];
+        }
+
+        if (! is_array($value)) {
+            return $value;
+        }
+
+        $messages = [];
+
+        foreach ($value as $key => $message) {
+            if ($message instanceof Phrase) {
+                $messages[$key] = $message;
+                continue;
             }
 
-            $context->pushEffect('loader', $loader);
+            if (is_string($message)) {
+                $messages[$key] = __($message);
+            }
         }
+
+        return $messages;
     }
 }

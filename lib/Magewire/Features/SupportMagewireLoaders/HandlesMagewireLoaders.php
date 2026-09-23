@@ -11,13 +11,15 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireLoaders;
 
+use Magento\Framework\Phrase;
+
 trait HandlesMagewireLoaders
 {
-    /** @var bool|array */
+    /** @var bool|string|Phrase|array */
     protected $loader = false;
 
     /**
-     * @return bool|array
+     * @return bool|string|Phrase|array
      */
     public function getLoader()
     {

@@ -17,6 +17,8 @@ use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
 use Magewirephp\Magewire\MagewireServiceProvider;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
 use Magewirephp\Magewire\Mechanisms\HandleRequests\ComponentRequestContext;
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentModifiers\ComponentModifierContext;
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentModifiers\ComponentModifierRunner;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolver\ComponentResolver;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\ComponentResolverManager;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\LayoutManager;
@@ -30,7 +32,8 @@ class ResolveComponents
     public function __construct(
         private readonly ComponentResolverManager $componentResolverManagement,
         private readonly MagewireServiceProvider $magewireServiceProvider,
-        private readonly LayoutManager $layoutManager
+        private readonly LayoutManager $layoutManager,
+        private readonly ComponentModifierRunner $componentModifierRunner
     ) {
     }
 
@@ -91,7 +94,7 @@ class ResolveComponents
             throw new ComponentNotFoundException(sprintf('Resolver "%s" failed to construct a Magewire component.', $resolver->accessor()));
         }
 
-        return static function () use ($resolver, $block, $lifecycle) {
+        return function () use ($resolver, $block, $lifecycle) {
             $resolver->arguments()->reassemble($block);
 
             /** @var Component $component */
@@ -101,6 +104,8 @@ class ResolveComponents
             $component->magewireBlock($block);
             $component->magewireResolver($resolver);
             $component->magewireLayoutLifecycle($lifecycle);
+
+            $this->componentModifierRunner->run(new ComponentModifierContext($component, $resolver->arguments()));
 
             $assembly = $resolver->assemble($block, $component);
             trigger('magewire:component:build', $assembly, $component, $resolver);
