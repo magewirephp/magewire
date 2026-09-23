@@ -11,13 +11,14 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments;
 
+use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magewirephp\Magewire\Component;
 
 /**
  * Changes resolved Magewire arguments before component mount or hydration.
  * The collection accepts any argument name, including future ones.
  */
-interface ArgumentModifierInterface
+interface ArgumentModifierInterface extends ArgumentInterface
 {
     public function modify(Component $component, MagewireArguments $arguments): void;
 }
