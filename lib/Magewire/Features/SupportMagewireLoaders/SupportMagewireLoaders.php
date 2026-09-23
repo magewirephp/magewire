@@ -19,9 +19,14 @@ use function Magewirephp\Magewire\map_with_keys;
 
 class SupportMagewireLoaders extends ComponentHook
 {
+    public function __construct(
+        private readonly LayoutArgumentOverlay $layoutArgumentOverlay
+    ) {
+    }
+
     function dehydrate(ComponentContext $context): void
     {
-        $loader = LayoutArgumentOverlay::value($context->component, 'loader', $context->component->getLoader(), [null]);
+        $loader = $this->layoutArgumentOverlay->value($context->component, 'loader', $context->component->getLoader(), [null]);
 
         if ($loader) {
             if (is_array($loader)) {

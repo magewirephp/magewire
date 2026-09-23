@@ -11,9 +11,18 @@ use ReflectionMethod;
 
 class SupportMagewireEventsTest extends TestCase
 {
+    private LayoutArgumentOverlay $layoutArgumentOverlay;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->layoutArgumentOverlay = new LayoutArgumentOverlay();
+    }
+
     public function test_it_layers_layout_handlers_over_attribute_listeners(): void
     {
-        $listeners = LayoutArgumentOverlay::apply(
+        $listeners = $this->layoutArgumentOverlay->apply(
             $this->normalizeListeners([
                 'shorthandListener',
                 'attribute:removed' => 'onAttributeRemoved',
@@ -39,7 +48,7 @@ class SupportMagewireEventsTest extends TestCase
 
     public function test_false_and_null_are_preserved_as_listener_tombstones(): void
     {
-        $tombstones = LayoutArgumentOverlay::removed($this->normalizeListeners([
+        $tombstones = $this->layoutArgumentOverlay->removed($this->normalizeListeners([
             'class:removed' => false,
             'class:null-removed' => null,
             'layout:kept' => 'onLayoutKept'
@@ -58,6 +67,6 @@ class SupportMagewireEventsTest extends TestCase
     {
         $method = new ReflectionMethod(SupportMagewireEvents::class, 'normalizeListeners');
 
-        return $method->invoke(null, $listeners);
+        return $method->invoke(new SupportMagewireEvents($this->layoutArgumentOverlay), $listeners);
     }
 }

@@ -23,7 +23,12 @@ use function Magewirephp\Magewire\store;
 
 class SupportMagewireEvents extends ComponentHook
 {
-    public static function provide(): void
+    public function __construct(
+        private readonly LayoutArgumentOverlay $layoutArgumentOverlay
+    ) {
+    }
+
+    public function provide(): void
     {
         before('call', static function ($component, $method, $params): void {
             if ($method !== '__dispatch') {
@@ -48,9 +53,9 @@ class SupportMagewireEvents extends ComponentHook
         $component = $this->component();
         $fromAttributes = store($component)->get('listenersFromAttributes', []);
 
-        store($component)->set('listenersFromAttributes', LayoutArgumentOverlay::apply(
-            static::normalizeListeners($fromAttributes),
-            static::normalizeListeners(static::getLayoutListeners($component)),
+        store($component)->set('listenersFromAttributes', $this->layoutArgumentOverlay->apply(
+            $this->normalizeListeners($fromAttributes),
+            $this->normalizeListeners($this->getLayoutListeners($component)),
             [false, null]
         ));
     }
@@ -71,14 +76,14 @@ class SupportMagewireEvents extends ComponentHook
      * Return the per-placement listener overlay declared through the
      * `magewire:listeners` layout argument.
      */
-    protected static function getLayoutListeners($component): array
+    protected function getLayoutListeners($component): array
     {
-        $listeners = LayoutArgumentOverlay::get($component, 'listeners', []);
+        $listeners = $this->layoutArgumentOverlay->get($component, 'listeners', []);
 
         return is_array($listeners) ? $listeners : [];
     }
 
-    protected static function normalizeListeners(array $listeners): array
+    protected function normalizeListeners(array $listeners): array
     {
         $normalized = [];
 
@@ -100,7 +105,7 @@ class SupportMagewireEvents extends ComponentHook
     private function getRemovedListenerNames(): array
     {
         $component = $this->component();
-        $tombstones = LayoutArgumentOverlay::removed(static::normalizeListeners(static::getLayoutListeners($component)), [false, null]);
+        $tombstones = $this->layoutArgumentOverlay->removed($this->normalizeListeners($this->getLayoutListeners($component)), [false, null]);
         $tombstones = SupportEvents::replaceDynamicEventNamePlaceholders($tombstones, $component);
 
         return array_keys($tombstones);

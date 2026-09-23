@@ -9,6 +9,7 @@ use Magewirephp\Magewire\Features\SupportMagewireLoaders\SupportMagewireLoaders;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext\Effects;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext\Memo;
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\LayoutArgumentOverlay;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\MagewireArguments;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolver\ComponentResolver;
 use PHPUnit\Framework\TestCase;
@@ -38,7 +39,7 @@ class SupportMagewireLoadersTest extends TestCase
         $component->magewireResolver($resolver);
 
         $context = new ComponentContext(null, $component, true, new Effects(), new Memo());
-        $hook = new SupportMagewireLoaders();
+        $hook = new SupportMagewireLoaders(new LayoutArgumentOverlay());
         $hook->setComponent($component);
         $hook->dehydrate($context);
 

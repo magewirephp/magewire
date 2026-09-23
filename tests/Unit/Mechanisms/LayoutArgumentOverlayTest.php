@@ -12,6 +12,15 @@ use PHPUnit\Framework\TestCase;
 
 class LayoutArgumentOverlayTest extends TestCase
 {
+    private LayoutArgumentOverlay $layoutArgumentOverlay;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->layoutArgumentOverlay = new LayoutArgumentOverlay();
+    }
+
     public function test_it_appends_list_values_and_replaces_or_removes_named_values(): void
     {
         self::assertSame(
@@ -20,7 +29,7 @@ class LayoutArgumentOverlayTest extends TestCase
                 'save' => 'Layout saving',
                 'layoutAction'
             ],
-            LayoutArgumentOverlay::apply(
+            $this->layoutArgumentOverlay->apply(
                 [
                     'classAction',
                     'save' => 'Class saving',
@@ -38,26 +47,26 @@ class LayoutArgumentOverlayTest extends TestCase
 
     public function test_it_preserves_false_when_the_consumer_only_removes_null(): void
     {
-        self::assertSame(['save' => false], LayoutArgumentOverlay::apply(['save' => 'Class saving'], ['save' => false], [null]));
+        self::assertSame(['save' => false], $this->layoutArgumentOverlay->apply(['save' => 'Class saving'], ['save' => false], [null]));
     }
 
     public function test_it_discards_removals_when_an_array_replaces_a_scalar(): void
     {
-        self::assertSame(['save' => 'Layout saving'], LayoutArgumentOverlay::apply(false, ['save' => 'Layout saving', 'obsolete' => null], [null]));
+        self::assertSame(['save' => 'Layout saving'], $this->layoutArgumentOverlay->apply(false, ['save' => 'Layout saving', 'obsolete' => null], [null]));
     }
 
     public function test_it_uses_a_layout_scalar_even_when_it_is_null(): void
     {
         $component = $this->componentWithArguments(['loader' => null]);
 
-        self::assertNull(LayoutArgumentOverlay::value($component, 'loader', ['save' => 'Class saving']));
+        self::assertNull($this->layoutArgumentOverlay->value($component, 'loader', ['save' => 'Class saving']));
     }
 
     public function test_it_leaves_the_original_value_when_the_argument_is_absent(): void
     {
         $component = $this->componentWithArguments([]);
 
-        self::assertSame(['save'], LayoutArgumentOverlay::value($component, 'loader', ['save']));
+        self::assertSame(['save'], $this->layoutArgumentOverlay->value($component, 'loader', ['save']));
     }
 
     private function componentWithArguments(array $values): Component

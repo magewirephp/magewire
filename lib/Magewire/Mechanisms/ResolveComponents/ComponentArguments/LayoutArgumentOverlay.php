@@ -13,17 +13,11 @@ namespace Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments;
 
 use Magewirephp\Magewire\Component;
 
-final class LayoutArgumentOverlay
+class LayoutArgumentOverlay
 {
-    public static function get(Component $component, string $name, mixed $default = null): mixed
+    public function get(Component $component, string $name, mixed $default = null): mixed
     {
-        $resolver = $component->magewireResolver();
-
-        if ($resolver === null) {
-            return $default;
-        }
-
-        $arguments = $resolver->arguments()->all();
+        $arguments = $this->arguments($component);
 
         return array_key_exists($name, $arguments) ? $arguments[$name] : $default;
     }
@@ -32,24 +26,18 @@ final class LayoutArgumentOverlay
      * Use the layout value when present. Arrays add entries and replace keys;
      * selected keyed values can remove entries from the original array.
      */
-    public static function value(Component $component, string $name, mixed $original, array $removals = []): mixed
+    public function value(Component $component, string $name, mixed $original, array $removals = []): mixed
     {
-        $resolver = $component->magewireResolver();
-
-        if ($resolver === null) {
-            return $original;
-        }
-
-        $arguments = $resolver->arguments()->all();
+        $arguments = $this->arguments($component);
 
         if (! array_key_exists($name, $arguments)) {
             return $original;
         }
 
-        return self::apply($original, $arguments[$name], $removals);
+        return $this->apply($original, $arguments[$name], $removals);
     }
 
-    public static function apply(mixed $original, mixed $overlay, array $removals = []): mixed
+    public function apply(mixed $original, mixed $overlay, array $removals = []): mixed
     {
         if (! is_array($overlay)) {
             return $overlay;
@@ -77,8 +65,13 @@ final class LayoutArgumentOverlay
         return $original;
     }
 
-    public static function removed(array $overlay, array $removals): array
+    public function removed(array $overlay, array $removals): array
     {
         return array_filter($overlay, static fn ($value) => in_array($value, $removals, true));
+    }
+
+    private function arguments(Component $component): array
+    {
+        return $component->magewireResolver()?->arguments()->all() ?? [];
     }
 }
