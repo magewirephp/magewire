@@ -29,6 +29,11 @@ class Basic extends Component
         'dynamic:{scope}' => 'onDynamicListener'
     ];
 
+    protected $loader = [
+        'onClassKept' => 'Class loading',
+        'onClassRemoved' => 'Removed loading'
+    ];
+
     public function onClassKept(): void
     {
         $this->result = 'class-kept';

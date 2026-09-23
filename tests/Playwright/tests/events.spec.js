@@ -60,6 +60,17 @@ test.describe('Magewire Playwright — Events', () => {
         ]));
     });
 
+    test('merges loader entries from the layout with the component loader', async ({ request }) => {
+        const html = await (await request.get(PATH)).text();
+        const tag = rootTag(html, ID);
+
+        expect(tag).toBeTruthy();
+        expect(effectsFromTag(tag).loader[0]).toEqual({
+            onClassKept: ['Layout loading'],
+            onLayoutAdded: ['Added loading'],
+        });
+    });
+
     test('dispatches kept and layout-added listeners', async ({ page }) => {
         const result = component(page).getByTestId('event-result');
 

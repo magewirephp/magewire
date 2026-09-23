@@ -23,6 +23,11 @@
                         <item name="attribute:removed" xsi:type="null"/>
                         <item name="attribute:replaced" xsi:type="string">onAttributeReplacement</item>
                     </argument>
+                    <argument name="magewire:loader" xsi:type="array">
+                        <item name="onClassKept" xsi:type="string">Layout loading</item>
+                        <item name="onClassRemoved" xsi:type="null"/>
+                        <item name="onLayoutAdded" xsi:type="string">Added loading</item>
+                    </argument>
                 </arguments>
             </block>
         </referenceContainer>

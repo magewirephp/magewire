@@ -16,11 +16,11 @@ use Magewirephp\Magewire\ComponentHookRegistry;
 use Magewirephp\Magewire\Exceptions\EventHandlerDoesNotExist;
 use Magewirephp\Magewire\Features\SupportEvents\SupportEvents;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\LayoutArgumentOverlay;
 
 use function Magewirephp\Magewire\before;
 use function Magewirephp\Magewire\store;
 
-/** @mago-expect lint:cyclomatic-complexity */
 class SupportMagewireEvents extends ComponentHook
 {
     public static function provide(): void
@@ -48,7 +48,11 @@ class SupportMagewireEvents extends ComponentHook
         $component = $this->component();
         $fromAttributes = store($component)->get('listenersFromAttributes', []);
 
-        store($component)->set('listenersFromAttributes', static::applyListenerOverlay($fromAttributes, static::getLayoutListeners($component)));
+        store($component)->set('listenersFromAttributes', LayoutArgumentOverlay::apply(
+            static::normalizeListeners($fromAttributes),
+            static::normalizeListeners(static::getLayoutListeners($component)),
+            [false, null]
+        ));
     }
 
     public function dehydrate(ComponentContext $context): void
@@ -69,50 +73,9 @@ class SupportMagewireEvents extends ComponentHook
      */
     protected static function getLayoutListeners($component): array
     {
-        $resolver = $component->magewireResolver();
-
-        if ($resolver === null) {
-            return [];
-        }
-
-        $listeners = $resolver->arguments()->get('listeners', []);
+        $listeners = LayoutArgumentOverlay::get($component, 'listeners', []);
 
         return is_array($listeners) ? $listeners : [];
-    }
-
-    /**
-     * Add layout handlers to the source consumed by SupportEvents. Tombstones
-     * are enforced by the pre-call guard and the later dehydration hook.
-     */
-    protected static function applyListenerOverlay(array $listeners, array $overlay): array
-    {
-        $listeners = static::normalizeListeners($listeners);
-
-        foreach (static::normalizeListeners($overlay) as $event => $method) {
-            if ($method === false || $method === null) {
-                unset($listeners[$event]);
-                continue;
-            }
-
-            $listeners[$event] = $method;
-        }
-
-        return $listeners;
-    }
-
-    protected static function getListenerTombstones(array $listeners): array
-    {
-        $tombstones = [];
-
-        foreach (static::normalizeListeners($listeners) as $event => $method) {
-            if ($method !== false && $method !== null) {
-                continue;
-            }
-
-            $tombstones[$event] = $method;
-        }
-
-        return $tombstones;
     }
 
     protected static function normalizeListeners(array $listeners): array
@@ -137,7 +100,7 @@ class SupportMagewireEvents extends ComponentHook
     private function getRemovedListenerNames(): array
     {
         $component = $this->component();
-        $tombstones = static::getListenerTombstones(static::getLayoutListeners($component));
+        $tombstones = LayoutArgumentOverlay::removed(static::normalizeListeners(static::getLayoutListeners($component)), [false, null]);
         $tombstones = SupportEvents::replaceDynamicEventNamePlaceholders($tombstones, $component);
 
         return array_keys($tombstones);

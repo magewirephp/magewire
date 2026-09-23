@@ -13,6 +13,7 @@ namespace Magewirephp\Magewire\Features\SupportMagewireLoaders;
 
 use Magewirephp\Magewire\ComponentHook;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
+use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentArguments\LayoutArgumentOverlay;
 
 use function Magewirephp\Magewire\map_with_keys;
 
@@ -20,7 +21,7 @@ class SupportMagewireLoaders extends ComponentHook
 {
     function dehydrate(ComponentContext $context): void
     {
-        $loader = $context->component->getLoader();
+        $loader = LayoutArgumentOverlay::value($context->component, 'loader', $context->component->getLoader(), [null]);
 
         if ($loader) {
             if (is_array($loader)) {
