@@ -13,7 +13,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: unit-tests-${{ inputs.checkout_ref || github.ref }}
+  group: unit-tests-${{ github.event_name }}-${{ inputs.checkout_ref || github.ref }}
   cancel-in-progress: true
 
 jobs:
