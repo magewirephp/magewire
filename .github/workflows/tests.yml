@@ -62,7 +62,7 @@ jobs:
   backend-admin:
     name: 'Backend admin tests'
     if: github.event_name == 'push'
-    uses: magewirephp/magewire-admin/.github/workflows/backend-tests.yml@main
+    uses: magewirephp/magewire-admin/.github/workflows/backend-tests.yml@4334eea16fd9adbb83b9ff1dc7963fade8d20044
     with:
       magewire_ref: ${{ github.sha }}
 
