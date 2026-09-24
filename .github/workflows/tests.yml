@@ -59,6 +59,13 @@ jobs:
     with:
       checkout_ref: ${{ inputs.checkout_ref }}
 
+  backend-admin:
+    name: 'Backend admin tests'
+    if: github.event_name == 'push'
+    uses: magewirephp/magewire-admin/.github/workflows/backend-tests.yml@main
+    with:
+      magewire_ref: ${{ github.sha }}
+
   approve-trusted-playwright:
     name: 'Approve fork Playwright'
     # SECURITY: this environment must exist with required reviewers configured.
