@@ -121,6 +121,23 @@
     }
 }
 
+.magewire-component-loader {
+    position: absolute;
+    z-index: 10;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.magewire-component-loader-spinner {
+    display: block;
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    color: var(--magewire-loading-color, #2563eb);
+}
+
 /* 3. Addons
    ========================================================================== */
 

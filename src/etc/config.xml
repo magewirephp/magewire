@@ -5,6 +5,9 @@
     <default>
         <magewire>
             <features>
+                <component_loader>
+                    <show_interacted>0</show_interacted>
+                </component_loader>
                 <rate_limiting>
                     <variant>0</variant>
                     <developer_mode>0</developer_mode>

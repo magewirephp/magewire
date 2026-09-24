@@ -1,0 +1,85 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment = $magewireViewModel->utils()->fragment();
+?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    function magewireLoaderTimingUtility() {
+        'use strict';
+
+        const storageKey = 'magewire:component-loader:timings';
+        const sampleLimit = 5;
+        let timings = {};
+
+        try {
+            const saved = JSON.parse(sessionStorage.getItem(storageKey) || '{}');
+            timings = saved && typeof saved === 'object' && ! Array.isArray(saved) ? saved : {};
+        } catch (error) {
+            <?php /* Keep timings in memory when storage is unavailable. */ ?>
+        }
+
+        return {
+            samples: function(name) {
+                return Array.isArray(timings[name]) ? timings[name] : [];
+            },
+
+            record: function(name, duration) {
+                if (! name || ! Number.isFinite(duration)) {
+                    return;
+                }
+
+                timings[name] = [...this.samples(name), Math.round(duration)].slice(-sampleLimit);
+
+                try {
+                    sessionStorage.setItem(storageKey, JSON.stringify(timings));
+                } catch (error) {
+                    <?php /* Keep the in-memory sample if storage is unavailable. */ ?>
+                }
+            },
+
+            threshold: function(name) {
+                const connection = navigator.connection;
+
+                if (connection && (
+                    ['slow-2g', '2g'].includes(connection.effectiveType)
+                    || connection.rtt >= 600
+                    || (connection.downlink > 0 && connection.downlink < 1)
+                )) {
+                    return 250;
+                }
+
+                const samples = this.samples(name);
+
+                if (samples.length < 2) {
+                    return 500;
+                }
+
+                const sorted = [...samples].sort((a, b) => a - b);
+                const middle = Math.floor(sorted.length / 2);
+                const median = sorted.length % 2
+                    ? sorted[middle]
+                    : (sorted[middle - 1] + sorted[middle]) / 2;
+
+                return median >= 600 ? 250 : median <= 250 ? 700 : 500;
+            },
+
+            shouldShow: function(name, elapsed) {
+                return elapsed >= this.threshold(name);
+            }
+        };
+    }
+
+    document.addEventListener('alpine:init', () => {
+        window.MagewireUtilities.register('loaderTiming', magewireLoaderTimingUtility);
+    }, { once: true });
+</script>
+<?php $script->end() ?>
