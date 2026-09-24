@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.7.0](https://github.com/magewirephp/magewire/compare/3.6.1...3.7.0) (2026-09-24)
+
+
+### Features
+
+* add adaptive loading indicator ([#311](https://github.com/magewirephp/magewire/issues/311)) ([9202ed3](https://github.com/magewirephp/magewire/commit/9202ed39084dee033621b88e9be98e4807bb6f63))
+* **layout:** support listener, loader, and component modifiers ([#307](https://github.com/magewirephp/magewire/issues/307)) ([c88e68e](https://github.com/magewirephp/magewire/commit/c88e68e9d0bee6e76e5384d221cb184cab91c90f))
+* ship framework-independent component styles ([#305](https://github.com/magewirephp/magewire/issues/305)) ([08d9622](https://github.com/magewirephp/magewire/commit/08d9622bee32f02afaaa79447bf8bc92e9d21d5d))
+* support service type item sequences ([#308](https://github.com/magewirephp/magewire/issues/308)) ([eed91ec](https://github.com/magewirephp/magewire/commit/eed91ecca82162a553c7939a8fe776eb9a3c8c05))
+
+
+### Bug Fixes
+
+* **ci:** dispatch trusted workflow from main ([#298](https://github.com/magewirephp/magewire/issues/298)) ([afdfb81](https://github.com/magewirephp/magewire/commit/afdfb81a390e30fb3d67d95196163d4243f49807))
+* **ci:** grant pull request comment access ([#296](https://github.com/magewirephp/magewire/issues/296)) ([5b64c1b](https://github.com/magewirephp/magewire/commit/5b64c1b8a02a644febd48e0d6476529d2b355864))
+* **ci:** report trusted results inline ([#304](https://github.com/magewirephp/magewire/issues/304)) ([837c040](https://github.com/magewirephp/magewire/commit/837c0408a0625583af763b979115a38b35268750))
+* **ci:** run trusted result reporter ([#303](https://github.com/magewirephp/magewire/issues/303)) ([8612e99](https://github.com/magewirephp/magewire/commit/8612e992f0538b2f090bf096c432ceea7967aba0))
+* **ci:** use bot-owned test status comment ([#294](https://github.com/magewirephp/magewire/issues/294)) ([1219bf7](https://github.com/magewirephp/magewire/commit/1219bf70f3e0b0b85f6621df636fb78dfb7d1b01))
+* **loader:** show continuation messages after success ([#312](https://github.com/magewirephp/magewire/issues/312)) ([e2117df](https://github.com/magewirephp/magewire/commit/e2117dfce28513b755bc458138f9eb4d752f4238))
+
 ## [3.6.1](https://github.com/magewirephp/magewire/compare/3.6.0...3.6.1) (2026-09-01)
 
 
