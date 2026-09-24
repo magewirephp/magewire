@@ -79,6 +79,8 @@ $showInteracted = $magewireViewModel->utils()->magewire()->config()->isFeatureGr
                     if (entry.requests.size && timing.shouldShow(entry.component.name, performance.now() - started)) {
                         entry.visible = true;
                         publish(entry);
+                    } else if (entry.requests.size) {
+                        this.schedule(entry);
                     }
                 }, remaining);
             },

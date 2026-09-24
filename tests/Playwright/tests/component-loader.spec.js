@@ -147,6 +147,12 @@ test('centers only the shared spinner and adapts to recent timing', async ({ pag
 
     await page.evaluate(() => {
         const root = document.querySelector('#component-loader-origin');
+        const timing = window.MagewireUtilities.loaderTiming;
+        const shouldShow = timing.shouldShow.bind(timing);
+        let checks = 0;
+
+        timing.shouldShow = (...args) => ++checks > 1 && shouldShow(...args);
+
         window.finishComponentLoaderTest = window.MagewireAddons.componentLoader.start({
             id: 'component-loader-manual-test',
             name: 'component-loader-manual-test',
