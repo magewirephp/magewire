@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
-import { join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const PATH = '/magewire/playwright/componentloader';
-const SOURCE = 'Magewirephp_Magewire';
 const CONFIG_PATH = 'magewire/features/component_loader/show_interacted';
-const MAGENTO_ROOT = process.env.MAGENTO_ROOT;
+const MAGENTO_ROOT = process.env.MAGENTO_ROOT
+    || resolve(dirname(fileURLToPath(import.meta.url)), '../../../../../..');
 
 test.describe.configure({ mode: 'serial' });
 
@@ -20,49 +21,20 @@ function cleanConfigCache() {
     magento('cache:clean', 'config', 'block_html', 'full_page');
 }
 
-async function applyFixture(request, fixture, value) {
-    if (MAGENTO_ROOT) {
-        const previous = magento('config:show', CONFIG_PATH);
-        magento('config:set', CONFIG_PATH, String(value));
-        cleanConfigCache();
-        return { previous };
-    }
-
-    const response = await request.get(
-        `/config-fixture/apply/index/source/${SOURCE}/fixture/${fixture}/`
-    );
-    expect(response.status(), 'This test requires Wpoortman_ConfigFixture in developer mode.').toBe(200);
-
-    const result = await response.json();
-    expect(result).toMatchObject({
-        module: 'Wpoortman_ConfigFixture',
-        source_module: SOURCE,
-        fixture,
-        status: 'applied',
-        restore_url: expect.any(String),
-    });
-
-    return { restoreUrl: result.restore_url };
+function applyConfig(value) {
+    const previous = magento('config:show', CONFIG_PATH);
+    magento('config:set', CONFIG_PATH, String(value));
+    cleanConfigCache();
+    return previous;
 }
 
-async function restoreFixture(request, state) {
-    if (!state) {
+function restoreConfig(previous) {
+    if (previous === undefined) {
         return;
     }
 
-    if (MAGENTO_ROOT) {
-        magento('config:set', CONFIG_PATH, state.previous);
-        cleanConfigCache();
-        return;
-    }
-
-    const response = await request.get(state.restoreUrl);
-    expect(response.status(), 'Configuration fixture restoration failed.').toBe(200);
-    expect(await response.json()).toMatchObject({
-        module: 'Wpoortman_ConfigFixture',
-        source_module: SOURCE,
-        status: 'restored',
-    });
+    magento('config:set', CONFIG_PATH, previous || '0');
+    cleanConfigCache();
 }
 
 async function visit(page) {
@@ -99,8 +71,8 @@ async function gateRequests(page) {
     return { waiting, release };
 }
 
-test('shows only the follow-up listener by default', async ({ page, request }) => {
-    const restoreState = await applyFixture(request, 'component-loader-listeners-only', 0);
+test('shows only the follow-up listener by default', async ({ page }) => {
+    expect(['', '0']).toContain(magento('config:show', CONFIG_PATH));
     let gate;
 
     try {
@@ -126,12 +98,11 @@ test('shows only the follow-up listener by default', async ({ page, request }) =
     } finally {
         gate?.release.direct?.();
         gate?.release.listener?.();
-        await restoreFixture(request, restoreState);
     }
 });
 
-test('includes the interacted component when enabled', async ({ page, request }) => {
-    const restoreState = await applyFixture(request, 'component-loader-interacted', 1);
+test('includes the interacted component when enabled', async ({ page }) => {
+    const previous = applyConfig(1);
     let gate;
 
     try {
@@ -152,7 +123,7 @@ test('includes the interacted component when enabled', async ({ page, request })
     } finally {
         gate?.release.direct?.();
         gate?.release.listener?.();
-        await restoreFixture(request, restoreState);
+        restoreConfig(previous);
     }
 });
 
