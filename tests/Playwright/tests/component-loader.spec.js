@@ -1,12 +1,11 @@
 import { test, expect } from '@playwright/test';
 import { execFileSync } from 'node:child_process';
-import { dirname, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join, resolve } from 'node:path';
 
 const PATH = '/magewire/playwright/componentloader';
 const CONFIG_PATH = 'magewire/features/component_loader/show_interacted';
 const MAGENTO_ROOT = process.env.MAGENTO_ROOT
-    || resolve(dirname(fileURLToPath(import.meta.url)), '../../../../../..');
+    || resolve(process.cwd(), '../../../../..');
 
 test.describe.configure({ mode: 'serial' });
 
