@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd"
+>
+    <group id="loading_indicator"
+           translate="label comment"
+           sortOrder="10"
+           showInDefault="1"
+           showInWebsite="1"
+           showInStore="1"
+    >
+        <label>Loading Indicator</label>
+        <comment>The spinner appears for slow requests triggered by component event listeners.</comment>
+
+        <field id="show_interacted"
+               translate="label comment"
+               type="select"
+               sortOrder="10"
+               showInDefault="1"
+               showInWebsite="1"
+               showInStore="1"
+        >
+            <label>Show Spinner on Interacted Components</label>
+            <comment>Show the spinner on the component the customer directly interacted with as well. By default, only event listener components show it.</comment>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+        </field>
+    </group>
+</include>

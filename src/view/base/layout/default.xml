@@ -68,6 +68,9 @@
                     <block name="magewire.utilities.loader"
                            template="Magewirephp_Magewire::js/magewire/utilities/loader.phtml"
                     />
+                    <block name="magewire.utilities.loading-indicator-timing"
+                           template="Magewirephp_Magewire::js/magewire/utilities/loading-indicator-timing.phtml"
+                    />
                     <block name="magewire.utilities.str"
                            template="Magewirephp_Magewire::js/magewire/utilities/str.phtml"
                     />
@@ -92,6 +95,9 @@
                 >
                     <block name="magewire.addons.notifier"
                            template="Magewirephp_Magewire::js/magewire/addons/notifier.phtml"
+                    />
+                    <block name="magewire.addons.loading-indicator"
+                           template="Magewirephp_Magewire::js/magewire/addons/loading-indicator.phtml"
                     />
 
                     <!-- To ensure custom addons are rendered after those from the core. -->
@@ -124,6 +130,14 @@
                                    template="Magewirephp_Magewire::magewire/ui-components/notifier/close-button.phtml"
                             />
                         </block>
+                    </block>
+                    <block name="magewire.ui-components.loading-indicator"
+                           template="Magewirephp_Magewire::magewire/ui-components/loading-indicator.phtml"
+                    >
+                        <block name="magewire.ui-components.loading-indicator.spinner"
+                               as="spinner"
+                               template="Magewirephp_Magewire::magewire/utils/icons/loading.phtml"
+                        />
                     </block>
                 </container>
 

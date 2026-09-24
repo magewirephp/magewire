@@ -1,0 +1,150 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment = $magewireViewModel->utils()->fragment();
+$showInteracted = $magewireViewModel->utils()->magewire()->config()->isFeatureGroupFlag('loading_indicator/show_interacted');
+?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    function magewireLoadingIndicatorAddon() {
+        'use strict';
+
+        const active = new Map();
+        const listeners = new Set();
+        const showInteracted = <?= $showInteracted ? 'true' : 'false' ?>;
+
+        const publish = entry => {
+            listeners.forEach(listener => listener(entry));
+        };
+
+        return {
+            init: function() {
+                document.addEventListener('magewire:init', () => {
+                    Magewire.hook('component.init', ({ component, cleanup }) => {
+                        cleanup(() => this.cancel(component.id));
+                    });
+
+                    Magewire.hook('commit', ({ component, commit, succeed, fail }) => {
+                        const listenerRequest = commit.calls.some(call => call.method === '__dispatch');
+                        const finish = this.start(component, showInteracted || listenerRequest);
+
+                        succeed(finish);
+                        fail(finish);
+                    });
+                }, { once: true });
+            },
+
+            subscribe: function(listener) {
+                listeners.add(listener);
+                return () => listeners.delete(listener);
+            },
+
+            get: function(id) {
+                return active.get(id) || null;
+            },
+
+            schedule: function(entry) {
+                clearTimeout(entry.timer);
+
+                const eligible = [...entry.requests].filter(request => request.eligible);
+
+                if (eligible.length === 0) {
+                    if (entry.visible) {
+                        entry.visible = false;
+                        publish(entry);
+                    }
+
+                    return;
+                }
+
+                if (entry.visible) {
+                    return;
+                }
+
+                const started = Math.min(...eligible.map(request => request.started));
+                const timing = window.MagewireUtilities.loadingIndicatorTiming;
+                const remaining = Math.max(0, timing.threshold(entry.component.name) - (performance.now() - started));
+
+                entry.timer = setTimeout(() => {
+                    entry.timer = null;
+
+                    if (entry.requests.size && timing.shouldShow(entry.component.name, performance.now() - started)) {
+                        entry.visible = true;
+                        publish(entry);
+                    } else if (entry.requests.size) {
+                        this.schedule(entry);
+                    }
+                }, remaining);
+            },
+
+            start: function(component, eligible = true) {
+                const started = performance.now();
+                const request = { started, eligible };
+                let entry = active.get(component.id);
+
+                if (! entry) {
+                    entry = {
+                        id: component.id,
+                        component,
+                        requests: new Set(),
+                        visible: false,
+                        timer: null
+                    };
+                    active.set(component.id, entry);
+                }
+
+                entry.component = component;
+                entry.requests.add(request);
+                this.schedule(entry);
+
+                let finished = false;
+
+                return () => {
+                    if (finished || active.get(component.id) !== entry) {
+                        return;
+                    }
+
+                    finished = true;
+                    window.MagewireUtilities.loadingIndicatorTiming.record(component.name, performance.now() - started);
+                    entry.requests.delete(request);
+
+                    if (entry.requests.size === 0) {
+                        this.cancel(component.id);
+                    } else {
+                        this.schedule(entry);
+                    }
+                };
+            },
+
+            cancel: function(id) {
+                const entry = active.get(id);
+
+                if (! entry) {
+                    return;
+                }
+
+                clearTimeout(entry.timer);
+                entry.timer = null;
+                entry.requests.clear();
+
+                if (entry.visible) {
+                    entry.visible = false;
+                    publish(entry);
+                }
+
+                active.delete(id);
+            }
+        };
+    }
+
+    window.MagewireAddons.register('loadingIndicator', magewireLoadingIndicatorAddon);
+</script>
+<?php $script->end() ?>

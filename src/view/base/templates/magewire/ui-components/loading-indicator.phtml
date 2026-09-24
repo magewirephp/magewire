@@ -1,0 +1,122 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Escaper $escaper */
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment = $magewireViewModel->utils()->fragment();
+?>
+<div hidden x-data="magewireLoadingIndicator">
+    <template x-ref="overlay">
+        <div class="magewire-loading-indicator"
+             role="status"
+             aria-label="<?= $escaper->escapeHtmlAttr(__('Loading')) ?>">
+            <span class="magewire-loading-indicator-spinner" aria-hidden="true">
+                <?= $block->getChildHtml('spinner') ?>
+            </span>
+        </div>
+    </template>
+</div>
+
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    function magewireLoadingIndicator() {
+        'use strict';
+
+        const indicator = window.MagewireAddons.loadingIndicator;
+
+        return {
+            overlays: new Map(),
+
+            init: function() {
+                this.unsubscribe = indicator.subscribe(entry => {
+                    entry.visible ? this.show(entry) : this.hide(entry.id);
+                });
+
+                this.stopMorphHook = Magewire.hook('morphed', ({ component }) => {
+                    const entry = indicator.get(component.id);
+
+                    if (entry?.visible) {
+                        this.show(entry);
+                    }
+                });
+            },
+
+            destroy: function() {
+                this.unsubscribe();
+                this.stopMorphHook();
+                [...this.overlays.keys()].forEach(id => this.hide(id));
+            },
+
+            show: function(entry) {
+                const root = entry.component.el;
+
+                if (! root?.isConnected) {
+                    return;
+                }
+
+                let current = this.overlays.get(entry.id);
+
+                if (current && current.root !== root) {
+                    this.hide(entry.id);
+                    current = null;
+                }
+
+                if (! current) {
+                    current = {
+                        root,
+                        node: this.$refs.overlay.content.firstElementChild.cloneNode(true),
+                        position: root.style.position,
+                        busy: root.getAttribute('aria-busy')
+                    };
+
+                    if (getComputedStyle(root).position === 'static') {
+                        root.style.position = 'relative';
+                        current.positionChanged = true;
+                    }
+
+                    root.setAttribute('aria-busy', 'true');
+                    this.overlays.set(entry.id, current);
+                }
+
+                if (current.node.parentElement !== root) {
+                    root.appendChild(current.node);
+                }
+            },
+
+            hide: function(id) {
+                const current = this.overlays.get(id);
+
+                if (! current) {
+                    return;
+                }
+
+                current.node.remove();
+
+                if (current.positionChanged) {
+                    current.root.style.position = current.position;
+                }
+
+                if (current.busy === null) {
+                    current.root.removeAttribute('aria-busy');
+                } else {
+                    current.root.setAttribute('aria-busy', current.busy);
+                }
+
+                this.overlays.delete(id);
+            }
+        };
+    }
+
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('magewireLoadingIndicator', magewireLoadingIndicator);
+    }, { once: true });
+</script>
+<?php $script->end() ?>
