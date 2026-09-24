@@ -138,7 +138,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
                     ...hooks
                 }
 
-                parts[0]
+                parts[0].text
                     ? addons.notifier.create(parts[0].text, options, hooks)
                     : succeed(({ snapshot, effect }) => trySecondaryPart(parts));
             }

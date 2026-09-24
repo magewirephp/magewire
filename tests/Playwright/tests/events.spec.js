@@ -19,6 +19,7 @@ function effectsFromTag(tag) {
 }
 
 const component = page => page.locator(`[wire\\:id="${ID}"]`);
+const loaderMessages = page => page.locator('.magewire-notifier-message:visible');
 
 async function dispatch(page, event) {
     await page.evaluate((name) => window.dispatchEvent(new CustomEvent(name)), event);
@@ -73,6 +74,48 @@ test.describe('Magewire Playwright — Events, Loaders and Modifiers', () => {
             onModifierAdded: ['Adding from PHP modifier'],
         });
     });
+
+    for (const { message, during, after } of [
+        { message: '... Finished', during: [], after: ['Finished'] },
+        { message: '...Finished', during: [], after: ['Finished'] },
+        { message: 'Saving ... Saved', during: ['Saving'], after: ['Saving', 'Saved'] },
+        { message: 'Saving', during: ['Saving'], after: ['Saving'] },
+        { message: 'Hi...', during: ['Hi...'], after: ['Hi...'] },
+        { message: 'Hi... there', during: ['Hi... there'], after: ['Hi... there'] },
+    ]) {
+        test(`shows loader message phases for "${message}"`, async ({ page }) => {
+            await page.waitForFunction(id => window.Magewire?.all?.().some(item => item.id === id), ID);
+            await page.evaluate(({ id, text }) => {
+                const instance = window.Magewire.all().find(item => item.id === id);
+                instance.effects.loader = [{ onLayoutAdded: [text] }];
+            }, { id: ID, text: message });
+
+            let releaseRequest;
+            let requestSeen;
+            const heldRequest = new Promise(resolve => releaseRequest = resolve);
+            const requestStarted = new Promise(resolve => requestSeen = resolve);
+
+            await page.route('**/magewire/update**', async route => {
+                requestSeen();
+                await heldRequest;
+                await route.continue();
+            });
+
+            try {
+                await page.evaluate(id => {
+                    window.Magewire.find(id).call('onLayoutAdded');
+                }, ID);
+                await requestStarted;
+                await expect(loaderMessages(page)).toHaveText(during);
+
+                releaseRequest();
+                await expect(component(page).getByTestId('event-result')).toHaveText('layout-added');
+                await expect(loaderMessages(page)).toHaveText(after);
+            } finally {
+                releaseRequest();
+            }
+        });
+    }
 
     test('uses the modifier object for dynamic listener names and handler replacements', async ({ page }) => {
         const result = component(page).getByTestId('event-result');
