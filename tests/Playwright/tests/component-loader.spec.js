@@ -1,11 +1,33 @@
 import { test, expect } from '@playwright/test';
+import { execFileSync } from 'node:child_process';
+import { join } from 'node:path';
 
 const PATH = '/magewire/playwright/componentloader';
 const SOURCE = 'Magewirephp_Magewire';
+const CONFIG_PATH = 'magewire/features/component_loader/show_interacted';
+const MAGENTO_ROOT = process.env.MAGENTO_ROOT;
 
 test.describe.configure({ mode: 'serial' });
 
-async function applyFixture(request, fixture) {
+function magento(...args) {
+    return execFileSync(process.env.MAGENTO_PHP_BIN || 'php', [join(MAGENTO_ROOT, 'bin/magento'), ...args], {
+        cwd: MAGENTO_ROOT,
+        encoding: 'utf8',
+    }).trim();
+}
+
+function cleanConfigCache() {
+    magento('cache:clean', 'config', 'block_html', 'full_page');
+}
+
+async function applyFixture(request, fixture, value) {
+    if (MAGENTO_ROOT) {
+        const previous = magento('config:show', CONFIG_PATH);
+        magento('config:set', CONFIG_PATH, String(value));
+        cleanConfigCache();
+        return { previous };
+    }
+
     const response = await request.get(
         `/config-fixture/apply/index/source/${SOURCE}/fixture/${fixture}/`
     );
@@ -20,15 +42,21 @@ async function applyFixture(request, fixture) {
         restore_url: expect.any(String),
     });
 
-    return result.restore_url;
+    return { restoreUrl: result.restore_url };
 }
 
-async function restoreFixture(request, url) {
-    if (!url) {
+async function restoreFixture(request, state) {
+    if (!state) {
         return;
     }
 
-    const response = await request.get(url);
+    if (MAGENTO_ROOT) {
+        magento('config:set', CONFIG_PATH, state.previous);
+        cleanConfigCache();
+        return;
+    }
+
+    const response = await request.get(state.restoreUrl);
     expect(response.status(), 'Configuration fixture restoration failed.').toBe(200);
     expect(await response.json()).toMatchObject({
         module: 'Wpoortman_ConfigFixture',
@@ -72,7 +100,7 @@ async function gateRequests(page) {
 }
 
 test('shows only the follow-up listener by default', async ({ page, request }) => {
-    const restoreUrl = await applyFixture(request, 'component-loader-listeners-only');
+    const restoreState = await applyFixture(request, 'component-loader-listeners-only', 0);
     let gate;
 
     try {
@@ -98,12 +126,12 @@ test('shows only the follow-up listener by default', async ({ page, request }) =
     } finally {
         gate?.release.direct?.();
         gate?.release.listener?.();
-        await restoreFixture(request, restoreUrl);
+        await restoreFixture(request, restoreState);
     }
 });
 
 test('includes the interacted component when enabled', async ({ page, request }) => {
-    const restoreUrl = await applyFixture(request, 'component-loader-interacted');
+    const restoreState = await applyFixture(request, 'component-loader-interacted', 1);
     let gate;
 
     try {
@@ -124,7 +152,7 @@ test('includes the interacted component when enabled', async ({ page, request })
     } finally {
         gate?.release.direct?.();
         gate?.release.listener?.();
-        await restoreFixture(request, restoreUrl);
+        await restoreFixture(request, restoreState);
     }
 });
 
