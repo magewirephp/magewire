@@ -135,7 +135,7 @@
     display: block;
     inline-size: 2.5rem;
     block-size: 2.5rem;
-    color: var(--magewire-loading-color, #2563eb);
+    color: var(--magewire-loading-color, #6b7280);
 }
 
 /* 3. Addons
