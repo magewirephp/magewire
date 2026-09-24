@@ -13,10 +13,10 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
 ?>
 <?php $script = $magewireFragment->make()->script()->start() ?>
 <script>
-    function magewireLoaderTimingUtility() {
+    function magewireLoadingIndicatorTimingUtility() {
         'use strict';
 
-        const storageKey = 'magewire:component-loader:timings';
+        const storageKey = 'magewire:loading-indicator:timings';
         const sampleLimit = 5;
         let timings = {};
 
@@ -79,7 +79,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
     }
 
     document.addEventListener('alpine:init', () => {
-        window.MagewireUtilities.register('loaderTiming', magewireLoaderTimingUtility);
+        window.MagewireUtilities.register('loadingIndicatorTiming', magewireLoadingIndicatorTimingUtility);
     }, { once: true });
 </script>
 <?php $script->end() ?>

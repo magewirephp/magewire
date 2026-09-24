@@ -2,14 +2,14 @@
 <include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd"
 >
-    <group id="component_loader"
+    <group id="loading_indicator"
            translate="label comment"
            sortOrder="10"
            showInDefault="1"
            showInWebsite="1"
            showInStore="1"
     >
-        <label>Component Loader</label>
+        <label>Loading Indicator</label>
         <comment>The spinner appears for slow requests triggered by component event listeners.</comment>
 
         <field id="show_interacted"

@@ -11,7 +11,7 @@
     >
         <label>Features</label>
 
-        <include path="Magewirephp_Magewire::system/magewire/features/component-loader.xml"/>
+        <include path="Magewirephp_Magewire::system/magewire/features/loading-indicator.xml"/>
         <include path="Magewirephp_Magewire::system/magewire/features/support-rate-limiting/support-rate-limiting.xml"/>
     </group>
 </include>

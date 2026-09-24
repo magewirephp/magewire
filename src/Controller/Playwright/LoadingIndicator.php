@@ -7,7 +7,7 @@ namespace Magewirephp\Magewire\Controller\Playwright;
 use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magewirephp\Magewire\Controller\MagewireDeveloperAction;
 
-class ComponentLoader extends MagewireDeveloperAction implements HttpGetActionInterface
+class LoadingIndicator extends MagewireDeveloperAction implements HttpGetActionInterface
 {
-    protected string $pageTitle = 'Magewire / Playwright / Component Loader';
+    protected string $pageTitle = 'Magewire / Playwright / Loading Indicator';
 }

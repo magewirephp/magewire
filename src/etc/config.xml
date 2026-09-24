@@ -5,9 +5,9 @@
     <default>
         <magewire>
             <features>
-                <component_loader>
+                <loading_indicator>
                     <show_interacted>0</show_interacted>
-                </component_loader>
+                </loading_indicator>
                 <rate_limiting>
                     <variant>0</variant>
                     <developer_mode>0</developer_mode>

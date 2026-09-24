@@ -5,21 +5,21 @@
 >
     <body>
         <referenceContainer name="content">
-            <block name="magewire.playwright.component-loader.origin"
-                   template="Magewirephp_Magewire::tests/magewire/playwright/component_loader/origin.phtml"
+            <block name="magewire.playwright.loading-indicator.origin"
+                   template="Magewirephp_Magewire::tests/magewire/playwright/loading_indicator/origin.phtml"
             >
                 <arguments>
                     <argument name="magewire" xsi:type="object" shared="false">
-                        Magewirephp\Magewire\Magewire\Playwright\ComponentLoader\Origin
+                        Magewirephp\Magewire\Magewire\Playwright\LoadingIndicator\Origin
                     </argument>
                 </arguments>
             </block>
-            <block name="magewire.playwright.component-loader.listener"
-                   template="Magewirephp_Magewire::tests/magewire/playwright/component_loader/listener.phtml"
+            <block name="magewire.playwright.loading-indicator.listener"
+                   template="Magewirephp_Magewire::tests/magewire/playwright/loading_indicator/listener.phtml"
             >
                 <arguments>
                     <argument name="magewire" xsi:type="object" shared="false">
-                        Magewirephp\Magewire\Magewire\Playwright\ComponentLoader\Listener
+                        Magewirephp\Magewire\Magewire\Playwright\LoadingIndicator\Listener
                     </argument>
                 </arguments>
             </block>

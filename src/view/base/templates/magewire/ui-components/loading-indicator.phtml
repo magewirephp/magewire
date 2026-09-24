@@ -13,12 +13,12 @@ use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
 $magewireViewModel = $block->getData('view_model');
 $magewireFragment = $magewireViewModel->utils()->fragment();
 ?>
-<div hidden x-data="magewireComponentLoader">
+<div hidden x-data="magewireLoadingIndicator">
     <template x-ref="overlay">
-        <div class="magewire-component-loader"
+        <div class="magewire-loading-indicator"
              role="status"
              aria-label="<?= $escaper->escapeHtmlAttr(__('Loading')) ?>">
-            <span class="magewire-component-loader-spinner" aria-hidden="true">
+            <span class="magewire-loading-indicator-spinner" aria-hidden="true">
                 <?= $block->getChildHtml('spinner') ?>
             </span>
         </div>
@@ -27,21 +27,21 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
 
 <?php $script = $magewireFragment->make()->script()->start() ?>
 <script>
-    function magewireComponentLoader() {
+    function magewireLoadingIndicator() {
         'use strict';
 
-        const loader = window.MagewireAddons.componentLoader;
+        const indicator = window.MagewireAddons.loadingIndicator;
 
         return {
             overlays: new Map(),
 
             init: function() {
-                this.unsubscribe = loader.subscribe(entry => {
+                this.unsubscribe = indicator.subscribe(entry => {
                     entry.visible ? this.show(entry) : this.hide(entry.id);
                 });
 
                 this.stopMorphHook = Magewire.hook('morphed', ({ component }) => {
-                    const entry = loader.get(component.id);
+                    const entry = indicator.get(component.id);
 
                     if (entry?.visible) {
                         this.show(entry);
@@ -116,7 +116,7 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
     }
 
     document.addEventListener('alpine:init', () => {
-        Alpine.data('magewireComponentLoader', magewireComponentLoader);
+        Alpine.data('magewireLoadingIndicator', magewireLoadingIndicator);
     }, { once: true });
 </script>
 <?php $script->end() ?>

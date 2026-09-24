@@ -10,11 +10,11 @@ use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
 
 $magewireViewModel = $block->getData('view_model');
 $magewireFragment = $magewireViewModel->utils()->fragment();
-$showInteracted = $magewireViewModel->utils()->magewire()->config()->isFeatureGroupFlag('component_loader/show_interacted');
+$showInteracted = $magewireViewModel->utils()->magewire()->config()->isFeatureGroupFlag('loading_indicator/show_interacted');
 ?>
 <?php $script = $magewireFragment->make()->script()->start() ?>
 <script>
-    function magewireComponentLoaderAddon() {
+    function magewireLoadingIndicatorAddon() {
         'use strict';
 
         const active = new Map();
@@ -70,7 +70,7 @@ $showInteracted = $magewireViewModel->utils()->magewire()->config()->isFeatureGr
                 }
 
                 const started = Math.min(...eligible.map(request => request.started));
-                const timing = window.MagewireUtilities.loaderTiming;
+                const timing = window.MagewireUtilities.loadingIndicatorTiming;
                 const remaining = Math.max(0, timing.threshold(entry.component.name) - (performance.now() - started));
 
                 entry.timer = setTimeout(() => {
@@ -113,7 +113,7 @@ $showInteracted = $magewireViewModel->utils()->magewire()->config()->isFeatureGr
                     }
 
                     finished = true;
-                    window.MagewireUtilities.loaderTiming.record(component.name, performance.now() - started);
+                    window.MagewireUtilities.loadingIndicatorTiming.record(component.name, performance.now() - started);
                     entry.requests.delete(request);
 
                     if (entry.requests.size === 0) {
@@ -145,6 +145,6 @@ $showInteracted = $magewireViewModel->utils()->magewire()->config()->isFeatureGr
         };
     }
 
-    window.MagewireAddons.register('componentLoader', magewireComponentLoaderAddon);
+    window.MagewireAddons.register('loadingIndicator', magewireLoadingIndicatorAddon);
 </script>
 <?php $script->end() ?>
