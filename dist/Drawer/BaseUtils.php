@@ -45,9 +45,14 @@ class BaseUtils
     }
     static function getPublicMethodsDefinedBySubClass($target)
     {
-        $methods = array_filter((new \ReflectionObject($target))->getMethods(), function ($method) {
-            $isInBaseComponentClass = $method->getDeclaringClass()->getName() === \Livewire\Component::class;
-            return $method->isPublic() && !$method->isStatic() && !$isInBaseComponentClass;
+        $reflection = new \ReflectionObject($target);
+        // Magento interceptors redeclare public methods, including methods from the base component.
+        if ($target instanceof \Magento\Framework\Interception\InterceptorInterface) {
+            $reflection = $reflection->getParentClass();
+        }
+        $methods = array_filter($reflection->getMethods(), function ($method) {
+            $isInFrameworkComponentClass = in_array($method->getDeclaringClass()->getName(), [\Magewirephp\Magewire\Component::class, \Magewirephp\Magewire\Component\Form::class], true);
+            return $method->isPublic() && !$method->isStatic() && !$isInFrameworkComponentClass && !str_starts_with($method->getName(), '__');
         });
         return array_map(function ($method) {
             return $method->getName();
