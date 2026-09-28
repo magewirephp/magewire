@@ -254,6 +254,42 @@ class SupportEventsTest extends TestCase
         ]);
     }
 
+    public function test_call_methods_refuses_render(): void
+    {
+        $this->expectException(MethodNotFoundException::class);
+        $this->callComponentMethods(new class extends Component {
+            public function render()
+            {
+                return '';
+            }
+        }, [
+            ['method' => 'render', 'params' => []],
+        ]);
+    }
+
+    public function test_dispatch_refuses_render_listener(): void
+    {
+        $component = new class extends Component {
+            protected $listeners = ['probe:evt' => 'render'];
+
+            protected function getListeners(): array
+            {
+                return $this->listeners;
+            }
+
+            public function render()
+            {
+                return '';
+            }
+        };
+
+        $hook = new SupportEvents();
+        $hook->setComponent($component);
+
+        $this->expectException(MethodNotFoundException::class);
+        $hook->call('__dispatch', ['probe:evt', []], static function (): void {});
+    }
+
     private function callComponentMethods(Component $component, array $calls): void
     {
         $handler = new class extends HandleComponents {

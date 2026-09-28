@@ -76,6 +76,18 @@ class CheckoutForm extends \Magewirephp\Magewire\Component\Form
 
 Call `clearEmail` from the frontend, for example with `wire:click="clearEmail"`. The inherited `reset` method remains unavailable as a direct browser action.
 
+Re-declaring an inherited method on your component, for example `public function reset(...$properties)`, makes it browser-callable again. Only do this deliberately.
+
+Event listeners follow the same rule. A `$listeners` entry, `#[On]` attribute, or layout listener that points at an inherited method (such as `reset`) or a lifecycle hook (such as `mount` or `boot`) throws `MethodNotFoundException` when dispatched. Listeners that point at an undeclared method, and `$refresh`, remain no-ops.
+
+The following method names are reserved for the framework and cannot be called from the browser or used as listener targets:
+
+- `boot`, `booted`, `mount`, `exception`, `rendering`, `rendered`, and `placeholder`
+- anything matching `hydrate*`, `dehydrate*`, `updating*`, or `updated*`
+- `<hook><TraitBasename>` for every trait the component uses, where `<hook>` is one of `boot`, `initialize`, `mount`, `hydrate`, `updating`, `updated`, `rendering`, `rendered`, `dehydrate`, `exception`, `call`, or `booted` (for example `mountWithFileUploads` or `initializeView`)
+
+Rename application actions that collide with these names.
+
 ### `wire:model` is no longer live by default
 
 Livewire v3 changed `wire:model` to defer updates until an explicit action. For v1 behavior, use `wire:model.live`:

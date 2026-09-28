@@ -13,6 +13,7 @@ use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentResolver\Componen
 use Magewirephp\Magewire\Support\DataCollection;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\ObjectManagerInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 
@@ -43,7 +44,7 @@ class SupportLazyLoadingTest extends TestCase
             ->setValue(null, $this->previousObjectManager);
     }
 
-    /** @dataProvider nonLazyMemos */
+    #[DataProvider('nonLazyMemos')]
     public function test_lazy_load_is_refused_without_a_placeholder(array $memo): void
     {
         $hook = new SupportLazyLoading();
@@ -67,16 +68,10 @@ class SupportLazyLoadingTest extends TestCase
         $mountArguments = $this->createMock(DataCollection::class);
         $mountArguments->method('all')->willReturn(['probe' => 'ok']);
 
-        $arguments = $this->getMockBuilder(MagewireArguments::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['forMount'])
-            ->getMockForAbstractClass();
+        $arguments = $this->createMock(MagewireArguments::class);
         $arguments->method('forMount')->willReturn($mountArguments);
 
-        $resolver = $this->getMockBuilder(ComponentResolver::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['arguments'])
-            ->getMockForAbstractClass();
+        $resolver = $this->createMock(ComponentResolver::class);
         $resolver->method('arguments')->willReturn($arguments);
 
         $component = new class extends Component {};
