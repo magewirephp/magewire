@@ -33,6 +33,26 @@ class BaseUtilsTest extends TestCase
         self::assertNotContains('dispatchMessage', $methods);
     }
 
+    public function test_public_action_can_use_an_inherited_helper(): void
+    {
+        $component = new class extends Component {
+            public string $name = 'original';
+
+            public function clearName(): void
+            {
+                $this->fill(['name' => '']);
+            }
+        };
+
+        $methods = Utils::getPublicMethodsDefinedBySubClass($component);
+
+        self::assertContains('clearName', $methods);
+        self::assertNotContains('fill', $methods);
+
+        $component->clearName();
+        self::assertSame('', $component->name);
+    }
+
     public function test_magento_interceptor_methods_are_not_exposed(): void
     {
         $component = new class extends ActionComponent implements InterceptorInterface {

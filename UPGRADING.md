@@ -58,7 +58,23 @@ The attribute flips a `bc` memo flag in the component snapshot. Without it, new 
 
 ### Browser-callable component methods
 
-Browser actions and event listeners may call public application action methods. Methods inherited from Magewire's `Component` or `Component\Form`, or re-imported from their traits, are no longer browser-callable. This includes `reset`, `fill`, `redirect`, `validate`, and `validateOnly`. Lifecycle hooks are reserved for the framework, and `__lazyLoad` is accepted only for a lazy placeholder. If a template calls a framework method directly (for example, `wire:click="reset"`), add a named public action to your component that calls it internally.
+As in Livewire 3, every public method defined on your application component is callable from the browser, even when no template references it. Keep internal helpers `protected` or `private`, and authorize actions on the server. Methods inherited from Magewire's `Component` or `Component\Form`, or re-imported from their traits, are not browser-callable. This includes `reset`, `fill`, `redirect`, `validate`, and `validateOnly`. Lifecycle hooks are reserved for the framework, and `__lazyLoad` is accepted only for a lazy placeholder.
+
+To expose a specific operation that uses a framework helper, define a public action on your component:
+
+```php
+class CheckoutForm extends \Magewirephp\Magewire\Component\Form
+{
+    public string $email = '';
+
+    public function clearEmail(): void
+    {
+        $this->reset('email');
+    }
+}
+```
+
+Call `clearEmail` from the frontend, for example with `wire:click="clearEmail"`. The inherited `reset` method remains unavailable as a direct browser action.
 
 ### `wire:model` is no longer live by default
 
