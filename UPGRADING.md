@@ -56,6 +56,10 @@ The attribute flips a `bc` memo flag in the component snapshot. Without it, new 
 
 ## Breaking changes you will hit first
 
+### Browser-callable component methods
+
+Browser actions and event listeners may call public application action methods. Methods inherited from Magewire's `Component` or `Component\Form`, or re-imported from their traits, are no longer browser-callable. This includes `reset`, `fill`, `redirect`, `validate`, and `validateOnly`. Lifecycle hooks are reserved for the framework, and `__lazyLoad` is accepted only for a lazy placeholder. If a template calls a framework method directly (for example, `wire:click="reset"`), add a named public action to your component that calls it internally.
+
 ### `wire:model` is no longer live by default
 
 Livewire v3 changed `wire:model` to defer updates until an explicit action. For v1 behavior, use `wire:model.live`:

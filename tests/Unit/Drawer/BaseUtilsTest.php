@@ -4,21 +4,30 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Tests\Unit\Drawer;
 
+use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Component\Form;
+use Magewirephp\Magewire\Concerns\InteractsWithProperties;
 use Magewirephp\Magewire\Drawer\Utils;
-use Magewirephp\Magewire\Magewire\Playwright\Events\Basic;
+use Magewirephp\Magewire\Features\SupportRedirects\HandlesRedirects;
+use Magewirephp\Magewire\Tests\Unit\Fixtures\ActionComponent;
+use Magewirephp\Magewire\Tests\Unit\Fixtures\ActionInterceptor;
 use Magento\Framework\Interception\Interceptor;
 use Magento\Framework\Interception\InterceptorInterface;
 use PHPUnit\Framework\TestCase;
 use Rakit\Validation\Validator;
 
+require_once __DIR__ . '/../Fixtures/ActionComponent.php';
+require_once __DIR__ . '/../Fixtures/ActionInterceptor.php';
+
 class BaseUtilsTest extends TestCase
 {
     public function test_only_component_actions_are_exposed(): void
     {
-        $methods = Utils::getPublicMethodsDefinedBySubClass(new Basic());
+        $component = new ActionComponent();
 
-        self::assertContains('onClassKept', $methods);
+        $methods = Utils::getPublicMethodsDefinedBySubClass($component);
+
+        self::assertContains('onAction', $methods);
         self::assertNotContains('tap', $methods);
         self::assertNotContains('setId', $methods);
         self::assertNotContains('dispatchMessage', $methods);
@@ -26,12 +35,11 @@ class BaseUtilsTest extends TestCase
 
     public function test_magento_interceptor_methods_are_not_exposed(): void
     {
-        $component = new class extends Basic implements InterceptorInterface {
+        $component = new class extends ActionComponent implements InterceptorInterface {
             use Interceptor;
 
-            public function onClassKept(): void
+            public function onAction(): void
             {
-                parent::onClassKept();
             }
 
             public function tap($callback): static
@@ -42,7 +50,7 @@ class BaseUtilsTest extends TestCase
 
         $methods = Utils::getPublicMethodsDefinedBySubClass($component);
 
-        self::assertContains('onClassKept', $methods);
+        self::assertContains('onAction', $methods);
         self::assertNotContains('tap', $methods);
         self::assertNotContains('___callParent', $methods);
         self::assertNotContains('___init', $methods);
@@ -78,22 +86,54 @@ class BaseUtilsTest extends TestCase
 
     public function test_application_magic_methods_are_not_browser_actions(): void
     {
-        $component = new class extends Basic {
+        $component = new class extends Component {
             public function __construct()
             {
-                $this->result = 'constructed';
             }
 
             public function __internal(): void
             {
-                $this->result = 'internal';
+            }
+
+            public function onAction(): void
+            {
             }
         };
 
         $methods = Utils::getPublicMethodsDefinedBySubClass($component);
 
-        self::assertContains('onClassKept', $methods);
+        self::assertContains('onAction', $methods);
         self::assertNotContains('__construct', $methods);
         self::assertNotContains('__internal', $methods);
+    }
+
+    public function test_reimported_framework_traits_are_not_browser_actions(): void
+    {
+        $component = new class extends Component {
+            use HandlesRedirects;
+            use InteractsWithProperties;
+
+            public function onSave(): void
+            {
+            }
+        };
+
+        $methods = Utils::getPublicMethodsDefinedBySubClass($component);
+
+        self::assertSame(['onSave'], array_values($methods));
+    }
+
+    public function test_nested_magento_interceptors_do_not_expose_base_methods(): void
+    {
+        $component = new class extends ActionInterceptor implements InterceptorInterface {
+            use Interceptor;
+
+            public function tap($callback): static
+            {
+                return parent::tap($callback);
+            }
+        };
+
+        self::assertSame(['onAction'], array_values(Utils::getPublicMethodsDefinedBySubClass($component)));
     }
 }
