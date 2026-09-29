@@ -339,8 +339,13 @@
     .magewire-notifier {
         --magewire-notifier-gap: 0.5rem;
         --magewire-notifier-offset: 1rem;
+        /* Pin to the start edge so notifications don't cover centered page content (e.g. primary actions). */
+        inset-inline-start: var(--magewire-notifier-offset);
+        inset-inline-end: auto;
+        align-items: flex-start;
         inline-size: var(--magewire-notifier-width);
         max-inline-size: calc(100vw - var(--magewire-notifier-offset) - var(--magewire-notifier-offset));
+        margin-inline: 0;
     }
 
     .magewire-notifier .magewire-notifier-item[data-type] {
