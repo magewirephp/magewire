@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.7.1](https://github.com/magewirephp/magewire/compare/3.7.0...3.7.1) (2026-09-29)
+
+
+### Bug Fixes
+
+* **notifier:** pin notifications to the bottom start on desktop ([#314](https://github.com/magewirephp/magewire/issues/314)) ([5a2887c](https://github.com/magewirephp/magewire/commit/5a2887c027630a8159a05ef88a56f1d52c3e370a))
+
 ## [3.7.0](https://github.com/magewirephp/magewire/compare/3.6.1...3.7.0) (2026-09-24)
 
 
