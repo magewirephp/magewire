@@ -153,6 +153,34 @@ test.describe('Magewire Playwright — Events, Loaders and Modifiers', () => {
         await expect(result).toHaveText('layout-replacement');
     });
 
+    test('rejects a framework method through a real update request while allowing application actions', async ({ page }) => {
+        await page.waitForFunction(id => window.Livewire?.find(id), ID);
+
+        await page.evaluate(id => window.Livewire.find(id).call('onClassKept'), ID);
+        await expect(component(page).getByTestId('event-result')).toHaveText('class-kept');
+
+        const response = await page.evaluate(id => new Promise(resolve => {
+            const release = window.Livewire.hook('request', ({ succeed, fail }) => {
+                succeed(({ status }) => {
+                    release();
+                    resolve({ status, content: '' });
+                });
+                fail(({ status, content, preventDefault }) => {
+                    preventDefault();
+                    release();
+                    resolve({ status, content });
+                });
+            });
+
+            // is_object is harmless if a regression exposes tap again.
+            window.Livewire.find(id).call('tap', 'is_object');
+        }), ID);
+
+        expect(response.status).toBe(500);
+        expect(response.content).toContain('Public method [tap] not found on component');
+        await expect(component(page).getByTestId('event-result')).toHaveText('class-kept');
+    });
+
     test('rejects a direct server dispatch to a removed listener', async ({ page }) => {
         const response = await page.evaluate(({ id, event }) => new Promise((resolve) => {
             const release = window.Livewire.hook('request', ({ fail }) => {

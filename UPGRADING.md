@@ -78,15 +78,15 @@ Call `clearEmail` from the frontend, for example with `wire:click="clearEmail"`.
 
 Re-declaring an inherited method on your component, for example `public function reset(...$properties)`, makes it browser-callable again. Only do this deliberately.
 
-Event listeners follow the same rule. A `$listeners` entry, `#[On]` attribute, or layout listener that points at an inherited method (such as `reset`) or a lifecycle hook (such as `mount` or `boot`) throws `MethodNotFoundException` when dispatched. Listeners that point at an undeclared method, and `$refresh`, remain no-ops.
+Event listeners follow the same rule. A `$listeners` entry, `#[On]` attribute, or layout listener that points at a method inherited from Magewire's `Component` or `Component\Form` (such as `reset`) or a lifecycle hook (such as `mount` or `boot`) throws `MethodNotFoundException` when dispatched. Public methods inherited from downstream base components remain browser-callable unless otherwise reserved. Listeners that point at an undeclared method, and `$refresh`, remain no-ops.
 
 The following method names are reserved for the framework and cannot be called from the browser or used as listener targets:
 
 - `boot`, `booted`, `mount`, `exception`, `rendering`, `rendered`, and `placeholder`
 - anything matching `hydrate*`, `dehydrate*`, `updating*`, or `updated*`
-- `<hook><TraitBasename>` for every trait the component uses, where `<hook>` is one of `boot`, `initialize`, `mount`, `hydrate`, `updating`, `updated`, `rendering`, `rendered`, `dehydrate`, `exception`, `call`, or `booted` (for example `mountWithFileUploads` or `initializeView`)
+- `<hook><TraitBasename>` for every trait the component uses, where `<hook>` is one of `boot`, `initialize`, `mount`, `hydrate`, `updating`, `updated`, `rendering`, `rendered`, `dehydrate`, `exception`, `call`, or `booted` (for example `callRequest` or `initializeView`)
 
-Rename application actions that collide with these names.
+Reserved names are matched case-sensitively. Declare lifecycle hooks using the casing shown. Rename application actions that collide with these names.
 
 ### `wire:model` is no longer live by default
 
