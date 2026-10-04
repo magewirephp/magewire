@@ -1,0 +1,26 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Playwright\Compiler\LayoutContext;
+
+/** @var Template $block */
+/** @var LayoutContext $compilerContext */
+
+$compilerContext = $block->getData('compiler_context');
+$items = ['nested one', 'nested two'];
+?>
+<article
+    data-testid="compiler-nesting-child"
+    data-layout-route="{{ attr($compilerContext->route()) }}"
+    data-within-parent="{{ attr($compilerContext->within('magewire.playwright.compiler.nesting.parent') ? 'yes' : 'no') }}"
+    data-compiler="<?= $escaper->escapeHtmlAttr($block->getData('magewire:compiler')::class) ?>"
+    class="rounded-lg border border-indigo-200 bg-white p-4"
+>
+    <h3 class="font-bold">Compiled child with custom compiler</h3>
+    @foreach($items as $item)
+        <span data-testid="compiler-nesting-item">{{ $item }}</span>
+    @endforeach
+    @renderChild('grandchild')
+</article>

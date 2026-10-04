@@ -14,7 +14,7 @@ namespace Magewirephp\Magewire\Mechanisms\HandleCompiling\View\Compiler\Middlewa
 use Magewirephp\Magewire\Mechanisms\HandleCompiling\Contracts\ViewCompilerInterface;
 
 /**
- * Shared machinery for prefix-based tag compilers (`<flux:button>`,
+ * Shared machinery for prefix-based tag compilers (`<flake:button>`,
  * `<slot:test>`, `<magewire:counter>`, …).
  *
  * Subclasses declare a tag prefix and how to emit the opening directive; the
@@ -57,7 +57,7 @@ abstract class AbstractTagCompiler implements ViewCompilerInterface
         REGEX;
 
     /**
-     * The literal tag prefix that appears before the colon (`flux`, `slot`,
+     * The literal tag prefix that appears before the colon (`flake`, `slot`,
      * `magewire`, …). The base class regex-quotes this when assembling the
      * matching pattern, so subclasses just return the plain string.
      */

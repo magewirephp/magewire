@@ -27,6 +27,9 @@ class FlakeViewAction extends ViewAction
     }
 
     /**
+     * @param array<string, mixed> $data
+     * @param array<string, mixed> $metadata
+     * @param array<string, mixed> $variables
      * @throws RuntimeException
      */
     public function create(
