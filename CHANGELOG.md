@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.7.2](https://github.com/magewirephp/magewire/compare/3.7.1...3.7.2) (2026-10-06)
+
+### Security
+
+* Fix [GHSA-64j9-rg74-hqc7](https://github.com/magewirephp/magewire/security/advisories/GHSA-64j9-rg74-hqc7) (High): restrict browser-callable component methods to application actions, validate event-listener targets, reserve framework lifecycle hooks, and limit lazy loading to genuine placeholders.
+* All users running Magewire 3.0.0 through 3.7.1 must upgrade to 3.7.2 in every environment, including production, staging, development, and local installations.
+* A coordinated Hyvä Checkout 1.4.0-beta6 release will follow. Everyone currently using a 1.4.0 beta must upgrade when that release is available and verify the fixed Magewire dependency. Existing beta dependency pins can block a Magewire-only update.
+
+See [UPGRADING.md](UPGRADING.md#browser-callable-component-methods) for compatibility guidance on custom actions and listeners.
+
 ## [3.7.1](https://github.com/magewirephp/magewire/compare/3.7.0...3.7.1) (2026-09-29)
 
 

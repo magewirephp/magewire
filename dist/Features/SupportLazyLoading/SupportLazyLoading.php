@@ -11,6 +11,7 @@ namespace Magewirephp\Magewire\Features\SupportLazyLoading;
 
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Attributes\Lazy;
+use Magewirephp\Magewire\Exceptions\MethodNotFoundException;
 use Magewirephp\Magewire\Features\SupportLifecycleHooks\SupportLifecycleHooks;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\LayoutManager;
 use Magewirephp\Magewire\Support\Factory;
@@ -107,6 +108,9 @@ class SupportLazyLoading extends ComponentHook
     {
         if ($method !== '__lazyLoad') {
             return;
+        }
+        if ($this->storeGet('isLazyLoadHydrating') !== true) {
+            throw new MethodNotFoundException($method);
         }
         // The block was rebuilt from its layout handles for this XHR, so its mount
         // arguments are available again — re-derive them rather than trusting the client.

@@ -67,8 +67,7 @@ class SupportLifecycleHooks extends ComponentHook
     }
     public function call($methodName, $params, $returnEarly)
     {
-        $protectedMethods = ['mount', 'exception', 'hydrate*', 'dehydrate*', 'updating*', 'updated*'];
-        throw_if(str($methodName)->is($protectedMethods), new DirectlyCallingLifecycleHooksNotAllowedException($methodName, $this->component->getName()));
+        throw_if(static::isProtectedMethod($this->component, $methodName), new DirectlyCallingLifecycleHooksNotAllowedException($methodName, $this->component->getName()));
         $this->callTraitHook('call', ['methodName' => $methodName, 'params' => $params, 'returnEarly' => $returnEarly]);
     }
     public function exception($e, $stopPropagation)
@@ -108,5 +107,21 @@ class SupportLifecycleHooks extends ComponentHook
                 wrap($this->component)->{$method}(...$params);
             }
         }
+    }
+    public static function isProtectedMethod($component, string $methodName): bool
+    {
+        $protectedMethods = ['boot', 'booted', 'mount', 'exception', 'rendering', 'rendered', 'placeholder', 'hydrate*', 'dehydrate*', 'updating*', 'updated*'];
+        if (\Magewirephp\Magewire\str($methodName)->is($protectedMethods)) {
+            return true;
+        }
+        foreach (class_uses_recursive($component) as $trait) {
+            $suffix = class_basename($trait);
+            foreach (['boot', 'initialize', 'mount', 'hydrate', 'updating', 'updated', 'rendering', 'rendered', 'dehydrate', 'exception', 'call', 'booted'] as $hook) {
+                if ($methodName === $hook . $suffix) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
