@@ -9,32 +9,40 @@
  */
 namespace Magewirephp\Magewire\Features\SupportEvents;
 
+use Magewirephp\Magewire\Drawer\Utils;
+use Magewirephp\Magewire\Exceptions\EventHandlerDoesNotExist;
+use Magewirephp\Magewire\Exceptions\MethodNotFoundException;
+use Magewirephp\Magewire\Features\SupportAttributes\AttributeLevel;
+use Magewirephp\Magewire\Features\SupportLifecycleHooks\SupportLifecycleHooks;
+use Magewirephp\Magewire\Mechanisms\HandleComponents\BaseRenderless;
 use function Magewirephp\Magewire\wrap;
 use function Magewirephp\Magewire\store;
 use function Magewirephp\Magewire\invade;
-use Magewirephp\Magewire\Features\SupportAttributes\AttributeLevel;
 use Magewirephp\Magewire\ComponentHook;
-use Magewirephp\Magewire\Exceptions\EventHandlerDoesNotExist;
-use Magewirephp\Magewire\Mechanisms\HandleComponents\BaseRenderless;
 class SupportEvents extends ComponentHook
 {
-    function call($method, $params, $returnEarly)
+    public function call($method, $params, $returnEarly)
     {
-        if ($method === '__dispatch') {
-            [$name, $params] = $params;
-            $names = static::getListenerEventNames($this->component);
-            if (!in_array($name, $names)) {
-                throw new EventHandlerDoesNotExist($name);
+        if ($method !== '__dispatch') {
+            return;
+        }
+        [$name, $params] = $params;
+        $names = static::getListenerEventNames($this->component);
+        if (!in_array($name, $names)) {
+            throw new EventHandlerDoesNotExist($name);
+        }
+        $method = static::getListenerMethodName($this->component, $name);
+        // A listener can be rewritten by a component action, so check its target too.
+        if (method_exists($this->component, $method)) {
+            $allowed = array_diff(Utils::getPublicMethodsDefinedBySubClass($this->component), ['render']);
+            if (!in_array($method, $allowed, true) || SupportLifecycleHooks::isProtectedMethod($this->component, $method)) {
+                throw new MethodNotFoundException($method);
             }
-            $method = static::getListenerMethodName($this->component, $name);
-            $returnEarly(wrap($this->component)->{$method}(...$params));
-            // Here we have to manually check to see if the event listener method
-            // is "renderless" as it's normal "call" hook doesn't get run when
-            // the method is called as an event listener...
-            $isRenderless = $this->component->getAttributes()->filter(fn($i) => is_subclass_of($i, BaseRenderless::class))->filter(fn($i) => $i->getName() === $method)->filter(fn($i) => $i->getLevel() === AttributeLevel::METHOD)->count() > 0;
-            if ($isRenderless) {
-                $this->component->skipRender();
-            }
+        }
+        $returnEarly(wrap($this->component)->{$method}(...$params));
+        $isRenderless = $this->component->getAttributes()->filter(fn($attribute) => is_subclass_of($attribute, BaseRenderless::class))->filter(fn($attribute) => $attribute->getName() === $method)->filter(fn($attribute) => $attribute->getLevel() === AttributeLevel::METHOD)->count() > 0;
+        if ($isRenderless) {
+            $this->component->skipRender();
         }
     }
     function dehydrate($context)

@@ -56,6 +56,38 @@ The attribute flips a `bc` memo flag in the component snapshot. Without it, new 
 
 ## Breaking changes you will hit first
 
+### Browser-callable component methods
+
+As in Livewire 3, every public method defined on your application component is callable from the browser, even when no template references it. Keep internal helpers `protected` or `private`, and authorize actions on the server. Methods inherited from Magewire's `Component` or `Component\Form`, or re-imported from their traits, are not browser-callable. This includes `reset`, `fill`, `redirect`, `validate`, and `validateOnly`. Lifecycle hooks are reserved for the framework, and `__lazyLoad` is accepted only for a lazy placeholder.
+
+To expose a specific operation that uses a framework helper, define a public action on your component:
+
+```php
+class CheckoutForm extends \Magewirephp\Magewire\Component\Form
+{
+    public string $email = '';
+
+    public function clearEmail(): void
+    {
+        $this->reset('email');
+    }
+}
+```
+
+Call `clearEmail` from the frontend, for example with `wire:click="clearEmail"`. The inherited `reset` method remains unavailable as a direct browser action.
+
+Re-declaring an inherited method on your component, for example `public function reset(...$properties)`, makes it browser-callable again. Only do this deliberately.
+
+Event listeners follow the same rule. A `$listeners` entry, `#[On]` attribute, or layout listener that points at a method inherited from Magewire's `Component` or `Component\Form` (such as `reset`) or a lifecycle hook (such as `mount` or `boot`) throws `MethodNotFoundException` when dispatched. Public methods inherited from downstream base components remain browser-callable unless otherwise reserved. Listeners that point at an undeclared method, and `$refresh`, remain no-ops.
+
+The following method names are reserved for the framework and cannot be called from the browser or used as listener targets:
+
+- `boot`, `booted`, `mount`, `exception`, `rendering`, `rendered`, and `placeholder`
+- anything matching `hydrate*`, `dehydrate*`, `updating*`, or `updated*`
+- `<hook><TraitBasename>` for every trait the component uses, where `<hook>` is one of `boot`, `initialize`, `mount`, `hydrate`, `updating`, `updated`, `rendering`, `rendered`, `dehydrate`, `exception`, `call`, or `booted` (for example `callRequest` or `initializeView`)
+
+Reserved names are matched case-sensitively. Declare lifecycle hooks using the casing shown. Rename application actions that collide with these names.
+
 ### `wire:model` is no longer live by default
 
 Livewire v3 changed `wire:model` to defer updates until an explicit action. For v1 behavior, use `wire:model.live`:
