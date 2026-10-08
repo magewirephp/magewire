@@ -13,6 +13,7 @@ use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentModifiers\Compone
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\ComponentModifiers\ModifierInterface;
 use Magewirephp\Magewire\Support\DataCollection\Filter;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 
 class ComponentModifierRunnerTest extends TestCase
 {
@@ -21,14 +22,14 @@ class ComponentModifierRunnerTest extends TestCase
         $arguments = $this->arguments(['loader' => 'Original']);
 
         $runner = new ComponentModifierRunner();
-        $runner->run(new ComponentModifierContext(new Basic(), $arguments));
+        $runner->run(new ComponentModifierContext($this->component(), $arguments));
 
         self::assertSame('Original', $arguments->get('loader'));
     }
 
     public function test_it_modifies_any_argument_in_xml_order(): void
     {
-        $component = new Basic();
+        $component = $this->component();
         $arguments = $this->arguments([
             'modifiers' => [
                 new ConfigureComponent(),
@@ -57,7 +58,7 @@ class ComponentModifierRunnerTest extends TestCase
 
     public function test_it_respects_conditions_in_the_modifier(): void
     {
-        $component = new Basic();
+        $component = $this->component();
         $component->scope = 'other';
         $arguments = $this->arguments([
             'modifiers' => [new ConfigureComponent()],
@@ -76,7 +77,7 @@ class ComponentModifierRunnerTest extends TestCase
 
         $this->expectException(InvalidArgumentException::class);
         $runner = new ComponentModifierRunner();
-        $runner->run(new ComponentModifierContext(new Basic(), $arguments));
+        $runner->run(new ComponentModifierContext($this->component(), $arguments));
     }
 
     public function test_it_rejects_an_invalid_modifier_entry(): void
@@ -85,7 +86,12 @@ class ComponentModifierRunnerTest extends TestCase
 
         $this->expectException(InvalidArgumentException::class);
         $runner = new ComponentModifierRunner();
-        $runner->run(new ComponentModifierContext(new Basic(), $arguments));
+        $runner->run(new ComponentModifierContext($this->component(), $arguments));
+    }
+
+    private function component(): Basic
+    {
+        return ( new ReflectionClass(Basic::class) )->newInstanceWithoutConstructor();
     }
 
     private function arguments(array $values): BlockMagewireArguments
