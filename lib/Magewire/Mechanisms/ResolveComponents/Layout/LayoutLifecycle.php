@@ -299,14 +299,14 @@ class LayoutLifecycle
     {
         $route = array_search($block, $this->blocks, true);
 
-        return $route !== false ? $route : null;
+        return $route !== false ? (string) $route : null;
     }
 
     private function routeForComponent(Component $component): string|null
     {
         $route = array_search($component, $this->components, true);
 
-        return $route !== false ? $route : null;
+        return $route !== false ? (string) $route : null;
     }
 
     private function parentRoute(string $route): string

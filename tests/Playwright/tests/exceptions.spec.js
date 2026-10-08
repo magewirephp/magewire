@@ -63,6 +63,27 @@ test.describe('Magewire Playwright — Exceptions', () => {
             .toHaveText('Magewire / Playwright / Exceptions');
     });
 
+    test('renders a complex flash message queued by a JSON request', async ({ page }) => {
+        const formKey = await page.evaluate(() => window.hyva?.getFormKey?.() || window.FORM_KEY);
+        expect(formKey).toBeTruthy();
+
+        // The request shares the browser's session. Magento's existing cart message uses an
+        // anonymous template block, rendered after the next page's layout has finished.
+        const queued = await page.request.post(PATH, { form: { form_key: formKey } });
+        expect(queued.status()).toBe(200);
+        expect(queued.headers()['content-type']).toContain('application/json');
+        expect(await queued.json()).toEqual({ queued: true });
+
+        const response = await page.goto(`${PATH}?v=${Date.now()}`);
+        expect(response.status()).toBe(200);
+        await expect(page.locator('.message.success'))
+            .toContainText('Magewire complex message regression');
+
+        const update = await clickAndCaptureUpdate(page, TESTID.increment);
+        expect(update.status()).toBe(200);
+        await expect(testid(page, TESTID.count)).toHaveText('1');
+    });
+
     /**
      * Control: the same component commits normally when nothing rejects it. Without this, every
      * "the counter did not move" assertion below would also pass on a broken button.
