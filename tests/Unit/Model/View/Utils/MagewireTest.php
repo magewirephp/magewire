@@ -26,12 +26,12 @@ class MagewireTest extends TestCase
     {
         parent::setUp();
 
-        $this->previousObjectManager = (new ReflectionProperty(ObjectManager::class, '_instance'))->getValue();
+        $this->previousObjectManager = ( new ReflectionProperty(ObjectManager::class, '_instance') )->getValue();
     }
 
     protected function tearDown(): void
     {
-        (new ReflectionProperty(ObjectManager::class, '_instance'))->setValue(null, $this->previousObjectManager);
+        ( new ReflectionProperty(ObjectManager::class, '_instance') )->setValue(null, $this->previousObjectManager);
 
         parent::tearDown();
     }
@@ -41,7 +41,11 @@ class MagewireTest extends TestCase
         return [
             'root' => ['https://example.com/', '/magewire/update'],
             'store code' => ['https://example.com/lt/', '/lt/magewire/update'],
+            'another store view' => ['https://example.com/en/', '/en/magewire/update'],
+            'subdirectory' => ['https://example.com/shop/', '/shop/magewire/update'],
             'subdirectory and store code' => ['https://example.com/shop/lt/', '/shop/lt/magewire/update'],
+            'rewrites disabled' => ['https://example.com/index.php/lt/', '/index.php/lt/magewire/update'],
+            'subdirectory and rewrites disabled' => ['https://example.com/shop/index.php/lt/', '/shop/index.php/lt/magewire/update'],
             'no trailing slash' => ['https://example.com', '/magewire/update']
         ];
     }
@@ -71,7 +75,7 @@ class MagewireTest extends TestCase
 
     private function createMagewire(UrlInterface|null ...$url): Magewire
     {
-        $dependency = static fn (string $type): object => (new ReflectionClass($type))->newInstanceWithoutConstructor();
+        $dependency = static fn (string $type): object => ( new ReflectionClass($type) )->newInstanceWithoutConstructor();
 
         return new Magewire(
             $dependency(Builder::class),

@@ -323,6 +323,29 @@ jobs:
           MAGENTO_PHP_BIN: php
         run: npx playwright test
 
+      - name: Create CI store views
+        if: matrix.mage_os == '3.1.0' && matrix.illuminate == ''
+        working-directory: ${{ env.MAGENTO_DIR }}
+        run: |
+          mysql -h 127.0.0.1 -uroot -proot magento <<'SQL'
+          INSERT INTO store (code, website_id, group_id, name, sort_order, is_active)
+          SELECT 'magewire_en', website_id, group_id, 'Magewire English', 10, 1
+          FROM store WHERE code = 'default';
+          INSERT INTO store (code, website_id, group_id, name, sort_order, is_active)
+          SELECT 'magewire_nl', website_id, group_id, 'Magewire Dutch', 20, 1
+          FROM store WHERE code = 'default';
+          SQL
+          php bin/magento cache:flush
+
+      - name: Run multi-store-view Playwright tests
+        if: matrix.mage_os == '3.1.0' && matrix.illuminate == ''
+        working-directory: ${{ env.MODULE_DIR }}/tests/Playwright
+        env:
+          MAGENTO_ROOT: ${{ env.MAGENTO_DIR }}
+          MAGENTO_PHP_BIN: php
+          MAGEWIRE_MULTI_STORE_VIEW: '1'
+        run: npx playwright test tests/store-views.spec.js --workers=1
+
       - name: Upload test results
         if: ${{ failure() }}
         uses: actions/upload-artifact@v7

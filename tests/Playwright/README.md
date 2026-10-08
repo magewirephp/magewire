@@ -42,6 +42,23 @@ To run the Magewire Playwright tests, follow these steps:
    npx playwright test --ui
    ```
 
+## Store-view CI coverage
+
+The latest Mage-OS CI job creates `magewire_en` and `magewire_nl` after the regular suite,
+then runs `tests/store-views.spec.js` separately. It covers store codes and URL rewrites both
+enabled and disabled. Each case switches English → Dutch → English in one browser session,
+verifies the rendered update URI, and makes two real component updates per page. The checks
+require HTTP 200 JSON without redirects and the selected store view in the server-rendered
+component response. With store codes enabled, a conflicting store cookie proves the URL takes
+precedence; with codes disabled, the cookie selects the view.
+
+This suite changes global URL configuration and is skipped during normal test runs. To run it
+on a disposable Magento installation with those two store views and the Hyvä theme configured:
+
+```sh
+MAGENTO_ROOT=/path/to/magento MAGEWIRE_MULTI_STORE_VIEW=1 npx playwright test tests/store-views.spec.js --workers=1
+```
+
 ## UI workbench
 
 Open `/magewire/playwright/ui` in a non-production Magento installation to inspect and style the

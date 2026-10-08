@@ -13,4 +13,5 @@ declare(strict_types=1);
 ?>
 <div data-testid="events-component">
     <p data-testid="event-result"><?= $escaper->escapeHtml($magewire->result) ?></p>
+    <p data-testid="event-store-view"><?= $escaper->escapeHtml($magewire->getCurrentStoreView()) ?></p>
 </div>
