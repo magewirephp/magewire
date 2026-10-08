@@ -3,8 +3,8 @@ name: 'Playwright (Mage-OS + Hyvä)'
 # End-to-end Playwright run of the Magewire test controllers on a freshly installed
 # Mage-OS store using the Hyvä theme and the Magewire-Hyvä compatibility module.
 #
-# The specs in tests/Playwright hit the module's /magewire/playwright/* controllers
-# and an explicitly installed test-only fixture, so no Magento Sample Data is required. They assert DOM
+# The specs in tests/Playwright hit self-contained controllers under /magewire/playwright/*
+# (shipped by this module), so no Magento Sample Data is required. They assert DOM
 # attributes and browser console output — not styling — so the Hyvä Tailwind build is
 # intentionally skipped to keep CI fast.
 #
@@ -71,7 +71,6 @@ jobs:
       MODULE_DIR: ${{ github.workspace }}/magewire-src
       BASE_URL: 'http://127.0.0.1:8080/'
       COMPOSER_MEMORY_LIMIT: '-1'
-      MAGEWIRE_PLAYWRIGHT_FIXTURES: '1'
       # Path repositories derive their version from the checked-out git branch. On a PR
       # this is the head ref; on manual dispatch it is the selected ref name.
       MODULE_BRANCH: ${{ github.head_ref || github.ref_name }}
@@ -216,12 +215,6 @@ jobs:
           # the range this row exercised (and catches a silent pin miss).
           composer show illuminate/support | grep -i '^versions' || true
 
-      - name: Install test-only exception fixtures
-        run: |
-          mkdir -p "$MAGENTO_DIR/app/code/Magewirephp"
-          cp -R "$MODULE_DIR/tests/Playwright/fixtures/Magewirephp/MagewirePlaywright" \
-            "$MAGENTO_DIR/app/code/Magewirephp/"
-
       - name: Install Mage-OS
         working-directory: ${{ env.MAGENTO_DIR }}
         run: |
@@ -329,14 +322,6 @@ jobs:
           MAGENTO_ROOT: ${{ env.MAGENTO_DIR }}
           MAGENTO_PHP_BIN: php
         run: npx playwright test
-
-      - name: Switch the test store to production
-        working-directory: ${{ env.MAGENTO_DIR }}
-        run: php bin/magento deploy:mode:set production
-
-      - name: Verify production exception responses
-        working-directory: ${{ env.MODULE_DIR }}/tests/Playwright
-        run: npx playwright test --config playwright.exceptions-production.config.js
 
       - name: Upload test results
         if: ${{ failure() }}

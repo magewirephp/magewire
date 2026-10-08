@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-import { fixturesEnabled, complexMessage, queueComplexMessage } from '../helpers/exception-fixtures.js';
 
 /**
  * End-to-end cover for the request filter pipeline, driving the real server path: filter, exception,
@@ -65,13 +64,20 @@ test.describe('Magewire Playwright — Exceptions', () => {
     });
 
     test('renders a complex flash message queued by a JSON request', async ({ page }) => {
-        test.skip(!fixturesEnabled, 'Requires the explicitly installed complex-message fixture.');
+        const formKey = await page.evaluate(() => window.hyva?.getFormKey?.() || window.FORM_KEY);
+        expect(formKey).toBeTruthy();
 
-        await queueComplexMessage(page);
+        // The request shares the browser's session. Magento's existing cart message uses an
+        // anonymous template block, rendered after the next page's layout has finished.
+        const queued = await page.request.post(PATH, { form: { form_key: formKey } });
+        expect(queued.status()).toBe(200);
+        expect(queued.headers()['content-type']).toContain('application/json');
+        expect(await queued.json()).toEqual({ queued: true });
+
         const response = await page.goto(`${PATH}?v=${Date.now()}`);
-
         expect(response.status()).toBe(200);
-        await expect(page.getByTestId('fixture-complex-message')).toHaveText(complexMessage);
+        await expect(page.locator('.message.success'))
+            .toContainText('Magewire complex message regression');
 
         const update = await clickAndCaptureUpdate(page, TESTID.increment);
         expect(update.status()).toBe(200);
