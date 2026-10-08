@@ -1,0 +1,22 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Magewire\Playwright\Events\Basic;
+use Magewirephp\Magewire\ViewModel\Playwright\UiPreview;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+/** @var UiPreview $viewModel */
+$viewModel = $block->getData('view_model');
+$component = $block->getData('magewire');
+?>
+<div data-testid="<?= $escaper->escapeHtmlAttr($block->getNameInLayout()) ?>"
+     data-view-model="<?= $escaper->escapeHtmlAttr($viewModel::class) ?>">
+    <p data-testid="view-model-mode"><?= $escaper->escapeHtml($viewModel->applicationState()->getMode()) ?></p>
+    <?php if ($component instanceof Basic): ?>
+        <p data-testid="view-model-result"><?= $escaper->escapeHtml($component->result) ?></p>
+    <?php endif ?>
+</div>
