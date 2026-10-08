@@ -12,6 +12,8 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Model\View\Utils;
 
 use BadMethodCallException;
+use Magento\Framework\App\ObjectManager;
+use Magento\Framework\UrlInterface;
 use Magewirephp\Magewire\Model\Magento\System\ConfigMagewire as MagewireSystemConfig;
 use Magewirephp\Magewire\Model\View\Utils\Magewire\Builder;
 use Magewirephp\Magewire\Model\View\Utils\Magewire\Features as FeaturesViewUtil;
@@ -21,13 +23,17 @@ use Psr\Log\LoggerInterface;
 
 class Magewire implements UtilsInterface
 {
+    private readonly UrlInterface $url;
+
     public function __construct(
         private readonly Builder $builder,
         private readonly FeaturesViewUtil $features,
         private readonly MechanismsViewUtil $mechanisms,
         private readonly MagewireSystemConfig $config,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        UrlInterface|null $url = null
     ) {
+        $this->url = $url ?? ObjectManager::getInstance()->get(UrlInterface::class);
     }
 
     public function features(): FeaturesViewUtil
@@ -47,7 +53,9 @@ class Magewire implements UtilsInterface
 
     public function getUpdateUri(): string
     {
-        return '/magewire/update';
+        $basePath = (string) parse_url($this->url->getBaseUrl(), PHP_URL_PATH);
+
+        return rtrim($basePath, '/') . '/magewire/update';
     }
 
     public function logger(): LoggerInterface

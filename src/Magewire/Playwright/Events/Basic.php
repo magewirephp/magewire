@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Magewire\Playwright\Events;
 
+use Magento\Store\Model\StoreManagerInterface;
 use Magewirephp\Magewire\Attributes\On;
 use Magewirephp\Magewire\Component;
 
@@ -33,6 +34,16 @@ class Basic extends Component
         'onClassKept' => 'Class loading',
         'onClassRemoved' => 'Removed loading'
     ];
+
+    public function __construct(
+        private readonly StoreManagerInterface $storeManager
+    ) {
+    }
+
+    public function getCurrentStoreView(): string
+    {
+        return $this->storeManager->getStore()->getCode();
+    }
 
     public function onClassKept(): void
     {
