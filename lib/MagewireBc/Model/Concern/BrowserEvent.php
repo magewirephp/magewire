@@ -49,6 +49,12 @@ trait BrowserEvent
      */
     public function dispatchBrowserEvent($event, $data = null): void
     {
-        $this->dispatch($event, ...$data);
+        $params = match (true) {
+            $data === null => [],
+            is_iterable($data) => $data,
+            default => [$data]
+        };
+
+        $this->dispatch($event, ...$params);
     }
 }

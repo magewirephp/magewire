@@ -75,6 +75,26 @@ class AttributesReader
     }
 
     /**
+     * Returns the first instantiated attribute of $attributeClass on the class or its nearest parent, or null.
+     *
+     * @template T
+     * @param class-string<T> $attributeClass
+     * @return T|null
+     */
+    public function firstInHierarchy(string $attributeClass): object|null
+    {
+        for ($class = $this->reflection; $class !== false; $class = $class->getParentClass()) {
+            $attrs = $class->getAttributes($attributeClass);
+
+            if ($attrs !== []) {
+                return $attrs[0]->newInstance();
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Returns all instantiated attributes of $attributeClass.
      *
      * @template T
