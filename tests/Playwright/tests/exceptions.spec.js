@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { fixturesEnabled, complexMessage, queueComplexMessage } from '../helpers/exception-fixtures.js';
 
 /**
  * End-to-end cover for the request filter pipeline, driving the real server path: filter, exception,
@@ -61,6 +62,20 @@ test.describe('Magewire Playwright — Exceptions', () => {
     test('renders the page with the correct title', async ({ page }) => {
         await expect(page.locator('[data-ui-id="page-title-wrapper"]'))
             .toHaveText('Magewire / Playwright / Exceptions');
+    });
+
+    test('renders a complex flash message queued by a JSON request', async ({ page }) => {
+        test.skip(!fixturesEnabled, 'Requires the explicitly installed complex-message fixture.');
+
+        await queueComplexMessage(page);
+        const response = await page.goto(`${PATH}?v=${Date.now()}`);
+
+        expect(response.status()).toBe(200);
+        await expect(page.getByTestId('fixture-complex-message')).toHaveText(complexMessage);
+
+        const update = await clickAndCaptureUpdate(page, TESTID.increment);
+        expect(update.status()).toBe(200);
+        await expect(testid(page, TESTID.count)).toHaveText('1');
     });
 
     /**

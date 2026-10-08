@@ -4,6 +4,7 @@ import process from 'process';
 
 export default defineConfig({
     testDir: '.',
+    metadata: { magentoMode: 'developer' },
     fullyParallel: true,
     // Magewire specs drive live AJAX round-trips against a Magento store; a
     // component that is mid-hydrate on the first hit reliably settles on a
