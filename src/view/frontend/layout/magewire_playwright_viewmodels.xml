@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd"
+      layout="1column"
+>
+    <update handle="magewire_playwright_events"/>
+
+    <body>
+        <referenceContainer name="magewire.after">
+            <block class="Magento\Framework\View\Element\Text" name="magewire.playwright.view-models.root">
+                <arguments>
+                    <argument name="text" xsi:type="string"><![CDATA[<span data-testid="magewire.playwright.view-models.root"></span>]]></argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+
+        <referenceContainer name="before.body.end">
+            <block name="magewire.playwright.view-models.before"
+                   before="magewire"
+                   template="Magewirephp_Magewire::tests/magewire/playwright/view-models/basic.phtml"
+            >
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Magewirephp\Magewire\ViewModel\Playwright\UiPreview</argument>
+                </arguments>
+            </block>
+            <block name="magewire.playwright.view-models.after"
+                   after="magewire"
+                   template="Magewirephp_Magewire::tests/magewire/playwright/view-models/basic.phtml"
+            >
+                <arguments>
+                    <argument name="view_model" xsi:type="object">Magewirephp\Magewire\ViewModel\Playwright\UiPreview</argument>
+                </arguments>
+            </block>
+            <block name="magewire.playwright.view-models.component"
+                   after="magewire.playwright.view-models.after"
+                   template="Magewirephp_Magewire::tests/magewire/playwright/view-models/basic.phtml"
+            >
+                <arguments>
+                    <argument name="magewire" xsi:type="object" shared="false">Magewirephp\Magewire\Magewire\Playwright\Events\Basic</argument>
+                    <argument name="view_model" xsi:type="object">Magewirephp\Magewire\ViewModel\Playwright\UiPreview</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+
+        <move element="magewire"
+              destination="before.body.end"
+              after="magewire.playwright.view-models.before"
+        />
+    </body>
+</page>

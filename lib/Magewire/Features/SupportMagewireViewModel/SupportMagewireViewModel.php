@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Features\SupportMagewireViewModel;
 
-use InvalidArgumentException;
 use Magento\Framework\View\Element\AbstractBlock;
 use Magewirephp\Magewire\ComponentHook;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\Layout\LayoutLifecycle;
@@ -47,15 +46,16 @@ class SupportMagewireViewModel extends ComponentHook
              * Relying on global dictionary variables would force template modifications in such cases—something this method avoids.
              */
             if ($this->includeMagewireViewModel) {
-                $model = $block->getData('view_model');
-
-                if ($model && ! $model instanceof MagewireViewModelInterface) {
-                    throw new InvalidArgumentException('View model must be an instance of MagewireViewModelInterface');
-                } elseif ($model === null) {
-                    $block->setData('view_model', $this->magewireViewModelFactory->create());
-                }
+                $this->bindMagewireViewModel($block);
             }
         });
+    }
+
+    private function bindMagewireViewModel(AbstractBlock $block): void
+    {
+        if ($block->getData('view_model') === null) {
+            $block->setData('view_model', $this->magewireViewModelFactory->create());
+        }
     }
 
     private function isRootMagewireBlock(AbstractBlock $block): bool
