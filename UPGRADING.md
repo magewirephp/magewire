@@ -38,6 +38,19 @@ bin/magento setup:di:compile
 bin/magento cache:flush
 ```
 
+### Deploying while v1 is still live
+
+Magewire 1 registered three frontend observers that 3.x removes: `Observer\Frontend\ViewBlockAbstractToHtmlBefore`, `Observer\Frontend\ViewBlockAbstractToHtmlAfter` and `Observer\Frontend\HyvaConfigGenerateBefore`. If the new release runs `setup:upgrade` while the v1 release still serves traffic from the same cache backend (Redis, database), setup can read v1's cached event configuration and fail when Hyvä regenerates `hyva-themes.json`:
+
+```text
+Class "Magewirephp\Magewire\Observer\Frontend\HyvaConfigGenerateBefore" does not exist
+```
+
+Flushing the cache right before `setup:upgrade` does not help: the live release writes its configuration back within seconds. Either:
+
+- give the new release's build steps their own cache `id_prefix` (for example through `MAGENTO_DC__OVERRIDE`) and flush the cache after switching releases, or
+- run `bin/magento cache:flush` and `setup:upgrade` inside the maintenance window.
+
 ## Turn on backwards compatibility
 
 Most v1 components keep working under a BC layer. Opt in per-component:
