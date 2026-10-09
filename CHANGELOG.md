@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.7.3](https://github.com/magewirephp/magewire/compare/3.7.2...3.7.3) (2026-10-09)
+
+
+### Bug Fixes
+
+* **factory:** create runtime types without generated factories ([#325](https://github.com/magewirephp/magewire/issues/325)) ([4c211ff](https://github.com/magewirephp/magewire/commit/4c211ffdce2c852e487370b25d8e68087efb8911))
+* **layout:** return layout routes as strings from routeForBlock() and routeForComponent() ([#328](https://github.com/magewirephp/magewire/issues/328)) ([92701d0](https://github.com/magewirephp/magewire/commit/92701d0154721465c543a369ed4955b70270d1e8))
+* **update-uri:** build the update URI from the store base URL ([#324](https://github.com/magewirephp/magewire/issues/324)) ([800103e](https://github.com/magewirephp/magewire/commit/800103ede6259ef86356bb2913bc059520f7d546))
+* **view-model:** keep a block's own view_model instead of throwing ([#323](https://github.com/magewirephp/magewire/issues/323)) ([90945d6](https://github.com/magewirephp/magewire/commit/90945d6a8f34a6843247b7fa633421e351e99fd5))
+
 ## [3.7.2](https://github.com/magewirephp/magewire/compare/3.7.1...3.7.2) (2026-10-06)
 
 ### Security
