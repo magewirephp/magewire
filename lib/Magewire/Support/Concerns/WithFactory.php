@@ -52,7 +52,6 @@ trait WithFactory
             throw new InvalidArgumentException(sprintf('Class %s does not exist', $type));
         }
 
-        $factory = Factory::get(trim($type) . 'Factory');
-        return $factory->create($arguments);
+        return Factory::create(trim($type), $arguments);
     }
 }
