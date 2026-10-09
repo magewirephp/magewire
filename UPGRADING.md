@@ -38,6 +38,13 @@ bin/magento setup:di:compile
 bin/magento cache:flush
 ```
 
+### Deploying while v1 is still live
+
+Deprecated adapters keep Magewire 1's cached observer registrations working with Magewire 3. When both releases share a configuration cache, build steps can still read the old release's observer list, including registrations from other modules. Either:
+
+- give the new release's build steps their own cache `id_prefix` (for example through `MAGENTO_DC__OVERRIDE`) and flush the cache after switching releases, or
+- run `bin/magento cache:flush` and `setup:upgrade` inside a maintenance window with v1 traffic and background processes stopped.
+
 ## Turn on backwards compatibility
 
 Most v1 components keep working under a BC layer. Opt in per-component:
