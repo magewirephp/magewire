@@ -97,10 +97,18 @@ abstract class Component implements ArgumentInterface
     }
 
     /**
+     * Skips rendering the component, optionally rendering the given HTML instead.
+     * Passing false takes back an earlier skipRender() call within the same request.
+     *
      * @mago-expect lint:no-shorthand-ternary
      */
     public function skipRender($html = null): void
     {
+        if ($html === false) {
+            store($this)->unset('skipRender');
+            return;
+        }
+
         store($this)->set('skipRender', $html ?: true);
     }
 
