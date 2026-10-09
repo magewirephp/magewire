@@ -23,7 +23,11 @@ class Script extends Html
     }
 
     /**
-     * Returns the content between the script tags.
+     * Returns the content between the script tags, exactly as it is rendered.
+     *
+     * A CSP hash of the script is calculated from this code, and the browser
+     * only accepts the script when the hash matches its content byte for byte,
+     * including the leading and trailing whitespace.
      */
     public function getScriptCode(): string
     {
@@ -35,7 +39,7 @@ class Script extends Html
         $end = strrpos($this->raw, '<');
 
         if ($start !== false && $end !== false && $start < $end) {
-            $this->code = trim(substr($this->raw, $start + 1, $end - $start - 1));
+            $this->code = substr($this->raw, $start + 1, $end - $start - 1);
         }
 
         return $this->code ?? '';
