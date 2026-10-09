@@ -14,6 +14,8 @@ use Magento\Framework\DataObject;
 use Magewirephp\Magewire\Drawer\Utils;
 use Magewirephp\Magewire\Support\Factory;
 
+use function Magewirephp\Magewire\trigger;
+
 trait InteractsWithProperties
 {
     function hasProperty($prop)
@@ -49,6 +51,8 @@ trait InteractsWithProperties
 
     public function reset(...$properties)
     {
+        $arguments = $properties;
+
         $properties = count($properties) && is_array($properties[0])
             ? $properties[0]
             : $properties;
@@ -59,6 +63,10 @@ trait InteractsWithProperties
         }
 
         $freshInstance = Factory::create(static::class);
+
+        // Lets features prepare the fresh instance the properties are reset to, e.g. apply values
+        // the layout assigned to the component. The finisher runs once the properties are reset.
+        $finish = trigger('magewire:component:reset', $this, $freshInstance, $properties, $arguments);
 
         foreach ($properties as $property) {
             $property = str($property);
@@ -93,6 +101,8 @@ trait InteractsWithProperties
 
             data_set($this, $property, data_get($freshInstance, $property));
         }
+
+        $finish();
     }
 
     function all()

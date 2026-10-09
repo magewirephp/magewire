@@ -12,6 +12,7 @@ namespace Magewirephp\Magewire\Concerns;
 use Magento\Framework\DataObject;
 use Magewirephp\Magewire\Drawer\Utils;
 use Magewirephp\Magewire\Support\Factory;
+use function Magewirephp\Magewire\trigger;
 use Illuminate\Database\Eloquent\Model;
 use Magewirephp\Magewire\Form;
 trait InteractsWithProperties
@@ -42,12 +43,16 @@ trait InteractsWithProperties
     }
     public function reset(...$properties)
     {
+        $arguments = $properties;
         $properties = count($properties) && is_array($properties[0]) ? $properties[0] : $properties;
         // Reset all
         if (empty($properties)) {
             $properties = array_keys($this->all());
         }
         $freshInstance = Factory::create(static::class);
+        // Lets features prepare the fresh instance the properties are reset to, e.g. apply values
+        // the layout assigned to the component. The finisher runs once the properties are reset.
+        $finish = trigger('magewire:component:reset', $this, $freshInstance, $properties, $arguments);
         foreach ($properties as $property) {
             $property = str($property);
             // Check if the property contains a dot which means it is actually on a nested object like a FormObject
@@ -75,6 +80,7 @@ trait InteractsWithProperties
             }
             data_set($this, $property, data_get($freshInstance, $property));
         }
+        $finish();
     }
     protected function resetExcept(...$properties)
     {
