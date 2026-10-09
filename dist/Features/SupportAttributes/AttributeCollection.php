@@ -9,9 +9,10 @@
  */
 namespace Magewirephp\Magewire\Features\SupportAttributes;
 
-use Illuminate\Support\Collection;
+use Magewirephp\Magewire\Drawer\Utils;
 use ReflectionAttribute;
 use ReflectionObject;
+use Illuminate\Support\Collection;
 class AttributeCollection extends Collection
 {
     static function fromComponent($component, $subTarget = null, $propertyNamePrefix = '')
@@ -23,7 +24,8 @@ class AttributeCollection extends Collection
                 $attribute->__boot($component, AttributeLevel::ROOT, null, null, $subTarget);
             }));
         }
-        foreach ($reflected->getMethods() as $method) {
+        // A Magento Interceptor redeclares plugged methods without their attributes, so read the methods of the class itself.
+        foreach (Utils::getReflectionWithoutInterceptors($subTarget ?? $component)->getMethods() as $method) {
             foreach ($method->getAttributes(Attribute::class, ReflectionAttribute::IS_INSTANCEOF) as $attribute) {
                 $instance->push(tap($attribute->newInstance(), function ($attribute) use ($component, $method, $propertyNamePrefix, $subTarget) {
                     $attribute->__boot($component, AttributeLevel::METHOD, $propertyNamePrefix . $method->getName(), $method->getName(), $subTarget);

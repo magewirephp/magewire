@@ -45,11 +45,7 @@ class BaseUtils
     }
     static function getPublicMethodsDefinedBySubClass($target)
     {
-        $reflection = new \ReflectionObject($target);
-        // Magento interceptors redeclare public methods, including methods from the base component.
-        while (is_subclass_of($reflection->getName(), \Magento\Framework\Interception\InterceptorInterface::class) && $reflection->getParentClass()) {
-            $reflection = $reflection->getParentClass();
-        }
+        $reflection = static::getReflectionWithoutInterceptors($target);
         $frameworkTraitMethods = static::frameworkTraitMethodLocations();
         $methods = array_filter($reflection->getMethods(), function ($method) use ($frameworkTraitMethods) {
             $isInFrameworkComponentClass = in_array($method->getDeclaringClass()->getName(), [\Magewirephp\Magewire\Component::class, \Magewirephp\Magewire\Component\Form::class], true);
@@ -84,6 +80,20 @@ class BaseUtils
     {
         $property = static::getProperty($target, $property);
         return $property->hasType() && !$property->isInitialized($target);
+    }
+    /**
+     * Reflects the class itself rather than the Interceptor Magento generates for a class with plugins.
+     *
+     * An Interceptor redeclares the plugged methods, including methods from the base component, and
+     * PHP does not inherit attributes: neither the class attributes nor those of a redeclared method.
+     */
+    static function getReflectionWithoutInterceptors($target): \ReflectionClass
+    {
+        $reflection = is_object($target) ? new \ReflectionObject($target) : new \ReflectionClass($target);
+        while ($reflection->implementsInterface(\Magento\Framework\Interception\InterceptorInterface::class) && $reflection->getParentClass()) {
+            $reflection = $reflection->getParentClass();
+        }
+        return $reflection;
     }
     private static function frameworkTraitMethodLocations(): array
     {

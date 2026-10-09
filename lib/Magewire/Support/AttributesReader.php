@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Support;
 
+use Magewirephp\Magewire\Drawer\Utils;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionException;
@@ -34,7 +35,8 @@ class AttributesReader
      */
     private function __construct(mixed $subject)
     {
-        $this->reflection = $subject instanceof ReflectionClass ? $subject : new ReflectionClass($subject);
+        // Read the class itself, not the Interceptor Magento generates for it when it has plugins.
+        $this->reflection = Utils::getReflectionWithoutInterceptors($subject instanceof ReflectionClass ? $subject->getName() : $subject);
 
         $this->target = $this->reflection;
     }
