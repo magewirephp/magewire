@@ -29,7 +29,7 @@ trait Emit
      */
     public function emit(string $event, $params = []): Event
     {
-        return $this->dispatch($event, ...is_array($params) ? $params : [$params]);
+        return $this->dispatch($event, ...$this->magewireEmitParams(array_slice(func_get_args(), 1)));
     }
 
     /**
@@ -41,7 +41,7 @@ trait Emit
      */
     public function emitUp(string $event, $params = []): Event
     {
-        return $this->dispatch($event, ...is_array($params) ? $params : [$params]);
+        return $this->dispatch($event, ...$this->magewireEmitParams(array_slice(func_get_args(), 1)));
     }
 
     /**
@@ -53,7 +53,7 @@ trait Emit
      */
     public function emitSelf(string $event, $params = []): Event
     {
-        return $this->dispatch($event, ...is_array($params) ? $params : [$params])->self();
+        return $this->dispatch($event, ...$this->magewireEmitParams(array_slice(func_get_args(), 1)))->self();
     }
 
     /**
@@ -65,7 +65,7 @@ trait Emit
      */
     public function emitTo(string $name, string $event, $params = []): Event
     {
-        return $this->emit($event, $params)->to($name);
+        return $this->dispatch($event, ...$this->magewireEmitParams(array_slice(func_get_args(), 2)))->to($name);
     }
 
     /**
@@ -77,7 +77,7 @@ trait Emit
      */
     public function emitToRefresh(string $name, $params = []): Event
     {
-        return $this->dispatch('$refresh', ...is_array($params) ? $params : [$params])->to($name);
+        return $this->dispatch('$refresh', ...$this->magewireEmitParams(array_slice(func_get_args(), 1)))->to($name);
     }
 
     /**
@@ -90,6 +90,23 @@ trait Emit
      */
     public function emitToRefreshUp($params = []): Event
     {
-        return $this->dispatch('$refresh', ...is_array($params) ? $params : [$params]);
+        return $this->dispatch('$refresh', ...$this->magewireEmitParams(func_get_args()));
+    }
+
+    /**
+     * Returns the listener arguments for the arguments an emit method received after the event (and target) name.
+     *
+     * Like in v1, several arguments, e.g. emit('event', 'foo', 'bar'), are passed to the listener one by one.
+     * A single array is passed as the listener arguments, a single other value as the only argument.
+     */
+    private function magewireEmitParams(array $arguments): array
+    {
+        if (count($arguments) > 1) {
+            return $arguments;
+        }
+
+        $params = $arguments[0] ?? [];
+
+        return is_array($params) ? $params : [$params];
     }
 }
