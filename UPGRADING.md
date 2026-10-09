@@ -43,7 +43,7 @@ bin/magento cache:flush
 Most v1 components keep working under a BC layer. Opt in per-component:
 
 ```php
-use Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\Attributes\HandleBackwardsCompatibility;
+use Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\HandleBackwardsCompatibility;
 
 #[HandleBackwardsCompatibility]
 class MyComponent extends \Magewirephp\Magewire\Component
