@@ -34,6 +34,12 @@ class Hash implements HydratorInterface
 
     public function dehydrate(Component $component, ResponseInterface $response): void
     {
+        if ($response->getRequest()->isSubsequent() && ! $component->canRender()) {
+            // The browser still displays the HTML described by the existing hash.
+            $response->effects['html'] = null;
+            return;
+        }
+
         $hash = $this->domHashes[$component->id] ?? null;
         $response->memo['htmlHash'] = hash('crc32b', $response->effects['html']);
 

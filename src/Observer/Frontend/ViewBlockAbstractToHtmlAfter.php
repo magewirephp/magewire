@@ -37,8 +37,13 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
                     throw new LifecycleException(__('Component response object not found'));
                 }
 
-                // Add previous rendered components as children of the current component.
-                $this->registerChildren($block->getNameInLayout(), $component, $html);
+                if ($response->getRequest()->isSubsequent() && ! $component->canRender()) {
+                    // No template was rendered, but the layout lifecycle must still complete.
+                    $this->getLayoutRenderLifecycle()->stop($block->getNameInLayout());
+                } else {
+                    // Add previous rendered components as children of the current component.
+                    $this->registerChildren($block->getNameInLayout(), $component, $html);
+                }
 
                 $observer->getTransport()->setHtml(
                     $this->renderToView($response, $component, $html)
@@ -52,8 +57,10 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
 
     public function renderToView(ResponseInterface $response, Component $component, string $html): ?string
     {
+        $skipRender = $response->getRequest()->isSubsequent() && ! $component->canRender();
+
         // Bind intended HTML onto the Response.
-        $response->effects['html'] = $html;
+        $response->effects['html'] = $skipRender ? null : $html;
 
         /**
          * @lifecycle Runs on every subsequent request, before the component is dehydrated,
@@ -63,6 +70,11 @@ class ViewBlockAbstractToHtmlAfter extends ViewBlockAbstract implements Observer
 
         // Dehydration lifecycle step.
         $this->getComponentManager()->dehydrate($component);
+
+        if ($skipRender) {
+            $response->effects['html'] = null;
+            return null;
+        }
 
         $id = $response->fingerprint['id'];
         $data = ['id' => $response->fingerprint['id']];

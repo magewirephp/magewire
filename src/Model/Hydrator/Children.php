@@ -28,6 +28,11 @@ class Children implements HydratorInterface
 
     public function dehydrate(Component $component, ResponseInterface $response): void
     {
+        if ($response->getRequest()->isSubsequent() && ! $component->canRender()) {
+            $response->memo['children'] = $response->getRequest()->getServerMemo('children') ?? [];
+            return;
+        }
+
         $response->memo['children'] = $component->getRenderedChildren();
     }
 }

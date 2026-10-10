@@ -63,4 +63,26 @@ class Php
 
         return [$block, $filename, $dictionary];
     }
+
+    /**
+     * Skip the template itself so child blocks are never rendered during this update.
+     */
+    public function aroundRender(
+        Subject $subject,
+        callable $proceed,
+        BlockInterface $block,
+        string $filename,
+        array $dictionary = []
+    ): string {
+        $component = $block instanceof DataObject ? $block->getData('magewire') : null;
+
+        if ($component instanceof Component
+            && $component->getRequest()
+            && $component->getRequest()->isSubsequent()
+            && ! $component->canRender()) {
+            return '';
+        }
+
+        return $proceed($block, $filename, $dictionary);
+    }
 }
