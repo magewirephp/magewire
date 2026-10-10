@@ -12,6 +12,7 @@
   - [Widgets](#widgets-dc)
 - [Templates](#templates)
   - [Switch Template](#switch-template)
+  - [Skip Rendering](#skip-rendering)
 - [Directives](#directives)
   - [Wire Ignore](#wire-ignore)
     - [Children Block Rendering](#child-block-rendering)
@@ -204,6 +205,22 @@ public function login()
 ```
 > **Tip**: Use the power of the layout xml to assign a "switch" template path as a data param assigned to the component.
 > This way your component becomes more dynamic and extensible for other developers.
+
+### Skip Rendering
+
+Call `$this->skipRender()` in a component action when an update should leave the existing checkout or other component HTML in place.
+
+```php
+public function placeOrder(): void
+{
+    $this->orderService->placeOrder();
+    $this->skipRender();
+}
+```
+
+During a subsequent request, Magewire bypasses the component's PHP template, so its child blocks are not rendered. The response contains no replacement HTML and preserves the previous child list and HTML hash. Dehydration still runs, and component data, emitted events, browser events, and redirects are still sent to the browser.
+
+The flag applies to the current component update. Initial page rendering retains its existing behavior. Call `$this->skipRender(false)` before rendering to allow the template to run again.
 
 ## Directives
 

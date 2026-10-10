@@ -53,7 +53,7 @@ class LayoutRenderLifecycle
         $children = array_slice($views, $position + 1, count($views), true);
 
         // Special use case where a single component on the page doesn't have a child.
-        if (isset($this->views[$parent]) && $parent === $this->start) {
+        if (array_key_exists($parent, $this->views) && $parent === $this->start) {
             $children[$parent] = $this->views[$parent];
         }
 

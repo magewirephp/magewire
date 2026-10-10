@@ -15,7 +15,7 @@ trait View
     protected $loader = false;
 
     /**
-     * Avoid block rendering on a subsequent request.
+     * Avoid template rendering and preserve the existing HTML on a subsequent request.
      */
     public function skipRender(bool $skip = true): self
     {
