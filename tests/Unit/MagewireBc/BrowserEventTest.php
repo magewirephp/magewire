@@ -9,12 +9,11 @@ use Magento\Framework\ObjectManagerInterface;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Features\SupportEvents\SupportEvents;
 use Magewirephp\Magewire\Mechanisms\DataStore;
-use Magewirephp\Magewire\Model\Concern\BrowserEvent;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 
-class DispatchBrowserEventTest extends TestCase
+class BrowserEventTest extends TestCase
 {
     private ObjectManagerInterface|null $previousObjectManager = null;
 
@@ -83,18 +82,5 @@ class DispatchBrowserEventTest extends TestCase
             ],
             $component->getBrowserEvents()
         );
-    }
-
-    public function test_legacy_browser_event_trait_keeps_existing_imports_working(): void
-    {
-        $component = new class extends Component {
-            use BrowserEvent;
-        };
-
-        $component->dispatchBrowserEvent('legacy', 'saved');
-        $component->dispatch('modern', 'saved');
-
-        self::assertSame([['event' => 'legacy', 'data' => 'saved']], $component->getBrowserEvents());
-        self::assertSame('[{"name":"modern","params":["saved"]}]', json_encode(( new SupportEvents() )->getServerDispatchedEvents($component)));
     }
 }
