@@ -49,7 +49,7 @@ trait BrowserEvent
      */
     public function dispatchBrowserEvent($event, $data = null): void
     {
-        // Kept out of dispatch(): Livewire wraps a string payload in an array, Magewire 1 did not.
+        // Keep legacy payloads unchanged for compatibility modules to deliver separately from dispatch().
         $this->dispatchQueue[] = compact('event', 'data');
     }
 }

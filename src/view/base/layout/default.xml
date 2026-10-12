@@ -172,12 +172,7 @@
             >
                 <container name="magewire.internal.backwards-compatibility"
                            as="internal.backwards-compatibility"
-                >
-                    <!-- Delivers deprecated dispatchBrowserEvent() payloads in their Magewire 1 shape. -->
-                    <block name="magewire.internal.backwards-compatibility.browser-events"
-                           template="Magewirephp_Magewire::magewire-features/support-magewire-backwards-compatibility/browser-events.phtml"
-                    />
-                </container>
+                />
             </block>
 
             <!--

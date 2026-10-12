@@ -8,11 +8,7 @@ use Magento\Framework\App\ObjectManager;
 use Magento\Framework\ObjectManagerInterface;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Features\SupportEvents\SupportEvents;
-use Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\SupportBrowserEvents;
 use Magewirephp\Magewire\Mechanisms\DataStore;
-use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
-use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext\Effects;
-use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext\Memo;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
@@ -38,7 +34,7 @@ class BrowserEventTest extends TestCase
     }
 
     /**
-     * The browser handler turns an empty payload into {} like Magewire 1, so the data travels unchanged.
+     * Compatibility modules receive the original payload through getBrowserEvents().
      */
     public static function payloads(): array
     {
@@ -52,33 +48,39 @@ class BrowserEventTest extends TestCase
     }
 
     #[DataProvider('payloads')]
-    public function test_dispatch_browser_event_sends_the_v1_payload_in_the_bc_effect(mixed $data, string $expected): void
+    public function test_dispatch_browser_event_queues_the_original_payload(mixed $data, string $expected): void
     {
         $component = new class extends Component {};
 
         $component->dispatchBrowserEvent('item-saved', $data);
 
-        self::assertSame('[{"event":"item-saved","data":' . $expected . '}]', json_encode($this->dehydrate($component)['dispatches']));
+        self::assertSame('[{"event":"item-saved","data":' . $expected . '}]', json_encode($component->getBrowserEvents()));
         self::assertSame([], ( new SupportEvents() )->getServerDispatchedEvents($component));
     }
 
-    public function test_dispatch_keeps_the_livewire_event_and_adds_no_bc_dispatches(): void
+    public function test_dispatch_keeps_the_livewire_event_and_adds_no_browser_events(): void
     {
         $component = new class extends Component {};
 
         $component->dispatch('item-saved', 'saved');
 
-        self::assertSame([], $this->dehydrate($component));
+        self::assertSame([], $component->getBrowserEvents());
         self::assertSame('[{"name":"item-saved","params":["saved"]}]', json_encode(( new SupportEvents() )->getServerDispatchedEvents($component)));
     }
 
-    private function dehydrate(Component $component): array
+    public function test_dispatch_browser_event_accepts_its_default_payload_and_preserves_queue_order(): void
     {
-        $context = new ComponentContext(null, $component, false, new Effects(), new Memo());
-        $hook = new SupportBrowserEvents();
-        $hook->setComponent($component);
-        $hook->dehydrate($context);
+        $component = new class extends Component {};
 
-        return $context->getEffects()->getData('bc', default: []);
+        $component->dispatchBrowserEvent('first');
+        $component->dispatchBrowserEvent('second', 'saved');
+
+        self::assertSame(
+            [
+                ['event' => 'first', 'data' => null],
+                ['event' => 'second', 'data' => 'saved']
+            ],
+            $component->getBrowserEvents()
+        );
     }
 }

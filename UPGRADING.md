@@ -54,6 +54,10 @@ class MyComponent extends \Magewirephp\Magewire\Component
 
 The attribute flips a `bc` memo flag in the component snapshot. Without it, new v3 semantics apply. See the `magewire-backwards-compatibility` skill for the full behavior matrix.
 
+Legacy browser events sent through `dispatchBrowserEvent()` are delivered by
+[`magewirephp/magewire-hyva-theme`](https://github.com/magewirephp/magewire-hyva-theme),
+which preserves Magewire 1's `event.detail` payload shape.
+
 ## Breaking changes you will hit first
 
 ### Browser-callable component methods
