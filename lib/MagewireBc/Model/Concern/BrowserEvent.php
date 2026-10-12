@@ -12,11 +12,7 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Model\Concern;
 
 use Magewirephp\Magewire\Component;
-use Magewirephp\Magewire\Features\SupportEvents\Event;
 use Magewirephp\Magewire\Features\SupportEvents\HandlesEvents;
-use stdClass;
-
-use function Magewirephp\Magewire\store;
 
 /**
  * @deprecated Has been replaced with the HandlesEvents trait.
@@ -53,7 +49,7 @@ trait BrowserEvent
      */
     public function dispatchBrowserEvent($event, $data = null): void
     {
-        // Magewire 1 delivered $data unchanged as event.detail; dispatch() would wrap it in a parameter list.
-        store($this)->push('dispatched', new Event($event, $data ?? new stdClass()));
+        // Kept out of dispatch(): Livewire wraps a string payload in an array, Magewire 1 did not.
+        $this->dispatchQueue[] = compact('event', 'data');
     }
 }

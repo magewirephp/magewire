@@ -6,9 +6,13 @@ namespace Magewirephp\Magewire\Tests\Unit\MagewireBc;
 
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\ObjectManagerInterface;
+use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Features\SupportEvents\SupportEvents;
+use Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\SupportBrowserEvents;
 use Magewirephp\Magewire\Mechanisms\DataStore;
-use Magewirephp\Magewire\Model\Concern\BrowserEvent;
+use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext;
+use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext\Effects;
+use Magewirephp\Magewire\Mechanisms\HandleComponents\ComponentContext\Memo;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
@@ -34,12 +38,12 @@ class BrowserEventTest extends TestCase
     }
 
     /**
-     * Expected params are the JSON the browser receives, matching Magewire 1's event.detail.
+     * The browser handler turns an empty payload into {} like Magewire 1, so the data travels unchanged.
      */
     public static function payloads(): array
     {
         return [
-            'no data' => [null, '{}'],
+            'no data' => [null, 'null'],
             'named data' => [['id' => 5], '{"id":5}'],
             'list data' => [['a', 'b'], '["a","b"]'],
             'object data' => [(object) ['id' => 5], '{"id":5}'],
@@ -48,16 +52,33 @@ class BrowserEventTest extends TestCase
     }
 
     #[DataProvider('payloads')]
-    public function test_dispatch_browser_event_keeps_the_v1_payload_shape(mixed $data, string $expected): void
+    public function test_dispatch_browser_event_sends_the_v1_payload_in_the_bc_effect(mixed $data, string $expected): void
     {
-        $component = new class {
-            use BrowserEvent;
-        };
+        $component = new class extends Component {};
 
         $component->dispatchBrowserEvent('item-saved', $data);
 
-        $dispatches = ( new SupportEvents() )->getServerDispatchedEvents($component);
+        self::assertSame('[{"event":"item-saved","data":' . $expected . '}]', json_encode($this->dehydrate($component)['dispatches']));
+        self::assertSame([], ( new SupportEvents() )->getServerDispatchedEvents($component));
+    }
 
-        self::assertSame('[{"name":"item-saved","params":' . $expected . '}]', json_encode($dispatches));
+    public function test_dispatch_keeps_the_livewire_event_and_adds_no_bc_dispatches(): void
+    {
+        $component = new class extends Component {};
+
+        $component->dispatch('item-saved', 'saved');
+
+        self::assertSame([], $this->dehydrate($component));
+        self::assertSame('[{"name":"item-saved","params":["saved"]}]', json_encode(( new SupportEvents() )->getServerDispatchedEvents($component)));
+    }
+
+    private function dehydrate(Component $component): array
+    {
+        $context = new ComponentContext(null, $component, false, new Effects(), new Memo());
+        $hook = new SupportBrowserEvents();
+        $hook->setComponent($component);
+        $hook->dehydrate($context);
+
+        return $context->getEffects()->getData('bc', default: []);
     }
 }

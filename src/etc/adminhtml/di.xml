@@ -217,6 +217,12 @@
                     </item>
                 </item>
 
+                <!-- Delivers deprecated dispatchBrowserEvent() calls apart from Livewire's dispatches. -->
+                <item name="magewire_bc_browser_events" xsi:type="array">
+                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\SupportBrowserEvents</item>
+                    <item name="sort_order" xsi:type="number">1660</item>
+                </item>
+
                 <item name="magento_layouts" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagentoLayouts\SupportMagentoLayouts</item>
                     <item name="sort_order" xsi:type="number">5000</item>
