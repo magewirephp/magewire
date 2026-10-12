@@ -366,6 +366,22 @@ jobs:
           SELECT 'magewire_nl', website_id, group_id, 'Magewire Dutch', 20, 1
           FROM store WHERE code = 'default';
           SQL
+          # SQL inserts bypass Store::afterSave(), which invalidates the cached
+          # allowed store IDs. Refresh those relations before resolving cookies.
+          php <<'PHP'
+          <?php
+          require 'app/bootstrap.php';
+          $om = \Magento\Framework\App\Bootstrap::create(BP, $_SERVER)->getObjectManager();
+          $om->get(\Magento\Store\Model\StoreManagerInterface::class)->reinitStores();
+          [$allowedStores] = $om->get(\Magento\Store\Model\StoresData::class)->getStoresData('website');
+          $repository = $om->get(\Magento\Store\Api\StoreRepositoryInterface::class);
+          foreach (['magewire_en', 'magewire_nl'] as $code) {
+              if (!in_array($repository->getActiveStoreByCode($code)->getId(), $allowedStores)) {
+                  throw new \RuntimeException("CI store view $code is not available to the store resolver.");
+              }
+          }
+          echo 'Allowed CI store IDs: ' . json_encode($allowedStores) . PHP_EOL;
+          PHP
           php bin/magento cache:flush
           echo "created=true" >> "$GITHUB_OUTPUT"
 
