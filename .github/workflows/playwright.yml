@@ -257,6 +257,42 @@ jobs:
 
           php bin/magento cache:flush
 
+      - name: Create CI store views
+        id: store_views
+        if: matrix.mage_os == '3.1.0' && matrix.illuminate == ''
+        working-directory: ${{ env.MAGENTO_DIR }}
+        run: |
+          if [ ! -f "$MODULE_DIR/tests/Playwright/tests/store-views.spec.js" ]; then
+            echo "Store-view suite is not present in this checkout."
+            exit 0
+          fi
+          php <<'PHP'
+          <?php
+          require 'app/bootstrap.php';
+          $om = \Magento\Framework\App\Bootstrap::create(BP, $_SERVER)->getObjectManager();
+          $om->get(\Magento\Framework\App\State::class)->setAreaCode('adminhtml');
+          $default = $om->get(\Magento\Store\Api\StoreRepositoryInterface::class)->get('default');
+          $factory = $om->get(\Magento\Store\Model\StoreFactory::class);
+          $resource = $om->get(\Magento\Store\Model\ResourceModel\Store::class);
+          foreach ([
+              'magewire_en' => ['Magewire English', 10],
+              'magewire_nl' => ['Magewire Dutch', 20],
+          ] as $code => [$name, $sortOrder]) {
+              $store = $factory->create();
+              $store->setData([
+                  'code' => $code,
+                  'website_id' => $default->getWebsiteId(),
+                  'group_id' => $default->getGroupId(),
+                  'name' => $name,
+                  'sort_order' => $sortOrder,
+                  'is_active' => 1,
+              ]);
+              $resource->save($store);
+          }
+          PHP
+          php bin/magento cache:clean config
+          echo "created=true" >> "$GITHUB_OUTPUT"
+
       - name: Start Magento (built-in PHP server)
         working-directory: ${{ env.MAGENTO_DIR }}
         run: |
@@ -322,26 +358,6 @@ jobs:
           MAGENTO_ROOT: ${{ env.MAGENTO_DIR }}
           MAGENTO_PHP_BIN: php
         run: npx playwright test
-
-      - name: Create CI store views
-        id: store_views
-        if: matrix.mage_os == '3.1.0' && matrix.illuminate == ''
-        working-directory: ${{ env.MAGENTO_DIR }}
-        run: |
-          if [ ! -f "$MODULE_DIR/tests/Playwright/tests/store-views.spec.js" ]; then
-            echo "Store-view suite is not present in this checkout."
-            exit 0
-          fi
-          mysql -h 127.0.0.1 -uroot -proot magento <<'SQL'
-          INSERT INTO store (code, website_id, group_id, name, sort_order, is_active)
-          SELECT 'magewire_en', website_id, group_id, 'Magewire English', 10, 1
-          FROM store WHERE code = 'default';
-          INSERT INTO store (code, website_id, group_id, name, sort_order, is_active)
-          SELECT 'magewire_nl', website_id, group_id, 'Magewire Dutch', 20, 1
-          FROM store WHERE code = 'default';
-          SQL
-          php bin/magento cache:flush
-          echo "created=true" >> "$GITHUB_OUTPUT"
 
       - name: Run multi-store-view Playwright tests
         if: steps.store_views.outputs.created == 'true'
