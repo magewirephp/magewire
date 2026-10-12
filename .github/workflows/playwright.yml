@@ -278,14 +278,15 @@ jobs:
               'magewire_en' => ['Magewire English', 10],
               'magewire_nl' => ['Magewire Dutch', 20],
           ] as $code => [$name, $sortOrder]) {
-              $store = $factory->create(['data' => [
+              $store = $factory->create();
+              $store->setData([
                   'code' => $code,
                   'website_id' => $default->getWebsiteId(),
                   'group_id' => $default->getGroupId(),
                   'name' => $name,
                   'sort_order' => $sortOrder,
                   'is_active' => 1,
-              ]]);
+              ]);
               $resource->save($store);
           }
           PHP
