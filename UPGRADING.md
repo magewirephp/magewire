@@ -43,7 +43,7 @@ bin/magento cache:flush
 Most v1 components keep working under a BC layer. Opt in per-component:
 
 ```php
-use Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\Attributes\HandleBackwardsCompatibility;
+use Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\HandleBackwardsCompatibility;
 
 #[HandleBackwardsCompatibility]
 class MyComponent extends \Magewirephp\Magewire\Component
@@ -53,6 +53,10 @@ class MyComponent extends \Magewirephp\Magewire\Component
 ```
 
 The attribute flips a `bc` memo flag in the component snapshot. Without it, new v3 semantics apply. See the `magewire-backwards-compatibility` skill for the full behavior matrix.
+
+Legacy browser events sent through `dispatchBrowserEvent()` are delivered by
+[`magewirephp/magewire-hyva-theme`](https://github.com/magewirephp/magewire-hyva-theme),
+which preserves Magewire 1's `event.detail` payload shape.
 
 ## Breaking changes you will hit first
 

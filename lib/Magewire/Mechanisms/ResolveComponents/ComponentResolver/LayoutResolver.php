@@ -275,7 +275,7 @@ class LayoutResolver extends ComponentResolver
         $bc = store($component)->get('magewire:bc');
 
         try {
-            $within = AttributesReader::for($component)->first(HandleBackwardsCompatibility::class);
+            $within = AttributesReader::for($component)->firstInHierarchy(HandleBackwardsCompatibility::class);
 
             if ($within instanceof HandleBackwardsCompatibility) {
                 $bc = $within->isBackwardsCompatible();

@@ -49,6 +49,7 @@ trait BrowserEvent
      */
     public function dispatchBrowserEvent($event, $data = null): void
     {
-        $this->dispatch($event, ...$data);
+        // Keep legacy payloads unchanged for compatibility modules to deliver separately from dispatch().
+        $this->dispatchQueue[] = compact('event', 'data');
     }
 }
