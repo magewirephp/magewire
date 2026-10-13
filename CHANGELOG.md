@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.7.3](https://github.com/magewirephp/magewire/compare/3.7.2...3.7.3) (2026-10-13)
+
+
+### Bug Fixes
+
+* **attributes:** read attributes through Magento interceptors ([#336](https://github.com/magewirephp/magewire/issues/336)) ([f71e8e4](https://github.com/magewirephp/magewire/commit/f71e8e4dbf72dab88040a0a680cf8a16e38f4f70))
+* **bc:** inherit BC attributes and preserve the legacy event queue ([#326](https://github.com/magewirephp/magewire/issues/326)) ([efafe19](https://github.com/magewirephp/magewire/commit/efafe19dcf9cdab34d1371cde11d2c50672671a9))
+* **csp:** hash inline scripts exactly as they are rendered ([#332](https://github.com/magewirephp/magewire/issues/332)) ([383cf67](https://github.com/magewirephp/magewire/commit/383cf675e1b1d53901c9c803b4d5942baeca3a31))
+* **factory:** create runtime types without generated factories ([#325](https://github.com/magewirephp/magewire/issues/325)) ([4c211ff](https://github.com/magewirephp/magewire/commit/4c211ffdce2c852e487370b25d8e68087efb8911))
+* **flash-messages:** keep the requested message type ([#334](https://github.com/magewirephp/magewire/issues/334)) ([bb828c6](https://github.com/magewirephp/magewire/commit/bb828c62905c3e737d1be9c240acaea8088300a7))
+* **layout:** return layout routes as strings from routeForBlock() and routeForComponent() ([#328](https://github.com/magewirephp/magewire/issues/328)) ([92701d0](https://github.com/magewirephp/magewire/commit/92701d0154721465c543a369ed4955b70270d1e8))
+* **update-uri:** build the update URI from the store base URL ([#324](https://github.com/magewirephp/magewire/issues/324)) ([800103e](https://github.com/magewirephp/magewire/commit/800103ede6259ef86356bb2913bc059520f7d546))
+* **view-model:** keep a block's own view_model instead of throwing ([#323](https://github.com/magewirephp/magewire/issues/323)) ([90945d6](https://github.com/magewirephp/magewire/commit/90945d6a8f34a6843247b7fa633421e351e99fd5))
+
 ## [3.7.2](https://github.com/magewirephp/magewire/compare/3.7.1...3.7.2) (2026-10-06)
 
 ### Security
