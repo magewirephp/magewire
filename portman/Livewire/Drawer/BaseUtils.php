@@ -19,16 +19,28 @@ class BaseUtils extends \Livewire\Drawer\BaseUtils
         });
     }
 
-    static function getPublicMethodsDefinedBySubClass($target)
+    /**
+     * Reflects the class itself rather than the Interceptor Magento generates for a class with plugins.
+     *
+     * An Interceptor redeclares the plugged methods, including methods from the base component, and
+     * PHP does not inherit attributes: neither the class attributes nor those of a redeclared method.
+     */
+    static function getReflectionWithoutInterceptors($target): \ReflectionClass
     {
-        $reflection = new \ReflectionObject($target);
+        $reflection = is_object($target) ? new \ReflectionObject($target) : new \ReflectionClass($target);
 
-        // Magento interceptors redeclare public methods, including methods from the base component.
-        while (is_subclass_of($reflection->getName(), \Magento\Framework\Interception\InterceptorInterface::class)
+        while ($reflection->implementsInterface(\Magento\Framework\Interception\InterceptorInterface::class)
             && $reflection->getParentClass()
         ) {
             $reflection = $reflection->getParentClass();
         }
+
+        return $reflection;
+    }
+
+    static function getPublicMethodsDefinedBySubClass($target)
+    {
+        $reflection = static::getReflectionWithoutInterceptors($target);
 
         $frameworkTraitMethods = static::frameworkTraitMethodLocations();
 
