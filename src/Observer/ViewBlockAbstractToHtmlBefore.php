@@ -52,7 +52,7 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
         $lifecycle = $this->componentRenderLifecycleManager->forMagewire()->push($block);
         trigger('magento:block:render', $lifecycle, $block);
 
-        if ($magewire) {
+        if ($magewire || $block->getData('magewire:compile') === true) {
             try {
                 if ($magewire instanceof Component) {
                     // Update flag for use during subsequent updates to maintain synchronization and data consistency.
@@ -74,6 +74,10 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
                  * @see \Magewirephp\Magewire\Controller\Router
                  */
                 $this->magewireServiceProvider->boot(RequestMode::PRECEDING);
+
+                if (! $magewire) {
+                    return;
+                }
 
                 $construct = trigger('magewire:component:construct', $block);
                 $block = $construct();

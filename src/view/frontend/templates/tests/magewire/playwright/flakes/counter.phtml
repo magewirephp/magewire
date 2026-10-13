@@ -1,0 +1,19 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Magewire\Playwright\Flakes\Counter;
+
+/** @var Template $block */
+/** @var Counter $magewire */
+?>
+<aside class="mw-flake-counter" data-testid="reactive-flake-counter">
+    <p>
+        Reactive Flake count:
+        <strong data-testid="reactive-flake-count"><?= (int) $magewire->count ?></strong>
+    </p>
+    <button type="button" class="mw-flake-button mw-flake-button--primary" wire:click="increment">
+        Increment reactive Flake
+    </button>
+</aside>

@@ -1,0 +1,45 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+
+/** @var Template $block */
+
+$branch = 'secondary';
+$items = [
+    'first' => ['label' => 'First directive item', 'enabled' => true],
+    'hidden' => ['label' => 'Hidden directive item', 'enabled' => false],
+    'last' => ['label' => 'Last directive item', 'enabled' => true]
+];
+$payload = ['route' => 'compiler', 'branch' => $branch, 'count' => count($items)];
+?>
+<section
+    data-testid="compiler-directives"
+    data-payload='@json(value: $payload)'
+    class="rounded-xl border border-amber-200 bg-amber-50 p-6"
+>
+    <h2 class="mb-4 text-xl font-bold">Compiler directives</h2>
+
+    @if($branch === 'primary')
+        <p data-testid="compiler-directive-branch">Primary branch</p>
+    @elseif($branch === 'secondary')
+        <p data-testid="compiler-directive-branch">Secondary branch</p>
+    @else
+        <p data-testid="compiler-directive-branch">Fallback branch</p>
+    @endif
+
+    <ul data-testid="compiler-directive-items">
+        @foreach($items as $key => $item)
+            @if($item['enabled'])
+                <li data-item-key="{{ attr($key) }}">{{ $item['label'] }}</li>
+            @endif
+        @endforeach
+    </ul>
+
+    <p data-testid="compiler-directive-translation">
+        @translate(value: 'Translated compiler output')
+    </p>
+    <p data-testid="compiler-directive-escaped">{{ '<strong>Escaped compiler output</strong>' }}</p>
+    <p data-testid="compiler-directive-raw">{!! '<strong>Raw compiler output</strong>' !!}</p>
+</section>

@@ -1,0 +1,42 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Model\View\Fragment\Component as FragmentComponent;
+use Magewirephp\Magewire\Model\View\SlotSnapshot;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+/** @var FragmentComponent $__component */
+/** @var SlotSnapshot $__slot */
+
+$variant = (string) $__component->prop('variant', 'default');
+$variant = in_array($variant, ['default', 'accent', 'muted'], true) ? $variant : 'default';
+$extraClass = (string) $__component->attrs()->get('class', '');
+$testId = (string) $__component->attrs()->get('data-testid', '');
+?>
+<article
+    class="mw-flake-card mw-flake-card--<?= $escaper->escapeHtmlAttr($variant) ?> <?= $escaper->escapeHtmlAttr($extraClass) ?>"
+    <?php if ($testId !== ''): ?>data-testid="<?= $escaper->escapeHtmlAttr($testId) ?>"<?php endif ?>
+    data-variant="<?= $escaper->escapeHtmlAttr($variant) ?>"
+>
+    <?php if ($__slot->has('header')): ?>
+        <header class="mw-flake-card__header">
+            <?= /* @noEscape */ $__slot('header') ?>
+        </header>
+    <?php endif ?>
+
+    <?php if ($__slot->has()): ?>
+        <div class="mw-flake-card__body">
+            <?= /* @noEscape */ $__slot ?>
+        </div>
+    <?php endif ?>
+
+    <?php if ($__slot->has('footer')): ?>
+        <footer class="mw-flake-card__footer">
+            <?= /* @noEscape */ $__slot('footer') ?>
+        </footer>
+    <?php endif ?>
+</article>

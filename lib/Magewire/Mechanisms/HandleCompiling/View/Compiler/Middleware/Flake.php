@@ -20,18 +20,29 @@ use Magewirephp\Magewire\Support\Random;
  * backed by the stock `FlakeFactory` (layout handle `magewire_flakes`). Use
  * this for component blocks defined in `view/.../layout/magewire_flakes.xml`.
  *
- * Sibling of {@see Flux} — same emission shape with `type='flake'` instead of
- * `type='flux'`. The split exists so each prefix can map to its own layout
- * handle and resolver, keeping flake-vs-flux components distinct during
- * AJAX rehydrate.
+ * The prefix is constructor-configurable so another module can register the
+ * same compiler through a virtual type without a product-specific subclass.
  */
 class Flake extends AbstractTagCompiler
 {
-    protected function prefix(): string
+    private string $tagPrefix = 'flake';
+
+    /**
+     * @param string $tagPrefix
+     */
+    public function __construct(string $tagPrefix = 'flake')
     {
-        return 'flake';
+        $this->tagPrefix = $tagPrefix;
     }
 
+    protected function prefix(): string
+    {
+        return $this->tagPrefix;
+    }
+
+    /**
+     * @param array<string, mixed> $matches
+     */
     protected function emitOpening(array $matches): string
     {
         $type = $matches['type'];

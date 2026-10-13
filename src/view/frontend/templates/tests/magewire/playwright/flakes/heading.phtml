@@ -1,0 +1,28 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Model\View\Fragment\Component as FragmentComponent;
+use Magewirephp\Magewire\Model\View\SlotSnapshot;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+/** @var FragmentComponent $__component */
+/** @var SlotSnapshot $__slot */
+
+// Conditional-first markup guards the template scope after the PHP prologue.
+$level = (int) $__component->prop('level', 2);
+$level = in_array($level, [2, 3, 4], true) ? $level : 2;
+$tone = (string) $__component->prop('tone', 'strong');
+$tone = in_array($tone, ['strong', 'soft'], true) ? $tone : 'strong';
+$class = 'mw-flake-heading mw-flake-heading--' . $tone;
+?>
+<?php if ($level === 3): ?>
+    <h3 class="<?= $escaper->escapeHtmlAttr($class) ?>"><?= /* @noEscape */ $__slot ?></h3>
+<?php elseif ($level === 4): ?>
+    <h4 class="<?= $escaper->escapeHtmlAttr($class) ?>"><?= /* @noEscape */ $__slot ?></h4>
+<?php else: ?>
+    <h2 class="<?= $escaper->escapeHtmlAttr($class) ?>"><?= /* @noEscape */ $__slot ?></h2>
+<?php endif ?>

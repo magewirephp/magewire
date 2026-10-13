@@ -1,0 +1,20 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Model\View\Fragment\Component as FragmentComponent;
+use Magewirephp\Magewire\Model\View\SlotSnapshot;
+
+/** @var Template $block */
+/** @var Escaper $escaper */
+/** @var FragmentComponent $__component */
+/** @var SlotSnapshot $__slot */
+
+$variant = (string) $__component->prop('variant', 'secondary');
+$variant = in_array($variant, ['primary', 'secondary', 'quiet'], true) ? $variant : 'secondary';
+?>
+<button type="button" class="mw-flake-button mw-flake-button--<?= $escaper->escapeHtmlAttr($variant) ?>">
+    <?= /* @noEscape */ $__slot ?>
+</button>
