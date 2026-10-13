@@ -38,21 +38,21 @@ class ComponentRegistryTest extends TestCase
 
     public function test_a_layout_block_name_is_the_component_name(): void
     {
-        self::assertSame('checkout.shipping.methods', ( new ComponentRegistry() )->getName('checkout.shipping.methods'));
+        self::assertSame('example.panel', ( new ComponentRegistry() )->getName('example.panel'));
     }
 
     public function test_a_component_is_named_by_its_name(): void
     {
         $component = new class extends Component {};
-        $component->setName('checkout.shipping.methods');
+        $component->setName('example.panel');
 
-        self::assertSame('checkout.shipping.methods', ( new ComponentRegistry() )->getName($component));
+        self::assertSame('example.panel', ( new ComponentRegistry() )->getName($component));
     }
 
     public function test_an_event_targets_a_component_by_its_layout_block_name(): void
     {
-        $event = ( new Event('$refresh', []) )->to('price-summary.total-segments');
+        $event = ( new Event('$refresh', []) )->to('example.target');
 
-        self::assertSame(['name' => '$refresh', 'params' => [], 'to' => 'price-summary.total-segments'], $event->serialize());
+        self::assertSame(['name' => '$refresh', 'params' => [], 'to' => 'example.target'], $event->serialize());
     }
 }
