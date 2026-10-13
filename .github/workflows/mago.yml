@@ -1,15 +1,24 @@
 name: 'Mago'
 
+run-name: >-
+  ${{ github.event.pull_request.number &&
+  format('PR #{0} · Mago', github.event.pull_request.number) ||
+  format('{0} · Mago', github.ref_name) }}
+
 on:
   push:
     branches:
-      - '**'
+      - main
   pull_request:
     branches:
       - main
 
 permissions:
   contents: read
+
+concurrency:
+  group: mago-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
 

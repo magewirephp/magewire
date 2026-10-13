@@ -1,5 +1,7 @@
 name: 'Release Please'
 
+run-name: '${{ github.ref_name }} · Release Please'
+
 on:
   push:
     branches:

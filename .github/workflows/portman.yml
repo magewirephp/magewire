@@ -1,5 +1,7 @@
 name: 'Portman Build'
 
+run-name: 'PR #${{ github.event.pull_request.number }} · Portman build'
+
 on:
   pull_request:
     branches:

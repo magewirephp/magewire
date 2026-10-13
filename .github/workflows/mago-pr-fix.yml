@@ -1,5 +1,7 @@
 name: 'Mago (PR auto-fix)'
 
+run-name: 'PR #${{ github.event.pull_request.number }} · Mago auto-fix'
+
 on:
   pull_request:
     branches:

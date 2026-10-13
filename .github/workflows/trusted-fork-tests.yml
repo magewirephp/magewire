@@ -1,5 +1,9 @@
 name: 'Trusted fork tests'
 
+run-name: >-
+  PR #${{ github.event.pull_request.number }} ·
+  ${{ github.event.action == 'closed' && 'Fork test cleanup' || 'Prepare fork Playwright' }}
+
 # Fork pull_request workflows intentionally receive no repository secrets. This
 # privileged broker makes an exact fork revision reachable through an internal
 # CI ref, but dispatches the trusted workflow definition from main and never
@@ -11,6 +15,10 @@ on:
     types: [opened, synchronize, reopened, ready_for_review, closed]
 
 permissions: {}
+
+concurrency:
+  group: trusted-fork-broker-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
 
@@ -86,16 +94,19 @@ jobs:
               pull_number: pull.number,
               per_page: 100,
             });
-            const workflowChanges = files
-              .map(file => file.filename)
-              .filter(filename => filename.startsWith('.github/workflows/'));
+            const changedPaths = files.flatMap(file =>
+              [file.filename, file.previous_filename].filter(Boolean)
+            );
+            const workflowChanges = changedPaths.filter(filename =>
+              filename.startsWith('.github/workflows/')
+            );
 
             const { data: confirmedPull } = await github.rest.pulls.get({
               ...context.repo,
               pull_number: pull.number,
             });
 
-            if (confirmedPull.head.sha !== pull.head.sha) {
+            if (confirmedPull.state !== 'open' || confirmedPull.head.sha !== pull.head.sha) {
               core.notice(`PR #${pull.number} changed while it was being prepared; the synchronize event will test the new revision.`);
               return;
             }
@@ -114,10 +125,27 @@ jobs:
               return;
             }
 
+            // Match tests.yml's source paths. Workflow changes are refused above.
+            const testDirectories = ['src/', 'lib/', 'dist/', 'tests/Unit/', 'tests/Playwright/'];
+            const requiresTests = changedPaths.some(filename =>
+              filename === 'composer.json' ||
+              testDirectories.some(directory => filename.startsWith(directory))
+            );
+
+            if (!requiresTests) {
+              await setStatus([
+                '### Trusted fork tests',
+                '',
+                `ℹ️ Private Playwright tests are not needed for [\`${shortSha}\`](${commitUrl}) because this PR does not change tested files.`,
+              ]);
+              core.notice(`PR #${pull.number} does not change tested files; no private tests were dispatched.`);
+              return;
+            }
+
             await setStatus([
               '### Trusted fork tests',
               '',
-              `⏳ Preparing automatic tests for [\`${shortSha}\`](${commitUrl}).`,
+              `⏳ Preparing private Playwright tests for [\`${shortSha}\`](${commitUrl}).`,
             ]);
 
             const branch = `ci/pr-${pull.number}`;
@@ -162,19 +190,19 @@ jobs:
               await setStatus([
                 '### Trusted fork tests',
                 '',
-                `⏳ Trusted tests are running for [\`${shortSha}\`](${commitUrl}).`,
+                `⏳ Private Playwright tests are awaiting approval for [\`${shortSha}\`](${commitUrl}).`,
                 '',
-                'Public jobs run immediately. The private Hyvä Playwright job requires maintainer approval in the `trusted-fork-tests` environment.',
+                'The private Hyvä Playwright job requires maintainer approval in the `trusted-fork-tests` environment. Unit tests and production builds run separately in the normal PR workflow.',
                 '',
                 `[Review and follow the workflow run](${runsUrl})`,
               ]);
 
-              core.notice(`Dispatched the main Tests workflow for PR #${pull.number} at ${pull.head.sha}.`);
+              core.notice(`Dispatched private Playwright tests from main for PR #${pull.number} at ${pull.head.sha}.`);
             } catch (error) {
               await setStatus([
                 '### Trusted fork tests',
                 '',
-                `❌ Automatic tests could not be started for [\`${shortSha}\`](${commitUrl}).`,
+                `❌ Private Playwright tests could not be started for [\`${shortSha}\`](${commitUrl}).`,
                 '',
                 `[Review the broker run](${brokerUrl}), then re-run it or push a new commit to try again.`,
               ]);
@@ -182,19 +210,65 @@ jobs:
             }
 
   cleanup:
-    name: 'Remove trusted CI ref'
+    name: 'Cancel fork tests and remove CI ref'
     if: >-
       github.event_name == 'pull_request_target' &&
-      github.event.action == 'closed'
+      github.event.action == 'closed' &&
+      github.event.pull_request.head.repo.full_name != github.repository
     runs-on: ubuntu-latest
     permissions:
+      actions: write
       contents: write
+      pull-requests: read
     steps:
-      - name: Delete temporary PR refs
+      - name: Cancel trusted runs and delete temporary PR refs
         uses: actions/github-script@v9
         with:
           script: |
             const pullNumber = context.payload.pull_request.number;
+            const { data: pull } = await github.rest.pulls.get({
+              ...context.repo,
+              pull_number: pullNumber,
+            });
+
+            if (pull.state !== 'closed') {
+              core.notice(`PR #${pullNumber} was reopened; keeping its trusted tests and CI ref.`);
+              return;
+            }
+
+            const prefixes = [
+              `Trusted fork PR #${pullNumber} @ `,
+              `PR #${pullNumber} · Approved Playwright · `,
+            ];
+            const runs = (await Promise.all(
+              ['queued', 'in_progress', 'waiting', 'pending', 'requested'].map(status =>
+                github.paginate(github.rest.actions.listWorkflowRuns, {
+                  ...context.repo,
+                  workflow_id: 'tests.yml',
+                  branch: 'main',
+                  event: 'workflow_dispatch',
+                  status,
+                  per_page: 100,
+                })
+              )
+            )).flat();
+            const runIds = new Set(runs.filter(run =>
+              prefixes.some(prefix => run.display_title.startsWith(prefix))
+            ).map(run => run.id));
+
+            for (const runId of runIds) {
+              try {
+                await github.rest.actions.cancelWorkflowRun({
+                  ...context.repo,
+                  run_id: runId,
+                });
+                core.notice(`Cancelled trusted tests for closed PR #${pullNumber}: run ${runId}.`);
+              } catch (error) {
+                if (error.status !== 409) throw error;
+                core.notice(`Run ${runId} already finished or was cancelled.`);
+              }
+            }
+
             const exactRef = `refs/heads/ci/pr-${pullNumber}`;
             const legacyPrefix = `${exactRef}-comment-`;
             const refs = await github.paginate(github.rest.git.listMatchingRefs, {

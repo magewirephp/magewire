@@ -1,5 +1,7 @@
 name: PR Title
 
+run-name: 'PR #${{ github.event.pull_request.number }} · Title check'
+
 on:
   pull_request:
     types: [opened, edited, synchronize]
