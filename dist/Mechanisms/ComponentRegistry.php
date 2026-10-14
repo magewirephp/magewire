@@ -56,16 +56,17 @@ class ComponentRegistry extends Mechanism
     /**
      * Magewire names a component after its layout block (or the name it was given), not after its class.
      *
-     * An event target such as dispatch('event')->to('checkout.shipping.methods'), or v1's
-     * emitTo('checkout.shipping.methods', 'event'), already is that name, and the browser
-     * looks the component up by it. Only a component class is resolved the Livewire way.
+     * An event target such as dispatch('event')->to('example.panel'), or v1's
+     * emitTo('example.panel', 'event'), already is that name, and the browser
+     * looks the component up by it. A component class, and a name registered through component(), are
+     * resolved the Livewire way, so an alias still targets the name new() gives its component.
      */
     function getName($nameOrClassOrComponent)
     {
         if ($nameOrClassOrComponent instanceof Component && $nameOrClassOrComponent->getName() !== null) {
             return $nameOrClassOrComponent->getName();
         }
-        if (is_string($nameOrClassOrComponent) && !is_subclass_of($nameOrClassOrComponent, Component::class)) {
+        if (is_string($nameOrClassOrComponent) && !array_key_exists($nameOrClassOrComponent, $this->aliases) && !is_subclass_of($nameOrClassOrComponent, Component::class)) {
             return $nameOrClassOrComponent;
         }
         [$class, $name] = $this->getNameAndClass($nameOrClassOrComponent);
