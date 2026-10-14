@@ -58,6 +58,11 @@ Legacy browser events sent through `dispatchBrowserEvent()` are delivered by
 [`magewirephp/magewire-hyva-theme`](https://github.com/magewirephp/magewire-hyva-theme),
 which preserves Magewire 1's `event.detail` payload shape.
 
+Magewire 1's `redirect($path, $params = null, $secure = true)` keeps working for these components: a path is built
+as a Magento route with `$params` through `redirectRoute()`, and the params of an absolute URL become its query.
+Components without the attribute keep v3's `redirect($url, $navigate = false)`. In new code, use
+`redirectRoute('checkout/cart', ['_query' => ['reason' => 'stock']])` for a route with parameters.
+
 ## Breaking changes you will hit first
 
 ### Browser-callable component methods

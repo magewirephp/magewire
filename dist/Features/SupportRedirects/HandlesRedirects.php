@@ -1,49 +1,55 @@
 <?php
-/**
- * Livewire copyright © Caleb Porzio (https://github.com/livewire/livewire).
- * Magewire copyright © Willem Poortman 2024-present.
- * All rights reserved.
- *
- * Please read the README and LICENSE files for more
- * details on copyrights and license information.
- */
+
 namespace Magewirephp\Magewire\Features\SupportRedirects;
 
 use Magento\Framework\UrlInterface;
 use Magewirephp\Magewire\Support\Factory;
+
 use function Magewirephp\Magewire\config;
 use function Magewirephp\Magewire\store;
+
 trait HandlesRedirects
 {
-    /**
-     * Redirects the browser to the given URL, optionally using wire:navigate.
-     *
-     * Magewire v1's signature redirect($path, $params = null, $secure = true) is supported as well:
-     * an array (or null) as second argument holds Magento route params, and the URL is built from
-     * the path with Magento's URL builder, e.g. redirect('checkout/cart', ['_query' => ['a' => 'b']]).
-     */
     public function redirect($url, $navigate = false)
     {
-        if (is_array($navigate) || $navigate === null) {
-            $url = $this->magewireRedirectUrl((string) $url, $navigate ?? [], func_num_args() > 2 ? (bool) func_get_arg(2) : null);
-            $navigate = false;
+        // Magewire 1's redirect($path, $params = null, $secure = true), for components with backwards compatibility.
+        if (( is_array($navigate) || $navigate === null ) && store($this)->get('magewire:bc') === true) {
+            $this->magewireRedirectV1($url, $navigate, ...array_slice(func_get_args(), 2, 1));
+
+            return;
         }
+
         store($this)->set('redirect', $url);
+
         if ($navigate) {
             store($this)->set('redirectUsingNavigate', true);
         }
-        $shouldSkipRender = !config('livewire.render_on_redirect', false);
+
+        $shouldSkipRender = ! config('livewire.render_on_redirect', false);
+
         $shouldSkipRender && $this->skipRender();
     }
-    private function magewireRedirectUrl(string $url, array $params, bool|null $secure): string
+
+    /**
+     * Redirects to a Magento route, as Livewire's redirectRoute() does to a Laravel route.
+     *
+     * The parameters are Magento route params, e.g. ['id' => 5, '_query' => ['a' => 'b'], '_fragment' => 'top'].
+     */
+    public function redirectRoute($name, $parameters = [], $absolute = true, $navigate = false)
     {
-        // An absolute URL is not a route: the params only become its query, when it has none (as in v1).
-        if (preg_match('#^([a-z][a-z0-9+.-]*:)?//#i', $url)) {
-            return $params === [] || str_contains($url, '?') ? $url : $url . '?' . http_build_query($params);
-        }
-        if ($secure !== null) {
-            $params += ['_secure' => $secure];
-        }
-        return Factory::get(UrlInterface::class)->getUrl(ltrim($url, '/'), $params);
+        $url = Factory::get(UrlInterface::class)->getUrl($name, $parameters);
+
+        $this->redirect($absolute ? $url : self::magewireRelativeUrl($url), $navigate);
+    }
+
+    /**
+     * Returns the URL without its scheme and host, as Laravel's route($name, $parameters, false) does.
+     */
+    private static function magewireRelativeUrl(string $url): string
+    {
+        $query = parse_url($url, PHP_URL_QUERY);
+        $fragment = parse_url($url, PHP_URL_FRAGMENT);
+
+        return ( parse_url($url, PHP_URL_PATH) ?? '/' ) . ( $query === null ? '' : '?' . $query ) . ( $fragment === null ? '' : '#' . $fragment );
     }
 }

@@ -15,6 +15,7 @@ use Magewirephp\Magewire\Drawer\Utils;
 use Magewirephp\Magewire\Model\Concern\BrowserEvent as BrowserEventConcern;
 use Magewirephp\Magewire\Model\Concern\Emit as EmitConcern;
 use Magewirephp\Magewire\Model\Concern\Error as ErrorConcern;
+use Magewirephp\Magewire\Model\Concern\Redirect as RedirectConcern;
 use Magewirephp\Magewire\Model\Concern\Request as RequestConcern;
 use Magewirephp\Magewire\Model\Concern\View;
 
@@ -23,6 +24,7 @@ trait HandlesComponentBackwardsCompatibility
     use ErrorConcern;
     use BrowserEventConcern;
     use EmitConcern;
+    use RedirectConcern;
     use RequestConcern;
     use View;
 
