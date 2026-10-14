@@ -47,7 +47,14 @@ class EmitTest extends TestCase
             'emitTo, a single array' => ['emitTo', ['target', 'named', ['foo' => 'bar']], ['foo' => 'bar']],
             'emitToRefresh, several arguments' => ['emitToRefresh', ['target', 'left', 'right'], ['left', 'right']],
             'emitToRefreshUp, several arguments' => ['emitToRefreshUp', ['left', 'right'], ['left', 'right']],
-            'emitToRefreshUp, no arguments' => ['emitToRefreshUp', [], []]
+            'emitToRefreshUp, no arguments' => ['emitToRefreshUp', [], []],
+            'emit, an explicit null' => ['emit', ['nullable', null], [null]],
+            'emitUp, an explicit null' => ['emitUp', ['nullable', null], [null]],
+            'emitSelf, an explicit null' => ['emitSelf', ['nullable', null], [null]],
+            'emitTo, an explicit null' => ['emitTo', ['target', 'nullable', null], [null]],
+            'emitToRefresh, an explicit null' => ['emitToRefresh', ['target', null], [null]],
+            'emitToRefreshUp, an explicit null' => ['emitToRefreshUp', [null], [null]],
+            'emit, null among several arguments' => ['emit', ['pair', null, 'right'], [null, 'right']]
         ];
     }
 

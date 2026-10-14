@@ -97,7 +97,7 @@ trait Emit
      * Returns the listener arguments for the arguments an emit method received after the event (and target) name.
      *
      * Like in v1, several arguments, e.g. emit('event', 'foo', 'bar'), are passed to the listener one by one.
-     * A single array is passed as the listener arguments, a single other value as the only argument.
+     * A single array is passed as the listener arguments, a single other value, null included, as the only argument.
      */
     private function magewireEmitParams(array $arguments): array
     {
@@ -105,7 +105,7 @@ trait Emit
             return $arguments;
         }
 
-        $params = $arguments[0] ?? [];
+        $params = array_key_exists(0, $arguments) ? $arguments[0] : [];
 
         return is_array($params) ? $params : [$params];
     }
