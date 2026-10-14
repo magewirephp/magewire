@@ -23,6 +23,13 @@ trait Emit
     use HandlesEvents;
 
     /**
+     * @deprecated The events of emitUp() and emitToRefreshUp(), for a compatibility module to deliver.
+     * @see getAncestorEvents()
+     * @var Event[]
+     */
+    protected $emitUpQueue = [];
+
+    /**
      * @deprecated Use dispatch() instead.
      *
      * @param mixed $params An array holding the listener arguments, or a single argument. Further arguments
@@ -34,7 +41,10 @@ trait Emit
     }
 
     /**
-     * In v3 events bubble up by default, so emitting "up" is just a dispatch.
+     * Emit an event to the ancestors of this component only, as Magewire 1 did.
+     *
+     * Not a dispatch(): a Livewire 3 event reaches every component listening to it. The event is queued for a
+     * compatibility module to deliver to the ancestors, separately from dispatch().
      *
      * @deprecated Use dispatch() instead.
      *
@@ -43,7 +53,7 @@ trait Emit
      */
     public function emitUp(string $event, $params = []): Event
     {
-        return $this->dispatch($event, ...$this->magewireEmitParams(array_slice(func_get_args(), 1)));
+        return $this->emitUpQueue[] = new Event($event, $this->magewireEmitParams(array_slice(func_get_args(), 1)));
     }
 
     /**
@@ -86,8 +96,7 @@ trait Emit
     }
 
     /**
-     * Refresh all parents. In v3 events bubble up by default, so a
-     * dispatched "$refresh" reaches parent components automatically.
+     * Refresh all ancestors of this component, as Magewire 1 did. Queued like emitUp().
      *
      * @deprecated Use dispatch('$refresh') instead.
      *
@@ -96,7 +105,7 @@ trait Emit
      */
     public function emitToRefreshUp($params = []): Event
     {
-        return $this->dispatch('$refresh', ...$this->magewireEmitParams(func_get_args()));
+        return $this->emitUp('$refresh', ...func_get_args());
     }
 
     /**
@@ -114,5 +123,14 @@ trait Emit
         $params = array_key_exists(0, $arguments) ? $arguments[0] : [];
 
         return is_array($params) ? $params : [$params];
+    }
+
+    /**
+     * @deprecated The events of emitUp() and emitToRefreshUp(), for a compatibility module to deliver.
+     * @return Event[]
+     */
+    public function getAncestorEvents(): array
+    {
+        return $this->emitUpQueue;
     }
 }
