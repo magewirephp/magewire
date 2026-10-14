@@ -68,6 +68,13 @@
     </type>
 
     <!-- Global Plugins -->
+    <!-- Removes Magewire's styles and early scripts from a page without components, before the page cache stores it. -->
+    <type name="Magento\Framework\View\Result\Layout">
+        <plugin name="Magewirephp_Magewire_Plugin_Magento_Framework_View_Result_RemoveUnusedAssets"
+                type="Magewirephp\Magewire\Plugin\Magento\Framework\View\Result\RemoveUnusedAssets"
+                sortOrder="-30"
+        />
+    </type>
     <type name="Magento\Framework\View\TemplateEngine\Php">
         <plugin name="Magewirephp_Magewire_Plugin_Magento_Framework_View_TemplateEngine_Php"
                 type="Magewirephp\Magewire\Plugin\Magento\Framework\View\TemplateEngine\Php"

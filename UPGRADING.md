@@ -127,6 +127,22 @@ Raw PHP in PHTML still works. Raw `<script>` tags are discouraged — use `$mage
 - v1's bespoke runtime, hydration, and update flow are gone — replaced by Livewire-style snapshots (data + memo + checksum).
 - Synthesizers replace ad-hoc property casting. Built-ins: `DataObjectSynth`, `ArraySynth`, `EnumSynth`, `FloatSynth`, `IntSynth`, `StdClassSynth`.
 
+### Nothing renders on pages without components
+
+As in Livewire, which only injects its assets once a component rendered, Magewire adds nothing to a page that has no
+component: no `magewire.css`, no scripts and no `window.Magewire`. Only what an integration moved into the
+`magewire.alpinejs.load` container, e.g. a theme's Alpine.js, still renders. Code that calls `Magewire` on every page
+should check that it exists, or listen to `magewire:init`, which only fires where Magewire runs. To render everything
+anyway, set the `render_without_components` argument of the `magewire` block:
+
+```xml
+<referenceBlock name="magewire">
+    <arguments>
+        <argument name="render_without_components" xsi:type="boolean">true</argument>
+    </arguments>
+</referenceBlock>
+```
+
 ## Differences from upstream Livewire
 
 If you know Livewire v3, these are the Magewire-specific bits:
