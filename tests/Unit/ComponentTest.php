@@ -7,6 +7,7 @@ namespace Magewirephp\Magewire\Tests\Unit;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\ObjectManagerInterface;
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\EventBus;
 use Magewirephp\Magewire\Mechanisms\DataStore;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
@@ -21,9 +22,9 @@ class ComponentTest extends TestCase
     {
         $this->previousObjectManager = ( new ReflectionProperty(ObjectManager::class, '_instance') )->getValue();
 
-        $dataStore = new DataStore();
+        $services = [DataStore::class => new DataStore(), EventBus::class => new EventBus()];
         $objectManager = $this->createMock(ObjectManagerInterface::class);
-        $objectManager->method('get')->willReturnCallback(static fn ($class) => $class === DataStore::class ? $dataStore : null);
+        $objectManager->method('get')->willReturnCallback(static fn ($class) => $services[$class] ?? null);
 
         ObjectManager::setInstance($objectManager);
     }
@@ -51,23 +52,13 @@ class ComponentTest extends TestCase
         self::assertSame('<div>placeholder</div>', store($component)->get('skipRender'));
     }
 
-    public function test_skip_render_false_takes_back_an_earlier_skip_render(): void
+    public function test_skip_render_false_skips_rendering_as_in_livewire(): void
     {
         $component = new class extends Component {};
 
         $component->skipRender();
         $component->skipRender(false);
 
-        self::assertFalse(store($component)->has('skipRender'));
-        self::assertFalse(store($component)->get('skipRender', false));
-    }
-
-    public function test_skip_render_false_without_an_earlier_skip_render_keeps_rendering(): void
-    {
-        $component = new class extends Component {};
-
-        $component->skipRender(false);
-
-        self::assertFalse(store($component)->has('skipRender'));
+        self::assertTrue(store($component)->get('skipRender'));
     }
 }
