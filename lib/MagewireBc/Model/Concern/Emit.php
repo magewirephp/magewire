@@ -23,17 +23,27 @@ trait Emit
     use HandlesEvents;
 
     /**
+     * @deprecated The events of emitUp() and emitToRefreshUp(), for a compatibility module to deliver.
+     * @see getAncestorEvents()
+     * @var Event[]
+     */
+    protected $emitUpQueue = [];
+
+    /**
      * @deprecated Use dispatch() instead.
      *
      * @param array<string, mixed> $params
      */
     public function emit(string $event, $params = []): Event
     {
-        return $this->dispatch($event, ...is_array($params) ? $params : [$params]);
+        return $this->dispatch($event, ...$this->magewireEmitParams(array_slice(func_get_args(), 1)));
     }
 
     /**
-     * In v3 events bubble up by default, so emitting "up" is just a dispatch.
+     * Emit an event to the ancestors of this component only, as Magewire 1 did.
+     *
+     * Not a dispatch(): a Livewire 3 event reaches every component listening to it. The event is queued for a
+     * compatibility module to deliver to the ancestors, separately from dispatch().
      *
      * @deprecated Use dispatch() instead.
      *
@@ -41,7 +51,7 @@ trait Emit
      */
     public function emitUp(string $event, $params = []): Event
     {
-        return $this->dispatch($event, ...is_array($params) ? $params : [$params]);
+        return $this->emitUpQueue[] = new Event($event, $this->magewireEmitParams(array_slice(func_get_args(), 1)));
     }
 
     /**
@@ -53,7 +63,7 @@ trait Emit
      */
     public function emitSelf(string $event, $params = []): Event
     {
-        return $this->dispatch($event, ...is_array($params) ? $params : [$params])->self();
+        return $this->dispatch($event, ...$this->magewireEmitParams(array_slice(func_get_args(), 1)))->self();
     }
 
     /**
@@ -65,7 +75,7 @@ trait Emit
      */
     public function emitTo(string $name, string $event, $params = []): Event
     {
-        return $this->emit($event, $params)->to($name);
+        return $this->dispatch($event, ...$this->magewireEmitParams(array_slice(func_get_args(), 2)))->to($name);
     }
 
     /**
@@ -77,12 +87,11 @@ trait Emit
      */
     public function emitToRefresh(string $name, $params = []): Event
     {
-        return $this->dispatch('$refresh', ...is_array($params) ? $params : [$params])->to($name);
+        return $this->dispatch('$refresh', ...$this->magewireEmitParams(array_slice(func_get_args(), 1)))->to($name);
     }
 
     /**
-     * Refresh all parents. In v3 events bubble up by default, so a
-     * dispatched "$refresh" reaches parent components automatically.
+     * Refresh all ancestors of this component, as Magewire 1 did. Queued like emitUp().
      *
      * @deprecated Use dispatch('$refresh') instead.
      *
@@ -90,6 +99,32 @@ trait Emit
      */
     public function emitToRefreshUp($params = []): Event
     {
-        return $this->dispatch('$refresh', ...is_array($params) ? $params : [$params]);
+        return $this->emitUp('$refresh', ...func_get_args());
+    }
+
+    /**
+     * Returns the listener arguments for the arguments an emit method received after the event (and target) name.
+     *
+     * Like in v1, several arguments, e.g. emit('event', 'foo', 'bar'), are passed to the listener one by one.
+     * A single array is passed as the listener arguments, a single other value, null included, as the only argument.
+     */
+    private function magewireEmitParams(array $arguments): array
+    {
+        if (count($arguments) > 1) {
+            return $arguments;
+        }
+
+        $params = array_key_exists(0, $arguments) ? $arguments[0] : [];
+
+        return is_array($params) ? $params : [$params];
+    }
+
+    /**
+     * @deprecated The events of emitUp() and emitToRefreshUp(), for a compatibility module to deliver.
+     * @return Event[]
+     */
+    public function getAncestorEvents(): array
+    {
+        return $this->emitUpQueue;
     }
 }
