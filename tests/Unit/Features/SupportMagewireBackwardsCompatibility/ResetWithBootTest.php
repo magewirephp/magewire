@@ -6,11 +6,17 @@ namespace Magewirephp\Magewire\Tests\Unit\Features\SupportMagewireBackwardsCompa
 
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\ObjectManagerInterface;
-use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\EventBus;
 use Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\SupportMagewireBackwardsCompatibility;
+use Magewirephp\Magewire\Mechanisms\DataStore;
+use Magewirephp\Magewire\Tests\Unit\Fixtures\BootingComponent;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
+
+use function Magewirephp\Magewire\store;
+
+require_once __DIR__ . '/../../Fixtures/BootingComponent.php';
 
 class ResetWithBootTest extends TestCase
 {
@@ -20,9 +26,9 @@ class ResetWithBootTest extends TestCase
     {
         $this->previousObjectManager = ( new ReflectionProperty(ObjectManager::class, '_instance') )->getValue();
 
-        $eventBus = new EventBus();
+        $services = [EventBus::class => new EventBus(), DataStore::class => new DataStore()];
         $objectManager = $this->createMock(ObjectManagerInterface::class);
-        $objectManager->method('get')->willReturnCallback(static fn ($class) => $class === EventBus::class ? $eventBus : null);
+        $objectManager->method('get')->willReturnCallback(static fn ($class) => $services[$class] ?? null);
         $objectManager->method('create')->willReturnCallback(static fn ($class) => new $class());
 
         ObjectManager::setInstance($objectManager);
@@ -37,7 +43,7 @@ class ResetWithBootTest extends TestCase
 
     public function test_v1_reset_with_boot_takes_the_values_boot_assigns(): void
     {
-        $component = new BootingComponent();
+        $component = $this->component(true);
         $component->foo = 42;
 
         $component->reset(['foo'], true);
@@ -47,7 +53,7 @@ class ResetWithBootTest extends TestCase
 
     public function test_reset_without_boot_takes_the_class_defaults(): void
     {
-        $component = new BootingComponent();
+        $component = $this->component(true);
         $component->foo = 42;
 
         $component->reset(['foo']);
@@ -57,31 +63,57 @@ class ResetWithBootTest extends TestCase
 
     public function test_v1_reset_with_boot_runs_booted_after_boot(): void
     {
+        $component = $this->component(true);
         BootingComponent::$calls = [];
 
-        ( new BootingComponent() )->reset(['foo'], true);
+        $component->reset(['foo'], true);
 
         self::assertSame(['boot', 'booted'], BootingComponent::$calls);
     }
-}
 
-class BootingComponent extends Component
-{
-    public static array $calls = [];
-
-    public int|null $foo = null;
-
-    public function boot(): void
+    public static function componentsWithoutBackwardsCompatibility(): array
     {
-        self::$calls[] = 'boot';
-
-        if ($this->foo === null) {
-            $this->foo = 1337;
-        }
+        return [
+            'unmarked' => [null],
+            'explicitly opted out' => [false]
+        ];
     }
 
-    public function booted(): void
+    #[DataProvider('componentsWithoutBackwardsCompatibility')]
+    public function test_reset_with_the_v1_arguments_keeps_the_class_defaults_without_backwards_compatibility(
+        bool|null $bc
+    ): void {
+        $component = $this->component($bc);
+        $component->foo = 42;
+
+        $component->reset(['foo'], true);
+
+        self::assertNull($component->foo);
+    }
+
+    #[DataProvider('componentsWithoutBackwardsCompatibility')]
+    public function test_reset_with_the_v1_arguments_runs_no_lifecycle_hooks_without_backwards_compatibility(
+        bool|null $bc
+    ): void {
+        $component = $this->component($bc);
+        BootingComponent::$calls = [];
+
+        $component->reset(['foo'], true);
+
+        self::assertSame([], BootingComponent::$calls);
+    }
+
+    /**
+     * Returns a component with the given resolved backwards compatibility flag; null leaves it unset.
+     */
+    private function component(bool|null $bc): BootingComponent
     {
-        self::$calls[] = 'booted';
+        $component = new BootingComponent();
+
+        if ($bc !== null) {
+            store($component)->set('magewire:bc', $bc);
+        }
+
+        return $component;
     }
 }
