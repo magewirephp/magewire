@@ -15,6 +15,11 @@ $magewireFragment = $magewireViewModel->utils()->fragment();
 
 /**
  * @internal Do not modify to ensure Magewire continues to function correctly.
+ *
+ * Renders before the page content, so before it is known whether a component renders. The inert markers let
+ * Magewire remove this output from a page without components once it has rendered (see RemoveUnusedAssets).
  */
 ?>
+<?= /* @noEscape */ \Magewirephp\Magewire\Plugin\Magento\Framework\View\Result\RemoveUnusedAssets::PRIORITY_START ?>
 <?= $block->getChildHtml() ?>
+<?= /* @noEscape */ \Magewirephp\Magewire\Plugin\Magento\Framework\View\Result\RemoveUnusedAssets::PRIORITY_END ?>
