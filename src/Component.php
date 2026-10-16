@@ -97,10 +97,17 @@ abstract class Component implements ArgumentInterface
     }
 
     /**
+     * Passing false to resume rendering is deprecated and retained for Magewire 1 compatibility.
+     *
      * @mago-expect lint:no-shorthand-ternary
      */
     public function skipRender($html = null): void
     {
+        if ($html === false) {
+            store($this)->unset('skipRender');
+            return;
+        }
+
         store($this)->set('skipRender', $html ?: true);
     }
 
