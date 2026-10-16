@@ -97,20 +97,18 @@ abstract class Component implements ArgumentInterface
     }
 
     /**
-     * Skips rendering the component, optionally rendering the given HTML instead, as in Livewire.
-     *
-     * Features can adapt the result through the 'magewire:component:skip-render' event, e.g. the backwards
-     * compatibility layer, where v1's skipRender(false) took back an earlier skipRender().
+     * Passing false to resume rendering is deprecated and retained for Magewire 1 compatibility.
      *
      * @mago-expect lint:no-shorthand-ternary
      */
     public function skipRender($html = null): void
     {
-        $finish = trigger('magewire:component:skip-render', $this, $html);
+        if ($html === false) {
+            store($this)->unset('skipRender');
+            return;
+        }
 
         store($this)->set('skipRender', $html ?: true);
-
-        $finish();
     }
 
     public function skipMount(): void
