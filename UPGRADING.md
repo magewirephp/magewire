@@ -58,11 +58,6 @@ Legacy browser events sent through `dispatchBrowserEvent()` are delivered by
 [`magewirephp/magewire-hyva-theme`](https://github.com/magewirephp/magewire-hyva-theme),
 which preserves Magewire 1's `event.detail` payload shape.
 
-Magewire 1's `redirect($path, $params = null, $secure = true)` keeps working for these components: a path is built
-as a Magento route with `$params` through `redirectRoute()`, and the params of an absolute URL become its query.
-Components without the attribute keep v3's `redirect($url, $navigate = false)`. In new code, use
-`redirectRoute('checkout/cart', ['_query' => ['reason' => 'stock']])` for a route with parameters.
-
 ## Breaking changes you will hit first
 
 ### Browser-callable component methods
@@ -136,6 +131,8 @@ Raw PHP in PHTML still works. Raw `<script>` tags are discouraged — use `$mage
 
 If you know Livewire v3, these are the Magewire-specific bits:
 
+- **Magento route redirects.** Use `redirectRoute('checkout/cart', ['_query' => ['reason' => 'stock']])` to build a URL with Magento's URL builder. It supports Magento route parameters such as `_query`, `_fragment`, and `_secure`, plus Livewire's `$absolute` and `$navigate` arguments.
+- **Deprecated redirect parameters.** Passing an array as the second argument to `redirect()` resolves a Magento route or adds query parameters to an absolute URL without an existing query. This compatibility behavior applies to every component, independently of `magewire:bc`. Use `redirectRoute()` in new code. A plain `null` second argument retains native V3 behavior. An explicit third `$secure` argument with array or `null` parameters remains supported as deprecated compatibility behavior; it only selects the scheme for `www.` URLs. Calls with only a URL, or with boolean navigation flags, retain their existing behavior.
 - **No `Livewire::component()` registration.** Components are discovered through Magento layout XML — `<referenceContainer><block class="..."/></referenceContainer>` — and resolved by `ResolveComponents`.
 - **Service registration via DI, not a service provider.** Mechanisms and Features are registered in **area-scoped** DI (`etc/frontend/di.xml` or `etc/adminhtml/di.xml`), never global `etc/di.xml`.
 - **`app()` bridge.** Livewire code that calls `app('livewire')` or `app('redirect')` works — `Containers` maps those lookups to Magento DI bindings.

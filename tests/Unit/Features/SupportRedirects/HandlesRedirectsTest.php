@@ -11,6 +11,7 @@ use Magento\Framework\UrlInterface;
 use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Config;
 use Magewirephp\Magewire\Mechanisms\DataStore;
+use Magewirephp\Magewire\Support\Url;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
@@ -24,13 +25,15 @@ class HandlesRedirectsTest extends TestCase
 
     private array $urlBuilderCalls = [];
 
+    private array $configValues = [];
+
     protected function setUp(): void
     {
         $this->previousObjectManager = ( new ReflectionProperty(ObjectManager::class, '_instance') )->getValue();
 
         $dataStore = new DataStore();
         $config = $this->createMock(Config::class);
-        $config->method('getValue')->willReturn(null);
+        $config->method('getValue')->willReturnCallback(fn ($path) => $this->configValues[$path] ?? null);
 
         $scopeConfig = $this->createMock(ScopeConfigInterface::class);
         $scopeConfig->method('getValue')->willReturnMap([['web/default/front', 'store', null, 'cms']]);
@@ -46,6 +49,7 @@ class HandlesRedirectsTest extends TestCase
                 return 'https://shop.test/' . trim($path, '/') . '/' . ( $query === [] ? '' : '?' . http_build_query($query) ) . ( $fragment === null ? '' : '#' . $fragment );
             });
 
+        $urlSupport = new Url($urlBuilder, $scopeConfig);
         $objectManager = $this->createMock(ObjectManagerInterface::class);
         $objectManager
             ->method('get')
@@ -54,6 +58,7 @@ class HandlesRedirectsTest extends TestCase
                 Config::class => $config,
                 UrlInterface::class => $urlBuilder,
                 ScopeConfigInterface::class => $scopeConfig,
+                Url::class => $urlSupport,
                 default => null
             });
 
@@ -109,30 +114,41 @@ class HandlesRedirectsTest extends TestCase
         self::assertTrue(store($component)->get('redirectUsingNavigate'));
     }
 
-    public static function componentsWithoutBackwardsCompatibility(): array
+    public function test_redirect_route_accepts_magento_null_parameters(): void
+    {
+        $component = $this->component(null);
+
+        $component->redirectRoute('checkout/cart', null);
+
+        self::assertSame('https://shop.test/checkout/cart/', store($component)->get('redirect'));
+        self::assertSame([['checkout/cart', null]], $this->urlBuilderCalls);
+    }
+
+    public static function compatibilityModes(): array
     {
         return [
             'unmarked' => [null],
-            'explicitly opted out' => [false]
+            'explicitly opted out' => [false],
+            'enabled' => [true]
         ];
     }
 
-    #[DataProvider('componentsWithoutBackwardsCompatibility')]
-    public function test_the_v1_signature_keeps_the_native_behavior_without_backwards_compatibility(
+    #[DataProvider('compatibilityModes')]
+    public function test_array_parameters_resolve_a_route_regardless_of_backwards_compatibility(
         bool|null $bc
     ): void {
         $component = $this->component($bc);
 
         $component->redirect('checkout/cart', ['_query' => ['reason' => 'stock']], false);
 
-        // Natively, the second argument is $navigate: a non-empty array counts as true.
-        self::assertSame('checkout/cart', store($component)->get('redirect'));
-        self::assertTrue(store($component)->get('redirectUsingNavigate'));
-        self::assertSame([], $this->urlBuilderCalls);
+        self::assertSame('https://shop.test/checkout/cart/?reason=stock', store($component)->get('redirect'));
+        self::assertNull(store($component)->get('redirectUsingNavigate'));
+        self::assertSame([['checkout/cart', ['_query' => ['reason' => 'stock']]]], $this->urlBuilderCalls);
+        self::assertSame($bc, store($component)->get('magewire:bc'));
     }
 
-    #[DataProvider('componentsWithoutBackwardsCompatibility')]
-    public function test_a_null_second_argument_keeps_the_native_behavior_without_backwards_compatibility(
+    #[DataProvider('compatibilityModes')]
+    public function test_a_null_second_argument_keeps_the_native_behavior(
         bool|null $bc
     ): void {
         $component = $this->component($bc);
@@ -165,30 +181,30 @@ class HandlesRedirectsTest extends TestCase
         self::assertTrue(store($component)->get('redirectUsingNavigate'));
     }
 
-    public function test_v1_route_params_build_the_url_through_redirect_route_once(): void
+    public function test_route_params_build_the_url_once(): void
     {
         $component = $this->component(true);
 
         $component->redirect('/checkout/cart', ['_query' => ['reason' => 'stock']]);
 
-        // redirectRoute() calls redirect($url, false), which takes the native path: one URL, built once.
         self::assertSame('https://shop.test/checkout/cart/?reason=stock', store($component)->get('redirect'));
         self::assertNull(store($component)->get('redirectUsingNavigate'));
         self::assertTrue(store($component)->get('skipRender'));
         self::assertSame([['checkout/cart', ['_query' => ['reason' => 'stock']]]], $this->urlBuilderCalls);
     }
 
-    public function test_v1_null_params_build_the_url_of_the_path(): void
+    #[DataProvider('compatibilityModes')]
+    public function test_null_params_with_an_explicit_scheme_argument_build_the_route(bool|null $bc): void
     {
-        $component = $this->component(true);
+        $component = $this->component($bc);
 
-        $component->redirect('checkout/cart', null);
+        $component->redirect('checkout/cart', null, false);
 
         self::assertSame('https://shop.test/checkout/cart/', store($component)->get('redirect'));
         self::assertSame([['checkout/cart', []]], $this->urlBuilderCalls);
     }
 
-    public function test_v1_root_with_params_redirects_to_the_default_front_route(): void
+    public function test_root_with_params_redirects_to_the_default_front_route(): void
     {
         $component = $this->component(true);
 
@@ -197,28 +213,29 @@ class HandlesRedirectsTest extends TestCase
         self::assertSame([['cms', ['_query' => ['a' => 'b']]]], $this->urlBuilderCalls);
     }
 
-    public static function v1WwwUrls(): array
+    public static function wwwUrls(): array
     {
         return [
-            'secure by default' => [[], 'https://example.com/landing'],
+            'secure by default' => [[[]], 'https://example.com/landing'],
             'insecure' => [[[], false], 'http://example.com/landing'],
-            'secure' => [[[], true], 'https://example.com/landing']
+            'secure' => [[[], true], 'https://example.com/landing'],
+            'null params, insecure' => [[null, false], 'http://example.com/landing'],
+            'null params, secure' => [[null, true], 'https://example.com/landing']
         ];
     }
 
-    #[DataProvider('v1WwwUrls')]
-    public function test_v1_www_urls_get_the_scheme_secure_asks_for(array $arguments, string $expected): void
+    #[DataProvider('wwwUrls')]
+    public function test_www_urls_get_the_requested_scheme(array $arguments, string $expected): void
     {
         $component = $this->component(true);
 
-        $arguments = $arguments === [] ? [null] : $arguments;
         $component->redirect('www.example.com/landing', ...$arguments);
 
         self::assertSame($expected, store($component)->get('redirect'));
         self::assertSame([], $this->urlBuilderCalls);
     }
 
-    public static function v1AbsoluteUrls(): array
+    public static function absoluteUrls(): array
     {
         return [
             'params become the query' => ['https://example.com/landing', 'https://example.com/landing?reason=stock'],
@@ -235,14 +252,16 @@ class HandlesRedirectsTest extends TestCase
                 'https://example.com/landing?from=cart#details'
             ],
             'an empty query is replaced' => ['https://example.com/landing?', 'https://example.com/landing?reason=stock'],
-            'a protocol-relative URL' => ['//example.com/landing', '//example.com/landing?reason=stock']
+            'a protocol-relative URL' => ['//example.com/landing', '//example.com/landing?reason=stock'],
+            'a zero fragment is preserved' => ['https://example.com/landing#0', 'https://example.com/landing?reason=stock#0'],
+            'a zero query is preserved' => ['https://example.com/landing?0#details', 'https://example.com/landing?0#details']
         ];
     }
 
-    #[DataProvider('v1AbsoluteUrls')]
-    public function test_v1_absolute_urls_take_the_params_as_query(string $url, string $expected): void
+    #[DataProvider('absoluteUrls')]
+    public function test_absolute_urls_take_the_params_as_query(string $url, string $expected): void
     {
-        $component = $this->component(true);
+        $component = $this->component(null);
 
         $component->redirect($url, ['reason' => 'stock']);
 
@@ -251,13 +270,53 @@ class HandlesRedirectsTest extends TestCase
         self::assertSame([], $this->urlBuilderCalls);
     }
 
-    public function test_v1_absolute_url_without_params_is_kept(): void
+    public function test_absolute_url_without_params_is_kept(): void
     {
         $component = $this->component(true);
 
         $component->redirect('https://example.com/landing#details', []);
 
         self::assertSame('https://example.com/landing#details', store($component)->get('redirect'));
+    }
+
+    public function test_an_empty_parameter_array_still_resolves_the_route_without_navigate(): void
+    {
+        $component = $this->component(null);
+
+        $component->redirect('checkout/cart', []);
+
+        self::assertSame('https://shop.test/checkout/cart/', store($component)->get('redirect'));
+        self::assertNull(store($component)->get('redirectUsingNavigate'));
+        self::assertSame([['checkout/cart', []]], $this->urlBuilderCalls);
+    }
+
+    public function test_secure_route_parameters_are_forwarded_to_magento(): void
+    {
+        $component = $this->component(null);
+
+        $component->redirect('checkout/cart', ['_secure' => false], true);
+
+        self::assertSame([['checkout/cart', ['_secure' => false]]], $this->urlBuilderCalls);
+    }
+
+    public function test_the_scheme_argument_does_not_override_an_absolute_url(): void
+    {
+        $component = $this->component(null);
+
+        $component->redirect('https://example.com/landing#details', ['reason' => 'stock'], false);
+
+        self::assertSame('https://example.com/landing?reason=stock#details', store($component)->get('redirect'));
+    }
+
+    public function test_redirect_can_leave_rendering_enabled(): void
+    {
+        $component = $this->component(null);
+        $this->configValues['livewire.render_on_redirect'] = true;
+
+        $component->redirect('checkout/cart', ['_query' => ['reason' => 'stock']]);
+
+        self::assertSame('https://shop.test/checkout/cart/?reason=stock', store($component)->get('redirect'));
+        self::assertFalse(store($component)->has('skipRender'));
     }
 
     /**
