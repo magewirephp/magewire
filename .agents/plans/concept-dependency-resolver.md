@@ -1,4 +1,4 @@
-# Concept: consumer-aware dependency lookup
+# Concept: DependencyResolver
 
 Status: experimental draft for API and behavior review.
 
@@ -15,13 +15,14 @@ explicitly to that consumer's constructor.
 use Magewirephp\Magewire\Support\Factory;
 use Psr\Log\LoggerInterface;
 
-$factory = Factory::for($component);
+$resolver = Factory::for($component);
 
-$logger = $factory->dependency('logger', LoggerInterface::class);
-$sharedOrStoredLogger = $factory->get('logger', LoggerInterface::class);
-$freshLogger = $factory->create('logger', LoggerInterface::class, ['channel' => 'checkout']);
+$logger = $resolver->dependency('logger', LoggerInterface::class);
+$sharedOrStoredLogger = $resolver->get('logger', LoggerInterface::class);
+$freshLogger = $resolver->create('logger', LoggerInterface::class, ['channel' => 'checkout']);
 ```
 
+`Factory::for()` returns a `Magewirephp\Magewire\Support\DependencyResolver`.
 The consumer is explicit, so no backtrace is necessary. The fallback type is
 explicit because a missing property or constructor parameter cannot supply it.
 The original `Factory::get()` and `Factory::create()` keep their existing behavior.

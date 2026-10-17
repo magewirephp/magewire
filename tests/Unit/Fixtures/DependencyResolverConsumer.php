@@ -6,7 +6,7 @@ namespace Magewirephp\Magewire\Tests\Unit\Fixtures;
 
 use ArrayObject;
 
-class ContextualFactoryConsumer
+class DependencyResolverConsumer
 {
     public function __construct(
         private readonly ArrayObject $service,

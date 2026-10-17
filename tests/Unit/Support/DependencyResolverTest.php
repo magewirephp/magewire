@@ -16,20 +16,20 @@ use Magento\Framework\ObjectManager\Factory\Compiled as CompiledFactory;
 use Magento\Framework\ObjectManager\Factory\Dynamic\Developer as DeveloperFactory;
 use Magento\Framework\ObjectManager\ObjectManager as NativeObjectManager;
 use Magento\Framework\ObjectManagerInterface;
-use Magewirephp\Magewire\Support\ContextualFactory;
+use Magewirephp\Magewire\Support\DependencyResolver;
 use Magewirephp\Magewire\Support\Factory;
-use Magewirephp\Magewire\Tests\Unit\Fixtures\ContextualFactoryConsumer;
-use Magewirephp\Magewire\Tests\Unit\Fixtures\ContextualFactoryConsumerInterceptor;
+use Magewirephp\Magewire\Tests\Unit\Fixtures\DependencyResolverConsumer;
+use Magewirephp\Magewire\Tests\Unit\Fixtures\DependencyResolverConsumerInterceptor;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 use stdClass;
 use UnexpectedValueException;
 
-require_once __DIR__ . '/../Fixtures/ContextualFactoryConsumer.php';
-require_once __DIR__ . '/../Fixtures/ContextualFactoryConsumerInterceptor.php';
+require_once __DIR__ . '/../Fixtures/DependencyResolverConsumer.php';
+require_once __DIR__ . '/../Fixtures/DependencyResolverConsumerInterceptor.php';
 
-class ContextualFactoryTest extends TestCase
+class DependencyResolverTest extends TestCase
 {
     private ObjectManagerInterface|null $previousObjectManager;
 
@@ -50,15 +50,15 @@ class ContextualFactoryTest extends TestCase
     public function test_it_reuses_a_private_readonly_dependency_through_an_interceptor(): void
     {
         $service = new ArrayObject(['injected']);
-        $consumer = new ContextualFactoryConsumerInterceptor($service, new ArrayObject());
+        $consumer = new DependencyResolverConsumerInterceptor($service, new ArrayObject());
         $config = $this->createMock(ConfigInterface::class);
         $config->expects(self::never())->method('getArguments');
         $objectManager = $this->createMock(ObjectManagerInterface::class);
         $objectManager->expects(self::never())->method('get');
         $objectManager->expects(self::never())->method('create');
 
-        self::assertSame($service, ( new ContextualFactory($consumer, $objectManager, $config) )->dependency('service', Countable::class));
-        self::assertSame($service, ( new ContextualFactory($consumer, $objectManager, $config) )->get('service', Countable::class));
+        self::assertSame($service, ( new DependencyResolver($consumer, $objectManager, $config) )->dependency('service', Countable::class));
+        self::assertSame($service, ( new DependencyResolver($consumer, $objectManager, $config) )->get('service', Countable::class));
     }
 
     public function test_an_initialized_null_does_not_trigger_fallback(): void
@@ -71,8 +71,8 @@ class ContextualFactoryTest extends TestCase
         $objectManager = $this->createMock(ObjectManagerInterface::class);
         $objectManager->expects(self::never())->method('get');
 
-        self::assertNull(( new ContextualFactory($consumer, $objectManager, $config) )->dependency('service', Countable::class));
-        self::assertNull(( new ContextualFactory($consumer, $objectManager, $config) )->get('service', Countable::class));
+        self::assertNull(( new DependencyResolver($consumer, $objectManager, $config) )->dependency('service', Countable::class));
+        self::assertNull(( new DependencyResolver($consumer, $objectManager, $config) )->get('service', Countable::class));
     }
 
     #[DataProvider('argumentMetadata')]
@@ -97,7 +97,7 @@ class ContextualFactoryTest extends TestCase
             ->willReturn($service);
         $objectManager->expects(self::never())->method($shared ? 'create' : 'get');
 
-        self::assertSame($service, ( new ContextualFactory($consumer, $objectManager, $config) )->dependency('service', Countable::class));
+        self::assertSame($service, ( new DependencyResolver($consumer, $objectManager, $config) )->dependency('service', Countable::class));
         self::assertFalse(( new ReflectionProperty($consumer, 'service') )->isInitialized($consumer));
     }
 
@@ -130,7 +130,7 @@ class ContextualFactoryTest extends TestCase
 
         $expectation->willReturn($service);
         $objectManager->expects(self::never())->method($method === 'create' ? 'get' : 'create');
-        $factory = new ContextualFactory(new stdClass(), $objectManager, $config);
+        $factory = new DependencyResolver(new stdClass(), $objectManager, $config);
         $resolved = $method === 'create' ? $factory->create('service', Countable::class, $parameters) : $factory->get('service', Countable::class);
 
         self::assertSame($service, $resolved);
@@ -156,7 +156,7 @@ class ContextualFactoryTest extends TestCase
         $objectManager->expects(self::never())->method('get');
         $objectManager->expects(self::once())->method('create')->with(Countable::class, [])->willReturn($service);
 
-        self::assertSame($service, ( new ContextualFactory($consumer, $objectManager, $config) )->create('service', Countable::class));
+        self::assertSame($service, ( new DependencyResolver($consumer, $objectManager, $config) )->create('service', Countable::class));
         self::assertSame('keep me', $consumer->service);
     }
 
@@ -168,7 +168,7 @@ class ContextualFactoryTest extends TestCase
         $objectManager = $this->createMock(ObjectManagerInterface::class);
         $objectManager->expects(self::never())->method('get');
         $objectManager->expects(self::never())->method('create');
-        $factory = new ContextualFactory(new stdClass(), $objectManager, $config);
+        $factory = new DependencyResolver(new stdClass(), $objectManager, $config);
         $expected = is_array($argument) ? $argument['_v_'] ?? null : $argument;
 
         self::assertSame($expected, $factory->get('service', Countable::class));
@@ -189,18 +189,18 @@ class ContextualFactoryTest extends TestCase
 
     public function test_it_uses_the_original_consumer_type_for_interceptor_config(): void
     {
-        $consumer = new ContextualFactoryConsumerInterceptor(new ArrayObject(), new ArrayObject());
+        $consumer = new DependencyResolverConsumerInterceptor(new ArrayObject(), new ArrayObject());
         $service = new ArrayObject(['configured']);
         $config = $this->createMock(ConfigInterface::class);
         $config
             ->expects(self::once())
             ->method('getArguments')
-            ->with(ContextualFactoryConsumer::class)
+            ->with(DependencyResolverConsumer::class)
             ->willReturn(['unstored' => ['_i_' => 'context.service']]);
         $objectManager = $this->createMock(ObjectManagerInterface::class);
         $objectManager->expects(self::once())->method('get')->with('context.service')->willReturn($service);
 
-        self::assertSame($service, ( new ContextualFactory($consumer, $objectManager, $config) )->dependency('unstored', Countable::class));
+        self::assertSame($service, ( new DependencyResolver($consumer, $objectManager, $config) )->dependency('unstored', Countable::class));
     }
 
     public function test_a_missing_property_and_argument_use_the_explicit_fallback_type(): void
@@ -212,7 +212,7 @@ class ContextualFactoryTest extends TestCase
         $objectManager = $this->createMock(ObjectManagerInterface::class);
         $objectManager->expects(self::once())->method('get')->with(Countable::class)->willReturn($service);
 
-        self::assertSame($service, ( new ContextualFactory($consumer, $objectManager, $config) )->dependency('missing', Countable::class));
+        self::assertSame($service, ( new DependencyResolver($consumer, $objectManager, $config) )->dependency('missing', Countable::class));
         self::assertFalse(property_exists($consumer, 'missing'));
     }
 
@@ -224,7 +224,7 @@ class ContextualFactoryTest extends TestCase
         $objectManager = $this->createMock(ObjectManagerInterface::class);
         $objectManager->expects(self::never())->method('get');
 
-        self::assertNull(( new ContextualFactory(new stdClass(), $objectManager, $config) )->dependency('service', Countable::class));
+        self::assertNull(( new DependencyResolver(new stdClass(), $objectManager, $config) )->dependency('service', Countable::class));
     }
 
     public static function nullMetadata(): iterable
@@ -244,7 +244,7 @@ class ContextualFactoryTest extends TestCase
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('must implement or extend');
 
-        ( new ContextualFactory($consumer, $objectManager, $this->createMock(ConfigInterface::class)) )->dependency('service', Countable::class);
+        ( new DependencyResolver($consumer, $objectManager, $this->createMock(ConfigInterface::class)) )->dependency('service', Countable::class);
     }
 
     public function test_unsupported_argument_metadata_is_not_silently_ignored(): void
@@ -257,21 +257,21 @@ class ContextualFactoryTest extends TestCase
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage('not configured as an object or null');
 
-        ( new ContextualFactory(new stdClass(), $objectManager, $config) )->dependency('service', Countable::class);
+        ( new DependencyResolver(new stdClass(), $objectManager, $config) )->dependency('service', Countable::class);
     }
 
     public function test_it_requires_an_explicit_name_and_type(): void
     {
         $this->expectException(InvalidArgumentException::class);
 
-        ( new ContextualFactory(new stdClass(), $this->createMock(ObjectManagerInterface::class), $this->createMock(ConfigInterface::class)) )->dependency('service', '');
+        ( new DependencyResolver(new stdClass(), $this->createMock(ObjectManagerInterface::class), $this->createMock(ConfigInterface::class)) )->dependency('service', '');
     }
 
     #[DataProvider('containerModes')]
     public function test_it_resolves_real_magento_preferences_and_virtual_types(bool $compiled): void
     {
         $objectManager = $this->bootObjectManager($compiled);
-        $consumer = $objectManager->create(ContextualFactoryConsumer::class);
+        $consumer = $objectManager->create(DependencyResolverConsumer::class);
         $contextual = Factory::for($consumer);
 
         self::assertSame($objectManager->get('context.service'), $contextual->dependency('service', Countable::class));
@@ -318,7 +318,7 @@ class ContextualFactoryTest extends TestCase
     public function test_create_preserves_virtual_type_configuration_and_forwards_constructor_arguments(bool $compiled): void
     {
         $objectManager = $this->bootObjectManager($compiled);
-        $consumer = $objectManager->create(ContextualFactoryConsumer::class);
+        $consumer = $objectManager->create(DependencyResolverConsumer::class);
         $contextual = Factory::for($consumer);
         $injected = $contextual->get('service', Countable::class);
         $fresh = $contextual->create('service', Countable::class);
@@ -360,14 +360,14 @@ class ContextualFactoryTest extends TestCase
             ArrayObject::class => ['arguments' => ['array' => ['source' => 'default']]],
             'context.service' => ['type' => ArrayObject::class, 'arguments' => ['array' => ['source' => 'context']]],
             'transient.service' => ['type' => ArrayObject::class, 'arguments' => ['array' => ['source' => 'transient']]],
-            ContextualFactoryConsumer::class => [
+            DependencyResolverConsumer::class => [
                 'arguments' => [
                     'service' => ['instance' => 'context.service'],
                     'unstored' => ['instance' => 'context.service']
                 ]
             ],
             'special.consumer' => [
-                'type' => ContextualFactoryConsumer::class,
+                'type' => DependencyResolverConsumer::class,
                 'arguments' => [
                     'service' => ['instance' => 'transient.service', 'shared' => false],
                     'unstored' => ['instance' => 'transient.service', 'shared' => false]
@@ -390,12 +390,12 @@ class ContextualFactoryTest extends TestCase
             ];
         }
 
-        $arguments[ContextualFactoryConsumer::class] = ['service' => ['_i_' => 'context.service'], 'unstored' => ['_i_' => 'context.service']];
+        $arguments[DependencyResolverConsumer::class] = ['service' => ['_i_' => 'context.service'], 'unstored' => ['_i_' => 'context.service']];
         $arguments['special.consumer'] = ['service' => ['_ins_' => 'transient.service'], 'unstored' => ['_ins_' => 'transient.service']];
 
         return new CompiledConfig([
             'preferences' => [Countable::class => ArrayObject::class],
-            'instanceTypes' => ['context.service' => ArrayObject::class, 'transient.service' => ArrayObject::class, 'special.consumer' => ContextualFactoryConsumer::class],
+            'instanceTypes' => ['context.service' => ArrayObject::class, 'transient.service' => ArrayObject::class, 'special.consumer' => DependencyResolverConsumer::class],
             'arguments' => $arguments
         ]);
     }

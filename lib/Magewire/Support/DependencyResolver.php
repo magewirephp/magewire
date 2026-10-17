@@ -15,7 +15,7 @@ use InvalidArgumentException;
 use Magento\Framework\ObjectManager\ConfigInterface;
 use Magento\Framework\ObjectManagerInterface;
 use Magewirephp\Magewire\Drawer\Utils;
-use Magewirephp\Magewire\Support\Factory\ResolutionMode;
+use Magewirephp\Magewire\Support\DependencyResolver\ResolutionMode;
 use ReflectionObject;
 use ReflectionProperty;
 use UnexpectedValueException;
@@ -27,7 +27,7 @@ use UnexpectedValueException;
  *
  * @mago-expect lint:cyclomatic-complexity
  */
-class ContextualFactory
+class DependencyResolver
 {
     private readonly string $consumerType;
 

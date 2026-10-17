@@ -21,11 +21,11 @@ class Factory
      *
      * Pass the original DI name explicitly when the consumer was created as a virtual type.
      */
-    public static function for(object $consumer, string|null $consumerType = null): ContextualFactory
+    public static function for(object $consumer, string|null $consumerType = null): DependencyResolver
     {
         $objectManager = ObjectManager::getInstance();
 
-        return new ContextualFactory($consumer, $objectManager, $objectManager->get(ConfigInterface::class), $consumerType);
+        return new DependencyResolver($consumer, $objectManager, $objectManager->get(ConfigInterface::class), $consumerType);
     }
 
     /**

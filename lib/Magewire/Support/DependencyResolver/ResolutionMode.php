@@ -9,7 +9,7 @@
 
 declare(strict_types=1);
 
-namespace Magewirephp\Magewire\Support\Factory;
+namespace Magewirephp\Magewire\Support\DependencyResolver;
 
 /** @internal The public API expresses these choices through method names. */
 enum ResolutionMode
