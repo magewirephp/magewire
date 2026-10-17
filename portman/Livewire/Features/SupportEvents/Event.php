@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Willem Poortman 2021-present. All rights reserved.
  *
@@ -21,7 +22,7 @@ class Event extends \Livewire\Features\SupportEvents\Event
         if ($this->self) {
             $output['self'] = true;
         }
-        if ($this->component) {
+        if ($this->component !== null) {
             $output['to'] = app(ComponentRegistry::class)->getName($this->component);
         }
 

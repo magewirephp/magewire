@@ -42,7 +42,7 @@ class Event
         if ($this->self) {
             $output['self'] = true;
         }
-        if ($this->component) {
+        if ($this->component !== null) {
             $output['to'] = app(ComponentRegistry::class)->getName($this->component);
         }
         return $output;

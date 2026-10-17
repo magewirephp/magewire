@@ -111,6 +111,10 @@ The BC attribute above maps plain `wire:model` back to live semantics for tagged
 
 Component classes are resolved via layout XML blocks by the `LayoutResolver` (pluggable via `ComponentResolverManager`). If you used internal APIs to look up components manually in v1, migrate to injecting the resolver.
 
+The registry's `new()` method creates a fresh component through Magewire's factory and Magento's object manager, preserving constructor dependency injection and DI preferences before assigning its name and ID.
+
+Target a named component with `dispatch('example.updated')->to('example.panel')` using its layout name. Unregistered layout-name strings must match Magento's `elementNameType` in `Magento/Framework/View/Layout/etc/elements.xsd`: an ASCII letter or digit first, followed by ASCII letters, decimal digits, underscores, hyphens or dots. Invalid names, including an empty string, throw `InvalidArgumentException`. The valid name `'0'` is preserved as a target. Registered aliases retain their registry resolution, and named component instances retain their assigned name. To target a programmatically named block whose name falls outside the XML schema, pass its named component instance instead of an unregistered string.
+
 ### PHTML directives
 
 Templates now flow through a compiler. Preferred:
