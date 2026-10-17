@@ -9,7 +9,9 @@
  */
 namespace Magewirephp\Magewire\Mechanisms;
 
+use InvalidArgumentException;
 use Magewirephp\Magewire\Component;
+use Magewirephp\Magewire\Support\Factory;
 use Magewirephp\Magewire\Exceptions\ComponentNotFoundException;
 class ComponentRegistry extends Mechanism
 {
@@ -27,7 +29,7 @@ class ComponentRegistry extends Mechanism
     function new($nameOrClass, $id = null)
     {
         [$class, $name] = $this->getNameAndClass($nameOrClass);
-        $component = new $class();
+        $component = Factory::create($class);
         $component->setId($id ?: str()->random(20));
         $component->setName($name);
         // // Parameters passed in automatically set public properties by the same name...
@@ -60,6 +62,7 @@ class ComponentRegistry extends Mechanism
      * emitTo('example.panel', 'event'), already is that name, and the browser
      * looks the component up by it. A component class, and a name registered through component(), are
      * resolved the Livewire way, so an alias still targets the name new() gives its component.
+     * Unregistered layout names must match elementNameType in Magento's View/Layout/etc/elements.xsd.
      */
     function getName($nameOrClassOrComponent)
     {
@@ -67,6 +70,10 @@ class ComponentRegistry extends Mechanism
             return $nameOrClassOrComponent->getName();
         }
         if (is_string($nameOrClassOrComponent) && !array_key_exists($nameOrClassOrComponent, $this->aliases) && !is_subclass_of($nameOrClassOrComponent, Component::class)) {
+            // XML Schema's \d includes Unicode decimal digits after the initial ASCII letter or digit.
+            if (preg_match('/\A[a-zA-Z0-9][a-zA-Z\p{Nd}_.-]*\z/u', $nameOrClassOrComponent) !== 1) {
+                throw new InvalidArgumentException(sprintf('Invalid layout block name "%s".', $nameOrClassOrComponent));
+            }
             return $nameOrClassOrComponent;
         }
         [$class, $name] = $this->getNameAndClass($nameOrClassOrComponent);
