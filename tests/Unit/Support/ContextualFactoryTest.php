@@ -58,6 +58,7 @@ class ContextualFactoryTest extends TestCase
         $objectManager->expects(self::never())->method('create');
 
         self::assertSame($service, ( new ContextualFactory($consumer, $objectManager, $config) )->dependency('service', Countable::class));
+        self::assertSame($service, ( new ContextualFactory($consumer, $objectManager, $config) )->get('service', Countable::class));
     }
 
     public function test_an_initialized_null_does_not_trigger_fallback(): void
@@ -71,6 +72,7 @@ class ContextualFactoryTest extends TestCase
         $objectManager->expects(self::never())->method('get');
 
         self::assertNull(( new ContextualFactory($consumer, $objectManager, $config) )->dependency('service', Countable::class));
+        self::assertNull(( new ContextualFactory($consumer, $objectManager, $config) )->get('service', Countable::class));
     }
 
     #[DataProvider('argumentMetadata')]
@@ -107,6 +109,82 @@ class ContextualFactoryTest extends TestCase
         yield 'runtime non-shared type' => [['instance' => 'context.service'], false, true];
         yield 'compiled shared argument' => [['_i_' => 'context.service'], true, false];
         yield 'compiled non-shared argument' => [['_ins_' => 'context.service'], false, false];
+    }
+
+    #[DataProvider('explicitResolutionModes')]
+    public function test_explicit_methods_override_configured_sharing(array $argument, string $method): void
+    {
+        $service = new ArrayObject(['explicit']);
+        $parameters = ['array' => ['source' => 'explicit']];
+        $config = $this->createMock(ConfigInterface::class);
+        $config->method('getArguments')->willReturn(['service' => $argument]);
+        $config->expects(self::never())->method('isShared');
+        $objectManager = $this->createMock(ObjectManagerInterface::class);
+        $expectation = $objectManager->expects(self::once())->method($method);
+
+        if ($method === 'create') {
+            $expectation->with('context.service', $parameters);
+        } else {
+            $expectation->with('context.service');
+        }
+
+        $expectation->willReturn($service);
+        $objectManager->expects(self::never())->method($method === 'create' ? 'get' : 'create');
+        $factory = new ContextualFactory(new stdClass(), $objectManager, $config);
+        $resolved = $method === 'create' ? $factory->create('service', Countable::class, $parameters) : $factory->get('service', Countable::class);
+
+        self::assertSame($service, $resolved);
+    }
+
+    public static function explicitResolutionModes(): iterable
+    {
+        foreach (self::argumentMetadata() as $name => [$argument]) {
+            yield $name . ' via get' => [$argument, 'get'];
+            yield $name . ' via create' => [$argument, 'create'];
+        }
+    }
+
+    public function test_creation_bypasses_an_incompatible_stored_property_without_replacing_it(): void
+    {
+        $consumer = new class {
+            public string $service = 'keep me';
+        };
+        $service = new ArrayObject(['created']);
+        $config = $this->createMock(ConfigInterface::class);
+        $config->method('getArguments')->willReturn([]);
+        $objectManager = $this->createMock(ObjectManagerInterface::class);
+        $objectManager->expects(self::never())->method('get');
+        $objectManager->expects(self::once())->method('create')->with(Countable::class, [])->willReturn($service);
+
+        self::assertSame($service, ( new ContextualFactory($consumer, $objectManager, $config) )->create('service', Countable::class));
+        self::assertSame('keep me', $consumer->service);
+    }
+
+    #[DataProvider('literalBindings')]
+    public function test_literal_bindings_can_be_reused_but_cannot_be_created(mixed $argument): void
+    {
+        $config = $this->createMock(ConfigInterface::class);
+        $config->method('getArguments')->willReturn(['service' => $argument]);
+        $objectManager = $this->createMock(ObjectManagerInterface::class);
+        $objectManager->expects(self::never())->method('get');
+        $objectManager->expects(self::never())->method('create');
+        $factory = new ContextualFactory(new stdClass(), $objectManager, $config);
+        $expected = is_array($argument) ? $argument['_v_'] ?? null : $argument;
+
+        self::assertSame($expected, $factory->get('service', Countable::class));
+
+        $this->expectException(UnexpectedValueException::class);
+        $this->expectExceptionMessage('no configured DI type name to create');
+
+        $factory->create('service', Countable::class);
+    }
+
+    public static function literalBindings(): iterable
+    {
+        yield 'runtime null' => [null];
+        yield 'compiled null' => [['_vn_' => true]];
+        yield 'runtime object' => [new ArrayObject(['literal'])];
+        yield 'compiled literal object' => [['_v_' => new ArrayObject(['literal'])]];
     }
 
     public function test_it_uses_the_original_consumer_type_for_interceptor_config(): void
@@ -217,6 +295,43 @@ class ContextualFactoryTest extends TestCase
         self::assertSame('transient', $contextual->dependency('unstored', Countable::class)['source']);
         self::assertNotSame($contextual->dependency('unstored', Countable::class), $contextual->dependency('unstored', Countable::class));
         self::assertNotSame($stored, $contextual->dependency('unstored', Countable::class));
+    }
+
+    #[DataProvider('containerModes')]
+    public function test_get_reuses_stored_dependencies_and_forces_shared_configured_resolution(bool $compiled): void
+    {
+        $objectManager = $this->bootObjectManager($compiled);
+        $consumer = $objectManager->create('special.consumer');
+        $contextual = Factory::for($consumer, consumerType: 'special.consumer');
+        $injected = $contextual->dependency('service', Countable::class);
+        $shared = $contextual->get('unstored', Countable::class);
+
+        self::assertSame($injected, $contextual->get('service', Countable::class));
+        self::assertSame($shared, $contextual->get('unstored', Countable::class));
+        self::assertSame($objectManager->get('transient.service'), $shared);
+        self::assertSame('transient', $shared['source']);
+        self::assertNotSame($shared, $contextual->dependency('unstored', Countable::class));
+        self::assertSame($objectManager->get(Countable::class), $contextual->get('missing', Countable::class));
+    }
+
+    #[DataProvider('containerModes')]
+    public function test_create_preserves_virtual_type_configuration_and_forwards_constructor_arguments(bool $compiled): void
+    {
+        $objectManager = $this->bootObjectManager($compiled);
+        $consumer = $objectManager->create(ContextualFactoryConsumer::class);
+        $contextual = Factory::for($consumer);
+        $injected = $contextual->get('service', Countable::class);
+        $fresh = $contextual->create('service', Countable::class);
+        $custom = $contextual->create('service', Countable::class, ['array' => ['source' => 'custom']]);
+
+        self::assertNotSame($injected, $fresh);
+        self::assertNotSame($fresh, $contextual->create('service', Countable::class));
+        self::assertSame('context', $fresh['source']);
+        self::assertSame('custom', $custom['source']);
+        self::assertSame($injected, $contextual->get('service', Countable::class));
+        self::assertSame('context', $injected['source']);
+        self::assertNotSame($objectManager->get(Countable::class), $contextual->create('missing', Countable::class));
+        self::assertSame('fallback', $contextual->create('missing', Countable::class, ['array' => ['source' => 'fallback']])['source']);
     }
 
     public static function containerModes(): iterable
