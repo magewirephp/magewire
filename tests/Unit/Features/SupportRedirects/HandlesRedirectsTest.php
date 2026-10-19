@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Tests\Unit\Features\SupportRedirects;
 
+use GuzzleHttp\Psr7\Uri;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\ObjectManagerInterface;
@@ -12,15 +13,20 @@ use Magewirephp\Magewire\Component;
 use Magewirephp\Magewire\Config;
 use Magewirephp\Magewire\Mechanisms\DataStore;
 use Magewirephp\Magewire\Support\Url;
+use Magewirephp\Magewire\Tests\Unit\Fixtures\CreatesUriFactory;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 
 use function Magewirephp\Magewire\store;
 
+require_once __DIR__ . '/../../Fixtures/CreatesUriFactory.php';
+
 /** @mago-expect lint:too-many-methods */
 class HandlesRedirectsTest extends TestCase
 {
+    use CreatesUriFactory;
+
     private ObjectManagerInterface|null $previousObjectManager = null;
 
     private array $urlBuilderCalls = [];
@@ -49,8 +55,9 @@ class HandlesRedirectsTest extends TestCase
                 return 'https://shop.test/' . trim($path, '/') . '/' . ( $query === [] ? '' : '?' . http_build_query($query) ) . ( $fragment === null ? '' : '#' . $fragment );
             });
 
-        $urlSupport = new Url($urlBuilder, $scopeConfig);
         $objectManager = $this->createMock(ObjectManagerInterface::class);
+        $objectManager->method('create')->willReturnCallback(static fn ($class, $arguments) => match (ltrim($class, '\\')) { Uri::class => new Uri($arguments['uri']) });
+        $urlSupport = new Url($urlBuilder, $scopeConfig, $this->uriFactory($objectManager));
         $objectManager
             ->method('get')
             ->willReturnCallback(static fn ($class) => match ($class) {

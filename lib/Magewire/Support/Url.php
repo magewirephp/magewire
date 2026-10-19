@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Magewirephp\Magewire\Support;
 
-use GuzzleHttp\Psr7\Uri;
+use GuzzleHttp\Psr7\UriFactory;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\UrlInterface;
 
@@ -19,7 +19,8 @@ class Url
 {
     public function __construct(
         private readonly UrlInterface $urlBuilder,
-        private readonly ScopeConfigInterface $scopeConfig
+        private readonly ScopeConfigInterface $scopeConfig,
+        private readonly UriFactory $uriFactory
     ) {
     }
 
@@ -45,7 +46,7 @@ class Url
             $path = ( $secure ? 'https://' : 'http://' ) . substr($path, 4);
         }
 
-        $uri = new Uri($path);
+        $uri = $this->uriFactory->create(['uri' => $path]);
 
         if ($uri->getHost() !== '') {
             if ($parameters === [] || $uri->getQuery() !== '') {
@@ -68,7 +69,7 @@ class Url
      */
     public function relative(string $url): string
     {
-        $uri = new Uri($url);
+        $uri = $this->uriFactory->create(['uri' => $url]);
 
         return (string) $uri
             ->withScheme('')
