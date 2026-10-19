@@ -31,12 +31,36 @@ Two dependency changes happen automatically:
 
 After updating, run:
 
+If the incoming release shares a cache with a live Magewire 1 release, follow [Deploying while v1 is still live](#deploying-while-v1-is-still-live) before running these Magento commands.
+
 ```bash
 composer update magewirephp/magewire --with-all-dependencies
 bin/magento setup:upgrade
 bin/magento setup:di:compile
 bin/magento cache:flush
 ```
+
+### Deploying while v1 is still live
+
+When the live Magewire 1 release and the incoming Magewire 3 release use the same cache storage and cache prefix, the incoming release can load event configuration written by v1. Magento stores frontend event registrations in `frontend::event_config_cache` within the `config` cache type.
+
+During `setup:upgrade`, Hyvä regenerates `app/etc/hyva-themes.json` and dispatches `hyva_config_generate_before` in the frontend area. The stale event configuration references a Magewire 1 observer that Magewire 3 no longer ships:
+
+```text
+Class "Magewirephp\Magewire\Observer\Frontend\HyvaConfigGenerateBefore" does not exist
+```
+
+The same cached configuration also contains the old `Observer\Frontend\ViewBlockAbstractToHtmlBefore` and `Observer\Frontend\ViewBlockAbstractToHtmlAfter` registrations. Restoring these classes would leave the incoming release using the old observer list, including obsolete or missing registrations from other modules. An empty Hyvä observer would suppress the missing-class error while still generating `hyva-themes.json` from that stale list.
+
+Cleaning or flushing the shared cache before setup is insufficient while v1 processes remain active: a request or background process can repopulate it before the incoming release reads it. Choose one of these deployment approaches:
+
+1. **Isolate the incoming release's cache before Magento boots.** Give it a separate cache backend or a release-specific `id_prefix` on the cache frontend that stores configuration, normally `cache/frontend/default/id_prefix` in `app/etc/env.php`. Apply the isolation to any custom cache frontend used for configuration too, and use it for all build commands that boot Magento. The incoming release then reads its own event registrations even while v1 writes to its cache. At cutover, keep the new namespace for web requests, cron and consumers. If the isolated namespace is only used during the build, stop and drain all v1 processes before restoring the shared runtime namespace, cleaning its `config` cache and regenerating Hyvä's configuration with the incoming release.
+
+   Configure the prefix in the incoming release's deployment configuration without changing the live release's configuration. If using [`MAGENTO_DC__OVERRIDE`](https://experienceleague.adobe.com/en/docs/commerce-operations/configuration-guide/files/config-reference-envphp#override-file-configuration-with-variables), supply the complete existing `cache` section with the changed prefixes: Magento replaces that section rather than merging only the prefix.
+
+2. **Upgrade within a maintenance window.** Stop new v1 traffic and cron, consumers and cache warmers, and wait for in-flight v1 requests and jobs to finish. Once no v1 process can write to the shared cache, run `bin/magento cache:clean config` from the incoming release, then `setup:upgrade` and the remaining deployment steps. Resume traffic and background processes on the new release after deployment completes.
+
+The deployment must control which release can write each cache namespace. A Magewire observer adapter or a one-time cache clean cannot enforce that boundary.
 
 ## Turn on backwards compatibility
 
