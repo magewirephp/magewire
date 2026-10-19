@@ -4,6 +4,7 @@ namespace Magewirephp\Magewire\Features\SupportLazyLoading;
 
 use Magento\Framework\View\Element\Template;
 use Magewirephp\Magewire\Attributes\Lazy;
+use Magewirephp\Magewire\Drawer\Utils;
 use Magewirephp\Magewire\Exceptions\MethodNotFoundException;
 use Magewirephp\Magewire\Features\SupportLifecycleHooks\SupportLifecycleHooks;
 use Magewirephp\Magewire\Mechanisms\ResolveComponents\Management\LayoutManager;
@@ -33,7 +34,7 @@ class SupportLazyLoading extends \Livewire\Features\SupportLazyLoading\SupportLa
         $lazyParam = $arguments->get('lazy', false);
         $lazyEnabled = $hasLazyParam && ! in_array($lazyParam, [false, 'false', '0', 0, '', null], true);
 
-        $reflectionClass = new \ReflectionClass($this->component);
+        $reflectionClass = Utils::getReflectionWithoutInterceptors($this->component);
         $lazyAttribute = $reflectionClass->getAttributes(Lazy::class)[0] ?? null;
 
         // If `magewire:component:lazy="false"` disable lazy loading...
