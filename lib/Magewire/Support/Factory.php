@@ -12,9 +12,22 @@ declare(strict_types=1);
 namespace Magewirephp\Magewire\Support;
 
 use Magento\Framework\App\ObjectManager;
+use Magento\Framework\ObjectManager\ConfigInterface;
 
 class Factory
 {
+    /**
+     * Concept: resolve named dependencies in the context of an existing consumer.
+     *
+     * Pass the original DI name explicitly when the consumer was created as a virtual type.
+     */
+    public static function for(object $consumer, string|null $consumerType = null): DependencyResolver
+    {
+        $objectManager = ObjectManager::getInstance();
+
+        return new DependencyResolver($consumer, $objectManager, $objectManager->get(ConfigInterface::class), $consumerType);
+    }
+
     /**
      * @template T
      * @param class-string<T> $type
