@@ -131,6 +131,7 @@ Raw PHP in PHTML still works. Raw `<script>` tags are discouraged — use `$mage
 
 If you know Livewire v3, these are the Magewire-specific bits:
 
+- **Deprecated `skipRender(false)` compatibility.** Passing a strict boolean `false` clears an earlier skip and resumes normal rendering for every component, regardless of the `magewire:bc` flag. Call it before the renderer checks the flag. This Magewire 1 convention is deprecated; new code should decide whether rendering is needed before calling `skipRender()`. Calls without an argument, with `null`, or with replacement HTML retain their existing behavior. This cancellation behavior is a Magewire extension to Livewire.
 - **No `Livewire::component()` registration.** Components are discovered through Magento layout XML — `<referenceContainer><block class="..."/></referenceContainer>` — and resolved by `ResolveComponents`.
 - **Service registration via DI, not a service provider.** Mechanisms and Features are registered in **area-scoped** DI (`etc/frontend/di.xml` or `etc/adminhtml/di.xml`), never global `etc/di.xml`.
 - **`app()` bridge.** Livewire code that calls `app('livewire')` or `app('redirect')` works — `Containers` maps those lookups to Magento DI bindings.
