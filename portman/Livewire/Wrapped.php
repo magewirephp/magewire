@@ -29,6 +29,12 @@ class Wrapped extends \Livewire\Wrapped
         }
 
         try {
+            // A variadic parameter takes whatever else the caller passed, e.g. an event's payload in a
+            // #[On] listener declared as on(...$payload), so pass every argument on as it came.
+            if ($this->hasVariadicParameter($method)) {
+                return $this->target->{$method}(...$params);
+            }
+
             $arguments = $this->methodsMap->getMethodParams($this->target::class, $method);
 
             if (count($params) !== 0 && isset($params[0])) {
@@ -56,5 +62,13 @@ class Wrapped extends \Livewire\Wrapped
 
             $shouldPropagate && throw $e;
         }
+    }
+
+    private function hasVariadicParameter(string $method): bool
+    {
+        $parameters = (new \ReflectionMethod($this->target, $method))->getParameters();
+        $last = end($parameters);
+
+        return $last !== false && $last->isVariadic();
     }
 }
