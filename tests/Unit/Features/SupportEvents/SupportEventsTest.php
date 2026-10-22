@@ -12,6 +12,7 @@ use Magewirephp\Magewire\Exceptions\MethodNotFoundException;
 use Magewirephp\Magewire\Features\SupportEvents\SupportEvents;
 use Magewirephp\Magewire\Mechanisms\DataStore;
 use Magewirephp\Magewire\Mechanisms\HandleComponents\HandleComponents;
+use Magewirephp\Magewire\Tests\Unit\Fixtures\ProbeListenerComponent;
 use Magewirephp\Magewire\Wrapped;
 use Magento\Framework\App\ObjectManager;
 use Magento\Framework\Interception\Interceptor;
@@ -22,6 +23,8 @@ use PHPUnit\Framework\TestCase;
 use Rakit\Validation\Validator;
 use ReflectionMethod;
 use ReflectionProperty;
+
+require_once __DIR__ . '/../../Fixtures/ProbeListenerComponent.php';
 
 class SupportEventsTest extends TestCase
 {
@@ -114,6 +117,75 @@ class SupportEventsTest extends TestCase
         });
 
         self::assertSame('worked', $result);
+    }
+
+    public function test_dispatch_passes_a_named_payload_to_a_variadic_listener(): void
+    {
+        $component = new class extends ProbeListenerComponent {
+            public function onProbe(...$payload): array
+            {
+                return $payload;
+            }
+        };
+
+        self::assertSame(
+            ['method' => 'flatrate', 'carrier' => 'flatrate', 'code' => 'flatrate_flatrate'],
+            $this->dispatchTo($component, ['method' => 'flatrate', 'carrier' => 'flatrate', 'code' => 'flatrate_flatrate'])
+        );
+    }
+
+    public function test_dispatch_passes_the_rest_of_a_named_payload_to_the_variadic_after_declared_parameters(): void
+    {
+        $component = new class extends ProbeListenerComponent {
+            public function onProbe(string $code = '', ...$rest): array
+            {
+                return ['code' => $code, 'rest' => $rest];
+            }
+        };
+
+        self::assertSame(
+            ['code' => 'flatrate_flatrate', 'rest' => ['method' => 'flatrate', 'carrier' => 'flatrate']],
+            $this->dispatchTo($component, ['method' => 'flatrate', 'carrier' => 'flatrate', 'code' => 'flatrate_flatrate'])
+        );
+    }
+
+    public function test_dispatch_passes_every_positional_argument_to_a_variadic_listener(): void
+    {
+        $component = new class extends ProbeListenerComponent {
+            public function onProbe(...$values): array
+            {
+                return $values;
+            }
+        };
+
+        self::assertSame(['a', 'b', 'c'], $this->dispatchTo($component, ['a', 'b', 'c']));
+    }
+
+    public function test_dispatch_still_drops_named_arguments_a_listener_without_a_variadic_does_not_declare(): void
+    {
+        $component = new class extends ProbeListenerComponent {
+            public function onProbe(string $code = ''): string
+            {
+                return $code;
+            }
+        };
+
+        self::assertSame(
+            'flatrate_flatrate',
+            $this->dispatchTo($component, ['method' => 'flatrate', 'code' => 'flatrate_flatrate'])
+        );
+    }
+
+    public function test_dispatch_still_maps_positional_arguments_onto_a_listener_without_a_variadic(): void
+    {
+        $component = new class extends ProbeListenerComponent {
+            public function onProbe(string $first = '', string $second = ''): array
+            {
+                return [$first, $second];
+            }
+        };
+
+        self::assertSame(['a', 'b'], $this->dispatchTo($component, ['a', 'b', 'c']));
     }
 
     public function test_dispatch_keeps_undeclared_refresh_listener_as_no_op(): void
@@ -288,6 +360,19 @@ class SupportEventsTest extends TestCase
 
         $this->expectException(MethodNotFoundException::class);
         $hook->call('__dispatch', ['probe:evt', []], static function (): void {});
+    }
+
+    private function dispatchTo(Component $component, array $params): mixed
+    {
+        $hook = new SupportEvents();
+        $hook->setComponent($component);
+        $result = null;
+
+        $hook->call('__dispatch', ['probe:evt', $params], static function ($value) use (&$result): void {
+            $result = $value;
+        });
+
+        return $result;
     }
 
     private function callComponentMethods(Component $component, array $calls): void
