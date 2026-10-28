@@ -25,7 +25,8 @@ trait Emit
     /**
      * @deprecated Use dispatch() instead.
      *
-     * @param array<string, mixed> $params
+     * @param mixed $params An array holding the listener arguments, or a single argument. Further arguments
+     *                      are passed to the listener one by one.
      */
     public function emit(string $event, $params = []): Event
     {
@@ -37,7 +38,8 @@ trait Emit
      *
      * @deprecated Use dispatch() instead.
      *
-     * @param array<string, mixed> $params
+     * @param mixed $params An array holding the listener arguments, or a single argument. Further arguments
+     *                      are passed to the listener one by one.
      */
     public function emitUp(string $event, $params = []): Event
     {
@@ -49,7 +51,8 @@ trait Emit
      *
      * @deprecated Use dispatch()->self() instead.
      *
-     * @param array<string, mixed> $params
+     * @param mixed $params An array holding the listener arguments, or a single argument. Further arguments
+     *                      are passed to the listener one by one.
      */
     public function emitSelf(string $event, $params = []): Event
     {
@@ -61,7 +64,8 @@ trait Emit
      *
      * @deprecated Use dispatch()->to() instead.
      *
-     * @param array<string, mixed> $params
+     * @param mixed $params An array holding the listener arguments, or a single argument. Further arguments
+     *                      are passed to the listener one by one.
      */
     public function emitTo(string $name, string $event, $params = []): Event
     {
@@ -73,7 +77,8 @@ trait Emit
      *
      * @deprecated Use dispatch('$refresh')->to() instead.
      *
-     * @param array<string, mixed> $params
+     * @param mixed $params An array holding the listener arguments, or a single argument. Further arguments
+     *                      are passed to the listener one by one.
      */
     public function emitToRefresh(string $name, $params = []): Event
     {
@@ -86,7 +91,8 @@ trait Emit
      *
      * @deprecated Use dispatch('$refresh') instead.
      *
-     * @param array<string, mixed> $params
+     * @param mixed $params An array holding the listener arguments, or a single argument. Further arguments
+     *                      are passed to the listener one by one.
      */
     public function emitToRefreshUp($params = []): Event
     {
