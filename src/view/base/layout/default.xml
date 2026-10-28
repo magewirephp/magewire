@@ -172,7 +172,12 @@
             >
                 <container name="magewire.internal.backwards-compatibility"
                            as="internal.backwards-compatibility"
-                />
+                >
+                    <!-- Delivers the deprecated emitUp() and emitToRefreshUp() to the ancestors only, as in Magewire 1. -->
+                    <block name="magewire.internal.backwards-compatibility.emit-up"
+                           template="Magewirephp_Magewire::js/magewire/internal/backwards-compatibility-emit-up.phtml"
+                    />
+                </container>
             </block>
 
             <!--

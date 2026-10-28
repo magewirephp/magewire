@@ -1,0 +1,67 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\ViewModel\Magewire as MagewireViewModel;
+
+/** @var Template $block */
+/** @var MagewireViewModel $magewireViewModel */
+
+$magewireViewModel = $block->getData('view_model');
+$magewireFragment = $magewireViewModel->utils()->fragment();
+
+/** @internal Do not modify to ensure Magewire continues to function correctly. */
+?>
+<?php $script = $magewireFragment->make()->script()->start() ?>
+<script>
+    <?php /* Events of the deprecated emitUp() and emitToRefreshUp() reach the ancestors of the component
+     * only, as in Magewire 1. Livewire's dispatch() and its delivery are not touched.
+     * @see \Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\SupportEmitUp */ ?>
+    document.addEventListener('magewire:init', () => {
+        <?php /* Livewire throws when a component has no parent component. */ ?>
+        const parentOf = component => {
+            try {
+                return component.parent;
+            } catch (exception) {
+                return undefined;
+            }
+        };
+
+        <?php /* Delivered to a component the way $dispatchSelf() does, so it reaches that component's own
+         * listener only, never a sibling's. A '$refresh' re-renders the component, with or without a
+         * '$refresh' listener, as every Magewire 1 component listened to 'refresh'. */ ?>
+        const deliver = ($wire, name, params) => name === '$refresh'
+            ? $wire.$commit()
+            : $wire.$dispatchSelf(name, params);
+
+        <?php /* As in Magewire 1: ->self() keeps the event on the emitter, ->to() sends it to the named
+         * components, and otherwise it goes to every ancestor, nearest first. */ ?>
+        const dispatchUp = (component, { name, params = {}, self = false, to = null }) => {
+            if (self) {
+                deliver(component.$wire, name, params);
+            } else if (to) {
+                <?php /* getByName() returns the $wire of each component. */ ?>
+                Magewire.getByName(to).forEach($wire => deliver($wire, name, params));
+            } else {
+                for (let ancestor = parentOf(component); ancestor; ancestor = parentOf(ancestor)) {
+                    deliver(ancestor.$wire, name, params);
+                }
+            }
+        };
+
+        Magewire.hook('effect', ({ component, effects }) => {
+            const dispatches = effects.bc?.ancestorDispatches ?? [];
+
+            if (dispatches.length === 0) {
+                return;
+            }
+
+            <?php /* Same delay as Livewire's own dispatches, so listeners see the morphed DOM. */ ?>
+            queueMicrotask(() => queueMicrotask(() => queueMicrotask(() => {
+                dispatches.forEach(dispatch => dispatchUp(component, dispatch));
+            })));
+        });
+    }, { once: true });
+</script>
+<?php $script->end() ?>
