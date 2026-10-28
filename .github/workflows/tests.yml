@@ -23,17 +23,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'src/**'
-      - 'lib/**'
-      - 'dist/**'
-      - 'composer.json'
-      - 'tests/Unit/**'
-      - 'tests/Playwright/**'
-      - '.github/workflows/tests.yml'
-      - '.github/workflows/unit-tests.yml'
-      - '.github/workflows/production-build.yml'
-      - '.github/workflows/playwright.yml'
   pull_request:
     branches:
       - main
@@ -53,7 +42,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: tests-${{ inputs.trusted_pr_number || github.ref }}
+  group: tests-${{ github.event_name }}-${{ inputs.trusted_pr_number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -69,6 +58,13 @@ jobs:
     uses: ./.github/workflows/production-build.yml
     with:
       checkout_ref: ${{ inputs.checkout_ref }}
+
+  backend-admin:
+    name: 'Backend admin tests'
+    if: github.event_name == 'push'
+    uses: magewirephp/magewire-admin/.github/workflows/backend-tests.yml@990ed31fdec1a15f6a8bd8fc338b4ca5cc230aff
+    with:
+      magewire_ref: ${{ github.sha }}
 
   approve-trusted-playwright:
     name: 'Approve fork Playwright'
