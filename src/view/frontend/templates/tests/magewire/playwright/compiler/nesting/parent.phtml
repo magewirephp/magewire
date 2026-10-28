@@ -1,0 +1,24 @@
+<?php
+
+declare(strict_types=1);
+
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Playwright\Compiler\LayoutContext;
+
+/** @var Template $block */
+/** @var LayoutContext $compilerContext */
+
+$compilerContext = $block->getData('compiler_context');
+?>
+<section
+    data-testid="compiler-nesting-parent"
+    data-layout-route="{{ attr($compilerContext->route()) }}"
+    data-within-parent="{{ attr($compilerContext->within('magewire.playwright.compiler.nesting.parent') ? 'yes' : 'no') }}"
+    class="rounded-xl border border-slate-200 bg-slate-50 p-6"
+>
+    <h2 class="mb-4 text-xl font-bold">Nested Magento blocks</h2>
+    <div class="space-y-4">
+        @renderChild('compiled-child')
+        @renderChild('plain-child')
+    </div>
+</section>
