@@ -58,10 +58,10 @@ Legacy browser events sent through `dispatchBrowserEvent()` are delivered by
 [`magewirephp/magewire-hyva-theme`](https://github.com/magewirephp/magewire-hyva-theme),
 which preserves Magewire 1's `event.detail` payload shape.
 
-Events of `emitUp()` and `emitToRefreshUp()` are queued in the same way (`getAncestorEvents()`), and Magewire
-delivers them to the ancestors of the component only, as Magewire 1 did: `emitToRefreshUp()` re-renders every
-ancestor, with or without a `$refresh` listener. They no longer go through `dispatch()`, which reaches every
-component listening to the event.
+Events of `emitUp()` and `emitToRefreshUp()` are queued in the same way (`getAncestorEvents()`), and
+`magewirephp/magewire-hyva-theme` delivers them to the ancestors of the component only, as Magewire 1 did:
+`emitToRefreshUp()` re-renders every ancestor, with or without a `$refresh` listener. They no longer go through
+`dispatch()`, which reaches every component listening to the event.
 
 ## Breaking changes you will hit first
 

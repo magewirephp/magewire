@@ -23,7 +23,7 @@ trait Emit
     use HandlesEvents;
 
     /**
-     * @deprecated The events of emitUp() and emitToRefreshUp(), delivered to the ancestors by SupportEmitUp.
+     * @deprecated The events of emitUp() and emitToRefreshUp(), for a compatibility module to deliver.
      * @see getAncestorEvents()
      * @var Event[]
      */
@@ -43,8 +43,8 @@ trait Emit
     /**
      * Emit an event to the ancestors of this component only, as Magewire 1 did.
      *
-     * Not a dispatch(): a Livewire 3 event reaches every component listening to it. The event is queued and
-     * delivered to the ancestors separately from dispatch(), see SupportEmitUp.
+     * Not a dispatch(): a Livewire 3 event reaches every component listening to it. The event is queued for a
+     * compatibility module to deliver to the ancestors, separately from dispatch().
      *
      * @deprecated Use dispatch() instead.
      *
@@ -126,7 +126,7 @@ trait Emit
     }
 
     /**
-     * @deprecated The events of emitUp() and emitToRefreshUp(), delivered to the ancestors by SupportEmitUp.
+     * @deprecated The events of emitUp() and emitToRefreshUp(), for a compatibility module to deliver.
      * @return Event[]
      */
     public function getAncestorEvents(): array

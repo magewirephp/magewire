@@ -244,11 +244,6 @@
                     <item name="sort_order" xsi:type="number">99000</item>
                 </item>
 
-                <item name="magewire_backwards_compatibility_emit_up" xsi:type="array">
-                    <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagewireBackwardsCompatibility\SupportEmitUp</item>
-                    <item name="sort_order" xsi:type="number">99150</item>
-                </item>
-
                 <item name="magento_observer_events" xsi:type="array">
                     <item name="type" xsi:type="string">Magewirephp\Magewire\Features\SupportMagentoObserverEvents\SupportMagentoObserverEvents</item>
                     <item name="sort_order" xsi:type="number">99400</item>
