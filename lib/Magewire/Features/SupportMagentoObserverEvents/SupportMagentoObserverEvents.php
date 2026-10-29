@@ -46,6 +46,7 @@ class SupportMagentoObserverEvents extends ComponentHook
             'magewire:component:construct',
             'magewire:component:reconstruct',
             'magewire:component:build',
+            'magewire:component:reset',
 
             'magewire:view:compile',
 
