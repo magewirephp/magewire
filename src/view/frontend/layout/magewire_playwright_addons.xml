@@ -4,6 +4,13 @@
       layout="1column"
 >
     <body>
+        <!-- The notifier addon is used without a component on this page. -->
+        <referenceBlock name="magewire">
+            <arguments>
+                <argument name="render_without_components" xsi:type="boolean">true</argument>
+            </arguments>
+        </referenceBlock>
+
         <referenceContainer name="content">
             <container name="magewire.playwright.addons"
                        htmlClass="grid grid-cols-1 gap-8"

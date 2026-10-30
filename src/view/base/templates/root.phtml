@@ -17,6 +17,17 @@ $layoutUtil = $magewireViewModel->utils()->layout();
 $magewireUtil = $magewireViewModel->utils()->magewire();
 
 $canRequireMagewire = $magewireUtil->canRequireMagewireJsLibrary();
+
+/*
+ * Like Livewire, which only injects its assets once a component rendered, a page without components gets nothing
+ * from Magewire, except what integrations moved into "magewire.alpinejs.load", e.g. the theme's Alpine.js, which
+ * that page still needs. Set the "render_without_components" argument of this block to render everything anyway.
+ */
+if (! $canRequireMagewire && ! $block->getData('render_without_components')) {
+    echo $block->getLayout()->renderElement('magewire.alpinejs.load');
+
+    return;
+}
 ?>
 
 <?= $templateUtil->echoCodeComment('start', true) ?>
